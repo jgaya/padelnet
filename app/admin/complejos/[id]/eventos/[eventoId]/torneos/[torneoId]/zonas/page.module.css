@@ -1,0 +1,248 @@
+.zonaControlsCard {
+  background: #f7faf9;
+}
+
+.zonaGrid {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .zonaGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 992px) {
+  .zonaGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1400px) {
+  .zonaGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.zonaControls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.zonaControlSelect {
+  width: min(100%, 140px);
+}
+
+.zonaControlInput {
+  width: min(100%, 160px);
+}
+
+.zonaControlsActions {
+  align-items: center;
+}
+
+.zonaBtn {
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
+  box-shadow: 0 6px 14px rgba(28, 37, 38, 0.1);
+}
+
+.zonaBtnPrimary {
+  background: var(--padel-green);
+  color: var(--deep-black);
+  border: 1px solid rgba(0, 200, 83, 0.6);
+}
+
+.zonaBtnPrimary:hover {
+  filter: brightness(0.96);
+}
+
+.zonaBtnOutline {
+  background: #ffffff;
+  color: var(--deep-black);
+  border: 1px solid rgba(28, 37, 38, 0.25);
+}
+
+.zonaBtnOutline:hover {
+  background: #eef2f1;
+}
+
+.zonaBtnSave {
+  background: var(--energy-orange);
+  color: #ffffff;
+  border: 1px solid rgba(255, 79, 0, 0.6);
+}
+
+.zonaBtnSave:hover {
+  filter: brightness(0.95);
+}
+
+.zonaSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--deep-black);
+  font-weight: 600;
+}
+
+.zonaPoolSection {
+  border: 1px dashed rgba(28, 37, 38, 0.2);
+  border-radius: 0.95rem;
+  padding: 1rem;
+  background: #f9fbfb;
+}
+
+.zonaPoolHeader {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(28, 37, 38, 0.65);
+  margin-bottom: 0.6rem;
+}
+
+.zonaPool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 44px;
+}
+
+.zonaChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(0, 200, 83, 0.35);
+  background: rgba(0, 200, 83, 0.12);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--deep-black);
+  cursor: grab;
+  user-select: none;
+  min-width: 0;
+}
+
+.zonaChipSuplente {
+  border-color: rgba(255, 79, 0, 0.3);
+  background: rgba(255, 79, 0, 0.12);
+  color: #9a3600;
+}
+
+.zonaChipIndex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.3rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.4rem;
+  background: rgba(28, 37, 38, 0.08);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.zonaChipText {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zonaChipActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.zonaChipAction {
+  border: 1px solid rgba(28, 37, 38, 0.2);
+  background: #ffffff;
+  color: rgba(28, 37, 38, 0.8);
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.2rem 0.3rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+}
+
+.zonaChipAction:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.zonaCard {
+  border: 1px solid rgba(28, 37, 38, 0.12);
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 12px 24px rgba(28, 37, 38, 0.08);
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 220px;
+  min-width: 0;
+}
+
+.zonaCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.zonaCardInput {
+  flex: 1;
+  border: 1px solid rgba(28, 37, 38, 0.15);
+  border-radius: 0.7rem;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #f3f6f5;
+}
+
+.zonaCardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.zonaCounter {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.6rem;
+  background: #eef2f1;
+  color: rgba(28, 37, 38, 0.8);
+}
+
+.zonaCardBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.85rem;
+  border: 1px dashed rgba(28, 37, 38, 0.18);
+  background: #f8faf9;
+  min-height: 90px;
+  min-width: 0;
+}
+
+.zonaCardBody .zonaChip {
+  width: 100%;
+}
+
+.zonaEmpty {
+  font-size: 0.78rem;
+  color: rgba(28, 37, 38, 0.5);
+}

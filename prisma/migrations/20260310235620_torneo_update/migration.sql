@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `torneo` ADD COLUMN `imagenUrl` VARCHAR(191) NULL,
+    ADD COLUMN `jugxZona` INTEGER NOT NULL DEFAULT 3,
+    ADD COLUMN `valorInsc` VARCHAR(191) NULL;

@@ -6,21 +6,54 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "postbuild": "next-sitemap",
+    "lint": "eslint ./**/* --ext .js,.jsx,.ts,.tsx --fix",
+    "format": "prettier --write .",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "prisma db seed",
+    "prepare": "husky",
+    "prisma:check": "node scripts/check-prisma-maps.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@hookform/resolvers": "^5.2.1",
+    "@prisma/client": "^6.10.1",
+    "bcryptjs": "^3.0.2",
+    "jose": "^6.0.12",
     "next": "16.1.6",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-bootstrap": "^2.10.10",
+    "react-chartjs-2": "^5.3.1",
+    "react-day-picker": "^9.8.1",
+    "react-dom": "19.2.3",
+    "react-hook-form": "^7.61.1",
+    "resend": "^6.6.0",
+    "zod": "^4.0.14",
+    "@tensorflow/tfjs": "^4.22.0",
+    "face-api.js": "^0.22.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.32.0",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
+    "@types/node": "24.0.7",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "eslint": "^9.34.0",
     "eslint-config-next": "16.1.6",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.6",
+    "next-sitemap": "^4.2.3",
+    "prettier": "^3.6.2",
+    "prisma": "^6.10.1",
+    "tailwindcss": "^4.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0"
   }
 }
