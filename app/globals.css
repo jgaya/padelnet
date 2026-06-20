@@ -305,6 +305,8 @@ body {
   border: 1px solid rgba(28, 37, 38, 0.12);
   border-radius: 0.9rem;
   overflow: hidden;
+  font-size: 12px;
+  text-align: center;
 }
 
 .padel-data-table thead th {
@@ -314,7 +316,7 @@ body {
   font-size: 0.78rem;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  padding: 0.8rem 0.85rem;
+  padding: 6px;
 }
 
 .padel-data-table tbody tr {
@@ -336,7 +338,7 @@ body {
 .padel-data-table tbody td {
   border-top: 1px solid rgba(28, 37, 38, 0.08);
   vertical-align: middle;
-  padding: 0.78rem 0.85rem;
+  padding: 6px;
 }
 
 .padel-table-actions {

@@ -136,11 +136,11 @@ export default function ComplejoEventosPage() {
       <TitleBar
         title={`Eventos del Complejo #${complejoId}`}
         buttons={
-          <Button as="a" href={`/complejos/${complejoId}/eventos/new`} variant="primary">
+          <Button as="a" href={`/admin/complejos/${complejoId}/eventos/new`} variant="primary">
             Nuevo Evento
           </Button>
         }
-        backURL={`/complejos/${complejoId}`}
+        backURL={`/admin/complejos/${complejoId}`}
         total={total}
       />
 
@@ -197,13 +197,13 @@ export default function ComplejoEventosPage() {
                 <td>{evento.isFinished ? "Si" : "No"}</td>
                 <td className="d-flex gap-2 padel-table-actions">
                   <Link
-                    href={`/complejos/${complejoId}/eventos/${evento.id}`}
+                    href={`/admin/complejos/${complejoId}/eventos/${evento.id}`}
                     className="btn btn-primario btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>
                   <Link
-                    href={`/complejos/${complejoId}/eventos/${evento.id}/torneos`}
+                    href={`/admin/complejos/${complejoId}/eventos/${evento.id}/torneos`}
                     className="btn btn-primario btn-sm padel-action-btn"
                   >
                     <TrophyIcon className="h-4 w-4" />

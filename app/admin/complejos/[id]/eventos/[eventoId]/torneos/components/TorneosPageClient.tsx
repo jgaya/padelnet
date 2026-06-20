@@ -9,6 +9,7 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
+import Badge from "@/app/components/UI/Badge";
 import {
   deleteTorneo,
   listTorneosByEvento,
@@ -64,6 +65,134 @@ function formatCategoria(
     case "LIBRE":
     default:
       return "Libre";
+  }
+}
+
+function sexoLabel(sexo: TorneoListItem["sexo"]) {
+  switch (sexo) {
+    case "MASCULINO":
+      return "Torneo masculino";
+    case "FEMENINO":
+      return "Torneo femenino";
+    case "MIXTO":
+    default:
+      return "Torneo mixto";
+  }
+}
+
+function SexoIcon({ sexo }: { sexo: TorneoListItem["sexo"] }) {
+  const label = sexoLabel(sexo);
+
+  if (sexo === "MASCULINO") {
+    return (
+      <svg
+        aria-label={label}
+        className="h-5 w-5 text-deep-black"
+        fill="none"
+        role="img"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <title>{label}</title>
+        <circle cx="9" cy="15" r="5" />
+        <path d="M13 11 20 4" />
+        <path d="M15 4h5v5" />
+      </svg>
+    );
+  }
+
+  if (sexo === "FEMENINO") {
+    return (
+      <svg
+        aria-label={label}
+        className="h-5 w-5 text-deep-black"
+        fill="none"
+        role="img"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <title>{label}</title>
+        <circle cx="12" cy="8" r="5" />
+        <path d="M12 13v8" />
+        <path d="M8 17h8" />
+      </svg>
+    );
+  }
+
+  return (
+    <span
+      aria-label={label}
+      className="inline-flex items-center gap-1 text-deep-black"
+      role="img"
+      title={label}
+    >
+      <svg
+        aria-hidden="true"
+        className="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <circle cx="8" cy="15" r="4" />
+        <path d="M11 12 19 4" />
+        <path d="M15 4h4v4" />
+      </svg>
+      <svg
+        aria-hidden="true"
+        className="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <circle cx="12" cy="8" r="4" />
+        <path d="M12 12v8" />
+        <path d="M9 16h6" />
+      </svg>
+    </span>
+  );
+}
+
+function torneoStatusLabel(status: TorneoListItem["status"]) {
+  switch (status) {
+    case "PUBLISHED":
+      return "Publicado";
+    case "IN_PROGRESS":
+      return "En progreso";
+    case "FINISHED":
+      return "Finalizado";
+    case "ARCHIVED":
+      return "Archivado";
+    case "DRAFT":
+    default:
+      return "Borrador";
+  }
+}
+
+function torneoStatusBadgeVariant(status: TorneoListItem["status"]) {
+  switch (status) {
+    case "PUBLISHED":
+      return "success";
+    case "IN_PROGRESS":
+      return "warning";
+    case "FINISHED":
+      return "info";
+    case "ARCHIVED":
+      return "muted";
+    case "DRAFT":
+    default:
+      return "default";
   }
 }
 
@@ -198,7 +327,7 @@ export default function TorneosPageClient({
                   ID <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
                 <th onClick={() => handleSort("nombre")} style={{ cursor: "pointer" }}>
-                  Nombre{" "}
+                  Nombre
                   <SortArrow field="nombre" orderBy={orderBy} orderDir={orderDir} />
                 </th>
                 <th onClick={() => handleSort("sexo")} style={{ cursor: "pointer" }}>
@@ -209,7 +338,7 @@ export default function TorneosPageClient({
                   onClick={() => handleSort("capacidad")}
                   style={{ cursor: "pointer" }}
                 >
-                  Capacidad{" "}
+                  Capacidad
                   <SortArrow
                     field="capacidad"
                     orderBy={orderBy}
@@ -217,13 +346,13 @@ export default function TorneosPageClient({
                   />
                 </th>
                 <th onClick={() => handleSort("status")} style={{ cursor: "pointer" }}>
-                  Estado{" "}
+                  Estado
                   <SortArrow field="status" orderBy={orderBy} orderDir={orderDir} />
                 </th>
                 <th>Publicado</th>
                 <th>Zona cerrada</th>
                 <th onClick={() => handleSort("inicio")} style={{ cursor: "pointer" }}>
-                  Inicio{" "}
+                  Inicio
                   <SortArrow field="inicio" orderBy={orderBy} orderDir={orderDir} />
                 </th>
                 <th onClick={() => handleSort("fin")} style={{ cursor: "pointer" }}>
@@ -236,10 +365,17 @@ export default function TorneosPageClient({
               <tr key={torneo.id}>
                 <td>{torneo.id}</td>
                 <td>{torneo.nombre}</td>
-                <td>{torneo.sexo}</td>
+                <td>
+                  <SexoIcon sexo={torneo.sexo} />
+                </td>
                 <td>{formatCategoria(torneo.categoriaRegla, torneo.categoriaN)}</td>
                 <td>{torneo.capacidad}</td>
-                <td>{torneo.status}</td>
+                <td>
+                  <Badge
+                    text={torneoStatusLabel(torneo.status)}
+                    variant={torneoStatusBadgeVariant(torneo.status)}
+                  />
+                </td>
                 <td>{torneo.publicado ? "Si" : "No"}</td>
                 <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
                 <td>{formatDateTime(torneo.inicio)}</td>
