@@ -152,10 +152,7 @@ export async function listEventosByComplejo(
   };
 }
 
-export async function createEvento(
-  complejoId: number,
-  data: EventoPayload,
-) {
+export async function createEvento(complejoId: number, data: EventoPayload) {
   const access = await ensureComplejoManagerAccess(complejoId);
 
   const nombre = data.nombre?.trim();

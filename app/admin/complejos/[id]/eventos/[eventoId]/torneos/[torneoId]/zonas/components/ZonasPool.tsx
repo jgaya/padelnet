@@ -9,10 +9,7 @@ type ZonasPoolProps = {
   unassignedInscriptos: AdminZonaPareja[];
   unassignedSuplentes: AdminZonaPareja[];
   onDropPool: (event: DragEvent<HTMLDivElement>) => void;
-  onDragStart: (
-    event: DragEvent<HTMLDivElement>,
-    parejaId: number,
-  ) => void;
+  onDragStart: (event: DragEvent<HTMLDivElement>, parejaId: number) => void;
 };
 
 export default function ZonasPool({
@@ -61,10 +58,14 @@ export default function ZonasPool({
             ))}
           </div>
 
-          <div className={`${styles.zonaPoolHeader} mt-3`}>Parejas suplentes</div>
+          <div className={`${styles.zonaPoolHeader} mt-3`}>
+            Parejas suplentes
+          </div>
           <div className={styles.zonaPool}>
             {unassignedSuplentes.length === 0 ? (
-              <span className={styles.zonaEmpty}>Sin suplentes disponibles</span>
+              <span className={styles.zonaEmpty}>
+                Sin suplentes disponibles
+              </span>
             ) : null}
             {unassignedSuplentes.map((pair) => (
               <div

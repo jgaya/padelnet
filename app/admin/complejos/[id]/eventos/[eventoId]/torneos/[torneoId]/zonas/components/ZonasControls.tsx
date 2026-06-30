@@ -29,27 +29,37 @@ export default function ZonasControls({
       <div className={`card-body ${styles.zonaControls}`}>
         <div className="row g-3 align-items-end">
           <div className="col-12 col-md-3">
-            <label className="form-label padel-form-label">Parejas por zona</label>
+            <label className="form-label padel-form-label">
+              Parejas por zona
+            </label>
             <select
               className={`form-select padel-form-select ${styles.zonaControlSelect}`}
               value={pairsPerZone}
-              onChange={(event) => onPairsPerZoneChange(Number(event.target.value))}
+              onChange={(event) =>
+                onPairsPerZoneChange(Number(event.target.value))
+              }
             >
               <option value={3}>3</option>
               <option value={4}>4</option>
             </select>
           </div>
           <div className="col-12 col-md-3">
-            <label className="form-label padel-form-label">Cantidad de zonas</label>
+            <label className="form-label padel-form-label">
+              Cantidad de zonas
+            </label>
             <input
               type="number"
               min={1}
               className={`form-control padel-form-input ${styles.zonaControlInput}`}
               value={zoneCount}
-              onChange={(event) => onZoneCountChange(Number(event.target.value))}
+              onChange={(event) =>
+                onZoneCountChange(Number(event.target.value))
+              }
             />
           </div>
-          <div className={`col-12 col-md-6 d-flex flex-wrap gap-2 ${styles.zonaControlsActions}`}>
+          <div
+            className={`col-12 col-md-6 d-flex flex-wrap gap-2 ${styles.zonaControlsActions}`}
+          >
             <Button
               type="button"
               variant="secondary"

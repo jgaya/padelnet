@@ -72,7 +72,13 @@ export async function POST(request: Request) {
   }
 
   const userId = session.userId;
-  const baseDir = path.join(process.cwd(), "public", "uploads", "users", String(userId));
+  const baseDir = path.join(
+    process.cwd(),
+    "public",
+    "uploads",
+    "users",
+    String(userId),
+  );
   await mkdir(baseDir, { recursive: true });
 
   const stamp = Date.now();

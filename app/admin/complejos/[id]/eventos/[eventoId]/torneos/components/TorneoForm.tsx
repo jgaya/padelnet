@@ -132,9 +132,7 @@ export default function TorneoForm({
         sexo: data.sexo,
         categoriaRegla: data.categoriaRegla,
         categoriaN:
-          data.categoriaRegla === "LIBRE"
-            ? null
-            : Number(data.categoriaN || 0),
+          data.categoriaRegla === "LIBRE" ? null : Number(data.categoriaN || 0),
         capacidad: Number(data.capacidad),
         jugxZona: Number(data.jugxZona || 3),
         status: data.status,

@@ -55,7 +55,9 @@ export default async function TorneoPublicRegisterPage(props: {
   }
 
   if (data.status === "AUTH_REQUIRED") {
-    redirect(`/login?next=${encodeURIComponent(`/torneos/${torneoId}/registrarse`)}`);
+    redirect(
+      `/login?next=${encodeURIComponent(`/torneos/${torneoId}/registrarse`)}`,
+    );
   }
 
   const flashError = query.error?.trim() || "";
@@ -88,7 +90,10 @@ export default async function TorneoPublicRegisterPage(props: {
     });
 
     if (!result.success) {
-      nextParams.set("error", result.error || "No se pudo registrar la inscripcion");
+      nextParams.set(
+        "error",
+        result.error || "No se pudo registrar la inscripcion",
+      );
       redirect(`/torneos/${rawTorneoId}/registrarse?${nextParams.toString()}`);
     }
 
@@ -107,8 +112,8 @@ export default async function TorneoPublicRegisterPage(props: {
             {data.torneo.nombre}
           </h1>
           <p className="mt-1 text-sm text-deep-black/70">
-            {data.torneo.eventoNombre} - {data.torneo.complejoNombre} ({data.torneo.complejoCiudad},{" "}
-            {data.torneo.complejoProvincia})
+            {data.torneo.eventoNombre} - {data.torneo.complejoNombre} (
+            {data.torneo.complejoCiudad}, {data.torneo.complejoProvincia})
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
@@ -116,7 +121,10 @@ export default async function TorneoPublicRegisterPage(props: {
               Sexo: {data.torneo.sexo}
             </span>
             <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
-              {categoriaRuleLabel(data.torneo.categoriaRegla, data.torneo.categoriaN)}
+              {categoriaRuleLabel(
+                data.torneo.categoriaRegla,
+                data.torneo.categoriaN,
+              )}
             </span>
             <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
               Cupo: {data.torneo.inscriptosCount}/{data.torneo.capacidad}
@@ -170,7 +178,10 @@ export default async function TorneoPublicRegisterPage(props: {
             </div>
           ) : (
             <div className="space-y-4">
-              <form method="get" className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <form
+                method="get"
+                className="flex flex-col gap-2 sm:flex-row sm:items-center"
+              >
                 <input
                   name="q"
                   type="text"
@@ -196,8 +207,8 @@ export default async function TorneoPublicRegisterPage(props: {
 
               {data.torneo.inscriptosCount >= data.torneo.capacidad ? (
                 <p className="rounded-xl border border-energy-orange/25 bg-energy-orange/10 px-4 py-2 text-sm text-energy-orange">
-                  El cupo principal esta completo. Las nuevas inscripciones entraran a
-                  lista de suplentes.
+                  El cupo principal esta completo. Las nuevas inscripciones
+                  entraran a lista de suplentes.
                 </p>
               ) : null}
 
@@ -210,10 +221,18 @@ export default async function TorneoPublicRegisterPage(props: {
                     <table className="min-w-full text-sm">
                       <thead className="sticky top-0 bg-surface-soft text-deep-black/80">
                         <tr>
-                          <th className="px-3 py-2 text-left font-semibold">Elegir</th>
-                          <th className="px-3 py-2 text-left font-semibold">Jugador</th>
-                          <th className="px-3 py-2 text-left font-semibold">Genero</th>
-                          <th className="px-3 py-2 text-left font-semibold">Categoria</th>
+                          <th className="px-3 py-2 text-left font-semibold">
+                            Elegir
+                          </th>
+                          <th className="px-3 py-2 text-left font-semibold">
+                            Jugador
+                          </th>
+                          <th className="px-3 py-2 text-left font-semibold">
+                            Genero
+                          </th>
+                          <th className="px-3 py-2 text-left font-semibold">
+                            Categoria
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -223,7 +242,8 @@ export default async function TorneoPublicRegisterPage(props: {
                               colSpan={4}
                               className="px-3 py-5 text-center text-deep-black/65"
                             >
-                              No hay jugadores disponibles que cumplan las reglas del torneo.
+                              No hay jugadores disponibles que cumplan las
+                              reglas del torneo.
                             </td>
                           </tr>
                         ) : (
@@ -231,7 +251,9 @@ export default async function TorneoPublicRegisterPage(props: {
                             <tr
                               key={candidate.id}
                               className={`transition hover:bg-padel-green/10 ${
-                                index % 2 === 0 ? "bg-white" : "bg-surface-soft/50"
+                                index % 2 === 0
+                                  ? "bg-white"
+                                  : "bg-surface-soft/50"
                               }`}
                             >
                               <td className="px-3 py-2">
@@ -263,7 +285,9 @@ export default async function TorneoPublicRegisterPage(props: {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm text-deep-black/70">
                     Candidatos disponibles:{" "}
-                    <span className="font-semibold text-deep-black">{data.candidates.length}</span>
+                    <span className="font-semibold text-deep-black">
+                      {data.candidates.length}
+                    </span>
                   </p>
                   <button
                     type="submit"

@@ -132,7 +132,9 @@ export type PublicTorneoInscripcionesResult = {
   suplentes: PublicTorneoInscripcionPareja[];
 };
 
-function parseCategoriaNumber(categoria: string | null | undefined): number | null {
+function parseCategoriaNumber(
+  categoria: string | null | undefined,
+): number | null {
   if (!categoria) {
     return null;
   }
@@ -225,7 +227,9 @@ export async function listPublicTorneos(): Promise<PublicTorneosResult> {
   const isJugador = session?.type === "jugador";
   const sessionCategoria = parseCategoriaNumber(session?.categoria);
   const genero =
-    session?.genero === "M" || session?.genero === "F" || session?.genero === "X"
+    session?.genero === "M" ||
+    session?.genero === "F" ||
+    session?.genero === "X"
       ? session.genero
       : null;
 
@@ -330,7 +334,8 @@ export async function listPublicTorneos(): Promise<PublicTorneosResult> {
 
   const items: PublicTorneoItem[] = torneos.map((torneo) => {
     const complejoId = torneo.evento.complejo.id;
-    const categoriaJugador = categoriaByComplejo.get(complejoId) ?? sessionCategoria ?? null;
+    const categoriaJugador =
+      categoriaByComplejo.get(complejoId) ?? sessionCategoria ?? null;
     const registration = registrationByTorneo.get(torneo.id);
     const isAlreadyRegistered = Boolean(registration);
     const isAlreadyWaitlist = Boolean(registration?.suplente);
@@ -521,7 +526,9 @@ function scoreLabel(
     return "-";
   }
 
-  return sets.map((set) => `${set.gamesPareja1}-${set.gamesPareja2}`).join(" | ");
+  return sets
+    .map((set) => `${set.gamesPareja1}-${set.gamesPareja2}`)
+    .join(" | ");
 }
 
 function canchaLabel(
@@ -610,14 +617,15 @@ export async function getPublicTorneoInscripciones(
     return null;
   }
 
-  const allPairs: Array<PublicTorneoInscripcionPareja & { suplente: boolean }> = torneo.parejas.map((pair) => ({
-    id: pair.id,
-    parejaNombre: `${pair.jugador1.name} ${pair.jugador1.lastname} / ${pair.jugador2.name} ${pair.jugador2.lastname}`,
-    player1Nombre: `${pair.jugador1.name} ${pair.jugador1.lastname}`,
-    player2Nombre: `${pair.jugador2.name} ${pair.jugador2.lastname}`,
-    createdAt: pair.createdAt.toISOString(),
-    suplente: pair.suplente,
-  }));
+  const allPairs: Array<PublicTorneoInscripcionPareja & { suplente: boolean }> =
+    torneo.parejas.map((pair) => ({
+      id: pair.id,
+      parejaNombre: `${pair.jugador1.name} ${pair.jugador1.lastname} / ${pair.jugador2.name} ${pair.jugador2.lastname}`,
+      player1Nombre: `${pair.jugador1.name} ${pair.jugador1.lastname}`,
+      player2Nombre: `${pair.jugador2.name} ${pair.jugador2.lastname}`,
+      createdAt: pair.createdAt.toISOString(),
+      suplente: pair.suplente,
+    }));
 
   const inscriptos = allPairs
     .filter((pair) => !pair.suplente)

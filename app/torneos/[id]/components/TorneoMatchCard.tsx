@@ -129,9 +129,11 @@ export default function TorneoMatchCard({
 }) {
   const sets = parseScoreSets(match.score);
   const winner = resolveWinner(sets);
-  const showFallbackScore = sets.length === 0 && match.score && match.score !== "-";
+  const showFallbackScore =
+    sets.length === 0 && match.score && match.score !== "-";
 
-  const cardClassName = `overflow-hidden rounded-xl border border-deep-black/10 bg-white p-3 shadow-sm ${className ?? ""}`.trim();
+  const cardClassName =
+    `overflow-hidden rounded-xl border border-deep-black/10 bg-white p-3 shadow-sm ${className ?? ""}`.trim();
 
   return (
     <article className={cardClassName} style={style}>
@@ -156,7 +158,10 @@ export default function TorneoMatchCard({
           <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-deep-black/80">
             {sets.length > 0 ? (
               sets.map((set, index) => (
-                <span key={`p1-${match.id}-${index}`} className="w-4 text-right">
+                <span
+                  key={`p1-${match.id}-${index}`}
+                  className="w-4 text-right"
+                >
                   {set.pareja1}
                 </span>
               ))
@@ -175,7 +180,10 @@ export default function TorneoMatchCard({
           <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-deep-black/80">
             {sets.length > 0 ? (
               sets.map((set, index) => (
-                <span key={`p2-${match.id}-${index}`} className="w-4 text-right">
+                <span
+                  key={`p2-${match.id}-${index}`}
+                  className="w-4 text-right"
+                >
                   {set.pareja2}
                 </span>
               ))
@@ -187,11 +195,17 @@ export default function TorneoMatchCard({
       </div>
 
       {showFallbackScore ? (
-        <p className="mt-2 text-xs text-deep-black/70">Resultado: {match.score}</p>
+        <p className="mt-2 text-xs text-deep-black/70">
+          Resultado: {match.score}
+        </p>
       ) : null}
 
-      <p className="mt-2 text-xs text-deep-black/70">Cancha: {match.cancha ?? "-"}</p>
-      <p className="text-xs text-deep-black/70">{formatDateTime(match.scheduledAt)}</p>
+      <p className="mt-2 text-xs text-deep-black/70">
+        Cancha: {match.cancha ?? "-"}
+      </p>
+      <p className="text-xs text-deep-black/70">
+        {formatDateTime(match.scheduledAt)}
+      </p>
     </article>
   );
 }

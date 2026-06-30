@@ -43,20 +43,100 @@ const MOCK_GRUPOS: PublicTorneoDetail["grupos"] = [
     id: -1,
     nombre: "Zona A",
     rows: [
-      { parejaId: -11, parejaNombre: "Perez / Gomez", pts: 6, pg: 3, pp: 0, sg: 6, sp: 2, gg: 38, gp: 24 },
-      { parejaId: -12, parejaNombre: "Lopez / Diaz", pts: 5, pg: 2, pp: 1, sg: 5, sp: 3, gg: 34, gp: 29 },
-      { parejaId: -13, parejaNombre: "Sosa / Ruiz", pts: 4, pg: 1, pp: 2, sg: 3, sp: 5, gg: 27, gp: 33 },
-      { parejaId: -14, parejaNombre: "Acosta / Medina", pts: 3, pg: 0, pp: 3, sg: 2, sp: 6, gg: 21, gp: 34 },
+      {
+        parejaId: -11,
+        parejaNombre: "Perez / Gomez",
+        pts: 6,
+        pg: 3,
+        pp: 0,
+        sg: 6,
+        sp: 2,
+        gg: 38,
+        gp: 24,
+      },
+      {
+        parejaId: -12,
+        parejaNombre: "Lopez / Diaz",
+        pts: 5,
+        pg: 2,
+        pp: 1,
+        sg: 5,
+        sp: 3,
+        gg: 34,
+        gp: 29,
+      },
+      {
+        parejaId: -13,
+        parejaNombre: "Sosa / Ruiz",
+        pts: 4,
+        pg: 1,
+        pp: 2,
+        sg: 3,
+        sp: 5,
+        gg: 27,
+        gp: 33,
+      },
+      {
+        parejaId: -14,
+        parejaNombre: "Acosta / Medina",
+        pts: 3,
+        pg: 0,
+        pp: 3,
+        sg: 2,
+        sp: 6,
+        gg: 21,
+        gp: 34,
+      },
     ],
   },
   {
     id: -2,
     nombre: "Zona B",
     rows: [
-      { parejaId: -21, parejaNombre: "Fernandez / Nunez", pts: 6, pg: 3, pp: 0, sg: 6, sp: 1, gg: 40, gp: 23 },
-      { parejaId: -22, parejaNombre: "Rossi / Vidal", pts: 5, pg: 2, pp: 1, sg: 4, sp: 3, gg: 31, gp: 28 },
-      { parejaId: -23, parejaNombre: "Molina / Silva", pts: 4, pg: 1, pp: 2, sg: 3, sp: 5, gg: 29, gp: 35 },
-      { parejaId: -24, parejaNombre: "Ibarra / Torres", pts: 3, pg: 0, pp: 3, sg: 1, sp: 6, gg: 20, gp: 34 },
+      {
+        parejaId: -21,
+        parejaNombre: "Fernandez / Nunez",
+        pts: 6,
+        pg: 3,
+        pp: 0,
+        sg: 6,
+        sp: 1,
+        gg: 40,
+        gp: 23,
+      },
+      {
+        parejaId: -22,
+        parejaNombre: "Rossi / Vidal",
+        pts: 5,
+        pg: 2,
+        pp: 1,
+        sg: 4,
+        sp: 3,
+        gg: 31,
+        gp: 28,
+      },
+      {
+        parejaId: -23,
+        parejaNombre: "Molina / Silva",
+        pts: 4,
+        pg: 1,
+        pp: 2,
+        sg: 3,
+        sp: 5,
+        gg: 29,
+        gp: 35,
+      },
+      {
+        parejaId: -24,
+        parejaNombre: "Ibarra / Torres",
+        pts: 3,
+        pg: 0,
+        pp: 3,
+        sg: 1,
+        sp: 6,
+        gg: 20,
+        gp: 34,
+      },
     ],
   },
 ];
@@ -148,7 +228,8 @@ export default function TorneoDetailTabs({
   const [activeTab, setActiveTab] = useState<ActiveTab>("grupos");
 
   const locationLabel = useMemo(
-    () => `${detail.complejoNombre} - ${detail.complejoCiudad}, ${detail.complejoProvincia}`,
+    () =>
+      `${detail.complejoNombre} - ${detail.complejoCiudad}, ${detail.complejoProvincia}`,
     [detail.complejoCiudad, detail.complejoNombre, detail.complejoProvincia],
   );
 
@@ -248,14 +329,30 @@ export default function TorneoDetailTabs({
                     <table className="min-w-full text-sm">
                       <thead className="bg-surface-soft text-deep-black/80">
                         <tr>
-                          <th className="px-3 py-2 text-left font-semibold">Pareja</th>
-                          <th className="px-3 py-2 text-right font-semibold">Pts</th>
-                          <th className="px-3 py-2 text-right font-semibold">PG</th>
-                          <th className="px-3 py-2 text-right font-semibold">PP</th>
-                          <th className="px-3 py-2 text-right font-semibold">SG</th>
-                          <th className="px-3 py-2 text-right font-semibold">SP</th>
-                          <th className="px-3 py-2 text-right font-semibold">GG</th>
-                          <th className="px-3 py-2 text-right font-semibold">GP</th>
+                          <th className="px-3 py-2 text-left font-semibold">
+                            Pareja
+                          </th>
+                          <th className="px-3 py-2 text-right font-semibold">
+                            Pts
+                          </th>
+                          <th className="px-3 py-2 text-right font-semibold">
+                            PG
+                          </th>
+                          <th className="px-3 py-2 text-right font-semibold">
+                            PP
+                          </th>
+                          <th className="px-3 py-2 text-right font-semibold">
+                            SG
+                          </th>
+                          <th className="px-3 py-2 text-right font-semibold">
+                            SP
+                          </th>
+                          <th className="px-3 py-2 text-right font-semibold">
+                            GG
+                          </th>
+                          <th className="px-3 py-2 text-right font-semibold">
+                            GP
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -263,7 +360,9 @@ export default function TorneoDetailTabs({
                           <tr
                             key={row.parejaId}
                             className={`transition hover:bg-padel-green/10 ${
-                              index % 2 === 0 ? "bg-white" : "bg-surface-soft/50"
+                              index % 2 === 0
+                                ? "bg-white"
+                                : "bg-surface-soft/50"
                             }`}
                           >
                             <td className="px-3 py-2 font-medium text-deep-black">

@@ -160,9 +160,19 @@ async function main() {
   });
 
   const canchas = [
-    { numero: 1, name: "Cancha 1", superficie: "Cesped sintetico", isIndoor: false },
+    {
+      numero: 1,
+      name: "Cancha 1",
+      superficie: "Cesped sintetico",
+      isIndoor: false,
+    },
     { numero: 2, name: "Cancha 2", superficie: "Cemento", isIndoor: true },
-    { numero: 3, name: "Cancha 3", superficie: "Polvo de ladrillo", isIndoor: false },
+    {
+      numero: 3,
+      name: "Cancha 3",
+      superficie: "Polvo de ladrillo",
+      isIndoor: false,
+    },
   ];
 
   for (const cancha of canchas) {

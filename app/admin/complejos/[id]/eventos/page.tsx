@@ -136,11 +136,15 @@ export default function ComplejoEventosPage() {
       <TitleBar
         title={`Eventos del Complejo #${complejoId}`}
         buttons={
-          <Button as="a" href={`/admin/complejos/${complejoId}/eventos/new`} variant="primary">
+          <Button
+            as="a"
+            href={`/admin/complejos/${complejoId}/eventos/new`}
+            variant="primary"
+          >
             Nuevo Evento
           </Button>
         }
-        backURL={`/admin/complejos/${complejoId}`}
+        backURL="/admin/complejos"
         total={total}
       />
 
@@ -162,22 +166,56 @@ export default function ComplejoEventosPage() {
             getRowKey={(evento) => evento.id}
             renderHeader={() => (
               <tr>
-                <th onClick={() => handleSort("id")} style={{ cursor: "pointer" }}>
-                  ID <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
+                <th
+                  onClick={() => handleSort("id")}
+                  style={{ cursor: "pointer" }}
+                >
+                  ID{" "}
+                  <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
-                <th onClick={() => handleSort("nombre")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("nombre")}
+                  style={{ cursor: "pointer" }}
+                >
                   Nombre{" "}
-                  <SortArrow field="nombre" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="nombre"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("tipo")} style={{ cursor: "pointer" }}>
-                  Tipo <SortArrow field="tipo" orderBy={orderBy} orderDir={orderDir} />
+                <th
+                  onClick={() => handleSort("tipo")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Tipo{" "}
+                  <SortArrow
+                    field="tipo"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("inicio")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("inicio")}
+                  style={{ cursor: "pointer" }}
+                >
                   Inicio{" "}
-                  <SortArrow field="inicio" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="inicio"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("fin")} style={{ cursor: "pointer" }}>
-                  Fin <SortArrow field="fin" orderBy={orderBy} orderDir={orderDir} />
+                <th
+                  onClick={() => handleSort("fin")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Fin{" "}
+                  <SortArrow
+                    field="fin"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th>Abierto</th>
                 <th>Visible</th>

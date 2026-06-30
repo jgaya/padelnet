@@ -243,6 +243,50 @@ export async function createUsuario(data: UsuarioPayload) {
   }
 }
 
+export async function assignUsuarioAdminToComplejo(
+  userId: number,
+  complejoId: number,
+) {
+  const user = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  const complejo = await prisma.complejo.findFirst({
+    where: { id: complejoId, deletedAt: null, isActive: true },
+    select: { id: true },
+  });
+
+  if (!complejo) {
+    throw new Error("Complejo no encontrado o inactivo");
+  }
+
+  await prisma.complejoMembership.upsert({
+    where: {
+      complejoId_userId: {
+        userId,
+        complejoId,
+      },
+    },
+    update: {
+      role: "ADMIN",
+      isActive: true,
+    },
+    create: {
+      userId,
+      complejoId,
+      role: "ADMIN",
+      isActive: true,
+    },
+  });
+
+  return { success: true };
+}
+
 export async function updateUsuario(id: number, data: UsuarioPayload) {
   const name = data.name?.trim();
   const lastname = data.lastname?.trim();

@@ -38,11 +38,7 @@ export const TournamentStatusSchema = z.enum([
 ]);
 export type TournamentStatus = z.infer<typeof TournamentStatusSchema>;
 
-export const TournamentSexoSchema = z.enum([
-  "MASCULINO",
-  "FEMENINO",
-  "MIXTO",
-]);
+export const TournamentSexoSchema = z.enum(["MASCULINO", "FEMENINO", "MIXTO"]);
 export type TournamentSexo = z.infer<typeof TournamentSexoSchema>;
 
 export const TournamentCategoryRuleSchema = z.enum([
@@ -52,7 +48,9 @@ export const TournamentCategoryRuleSchema = z.enum([
   "IGUAL",
   "SUMA",
 ]);
-export type TournamentCategoryRule = z.infer<typeof TournamentCategoryRuleSchema>;
+export type TournamentCategoryRule = z.infer<
+  typeof TournamentCategoryRuleSchema
+>;
 
 export const MatchStatusSchema = z.enum([
   "PENDING",

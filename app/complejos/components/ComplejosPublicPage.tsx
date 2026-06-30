@@ -99,7 +99,9 @@ export default function ComplejosPublicPage({
 
                     <div className="space-y-4 px-5 py-4">
                       <div className="rounded-2xl bg-surface-soft/75 px-4 py-3 text-sm text-deep-black/80">
-                        <p className="font-semibold text-deep-black">Direccion</p>
+                        <p className="font-semibold text-deep-black">
+                          Direccion
+                        </p>
                         <p className="mt-1">
                           {complejo.direccion
                             ? `${complejo.direccion}, ${complejo.ciudad}, ${complejo.provincia}`
@@ -109,7 +111,9 @@ export default function ComplejosPublicPage({
 
                       <div className="grid gap-3 text-sm sm:grid-cols-2">
                         <div className="rounded-2xl border border-deep-black/10 bg-white px-4 py-3">
-                          <p className="font-semibold text-deep-black">Telefono</p>
+                          <p className="font-semibold text-deep-black">
+                            Telefono
+                          </p>
                           {complejo.telefono ? (
                             telHref ? (
                               <a
@@ -119,10 +123,14 @@ export default function ComplejosPublicPage({
                                 {complejo.telefono}
                               </a>
                             ) : (
-                              <p className="mt-1 text-deep-black/75">{complejo.telefono}</p>
+                              <p className="mt-1 text-deep-black/75">
+                                {complejo.telefono}
+                              </p>
                             )
                           ) : (
-                            <p className="mt-1 text-deep-black/45">No disponible</p>
+                            <p className="mt-1 text-deep-black/45">
+                              No disponible
+                            </p>
                           )}
                         </div>
 
@@ -136,7 +144,9 @@ export default function ComplejosPublicPage({
                               {complejo.email}
                             </a>
                           ) : (
-                            <p className="mt-1 text-deep-black/45">No disponible</p>
+                            <p className="mt-1 text-deep-black/45">
+                              No disponible
+                            </p>
                           )}
                         </div>
                       </div>
@@ -144,11 +154,17 @@ export default function ComplejosPublicPage({
                       <div className="grid gap-3 text-sm sm:grid-cols-2">
                         <div className="rounded-2xl border border-deep-black/10 bg-white px-4 py-3">
                           <p className="font-semibold text-deep-black">Pais</p>
-                          <p className="mt-1 text-deep-black/75">{complejo.pais}</p>
+                          <p className="mt-1 text-deep-black/75">
+                            {complejo.pais}
+                          </p>
                         </div>
                         <div className="rounded-2xl border border-deep-black/10 bg-white px-4 py-3">
-                          <p className="font-semibold text-deep-black">Zona horaria</p>
-                          <p className="mt-1 break-all text-deep-black/75">{complejo.timezone}</p>
+                          <p className="font-semibold text-deep-black">
+                            Zona horaria
+                          </p>
+                          <p className="mt-1 break-all text-deep-black/75">
+                            {complejo.timezone}
+                          </p>
                         </div>
                       </div>
 

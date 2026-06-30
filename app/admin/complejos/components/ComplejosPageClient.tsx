@@ -14,13 +14,22 @@ import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import type { Cancha, Complejo } from "@/types/db";
 import type { ListOpts } from "@/types/ui";
 
-import { PencilSquareIcon, TrophyIcon } from "@heroicons/react/24/solid";
+import {
+  PencilSquareIcon,
+  TrophyIcon,
+  Squares2X2Icon,
+} from "@heroicons/react/24/solid";
 
 type ComplejoRow = Complejo & { canchas: Cancha[] };
 
 type ComplejosPageClientProps = {
   basePath?: string;
   backURL?: string;
+  canCreate?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  showEventActions?: boolean;
+  showCanchaActions?: boolean;
 };
 
 const ALLOWED_SORT_FIELDS = new Set([
@@ -50,6 +59,11 @@ function SortArrow({
 export default function ComplejosPageClient({
   basePath = "/complejos",
   backURL = "/",
+  canCreate = false,
+  canEdit = false,
+  canDelete = false,
+  showEventActions = true,
+  showCanchaActions = false,
 }: ComplejosPageClientProps) {
   const [complejos, setComplejos] = useState<ComplejoRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -100,7 +114,9 @@ export default function ComplejosPageClient({
       showSnackbar("Complejo eliminado con exito", "success");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Error al eliminar el complejo";
+        error instanceof Error
+          ? error.message
+          : "Error al eliminar el complejo";
       showSnackbar(message, "error");
     }
   };
@@ -110,9 +126,11 @@ export default function ComplejosPageClient({
       <TitleBar
         title="Lista de Complejos"
         buttons={
-          <Button as="a" href={`${basePath}/new`} variant="primary">
-            Nuevo Complejo
-          </Button>
+          canCreate ? (
+            <Button as="a" href={`${basePath}/new`} variant="primary">
+              Nuevo Complejo
+            </Button>
+          ) : null
         }
         backURL={backURL}
         total={total}
@@ -136,16 +154,34 @@ export default function ComplejosPageClient({
             getRowKey={(complejo) => complejo.id}
             renderHeader={() => (
               <tr>
-                <th onClick={() => handleSort("id")} style={{ cursor: "pointer" }}>
-                  ID <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
+                <th
+                  onClick={() => handleSort("id")}
+                  style={{ cursor: "pointer" }}
+                >
+                  ID{" "}
+                  <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
-                <th onClick={() => handleSort("name")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("name")}
+                  style={{ cursor: "pointer" }}
+                >
                   Nombre{" "}
-                  <SortArrow field="name" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="name"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("ciudad")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("ciudad")}
+                  style={{ cursor: "pointer" }}
+                >
                   Ciudad{" "}
-                  <SortArrow field="ciudad" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="ciudad"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th
                   onClick={() => handleSort("provincia")}
@@ -170,24 +206,38 @@ export default function ComplejosPageClient({
                 <td>{complejo.provincia}</td>
                 <td>{complejo.telefono || "-"}</td>
                 <td className="d-flex gap-2 padel-table-actions">
-                  <Link
-                    href={`${basePath}/${complejo.id}`}
-                    className="btn btn-primario btn-sm padel-action-btn"
-                  >
-                    <PencilSquareIcon className="w-4 h-4" />
-                  </Link>
-                  <Link
-                    href={`/admin/complejos/${complejo.id}/eventos`}
-                    className="btn btn-primario btn-sm padel-action-btn"
-                  >
-                    <TrophyIcon className="h-4 w-4" />
-                  </Link>
-                  <ConfirmationModal
-                    onConfirm={() => handleDelete(complejo.id)}
-                    title={`Borrar Complejo ${complejo.id}`}
-                    message="Estas seguro de que quieres eliminar este complejo?"
-                    tooltip="Eliminar complejo"
-                  />
+                  {canEdit ? (
+                    <Link
+                      href={`${basePath}/${complejo.id}`}
+                      className="btn btn-primario btn-sm padel-action-btn"
+                    >
+                      <PencilSquareIcon className="w-4 h-4" />
+                    </Link>
+                  ) : null}
+                  {showEventActions ? (
+                    <Link
+                      href={`/admin/complejos/${complejo.id}/eventos`}
+                      className="btn btn-primario btn-sm padel-action-btn"
+                    >
+                      <TrophyIcon className="h-4 w-4" />
+                    </Link>
+                  ) : null}
+                  {showCanchaActions ? (
+                    <Link
+                      href={`/admin/complejos/${complejo.id}/canchas`}
+                      className="btn btn-secondary btn-sm padel-action-btn"
+                    >
+                      <Squares2X2Icon className="h-4 w-4" />
+                    </Link>
+                  ) : null}
+                  {canDelete ? (
+                    <ConfirmationModal
+                      onConfirm={() => handleDelete(complejo.id)}
+                      title={`Borrar Complejo ${complejo.id}`}
+                      message="Estas seguro de que quieres eliminar este complejo?"
+                      tooltip="Eliminar complejo"
+                    />
+                  ) : null}
                 </td>
               </tr>
             )}

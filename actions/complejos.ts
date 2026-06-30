@@ -33,13 +33,28 @@ export type PublicComplejoItem = {
   eventosCount: number;
 };
 
-const ORDERABLE_FIELDS = new Set(["id", "name", "ciudad", "provincia", "createdAt"]);
+const ORDERABLE_FIELDS = new Set([
+  "id",
+  "name",
+  "ciudad",
+  "provincia",
+  "createdAt",
+]);
 
 async function assertSuperadmin() {
   const session = await getSession();
   if (!session || session.type !== "superadmin") {
     throw new Error("No autorizado");
   }
+}
+
+async function getComplejosListAccess() {
+  const session = await getSession();
+  if (!session || !["superadmin", "admin"].includes(session.type)) {
+    throw new Error("No autorizado");
+  }
+
+  return session;
 }
 
 function normalizeNullable(value?: string | null): string | null {
@@ -58,7 +73,10 @@ function slugify(value: string): string {
   return normalized || "complejo";
 }
 
-async function generateUniqueSlug(name: string, excludeId?: number): Promise<string> {
+async function generateUniqueSlug(
+  name: string,
+  excludeId?: number,
+): Promise<string> {
   const base = slugify(name);
   let candidate = base;
   let index = 2;
@@ -82,16 +100,18 @@ async function generateUniqueSlug(name: string, excludeId?: number): Promise<str
 }
 
 export async function listComplejos(opts: ListOpts = {}) {
-  await assertSuperadmin();
+  const session = await getComplejosListAccess();
 
   const page = Math.max(1, opts.page ?? 1);
   const pageSize = Math.max(1, opts.pageSize ?? 10);
   const skip = (page - 1) * pageSize;
   const orderDir = opts.orderDir === "desc" ? "desc" : "asc";
-  const orderBy = ORDERABLE_FIELDS.has(opts.orderBy ?? "") ? (opts.orderBy as "id" | "name" | "ciudad" | "provincia" | "createdAt") : "id";
+  const orderBy = ORDERABLE_FIELDS.has(opts.orderBy ?? "")
+    ? (opts.orderBy as "id" | "name" | "ciudad" | "provincia" | "createdAt")
+    : "id";
   const searchBy = opts.searchBy?.trim() ?? "";
 
-  const whereClause = searchBy
+  const searchClause = searchBy
     ? {
         OR: [
           { name: { contains: searchBy } },
@@ -101,6 +121,26 @@ export async function listComplejos(opts: ListOpts = {}) {
         ],
       }
     : {};
+
+  const accessClause =
+    session.type === "superadmin"
+      ? {}
+      : {
+          memberships: {
+            some: {
+              userId: session.userId,
+              isActive: true,
+              role: { in: ["OWNER", "ADMIN"] },
+            },
+          },
+        };
+
+  const whereClause = {
+    deletedAt: null,
+    isActive: true,
+    ...searchClause,
+    ...accessClause,
+  };
 
   const [itemsRaw, total] = await Promise.all([
     prisma.complejo.findMany({

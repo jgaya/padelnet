@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getSessionRole } from "@/lib/authz";
 import { hasRole } from "@/lib/roles";
 
-export default async function UsuariosLayout({
+export default async function AdminComplejosLayout({
   children,
 }: {
   children: ReactNode;

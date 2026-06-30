@@ -24,14 +24,25 @@ import { CanchaFormSchema, type CanchaFormData } from "@/types/forms";
 export type CanchaFormProps = {
   initialData?: Partial<CanchaFormData>;
   isEdit?: number;
+  fixedComplejoId?: number;
+  backURL?: string;
 };
 
-export default function CanchaForm({ initialData, isEdit }: CanchaFormProps) {
+export default function CanchaForm({
+  initialData,
+  isEdit,
+  fixedComplejoId,
+  backURL = "/canchas",
+}: CanchaFormProps) {
   const router = useRouter();
   const showSnackbar = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingComplejos, setIsLoadingComplejos] = useState(true);
+  const [isLoadingComplejos, setIsLoadingComplejos] =
+    useState(!fixedComplejoId);
   const [complejos, setComplejos] = useState<ComplejoOption[]>([]);
+
+  const defaultComplejoId =
+    initialData?.complejoId ?? (fixedComplejoId ? String(fixedComplejoId) : "");
 
   const {
     register,
@@ -43,7 +54,7 @@ export default function CanchaForm({ initialData, isEdit }: CanchaFormProps) {
   } = useForm<CanchaFormData>({
     resolver: zodResolver(CanchaFormSchema),
     defaultValues: {
-      complejoId: "",
+      complejoId: defaultComplejoId,
       numero: "",
       name: "",
       superficie: "",
@@ -62,7 +73,9 @@ export default function CanchaForm({ initialData, isEdit }: CanchaFormProps) {
     }
 
     reset({
-      complejoId: initialData.complejoId ?? "",
+      complejoId:
+        initialData.complejoId ??
+        (fixedComplejoId ? String(fixedComplejoId) : ""),
       numero: initialData.numero ?? "",
       name: initialData.name ?? "",
       superficie: initialData.superficie ?? "",
@@ -70,9 +83,14 @@ export default function CanchaForm({ initialData, isEdit }: CanchaFormProps) {
       dobles: initialData.dobles ?? true,
       isActive: initialData.isActive ?? true,
     });
-  }, [initialData, reset]);
+  }, [fixedComplejoId, initialData, reset]);
 
   useEffect(() => {
+    if (fixedComplejoId) {
+      setValue("complejoId", String(fixedComplejoId));
+      return;
+    }
+
     const loadComplejos = async () => {
       try {
         const response = await listComplejosForCanchas();
@@ -85,15 +103,15 @@ export default function CanchaForm({ initialData, isEdit }: CanchaFormProps) {
     };
 
     void loadComplejos();
-  }, [showSnackbar]);
+  }, [fixedComplejoId, showSnackbar, setValue]);
 
   useEffect(() => {
-    if (selectedComplejoId || complejos.length !== 1) {
+    if (fixedComplejoId || selectedComplejoId || complejos.length !== 1) {
       return;
     }
 
     setValue("complejoId", String(complejos[0].id));
-  }, [complejos, selectedComplejoId, setValue]);
+  }, [complejos, fixedComplejoId, selectedComplejoId, setValue]);
 
   const onSubmit = async (data: CanchaFormData) => {
     setIsLoading(true);
@@ -120,7 +138,7 @@ export default function CanchaForm({ initialData, isEdit }: CanchaFormProps) {
         "success",
       );
 
-      router.push("/canchas");
+      router.push(backURL);
       router.refresh();
     } catch (error) {
       showSnackbar(
@@ -138,17 +156,31 @@ export default function CanchaForm({ initialData, isEdit }: CanchaFormProps) {
       backURL="/canchas"
     >
       <form className="padel-entity-form" onSubmit={handleSubmit(onSubmit)}>
-        <FormSelect
-          label="Complejo"
-          register={register("complejoId")}
-          error={errors.complejoId}
-          options={complejos.map((complejo) => ({
-            value: complejo.id,
-            label: `${complejo.name} (#${complejo.id})`,
-          }))}
-          required
-          disabled={isLoadingComplejos || complejos.length === 0}
-        />
+        {fixedComplejoId ? (
+          <>
+            <div className="mb-4">
+              <label className="form-label">Complejo</label>
+              <div className="form-control bg-light">#{fixedComplejoId}</div>
+              <input
+                type="hidden"
+                value={String(fixedComplejoId)}
+                {...register("complejoId")}
+              />
+            </div>
+          </>
+        ) : (
+          <FormSelect
+            label="Complejo"
+            register={register("complejoId")}
+            error={errors.complejoId}
+            options={complejos.map((complejo) => ({
+              value: complejo.id,
+              label: `${complejo.name} (#${complejo.id})`,
+            }))}
+            required
+            disabled={isLoadingComplejos || complejos.length === 0}
+          />
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <FormInput
@@ -194,7 +226,7 @@ export default function CanchaForm({ initialData, isEdit }: CanchaFormProps) {
 
         <FormActions
           submitText={isEdit ? "Guardar cambios" : "Guardar cancha"}
-          cancelPath="/canchas"
+          cancelPath={backURL}
           isLoading={isLoading}
         />
       </form>

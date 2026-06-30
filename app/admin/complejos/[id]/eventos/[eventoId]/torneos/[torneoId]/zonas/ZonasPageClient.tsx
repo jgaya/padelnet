@@ -72,7 +72,11 @@ function parseDragPayload(event: DragEvent<HTMLElement>): DragPayload | null {
 }
 
 export default function ZonasPageClient() {
-  const params = useParams<{ id: string; eventoId: string; torneoId: string }>();
+  const params = useParams<{
+    id: string;
+    eventoId: string;
+    torneoId: string;
+  }>();
   const showSnackbar = useSnackbar();
 
   const complejoId = Number(params.id);
@@ -165,7 +169,10 @@ export default function ZonasPageClient() {
   }, [groups]);
 
   const unassignedPairs = useMemo(
-    () => allPairs.filter((pair) => !assignedSet.has(pair.id)).sort(sortByCreatedAt),
+    () =>
+      allPairs
+        .filter((pair) => !assignedSet.has(pair.id))
+        .sort(sortByCreatedAt),
     [allPairs, assignedSet],
   );
 
@@ -199,12 +206,15 @@ export default function ZonasPageClient() {
       }
     }
 
-    const nextGroups: GroupState[] = Array.from({ length: count }, (_, index) => ({
-      clientId: createClientId(),
-      id: null,
-      nombre: zonaLabel(index),
-      parejaIds: [],
-    }));
+    const nextGroups: GroupState[] = Array.from(
+      { length: count },
+      (_, index) => ({
+        clientId: createClientId(),
+        id: null,
+        nombre: zonaLabel(index),
+        parejaIds: [],
+      }),
+    );
 
     setGroups(nextGroups);
   };
@@ -257,7 +267,9 @@ export default function ZonasPageClient() {
           : null;
 
       const sourceGroupIndex = payload.fromGroupClientId
-        ? prev.findIndex((group) => group.clientId === payload.fromGroupClientId)
+        ? prev.findIndex(
+            (group) => group.clientId === payload.fromGroupClientId,
+          )
         : -1;
       const sourcePairIndex =
         sourceGroupIndex >= 0
@@ -293,7 +305,10 @@ export default function ZonasPageClient() {
             return { ...group, parejaIds: updatedTargetIds };
           }
 
-          if (payload.fromGroupClientId && group.clientId === payload.fromGroupClientId) {
+          if (
+            payload.fromGroupClientId &&
+            group.clientId === payload.fromGroupClientId
+          ) {
             const nextIds = [...group.parejaIds];
             const insertAt =
               sourcePairIndex >= 0 && sourcePairIndex <= nextIds.length
@@ -308,7 +323,9 @@ export default function ZonasPageClient() {
       }
 
       let nextIndex =
-        typeof insertIndex === "number" ? insertIndex : targetAfterRemoval.parejaIds.length;
+        typeof insertIndex === "number"
+          ? insertIndex
+          : targetAfterRemoval.parejaIds.length;
 
       if (
         payload.fromGroupClientId === targetClientId &&
@@ -338,7 +355,9 @@ export default function ZonasPageClient() {
         group.clientId === payload.fromGroupClientId
           ? {
               ...group,
-              parejaIds: group.parejaIds.filter((id) => id !== payload.parejaId),
+              parejaIds: group.parejaIds.filter(
+                (id) => id !== payload.parejaId,
+              ),
             }
           : group,
       ),

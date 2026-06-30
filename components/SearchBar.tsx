@@ -39,7 +39,10 @@ export default function SearchBar({
   return (
     <div className="searchBar padel-searchbar flex w-full flex-col gap-3 rounded-2xl border border-deep-black/10 bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="padel-searchbar-left flex items-center gap-2">
-        <label htmlFor="pageSizeSelect" className="text-sm font-medium text-deep-black/80">
+        <label
+          htmlFor="pageSizeSelect"
+          className="text-sm font-medium text-deep-black/80"
+        >
           Items por pagina:
         </label>
         <select

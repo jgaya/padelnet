@@ -9,7 +9,11 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
-import { deleteCancha, listCanchas, type CanchaListItem } from "@/actions/canchas";
+import {
+  deleteCancha,
+  listCanchas,
+  type CanchaListItem,
+} from "@/actions/canchas";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import type { ListOpts } from "@/types/ui";
@@ -131,26 +135,45 @@ export default function CanchasPage() {
             getRowKey={(cancha) => cancha.id}
             renderHeader={() => (
               <tr>
-                <th onClick={() => handleSort("id")} style={{ cursor: "pointer" }}>
-                  ID <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
+                <th
+                  onClick={() => handleSort("id")}
+                  style={{ cursor: "pointer" }}
+                >
+                  ID{" "}
+                  <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
                 <th
                   onClick={() => handleSort("complejo")}
                   style={{ cursor: "pointer" }}
                 >
                   Complejo{" "}
-                  <SortArrow field="complejo" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="complejo"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th
                   onClick={() => handleSort("numero")}
                   style={{ cursor: "pointer" }}
                 >
                   Numero{" "}
-                  <SortArrow field="numero" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="numero"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("name")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("name")}
+                  style={{ cursor: "pointer" }}
+                >
                   Nombre{" "}
-                  <SortArrow field="name" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="name"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th
                   onClick={() => handleSort("superficie")}

@@ -1,12 +1,38 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/actions/auth";
 import { AvatarMenu } from "./avatar-menu";
+import { getSession } from "@/lib/session";
+import type { UserRole } from "@/lib/roles";
 
-const mainLinks = [
+type HeaderLink = {
+  href: string;
+  label: string;
+  mobileHidden?: boolean;
+};
+
+const publicMainLinks: HeaderLink[] = [
   { href: "/#inicio", label: "Inicio" },
   { href: "/complejos", label: "Complejos" },
   { href: "/torneos", label: "Torneos", mobileHidden: true },
 ];
+
+const mainLinksByRole: Partial<Record<UserRole, HeaderLink[]>> = {
+  jugador: publicMainLinks,
+  admin: [
+    { href: "/admin/complejos", label: "Gestion" },
+    { href: "/torneos", label: "Torneos", mobileHidden: true },
+  ],
+  superadmin: [
+    { href: "/superadmin/complejos", label: "Complejos" },
+    { href: "/superadmin/usuarios", label: "Usuarios" },
+    { href: "/torneos", label: "Torneos", mobileHidden: true },
+  ],
+  dataentry: [
+    { href: "/admin/complejos", label: "Gestion" },
+    { href: "/torneos", label: "Torneos", mobileHidden: true },
+  ],
+  fiscal: [{ href: "/torneos", label: "Torneos" }],
+};
 
 const baseProfileLinks = [
   { href: "/perfil", label: "Mi perfil" },
@@ -15,17 +41,28 @@ const baseProfileLinks = [
 ];
 
 export async function SiteHeader() {
-  const currentUser = await getCurrentUser();
+  const [currentUser, session] = await Promise.all([
+    getCurrentUser(),
+    getSession(),
+  ]);
+  const mainLinks = session?.type
+    ? (mainLinksByRole[session.type] ?? publicMainLinks)
+    : publicMainLinks;
   const profileLinks =
-    currentUser?.platformRole === "SUPERADMIN"
-      ? [{ href: "/admin/complejos", label: "Gestion complejos" }, ...baseProfileLinks]
+    session?.type === "superadmin"
+      ? [
+          { href: "/superadmin/complejos", label: "Gestion complejos" },
+          ...baseProfileLinks,
+        ]
       : baseProfileLinks;
 
   return (
     <header className="sticky top-0 z-50 border-b border-deep-black/10 bg-white/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-3 py-3 sm:px-6">
         <Link href="/" className="mr-auto flex items-baseline gap-1">
-          <span className="font-logo text-xl tracking-tight text-padel-green">PADEL</span>
+          <span className="font-logo text-xl tracking-tight text-padel-green">
+            PADEL
+          </span>
           <span className="text-[10px] font-semibold tracking-[0.24em] text-deep-black/70">
             .NET.AR
           </span>
@@ -33,7 +70,9 @@ export async function SiteHeader() {
 
         <nav aria-label="Principal" className="flex items-center gap-1">
           {mainLinks.map((link) => {
-            const hideOnMobile = link.mobileHidden ? "hidden sm:inline-flex" : "inline-flex";
+            const hideOnMobile = link.mobileHidden
+              ? "hidden sm:inline-flex"
+              : "inline-flex";
             return (
               <Link
                 key={link.href}
@@ -46,10 +85,7 @@ export async function SiteHeader() {
           })}
         </nav>
 
-        <AvatarMenu
-          user={currentUser}
-          profileLinks={profileLinks}
-        />
+        <AvatarMenu user={currentUser} profileLinks={profileLinks} />
       </div>
     </header>
   );

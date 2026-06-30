@@ -107,12 +107,15 @@ export default function TorneoCard({
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
-                  {torneo.complejoNombre} - {torneo.complejoCiudad}, {torneo.complejoProvincia}
+                  {torneo.complejoNombre} - {torneo.complejoCiudad},{" "}
+                  {torneo.complejoProvincia}
                 </p>
                 <h3 className="mt-2 text-xl font-semibold leading-tight text-deep-black">
                   {torneo.nombre}
                 </h3>
-                <p className="mt-1 text-sm text-deep-black/70">{torneo.eventoNombre}</p>
+                <p className="mt-1 text-sm text-deep-black/70">
+                  {torneo.eventoNombre}
+                </p>
               </div>
               <span
                 className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusClasses(
@@ -143,7 +146,9 @@ export default function TorneoCard({
             </div>
 
             {torneo.comentario && (
-              <p className="text-sm leading-relaxed text-deep-black/75">{torneo.comentario}</p>
+              <p className="text-sm leading-relaxed text-deep-black/75">
+                {torneo.comentario}
+              </p>
             )}
 
             <div className="grid gap-2 text-sm text-deep-black/75">
@@ -176,7 +181,8 @@ export default function TorneoCard({
                       ? torneo.isAlreadyWaitlist
                         ? "Ya estas en lista de suplentes."
                         : "Ya estas inscripto."
-                      : torneo.motivoNoInscripcion || "No disponible para inscripcion"}
+                      : torneo.motivoNoInscripcion ||
+                        "No disponible para inscripcion"}
                   </p>
                 )}
 

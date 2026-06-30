@@ -141,7 +141,26 @@ export async function login(input: LoginInput): Promise<LoginResult> {
       return { success: false, error: "Usuario o contrasena incorrectos" };
     }
 
-    const role = mapPlatformRoleToUserRole(user.platformRole);
+    let role = mapPlatformRoleToUserRole(user.platformRole);
+
+    if (role === "jugador") {
+      const membership = await prisma.complejoMembership.findFirst({
+        where: {
+          userId: user.id,
+          isActive: true,
+          role: { in: ["OWNER", "ADMIN"] },
+          complejo: {
+            deletedAt: null,
+            isActive: true,
+          },
+        },
+        select: { id: true },
+      });
+
+      if (membership) {
+        role = "admin";
+      }
+    }
 
     await createSession(
       user.id,
@@ -162,7 +181,9 @@ export async function login(input: LoginInput): Promise<LoginResult> {
   }
 }
 
-export async function registerUser(input: RegisterInput): Promise<RegisterResult> {
+export async function registerUser(
+  input: RegisterInput,
+): Promise<RegisterResult> {
   const name = input.name.trim();
   const lastname = input.lastname.trim();
   const email = input.email.trim().toLowerCase();
@@ -171,12 +192,23 @@ export async function registerUser(input: RegisterInput): Promise<RegisterResult
   const categoria = input.categoria.trim();
   const birthDate = parseBirthDate(input.birthDate.trim());
 
-  if (!name || !lastname || !email || !password || !dni || !categoria || !birthDate) {
+  if (
+    !name ||
+    !lastname ||
+    !email ||
+    !password ||
+    !dni ||
+    !categoria ||
+    !birthDate
+  ) {
     return { success: false, error: "Faltan campos obligatorios" };
   }
 
   if (password.length < 6) {
-    return { success: false, error: "La contrasena debe tener al menos 6 caracteres" };
+    return {
+      success: false,
+      error: "La contrasena debe tener al menos 6 caracteres",
+    };
   }
 
   try {
@@ -195,7 +227,8 @@ export async function registerUser(input: RegisterInput): Promise<RegisterResult
     if (existingUser?.deletedAt) {
       return {
         success: false,
-        error: "Este email corresponde a una cuenta eliminada. Contacte soporte.",
+        error:
+          "Este email corresponde a una cuenta eliminada. Contacte soporte.",
       };
     }
 
@@ -219,7 +252,10 @@ export async function registerUser(input: RegisterInput): Promise<RegisterResult
 
     return { success: true };
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
       const rawTarget = error.meta?.target as string[] | string | undefined;
       const fields = Array.isArray(rawTarget)
         ? rawTarget.join(", ")

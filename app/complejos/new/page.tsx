@@ -9,5 +9,5 @@ export default async function NewComplejoPage() {
     notFound();
   }
 
-  redirect("/admin/complejos/new");
+  redirect("/superadmin/complejos/new");
 }

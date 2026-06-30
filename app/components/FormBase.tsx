@@ -4,7 +4,7 @@ import React, { useState } from "react";
 // import { useWatch } from "react-hook-form";
 import type {
   FieldError,
-//   FieldValues,
+  //   FieldValues,
   UseFormRegisterReturn,
 } from "react-hook-form";
 import { Button, Tooltip, OverlayTrigger } from "react-bootstrap";
@@ -18,7 +18,7 @@ import type {
   FormCheckboxProps,
   FormContainerProps,
   FormDatePickerProps,
-//   FormImageUploadProps,
+  //   FormImageUploadProps,
   FormInputProps,
   FormSelectProps,
   TooltipButtonProps,
@@ -44,7 +44,11 @@ export function FormInput({
         placeholder={placeholder}
         {...register}
       />
-      {error && <div className="invalid-feedback d-block padel-invalid-feedback">{error.message}</div>}
+      {error && (
+        <div className="invalid-feedback d-block padel-invalid-feedback">
+          {error.message}
+        </div>
+      )}
     </div>
   );
 }
@@ -66,7 +70,11 @@ export function FormCheckbox({ label, register, error }: FormCheckboxProps) {
           {label}
         </label>
       </div>
-      {error && <div className="invalid-feedback d-block padel-invalid-feedback">{error.message}</div>}
+      {error && (
+        <div className="invalid-feedback d-block padel-invalid-feedback">
+          {error.message}
+        </div>
+      )}
     </div>
   );
 }
@@ -96,7 +104,11 @@ export function FormSelect({
           </option>
         ))}
       </select>
-      {error && <div className="invalid-feedback d-block padel-invalid-feedback">{error.message}</div>}
+      {error && (
+        <div className="invalid-feedback d-block padel-invalid-feedback">
+          {error.message}
+        </div>
+      )}
     </div>
   );
 }
@@ -189,7 +201,11 @@ export function FormDatePicker({
           onChange={handleDateChange}
         />
       )}
-      {error && <div className="invalid-feedback d-block padel-invalid-feedback">{error.message}</div>}
+      {error && (
+        <div className="invalid-feedback d-block padel-invalid-feedback">
+          {error.message}
+        </div>
+      )}
     </div>
   );
 }
@@ -390,7 +406,12 @@ type FormPasswordProps = {
 
 function EyeOpenIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" className="h-5 w-5">
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+      className="h-5 w-5"
+    >
       <path
         d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"
         fill="none"
@@ -399,14 +420,26 @@ function EyeOpenIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <circle
+        cx="12"
+        cy="12"
+        r="3"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
     </svg>
   );
 }
 
 function EyeClosedIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" className="h-5 w-5">
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+      className="h-5 w-5"
+    >
       <path
         d="M3 3l18 18"
         fill="none"
@@ -460,7 +493,11 @@ export function FormPassword({
           {showPass ? <EyeClosedIcon /> : <EyeOpenIcon />}
         </button>
       </div>
-      {error && <div className="invalid-feedback d-block padel-invalid-feedback">{error.message}</div>}
+      {error && (
+        <div className="invalid-feedback d-block padel-invalid-feedback">
+          {error.message}
+        </div>
+      )}
     </div>
   );
 }

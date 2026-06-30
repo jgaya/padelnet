@@ -45,7 +45,11 @@ body {
   background: var(--background);
   color: var(--foreground);
   background:
-    radial-gradient(circle at 10% -10%, rgba(0, 200, 83, 0.18), transparent 45%),
+    radial-gradient(
+      circle at 10% -10%,
+      rgba(0, 200, 83, 0.18),
+      transparent 45%
+    ),
     radial-gradient(circle at 100% 0%, rgba(255, 79, 0, 0.14), transparent 40%),
     linear-gradient(180deg, var(--surface-white) 0%, var(--surface-soft) 100%);
 }
@@ -69,7 +73,10 @@ body {
   padding: 0.7rem 0.95rem;
   background: var(--surface-soft);
   color: var(--deep-black);
-  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
 }
 
 .padel-form-select {
@@ -80,7 +87,9 @@ body {
   background-position:
     calc(100% - 1.05rem) calc(50% - 0.12rem),
     calc(100% - 0.75rem) calc(50% - 0.12rem);
-  background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+  background-size:
+    0.35rem 0.35rem,
+    0.35rem 0.35rem;
   background-repeat: no-repeat;
   padding-right: 2.2rem;
 }
@@ -153,7 +162,10 @@ body {
   background: var(--surface-white);
   color: color-mix(in oklab, var(--deep-black) 68%, transparent);
   cursor: pointer;
-  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease;
 }
 
 .padel-password-toggle:hover {
@@ -181,7 +193,7 @@ body {
   padding: 1.25rem;
 }
 
-.padel-entity-form .row>div {
+.padel-entity-form .row > div {
   margin-bottom: 0.2rem;
 }
 
@@ -285,7 +297,7 @@ body {
   background: var(--surface-white);
   box-shadow: 0 18px 34px rgba(28, 37, 38, 0.1);
   padding: 10px;
-  margin-bottom: .9rem;
+  margin-bottom: 0.9rem;
 }
 
 .padel-table-wrapper {
@@ -484,7 +496,6 @@ body {
   background-color: var(--info-bg);
 }
 
-
 .container,
 .container-fluid,
 .container-xxl,
@@ -502,7 +513,6 @@ body {
 }
 
 @media (min-width: 576px) {
-
   .container-sm,
   .container {
     max-width: 540px;
@@ -510,7 +520,6 @@ body {
 }
 
 @media (min-width: 768px) {
-
   .container-md,
   .container-sm,
   .container {
@@ -519,7 +528,6 @@ body {
 }
 
 @media (min-width: 992px) {
-
   .container-lg,
   .container-md,
   .container-sm,
@@ -529,7 +537,6 @@ body {
 }
 
 @media (min-width: 1200px) {
-
   .container-xl,
   .container-lg,
   .container-md,
@@ -540,7 +547,6 @@ body {
 }
 
 @media (min-width: 1400px) {
-
   .container-xxl,
   .container-xl,
   .container-lg,
@@ -571,16 +577,32 @@ body {
 
   --btn-outline-border: var(--deep-black);
   --btn-outline-text: var(--deep-black);
-  --btn-outline-hover-bg: color-mix(in oklab, var(--deep-black) 8%, transparent);
-  --btn-outline-active-bg: color-mix(in oklab, var(--deep-black) 12%, transparent);
+  --btn-outline-hover-bg: color-mix(
+    in oklab,
+    var(--deep-black) 8%,
+    transparent
+  );
+  --btn-outline-active-bg: color-mix(
+    in oklab,
+    var(--deep-black) 12%,
+    transparent
+  );
 
   --btn-ghost-text: var(--deep-black);
   --btn-ghost-hover-bg: color-mix(in oklab, var(--foreground) 5%, transparent);
-  --btn-ghost-active-bg: color-mix(in oklab, var(--foreground) 10%, transparent);
+  --btn-ghost-active-bg: color-mix(
+    in oklab,
+    var(--foreground) 10%,
+    transparent
+  );
 
   --btn-disabled-bg: color-mix(in oklab, var(--deep-black) 15%, transparent);
   --btn-disabled-text: color-mix(in oklab, var(--deep-black) 42%, transparent);
-  --btn-disabled-border: color-mix(in oklab, var(--deep-black) 12%, transparent);
+  --btn-disabled-border: color-mix(
+    in oklab,
+    var(--deep-black) 12%,
+    transparent
+  );
 }
 
 /* Base Button Styles */
@@ -700,7 +722,6 @@ body {
   box-shadow: none;
 }
 
-
 /* ========================================
    OUTLINE VARIANT SECUNDARY
    ======================================== */
@@ -731,7 +752,6 @@ body {
   background-color: transparent;
   box-shadow: none;
 }
-
 
 /* ========================================
    GHOST VARIANT

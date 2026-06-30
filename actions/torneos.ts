@@ -246,7 +246,9 @@ export async function listTorneosByEvento(
             ...(searchCategoriaRegla
               ? [{ categoriaRegla: { equals: searchCategoriaRegla } }]
               : []),
-            ...(numericSearch ? [{ categoriaN: numericSearch }, { capacidad: numericSearch }] : []),
+            ...(numericSearch
+              ? [{ categoriaN: numericSearch }, { capacidad: numericSearch }]
+              : []),
           ],
         }
       : {}),

@@ -8,7 +8,12 @@ import type { DatePickerProps } from "@/types/ui";
 
 function CalendarIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" className="h-5 w-5">
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+      className="h-5 w-5"
+    >
       <rect
         x="3"
         y="4"
@@ -19,7 +24,12 @@ function CalendarIcon() {
         stroke="currentColor"
         strokeWidth="1.8"
       />
-      <path d="M8 2.8v3.4M16 2.8v3.4M3 9.2h18" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M8 2.8v3.4M16 2.8v3.4M3 9.2h18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
     </svg>
   );
 }

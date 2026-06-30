@@ -45,7 +45,9 @@ export default function ZonaCard({
         <input
           type="text"
           value={group.nombre}
-          onChange={(event) => onUpdateZoneName(group.clientId, event.target.value)}
+          onChange={(event) =>
+            onUpdateZoneName(group.clientId, event.target.value)
+          }
           className={styles.zonaCardInput}
           placeholder="Nombre de zona"
         />
@@ -83,7 +85,9 @@ export default function ZonaCard({
                 pair.suplente ? styles.zonaChipSuplente : ""
               }`}
               draggable
-              onDragStart={(event) => onDragStart(event, pair.id, group.clientId)}
+              onDragStart={(event) =>
+                onDragStart(event, pair.id, group.clientId)
+              }
               onDragOver={(event) => event.preventDefault()}
               onDrop={(event) => onDropGroup(event, group.clientId, index)}
               title={pair.parejaNombre}

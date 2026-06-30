@@ -36,7 +36,6 @@ export type ListOpts = {
 
 export type ParamValue = string | number | null | undefined;
 
-
 export type ConfirmationModalProps = {
   onConfirm: () => void;
   title: string;

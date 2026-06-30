@@ -191,7 +191,9 @@ function buildBracketLayout(
   const alignTop = options?.alignTop ?? true;
 
   const normalizedColumns =
-    columns.length > 0 ? columns : [{ round: "FINAL" as const, label: "Final", matches: [] }];
+    columns.length > 0
+      ? columns
+      : [{ round: "FINAL" as const, label: "Final", matches: [] }];
   const firstRoundMatches = Math.max(
     1,
     normalizedColumns[0].matches.length || 1,
@@ -217,7 +219,9 @@ function buildBracketLayout(
   };
 
   const getMatchCenterY = (columnMatches: number, matchIndex: number) =>
-    verticalOffset + outerPadding + getRoundStep(columnMatches) * (matchIndex + 0.5);
+    verticalOffset +
+    outerPadding +
+    getRoundStep(columnMatches) * (matchIndex + 0.5);
 
   const mapToNextIndex = (
     fromLength: number,
@@ -228,12 +232,19 @@ function buildBracketLayout(
     if (fromLength >= toLength * 2) {
       return Math.min(toLength - 1, Math.floor(fromIndex / 2));
     }
-    return Math.min(toLength - 1, Math.floor((fromIndex * toLength) / fromLength));
+    return Math.min(
+      toLength - 1,
+      Math.floor((fromIndex * toLength) / fromLength),
+    );
   };
 
   const connectorPaths: Array<{ d: string; fromColumn: number }> = [];
 
-  for (let columnIndex = 0; columnIndex < normalizedColumns.length - 1; columnIndex += 1) {
+  for (
+    let columnIndex = 0;
+    columnIndex < normalizedColumns.length - 1;
+    columnIndex += 1
+  ) {
     const fromMatches = normalizedColumns[columnIndex].matches;
     const toMatches = normalizedColumns[columnIndex + 1].matches;
     const fromLength = fromMatches.length;
@@ -296,7 +307,8 @@ function BracketMatchCard({
 }) {
   const sets = parseScoreSets(match.score);
   const winner = resolveWinner(sets);
-  const showFallbackScore = sets.length === 0 && match.score && match.score !== "-";
+  const showFallbackScore =
+    sets.length === 0 && match.score && match.score !== "-";
 
   const cardClassName =
     `overflow-hidden rounded-xl border border-deep-black/10 bg-white p-3 shadow-sm ${className ?? ""}`.trim();
@@ -324,7 +336,10 @@ function BracketMatchCard({
           <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-deep-black/80">
             {sets.length > 0 ? (
               sets.map((set, index) => (
-                <span key={`p1-${match.id}-${index}`} className="w-4 text-right">
+                <span
+                  key={`p1-${match.id}-${index}`}
+                  className="w-4 text-right"
+                >
                   {set.pareja1}
                 </span>
               ))
@@ -343,7 +358,10 @@ function BracketMatchCard({
           <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-deep-black/80">
             {sets.length > 0 ? (
               sets.map((set, index) => (
-                <span key={`p2-${match.id}-${index}`} className="w-4 text-right">
+                <span
+                  key={`p2-${match.id}-${index}`}
+                  className="w-4 text-right"
+                >
                   {set.pareja2}
                 </span>
               ))
@@ -355,11 +373,17 @@ function BracketMatchCard({
       </div>
 
       {showFallbackScore ? (
-        <p className="mt-2 text-xs text-deep-black/70">Resultado: {match.score}</p>
+        <p className="mt-2 text-xs text-deep-black/70">
+          Resultado: {match.score}
+        </p>
       ) : null}
 
-      <p className="mt-2 text-xs text-deep-black/70">Cancha: {match.cancha ?? "-"}</p>
-      <p className="text-xs text-deep-black/70">{formatDateTime(match.scheduledAt)}</p>
+      <p className="mt-2 text-xs text-deep-black/70">
+        Cancha: {match.cancha ?? "-"}
+      </p>
+      <p className="text-xs text-deep-black/70">
+        {formatDateTime(match.scheduledAt)}
+      </p>
     </article>
   );
 }
@@ -486,7 +510,9 @@ export function Bracket({
 
   const selectedPhaseIndex = Math.max(
     0,
-    renderedColumns.findIndex((column) => column.round === effectiveSelectedPhase),
+    renderedColumns.findIndex(
+      (column) => column.round === effectiveSelectedPhase,
+    ),
   );
 
   const handlePhaseSelection = (nextRound: BracketRound) => {
@@ -552,7 +578,11 @@ export function Bracket({
     renderedColumns[selectedPhaseIndex] ?? renderedColumns[0] ?? null;
 
   const desktopLayout = useMemo(
-    () => buildBracketLayout(desktopVisibleColumns, { minHeight: 560, alignTop: true }),
+    () =>
+      buildBracketLayout(desktopVisibleColumns, {
+        minHeight: 560,
+        alignTop: true,
+      }),
     [desktopVisibleColumns],
   );
 
@@ -577,12 +607,21 @@ export function Bracket({
       return 0;
     }
 
-    return getVisibleBoardWidth(leavingDesktopLayout, leavingDesktopColumns.length);
+    return getVisibleBoardWidth(
+      leavingDesktopLayout,
+      leavingDesktopColumns.length,
+    );
   }, [leavingDesktopColumns.length, leavingDesktopLayout]);
 
-  const desktopViewportWidth = Math.max(desktopVisibleWidth, leavingDesktopWidth);
+  const desktopViewportWidth = Math.max(
+    desktopVisibleWidth,
+    leavingDesktopWidth,
+  );
   const desktopViewportHeight =
-    Math.max(desktopLayout.boardHeight, leavingDesktopLayout?.boardHeight ?? 0) + 40;
+    Math.max(
+      desktopLayout.boardHeight,
+      leavingDesktopLayout?.boardHeight ?? 0,
+    ) + 40;
 
   const desktopEnterAnimation = phaseTransition
     ? phaseTransition.direction === "forward"
@@ -598,10 +637,10 @@ export function Bracket({
 
   const mobileLayout = useMemo(
     () =>
-      buildBracketLayout(
-        mobileSelectedColumn ? [mobileSelectedColumn] : [],
-        { minHeight: 360, alignTop: true },
-      ),
+      buildBracketLayout(mobileSelectedColumn ? [mobileSelectedColumn] : [], {
+        minHeight: 360,
+        alignTop: true,
+      }),
     [mobileSelectedColumn],
   );
 
@@ -623,8 +662,15 @@ export function Bracket({
     const stubLength = 22;
     const paths: string[] = [];
 
-    for (let index = 0; index < mobileSelectedColumn.matches.length; index += 1) {
-      const y = mobileLayout.getMatchCenterY(mobileSelectedColumn.matches.length, index);
+    for (
+      let index = 0;
+      index < mobileSelectedColumn.matches.length;
+      index += 1
+    ) {
+      const y = mobileLayout.getMatchCenterY(
+        mobileSelectedColumn.matches.length,
+        index,
+      );
       if (hasPrev) {
         paths.push(`M ${xLeft} ${y} L ${xLeft - stubLength} ${y}`);
       }
@@ -634,11 +680,19 @@ export function Bracket({
     }
 
     return paths;
-  }, [mobileLayout, mobileSelectedColumn, renderedColumns.length, selectedPhaseIndex]);
+  }, [
+    mobileLayout,
+    mobileSelectedColumn,
+    renderedColumns.length,
+    selectedPhaseIndex,
+  ]);
 
   useEffect(() => {
     return () => {
-      if (typeof window !== "undefined" && transitionTimerRef.current !== null) {
+      if (
+        typeof window !== "undefined" &&
+        transitionTimerRef.current !== null
+      ) {
         window.clearTimeout(transitionTimerRef.current);
       }
     };

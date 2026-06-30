@@ -4,7 +4,10 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Button from "react-bootstrap/Button";
-import { PencilSquareIcon, RectangleGroupIcon } from "@heroicons/react/24/solid";
+import {
+  PencilSquareIcon,
+  RectangleGroupIcon,
+} from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
@@ -323,15 +326,34 @@ export default function TorneosPageClient({
             getRowKey={(torneo) => torneo.id}
             renderHeader={() => (
               <tr>
-                <th onClick={() => handleSort("id")} style={{ cursor: "pointer" }}>
-                  ID <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
+                <th
+                  onClick={() => handleSort("id")}
+                  style={{ cursor: "pointer" }}
+                >
+                  ID{" "}
+                  <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
-                <th onClick={() => handleSort("nombre")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("nombre")}
+                  style={{ cursor: "pointer" }}
+                >
                   Nombre
-                  <SortArrow field="nombre" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="nombre"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("sexo")} style={{ cursor: "pointer" }}>
-                  Sexo <SortArrow field="sexo" orderBy={orderBy} orderDir={orderDir} />
+                <th
+                  onClick={() => handleSort("sexo")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Sexo{" "}
+                  <SortArrow
+                    field="sexo"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th>Categoría</th>
                 <th
@@ -345,18 +367,40 @@ export default function TorneosPageClient({
                     orderDir={orderDir}
                   />
                 </th>
-                <th onClick={() => handleSort("status")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("status")}
+                  style={{ cursor: "pointer" }}
+                >
                   Estado
-                  <SortArrow field="status" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="status"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th>Publicado</th>
                 <th>Zona cerrada</th>
-                <th onClick={() => handleSort("inicio")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("inicio")}
+                  style={{ cursor: "pointer" }}
+                >
                   Inicio
-                  <SortArrow field="inicio" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="inicio"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("fin")} style={{ cursor: "pointer" }}>
-                  Fin <SortArrow field="fin" orderBy={orderBy} orderDir={orderDir} />
+                <th
+                  onClick={() => handleSort("fin")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Fin{" "}
+                  <SortArrow
+                    field="fin"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th>Acciones</th>
               </tr>
@@ -368,7 +412,9 @@ export default function TorneosPageClient({
                 <td>
                   <SexoIcon sexo={torneo.sexo} />
                 </td>
-                <td>{formatCategoria(torneo.categoriaRegla, torneo.categoriaN)}</td>
+                <td>
+                  {formatCategoria(torneo.categoriaRegla, torneo.categoriaN)}
+                </td>
                 <td>{torneo.capacidad}</td>
                 <td>
                   <Badge

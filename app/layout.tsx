@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
-import { SiteHeader } from "./components/site-header";
+import { SiteHeader } from "@/app/components/site-header";
 import { SnackbarProvider } from "@/context/SnackbarContext";
 
 const inter = Inter({
@@ -27,16 +27,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${inter.variable} ${montserrat.variable} font-sans antialiased`}>
+      <body
+        className={`${inter.variable} ${montserrat.variable} font-sans antialiased`}
+      >
         <SnackbarProvider>
           <div className="flex min-h-screen flex-col">
             <SiteHeader />
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
             <footer className="border-t border-deep-black/10 bg-white">
               <div className="mx-auto w-full max-w-6xl px-4 py-5 text-center text-sm text-deep-black/70 sm:px-6">
-                PadelNet (c) {new Date().getFullYear()} - Comunidad oficial de padel.
+                PadelNet (c) {new Date().getFullYear()} - Comunidad oficial de
+                padel.
               </div>
             </footer>
           </div>

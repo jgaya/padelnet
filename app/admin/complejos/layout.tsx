@@ -10,7 +10,7 @@ export default async function AdminComplejosLayout({
 }) {
   const role = await getSessionRole();
 
-  if (!hasRole(role, ["superadmin"])) {
+  if (!hasRole(role, ["superadmin", "admin"])) {
     notFound();
   }
 

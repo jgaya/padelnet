@@ -90,9 +90,7 @@ export async function listComplejosForCanchas(): Promise<ComplejoOption[]> {
     where: {
       deletedAt: null,
       isActive: true,
-      ...(scope.isSuperadmin
-        ? {}
-        : { id: { in: scope.allowedComplejoIds } }),
+      ...(scope.isSuperadmin ? {} : { id: { in: scope.allowedComplejoIds } }),
     },
     orderBy: { name: "asc" },
     select: {
@@ -129,6 +127,83 @@ export async function listCanchas(opts: ListOpts = {}) {
             { name: { contains: searchBy } },
             { superficie: { contains: searchBy } },
             { complejo: { name: { contains: searchBy } } },
+            ...(hasNumericSearch ? [{ numero: numericSearch }] : []),
+          ],
+        }
+      : {}),
+  };
+
+  const orderByClause: Prisma.CanchaOrderByWithRelationInput =
+    orderBy === "complejo"
+      ? { complejo: { name: orderDir } }
+      : ({ [orderBy]: orderDir } as Prisma.CanchaOrderByWithRelationInput);
+
+  const [items, total] = await Promise.all([
+    prisma.cancha.findMany({
+      where: whereClause,
+      skip,
+      take: pageSize,
+      orderBy: orderByClause,
+      select: {
+        id: true,
+        complejoId: true,
+        name: true,
+        numero: true,
+        superficie: true,
+        isIndoor: true,
+        dobles: true,
+        isActive: true,
+        complejo: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    }),
+    prisma.cancha.count({ where: whereClause }),
+  ]);
+
+  return {
+    items: items.map((item) => ({
+      id: item.id,
+      complejoId: item.complejoId,
+      complejoName: item.complejo.name,
+      name: item.name,
+      numero: item.numero,
+      superficie: item.superficie,
+      isIndoor: item.isIndoor,
+      dobles: item.dobles,
+      isActive: item.isActive,
+    })) as CanchaListItem[],
+    total,
+  };
+}
+
+export async function listCanchasByComplejo(
+  complejoId: number,
+  opts: ListOpts = {},
+) {
+  await assertComplejoAllowed(complejoId);
+
+  const page = Math.max(1, opts.page ?? 1);
+  const pageSize = Math.max(1, opts.pageSize ?? 10);
+  const skip = (page - 1) * pageSize;
+  const orderDir = opts.orderDir === "desc" ? "desc" : "asc";
+  const orderByRaw = opts.orderBy ?? "id";
+  const orderBy = ORDERABLE_FIELDS.has(orderByRaw) ? orderByRaw : "id";
+  const searchBy = opts.searchBy?.trim() ?? "";
+
+  const numericSearch = Number(searchBy);
+  const hasNumericSearch = Number.isInteger(numericSearch);
+
+  const whereClause: Prisma.CanchaWhereInput = {
+    deletedAt: null,
+    complejoId,
+    ...(searchBy
+      ? {
+          OR: [
+            { name: { contains: searchBy } },
+            { superficie: { contains: searchBy } },
             ...(hasNumericSearch ? [{ numero: numericSearch }] : []),
           ],
         }

@@ -149,9 +149,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
         categoria: data.categoria || null,
         platformRole: data.platformRole,
         complejoRole:
-          data.platformRole === "SUPPORT"
-            ? (data.complejoRole ?? null)
-            : null,
+          data.platformRole === "SUPPORT" ? (data.complejoRole ?? null) : null,
         isActive: data.isActive ?? true,
         birthDate: data.birthDate || null,
       };
@@ -166,7 +164,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
         isEdit ? "Usuario actualizado con exito" : "Usuario creado con exito",
         "success",
       );
-      router.push("/usuarios");
+      router.push("/superadmin/usuarios");
       router.refresh();
     } catch (error) {
       showSnackbar(
@@ -181,7 +179,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
   return (
     <FormContainer
       title={isEdit ? "Editar Usuario" : "Nuevo Usuario"}
-      backURL="/usuarios"
+      backURL="/superadmin/usuarios"
     >
       <form className="padel-entity-form" onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -214,9 +212,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
             label={isEdit ? "Contrasena (opcional)" : "Contrasena"}
             type="password"
             placeholder={
-              isEdit
-                ? "Completar solo para cambiarla"
-                : "Minimo 6 caracteres"
+              isEdit ? "Completar solo para cambiarla" : "Minimo 6 caracteres"
             }
             register={register("password")}
             error={errors.password}
@@ -314,7 +310,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
 
         <FormActions
           submitText={isEdit ? "Guardar cambios" : "Guardar usuario"}
-          cancelPath="/usuarios"
+          cancelPath="/superadmin/usuarios"
           isLoading={isLoading}
         />
       </form>

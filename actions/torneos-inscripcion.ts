@@ -5,7 +5,12 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 
 type TournamentSexo = "MASCULINO" | "FEMENINO" | "MIXTO";
-type TournamentCategoryRule = "LIBRE" | "MAYOR_IGUAL" | "MENOR_IGUAL" | "IGUAL" | "SUMA";
+type TournamentCategoryRule =
+  | "LIBRE"
+  | "MAYOR_IGUAL"
+  | "MENOR_IGUAL"
+  | "IGUAL"
+  | "SUMA";
 type Genero = "M" | "F" | "X";
 
 type TorneoBase = {
@@ -92,7 +97,9 @@ export type RegisterTorneoPairResult = {
   isWaitlist?: boolean;
 };
 
-function parseCategoriaNumber(categoria: string | null | undefined): number | null {
+function parseCategoriaNumber(
+  categoria: string | null | undefined,
+): number | null {
   if (!categoria) return null;
   const matched = categoria.match(/\d+/);
   if (!matched) return null;
@@ -317,7 +324,12 @@ export async function getPublicTorneoRegistrationData(
     },
   });
 
-  if (!user || user.deletedAt || !user.isActive || user.platformRole !== "USER") {
+  if (
+    !user ||
+    user.deletedAt ||
+    !user.isActive ||
+    user.platformRole !== "USER"
+  ) {
     return {
       status: "NOT_ALLOWED",
       torneo: torneoSummary,
@@ -569,7 +581,10 @@ export async function registerPublicTorneoPair(
       });
 
       if (!torneo) {
-        return { success: false, error: "Torneo no disponible para inscripcion" };
+        return {
+          success: false,
+          error: "Torneo no disponible para inscripcion",
+        };
       }
 
       const [player1, player2] = await Promise.all([
@@ -603,7 +618,10 @@ export async function registerPublicTorneoPair(
         !player1.isActive ||
         player1.platformRole !== "USER"
       ) {
-        return { success: false, error: "Tu cuenta no esta habilitada para inscripciones" };
+        return {
+          success: false,
+          error: "Tu cuenta no esta habilitada para inscripciones",
+        };
       }
 
       if (
@@ -643,7 +661,10 @@ export async function registerPublicTorneoPair(
       ]);
 
       if (player1Profile?.isBlocked) {
-        return { success: false, error: "Tu perfil esta bloqueado en este complejo" };
+        return {
+          success: false,
+          error: "Tu perfil esta bloqueado en este complejo",
+        };
       }
 
       if (player2Profile?.isBlocked) {
@@ -664,7 +685,10 @@ export async function registerPublicTorneoPair(
         parseCategoriaNumber(player2.categoria);
 
       if (!pairMeetsSexoRule(torneo.sexo, player1Genero, player2Genero)) {
-        return { success: false, error: "La pareja no cumple la regla de sexo del torneo" };
+        return {
+          success: false,
+          error: "La pareja no cumple la regla de sexo del torneo",
+        };
       }
 
       if (
@@ -710,7 +734,8 @@ export async function registerPublicTorneoPair(
       if (alreadyPartner) {
         return {
           success: false,
-          error: "La pareja seleccionada ya esta inscripta o en lista de suplentes",
+          error:
+            "La pareja seleccionada ya esta inscripta o en lista de suplentes",
         };
       }
 

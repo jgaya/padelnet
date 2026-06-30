@@ -14,5 +14,5 @@ export default async function EditComplejoPage(props: {
   const complejoId = Number(id);
   if (Number.isNaN(complejoId)) notFound();
 
-  redirect(`/admin/complejos/${complejoId}`);
+  redirect(`/superadmin/complejos/${complejoId}`);
 }

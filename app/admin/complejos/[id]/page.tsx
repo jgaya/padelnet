@@ -1,39 +1,25 @@
-import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import type { Complejo } from "@/types/db";
-import ComplejoForm from "@/app/complejos/components/ComplejoForm";
+import { notFound, redirect } from "next/navigation";
+import { getSessionRole } from "@/lib/authz";
 
-export default async function AdminEditComplejoPage(props: {
+export default async function AdminComplejoPage(props: {
   params: Promise<{ id: string }>;
 }) {
-  const { params } = props;
-  const { id } = await params;
-
+  const { id } = await props.params;
   const complejoId = Number(id);
+
   if (Number.isNaN(complejoId)) {
     notFound();
   }
 
-  const complejo = (await prisma.complejo.findUnique({
-    where: { id: complejoId },
-  })) as Complejo | null;
+  const role = await getSessionRole();
 
-  if (!complejo) {
-    notFound();
+  if (role === "superadmin") {
+    redirect(`/superadmin/complejos/${complejoId}`);
   }
 
-  return (
-    <ComplejoForm
-      initialData={{
-        name: complejo.name,
-        email: complejo.email || "",
-        direccion: complejo.direccion || "",
-        provincia: complejo.provincia,
-        ciudad: complejo.ciudad,
-        telefono: complejo.telefono || "",
-      }}
-      isEdit={complejoId}
-      basePath="/admin/complejos"
-    />
-  );
+  if (role === "admin") {
+    redirect(`/admin/complejos/${complejoId}/eventos`);
+  }
+
+  notFound();
 }

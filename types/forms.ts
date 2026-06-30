@@ -76,9 +76,7 @@ export const LoginSchema = z.object({
     .string()
     .min(1, "El email es obligatorio")
     .email("Ingrese un email valido"),
-  password: z
-    .string()
-    .min(6, "La contrasena debe tener al menos 6 caracteres"),
+  password: z.string().min(6, "La contrasena debe tener al menos 6 caracteres"),
   remember: z.boolean().optional(),
 });
 
@@ -99,18 +97,12 @@ export const RegisterSchema = z
       .trim()
       .min(1, "El email es obligatorio")
       .email("Ingrese un email valido"),
-    dni: z
-      .string()
-      .trim()
-      .min(1, "El DNI es obligatorio"),
+    dni: z.string().trim().min(1, "El DNI es obligatorio"),
     birthDate: z
       .string()
       .trim()
       .min(1, "La fecha de nacimiento es obligatoria"),
-    categoria: z
-      .string()
-      .trim()
-      .min(1, "La categoria es obligatoria"),
+    categoria: z.string().trim().min(1, "La categoria es obligatoria"),
     genero: GeneroSchema,
     password: z
       .string()
@@ -140,10 +132,7 @@ export const RegisterSchema = z
 export type RegisterFormData = z.infer<typeof RegisterSchema>;
 
 export const ComplejoFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, "El nombre debe tener al menos 2 caracteres"),
+  name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres"),
   email: z
     .string()
     .trim()
@@ -224,7 +213,11 @@ export const EventoFormSchema = z
       });
     }
 
-    if (!Number.isNaN(inicio.getTime()) && !Number.isNaN(fin.getTime()) && fin < inicio) {
+    if (
+      !Number.isNaN(inicio.getTime()) &&
+      !Number.isNaN(fin.getTime()) &&
+      fin < inicio
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["fin"],
@@ -279,7 +272,10 @@ export const TorneoCrudFormSchema = z
           path: ["categoriaN"],
           message: "Debe indicar N para la regla de categoria seleccionada",
         });
-      } else if (!Number.isInteger(Number(data.categoriaN)) || Number(data.categoriaN) <= 0) {
+      } else if (
+        !Number.isInteger(Number(data.categoriaN)) ||
+        Number(data.categoriaN) <= 0
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["categoriaN"],
@@ -316,7 +312,11 @@ export const TorneoCrudFormSchema = z
       const inicio = new Date(data.inicio);
       const fin = new Date(data.fin);
 
-      if (!Number.isNaN(inicio.getTime()) && !Number.isNaN(fin.getTime()) && fin < inicio) {
+      if (
+        !Number.isNaN(inicio.getTime()) &&
+        !Number.isNaN(fin.getTime()) &&
+        fin < inicio
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["fin"],
@@ -328,58 +328,63 @@ export const TorneoCrudFormSchema = z
 
 export type TorneoCrudFormData = z.infer<typeof TorneoCrudFormSchema>;
 
-export const UsuarioFormSchema = z.object({
-  name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres"),
-  lastname: z
-    .string()
-    .trim()
-    .min(2, "El apellido debe tener al menos 2 caracteres"),
-  email: z
-    .string()
-    .trim()
-    .min(1, "El email es obligatorio")
-    .email("Ingrese un email valido"),
-  password: z
-    .string()
-    .min(6, "La contrasena debe tener al menos 6 caracteres")
-    .or(z.literal(""))
-    .optional(),
-  telefono: z.string().trim().optional(),
-  dni: z.string().trim().optional(),
-  genero: GeneroSchema,
-  categoria: z.string().trim().optional(),
-  platformRole: PlatformRoleSchema,
-  complejoId: z.string().trim().optional(),
-  complejoRole: ComplejoRoleSchema.optional(),
-  isActive: z.boolean(),
-  birthDate: z.string().optional(),
-}).superRefine((data, ctx) => {
-  if (data.platformRole !== "SUPPORT") {
-    return;
-  }
+export const UsuarioFormSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(2, "El nombre debe tener al menos 2 caracteres"),
+    lastname: z
+      .string()
+      .trim()
+      .min(2, "El apellido debe tener al menos 2 caracteres"),
+    email: z
+      .string()
+      .trim()
+      .min(1, "El email es obligatorio")
+      .email("Ingrese un email valido"),
+    password: z
+      .string()
+      .min(6, "La contrasena debe tener al menos 6 caracteres")
+      .or(z.literal(""))
+      .optional(),
+    telefono: z.string().trim().optional(),
+    dni: z.string().trim().optional(),
+    genero: GeneroSchema,
+    categoria: z.string().trim().optional(),
+    platformRole: PlatformRoleSchema,
+    complejoId: z.string().trim().optional(),
+    complejoRole: ComplejoRoleSchema.optional(),
+    isActive: z.boolean(),
+    birthDate: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.platformRole !== "SUPPORT") {
+      return;
+    }
 
-  if (!data.complejoId) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["complejoId"],
-      message: "Seleccione un complejo para usuarios de soporte",
-    });
-  } else if (!Number.isInteger(Number(data.complejoId))) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["complejoId"],
-      message: "El complejo seleccionado no es valido",
-    });
-  }
+    if (!data.complejoId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["complejoId"],
+        message: "Seleccione un complejo para usuarios de soporte",
+      });
+    } else if (!Number.isInteger(Number(data.complejoId))) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["complejoId"],
+        message: "El complejo seleccionado no es valido",
+      });
+    }
 
-  if (!data.complejoRole) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["complejoRole"],
-      message: "Seleccione un rol en el complejo para usuarios de soporte",
-    });
-  }
-});
+    if (!data.complejoRole) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["complejoRole"],
+        message: "Seleccione un rol en el complejo para usuarios de soporte",
+      });
+    }
+  });
 
 export type UsuarioFormData = z.infer<typeof UsuarioFormSchema>;
 

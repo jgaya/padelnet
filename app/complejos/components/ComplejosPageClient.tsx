@@ -100,7 +100,9 @@ export default function ComplejosPageClient({
       showSnackbar("Complejo eliminado con exito", "success");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Error al eliminar el complejo";
+        error instanceof Error
+          ? error.message
+          : "Error al eliminar el complejo";
       showSnackbar(message, "error");
     }
   };
@@ -136,16 +138,34 @@ export default function ComplejosPageClient({
             getRowKey={(complejo) => complejo.id}
             renderHeader={() => (
               <tr>
-                <th onClick={() => handleSort("id")} style={{ cursor: "pointer" }}>
-                  ID <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
+                <th
+                  onClick={() => handleSort("id")}
+                  style={{ cursor: "pointer" }}
+                >
+                  ID{" "}
+                  <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
-                <th onClick={() => handleSort("name")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("name")}
+                  style={{ cursor: "pointer" }}
+                >
                   Nombre{" "}
-                  <SortArrow field="name" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="name"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("ciudad")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("ciudad")}
+                  style={{ cursor: "pointer" }}
+                >
                   Ciudad{" "}
-                  <SortArrow field="ciudad" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="ciudad"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th
                   onClick={() => handleSort("provincia")}

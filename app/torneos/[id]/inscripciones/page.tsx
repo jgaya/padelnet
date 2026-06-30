@@ -42,13 +42,18 @@ function TableSection({
             <tr>
               <th className="px-3 py-2 text-left font-semibold">#</th>
               <th className="px-3 py-2 text-left font-semibold">Pareja</th>
-              <th className="px-3 py-2 text-left font-semibold">Fecha de inscripcion</th>
+              <th className="px-3 py-2 text-left font-semibold">
+                Fecha de inscripcion
+              </th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={3} className="px-3 py-4 text-center text-deep-black/65">
+                <td
+                  colSpan={3}
+                  className="px-3 py-4 text-center text-deep-black/65"
+                >
                   {emptyText}
                 </td>
               </tr>
@@ -60,9 +65,15 @@ function TableSection({
                     index % 2 === 0 ? "bg-white" : "bg-surface-soft/50"
                   }`}
                 >
-                  <td className="px-3 py-2 font-semibold text-deep-black">{index + 1}</td>
-                  <td className="px-3 py-2 text-deep-black">{row.parejaNombre}</td>
-                  <td className="px-3 py-2 text-deep-black/80">{formatDateTime(row.createdAt)}</td>
+                  <td className="px-3 py-2 font-semibold text-deep-black">
+                    {index + 1}
+                  </td>
+                  <td className="px-3 py-2 text-deep-black">
+                    {row.parejaNombre}
+                  </td>
+                  <td className="px-3 py-2 text-deep-black/80">
+                    {formatDateTime(row.createdAt)}
+                  </td>
                 </tr>
               ))
             )}
@@ -100,8 +111,8 @@ export default async function TorneoPublicInscripcionesPage(props: {
             {data.torneo.nombre}
           </h1>
           <p className="mt-1 text-sm text-deep-black/70">
-            {data.torneo.eventoNombre} - {data.torneo.complejoNombre} ({data.torneo.complejoCiudad},{" "}
-            {data.torneo.complejoProvincia})
+            {data.torneo.eventoNombre} - {data.torneo.complejoNombre} (
+            {data.torneo.complejoCiudad}, {data.torneo.complejoProvincia})
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">

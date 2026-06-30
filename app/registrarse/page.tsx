@@ -5,11 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  FormInput,
-  FormPassword,
-  FormSelect,
-} from "@/app/components/FormBase";
+import { FormInput, FormPassword, FormSelect } from "@/app/components/FormBase";
 import { registerUser } from "@/actions/auth";
 import { RegisterSchema, type RegisterFormData } from "@/types/forms";
 
@@ -85,7 +81,8 @@ export default function RegistrarsePage() {
             Crea tu cuenta y empeza a competir.
           </h1>
           <p className="mt-3 text-sm text-white/80 sm:text-base">
-            Registra tu perfil para ver torneos, anotarte y gestionar tu actividad.
+            Registra tu perfil para ver torneos, anotarte y gestionar tu
+            actividad.
           </p>
 
           <ul className="mt-6 space-y-2 text-sm text-white/80">
@@ -96,7 +93,9 @@ export default function RegistrarsePage() {
         </article>
 
         <article className="rounded-3xl border border-deep-black/10 bg-white p-5 shadow-sm sm:p-8">
-          <h2 className="text-2xl font-semibold text-deep-black">Crear cuenta</h2>
+          <h2 className="text-2xl font-semibold text-deep-black">
+            Crear cuenta
+          </h2>
           <p className="mt-2 text-sm text-deep-black/70">
             Completa los datos para registrarte.
           </p>

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getUsuarioById } from "@/actions/usuarios";
-import UsuarioForm from "@/app/usuarios/components/UsuarioForm";
+import UsuarioForm from "@/app/superadmin/usuarios/components/UsuarioForm";
 
 export default async function EditUsuarioPage(props: {
   params: Promise<{ id: string }>;

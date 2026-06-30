@@ -64,7 +64,9 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
       router.refresh();
     } catch (error) {
       showSnackbar(
-        error instanceof Error ? error.message : "No se pudo actualizar el perfil",
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar el perfil",
         "error",
       );
     } finally {

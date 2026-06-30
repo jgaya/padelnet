@@ -11,5 +11,9 @@ export default async function PerfilPage() {
     throw error;
   });
 
-  return <div className="container p-4"><PerfilForm initialData={profile} /></div>;
+  return (
+    <div className="container p-4">
+      <PerfilForm initialData={profile} />
+    </div>
+  );
 }

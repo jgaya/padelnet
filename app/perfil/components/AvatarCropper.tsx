@@ -36,8 +36,12 @@ export default function AvatarCropper({
   const [processing, setProcessing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(imageUrl ?? null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(avatarUrl ?? null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    imageUrl ?? null,
+  );
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(
+    avatarUrl ?? null,
+  );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const imgRef = useRef<HTMLImageElement>(null);
@@ -171,7 +175,11 @@ export default function AvatarCropper({
     const centerY = box.y + box.height / 2;
     const sqX = Math.max(0, centerX - side / 2);
     const sqY = Math.max(0, centerY - side / 2);
-    const sqSize = Math.min(side, img.naturalWidth - sqX, img.naturalHeight - sqY);
+    const sqSize = Math.min(
+      side,
+      img.naturalWidth - sqX,
+      img.naturalHeight - sqY,
+    );
 
     const squareCanvas = document.createElement("canvas");
     squareCanvas.width = sqSize;
@@ -208,7 +216,17 @@ export default function AvatarCropper({
       return;
     }
 
-    avCtx.drawImage(img, headX, headY, headSize, headSize, 0, 0, headSize, headSize);
+    avCtx.drawImage(
+      img,
+      headX,
+      headY,
+      headSize,
+      headSize,
+      0,
+      0,
+      headSize,
+      headSize,
+    );
     const avatarDataUrl = avatarCanvas.toDataURL("image/png");
 
     setImagePreview(squareDataUrl);
@@ -243,7 +261,11 @@ export default function AvatarCropper({
       setAvatarPreview(data.avatarUrl);
       onChange?.(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudieron guardar las imagenes.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "No se pudieron guardar las imagenes.",
+      );
     } finally {
       setUploading(false);
       setProcessing(false);
@@ -333,12 +355,16 @@ export default function AvatarCropper({
             onClick={processImage}
             disabled={disabled || isBusy || !selectedFile}
           >
-            {processing || uploading ? "Procesando..." : "Generar imagen y avatar"}
+            {processing || uploading
+              ? "Procesando..."
+              : "Generar imagen y avatar"}
           </button>
         </div>
 
         {error && (
-          <div className="invalid-feedback d-block padel-invalid-feedback">{error}</div>
+          <div className="invalid-feedback d-block padel-invalid-feedback">
+            {error}
+          </div>
         )}
       </div>
 

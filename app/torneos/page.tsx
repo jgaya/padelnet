@@ -44,7 +44,9 @@ export default async function TorneosPublicPage() {
                 <TorneoCard
                   key={torneo.id}
                   torneo={torneo}
-                  canShowInscription={data.viewer.isJugador && torneo.canInscribirse}
+                  canShowInscription={
+                    data.viewer.isJugador && torneo.canInscribirse
+                  }
                 />
               ))}
             </div>
