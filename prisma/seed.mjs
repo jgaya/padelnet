@@ -73,8 +73,46 @@ async function main() {
     genero: "M",
     platformRole: "USER",
     telefono: "3333333333",
+    categoria: "5",
     passwordHash,
   });
+
+  // Crear 40 usuarios adicionales
+  const nombres = [
+    "Carlos", "Miguel", "Juan", "Pedro", "Diego", "Fernando", "Luis", "Ricardo",
+    "Andrés", "Roberto", "Jorge", "Antonio", "Manuel", "Sergio", "Javier",
+    "Raúl", "Marcos", "Jorge", "Alberto", "Gustavo", "Rodrigo", "Héctor",
+    "Ángel", "Eduardo", "Efraín", "Ernesto", "Esteban", "Fabio", "Felipe",
+    "Francisco", "Gabriel", "Gerardo", "Gilberto", "Gregorio", "Guillermo",
+    "Gustavo", "Horacio", "Ignacio", "Ismael", "Iván"
+  ];
+
+  const apellidos = [
+    "López", "González", "Rodríguez", "Martínez", "García", "Pérez", "Sánchez",
+    "Ramírez", "Torres", "Flores", "Cruz", "Morales", "Silva", "Reyes", "Ruiz",
+    "Herrera", "Castro", "Ortiz", "Gómez", "Vega", "Molina", "Medina", "Cortés",
+    "Vargas", "Campos", "Rojas", "Fuentes", "Ochoa", "Cabrera", "Acosta",
+    "Aguirre", "Alarcón", "Alonso", "Alvarado", "Alvarez", "Amaro", "Andrade",
+    "Arias", "Armenta", "Armijo", "Arredondo"
+  ];
+
+  const usuarios40 = [];
+  for (let i = 1; i <= 40; i++) {
+    const randomName = nombres[Math.floor(Math.random() * nombres.length)];
+    const randomLastname = apellidos[Math.floor(Math.random() * apellidos.length)];
+    const usuario = await upsertUser({
+      email: `jugador${i}@padelnet.local`,
+      name: randomName,
+      lastname: randomLastname,
+      dni: `${10000003 + i}`,
+      genero: "M",
+      platformRole: "USER",
+      telefono: `${5555555555 + i}`,
+      categoria: "5",
+      passwordHash,
+    });
+    usuarios40.push(usuario);
+  }
 
   const complejo = await prisma.complejo.upsert({
     where: { slug: "complejo-demo" },
@@ -158,6 +196,8 @@ async function main() {
       observado: false,
     },
   });
+
+   
 
   const canchas = [
     {

@@ -10,9 +10,19 @@ import { registerUser } from "@/actions/auth";
 import { RegisterSchema, type RegisterFormData } from "@/types/forms";
 
 const generoOptions = [
-  { value: "X", label: "Prefiero no indicar" },
   { value: "M", label: "Masculino" },
   { value: "F", label: "Femenino" },
+];
+
+const categoriaOptions = [
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "4", label: "4" },
+  { value: "5", label: "5" },
+  { value: "6", label: "6" },
+  { value: "7", label: "7" },
+  { value: "8", label: "8" },
 ];
 
 export default function RegistrarsePage() {
@@ -33,7 +43,7 @@ export default function RegistrarsePage() {
       dni: "",
       birthDate: "",
       categoria: "",
-      genero: "X",
+      genero: undefined,
       password: "",
       confirmPassword: "",
     },
@@ -154,11 +164,11 @@ export default function RegistrarsePage() {
               />
             </div>
 
-            <FormInput
+            <FormSelect
               label="Categoria"
-              placeholder="Ej: 6, 7ma, C4"
               register={register("categoria")}
               error={errors.categoria}
+              options={categoriaOptions}
               required
             />
 

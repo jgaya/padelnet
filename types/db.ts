@@ -22,7 +22,7 @@ export const ComplejoRoleSchema = z.enum([
 ]);
 export type ComplejoRole = z.infer<typeof ComplejoRoleSchema>;
 
-export const GeneroSchema = z.enum(["M", "F", "X"]);
+export const GeneroSchema = z.enum(["M", "F"]);
 export type Genero = z.infer<typeof GeneroSchema>;
 
 export const EventTypeSchema = z.enum(["FINDE", "SEMANAL"]);
