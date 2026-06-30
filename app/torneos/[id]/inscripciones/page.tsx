@@ -21,6 +21,8 @@ function TableSection({
   title,
   rows,
   emptyText,
+  torneoId,
+  currentUserParejaId,
 }: {
   title: string;
   rows: Array<{
@@ -29,6 +31,8 @@ function TableSection({
     createdAt: string;
   }>;
   emptyText: string;
+  torneoId: number;
+  currentUserParejaId: number | null;
 }) {
   return (
     <article className="overflow-hidden rounded-2xl border border-deep-black/10 bg-white">
@@ -45,13 +49,14 @@ function TableSection({
               <th className="px-3 py-2 text-left font-semibold">
                 Fecha de inscripcion
               </th>
+              <th className="px-3 py-2 text-left font-semibold"></th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={3}
+                  colSpan={4}
                   className="px-3 py-4 text-center text-deep-black/65"
                 >
                   {emptyText}
@@ -73,6 +78,16 @@ function TableSection({
                   </td>
                   <td className="px-3 py-2 text-deep-black/80">
                     {formatDateTime(row.createdAt)}
+                  </td>
+                  <td className="px-3 py-2">
+                    {row.id === currentUserParejaId ? (
+                      <Link
+                        href={`/torneos/${torneoId}/inscripciones/${row.id}/editar`}
+                        className="inline-flex rounded-full bg-padel-green px-3 py-1 text-xs font-semibold text-deep-black transition hover:brightness-95"
+                      >
+                        Editar
+                      </Link>
+                    ) : null}
                   </td>
                 </tr>
               ))
@@ -145,11 +160,15 @@ export default async function TorneoPublicInscripcionesPage(props: {
             title="Parejas inscriptas"
             rows={data.inscriptos}
             emptyText="No hay parejas inscriptas aun."
+            torneoId={torneoId}
+            currentUserParejaId={data.currentUserParejaId}
           />
           <TableSection
             title="Parejas suplentes"
             rows={data.suplentes}
             emptyText="No hay parejas suplentes registradas."
+            torneoId={torneoId}
+            currentUserParejaId={data.currentUserParejaId}
           />
         </div>
       </div>

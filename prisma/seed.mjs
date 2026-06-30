@@ -11,6 +11,7 @@ async function upsertUser({
   genero,
   platformRole,
   telefono,
+  categoria,
   passwordHash,
 }) {
   return prisma.user.upsert({
@@ -22,6 +23,7 @@ async function upsertUser({
       genero,
       platformRole,
       telefono,
+      categoria,
       passwordHash,
       isActive: true,
       deletedAt: null,
@@ -34,6 +36,7 @@ async function upsertUser({
       genero,
       platformRole,
       telefono,
+      categoria,
       passwordHash,
       isActive: true,
     },
@@ -175,7 +178,7 @@ async function main() {
       isActive: true,
     },
   });
-
+/*
   await prisma.perfilJugadorComplejo.upsert({
     where: {
       complejoId_userId: {
@@ -195,7 +198,7 @@ async function main() {
       isBlocked: false,
       observado: false,
     },
-  });
+  });*/
 
    
 

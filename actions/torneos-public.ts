@@ -130,6 +130,7 @@ export type PublicTorneoInscripcionesResult = {
   };
   inscriptos: PublicTorneoInscripcionPareja[];
   suplentes: PublicTorneoInscripcionPareja[];
+  currentUserParejaId: number | null;
 };
 
 function parseCategoriaNumber(
@@ -555,6 +556,8 @@ function canchaLabel(
 export async function getPublicTorneoInscripciones(
   torneoId: number,
 ): Promise<PublicTorneoInscripcionesResult | null> {
+  const session = await getSession();
+
   const torneo = await prisma.torneo.findFirst({
     where: {
       id: torneoId,
@@ -596,6 +599,8 @@ export async function getPublicTorneoInscripciones(
           id: true,
           suplente: true,
           createdAt: true,
+          player1Id: true,
+          player2Id: true,
           jugador1: {
             select: {
               name: true,
@@ -661,6 +666,12 @@ export async function getPublicTorneoInscripciones(
     },
     inscriptos,
     suplentes,
+    currentUserParejaId: session
+      ? (torneo.parejas.find(
+          (p) =>
+            p.player1Id === session.userId || p.player2Id === session.userId,
+        )?.id ?? null)
+      : null,
   };
 }
 

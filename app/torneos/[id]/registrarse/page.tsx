@@ -97,8 +97,7 @@ export default async function TorneoPublicRegisterPage(props: {
       redirect(`/torneos/${rawTorneoId}/registrarse?${nextParams.toString()}`);
     }
 
-    nextParams.set("ok", result.message || "Inscripcion registrada");
-    redirect(`/torneos/${rawTorneoId}/registrarse?${nextParams.toString()}`);
+    redirect(`/torneos/${rawTorneoId}/inscripciones`);
   }
 
   return (

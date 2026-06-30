@@ -20,7 +20,13 @@ type TorneoBase = {
   categoriaRegla: TournamentCategoryRule;
   categoriaN: number | null;
   capacidad: number;
-  status: "DRAFT" | "PUBLISHED" | "IN_PROGRESS" | "FINISHED" | "ARCHIVED";
+  status:
+    | "DRAFT"
+    | "PUBLISHED"
+    | "CLOSED_REGISTRATION"
+    | "IN_PROGRESS"
+    | "FINISHED"
+    | "ARCHIVED";
   evento: {
     id: number;
     nombre: string;
@@ -96,6 +102,54 @@ export type RegisterTorneoPairResult = {
   error?: string;
   isWaitlist?: boolean;
 };
+
+export type UpdateTorneoPairInput = {
+  torneoId: number;
+  parejaId: number;
+  partnerId: number;
+};
+
+export type UpdateTorneoPairResult = {
+  success: boolean;
+  message?: string;
+  error?: string;
+};
+
+export type TorneoEditRegistrationDataResult =
+  | { status: "NOT_FOUND" }
+  | { status: "AUTH_REQUIRED" }
+  | {
+      status: "NOT_ALLOWED";
+      torneo: TorneoRegistrationSummary;
+      currentUser: {
+        id: number;
+        name: string;
+        lastname: string;
+        genero: Genero;
+        categoria: number | null;
+      };
+      reason: string;
+    }
+  | {
+      status: "READY";
+      torneo: TorneoRegistrationSummary;
+      currentUser: {
+        id: number;
+        name: string;
+        lastname: string;
+        genero: Genero;
+        categoria: number | null;
+      };
+      currentPartner: {
+        id: number;
+        name: string;
+        lastname: string;
+        genero: Genero;
+        categoria: number | null;
+      };
+      search: string;
+      candidates: TorneoPartnerCandidate[];
+    };
 
 function parseCategoriaNumber(
   categoria: string | null | undefined,
@@ -289,10 +343,34 @@ function buildSummary(
   };
 }
 
-export async function getPublicTorneoRegistrationData(
+type RegistrationCurrentUser = {
+  id: number;
+  name: string;
+  lastname: string;
+  genero: Genero;
+  categoria: number | null;
+};
+
+type RegistrationBaseContext =
+  | { status: "NOT_FOUND" }
+  | { status: "AUTH_REQUIRED" }
+  | {
+      status: "NOT_ALLOWED";
+      torneo: TorneoRegistrationSummary;
+      currentUser: RegistrationCurrentUser;
+      reason: string;
+    }
+  | {
+      status: "READY";
+      torneo: TorneoBase;
+      torneoSummary: TorneoRegistrationSummary;
+      currentUser: RegistrationCurrentUser;
+      userId: number;
+    };
+
+async function getRegistrationBaseContext(
   torneoId: number,
-  searchBy = "",
-): Promise<TorneoRegistrationDataResult> {
+): Promise<RegistrationBaseContext> {
   if (!Number.isInteger(torneoId) || torneoId <= 0) {
     return { status: "NOT_FOUND" };
   }
@@ -378,19 +456,122 @@ export async function getPublicTorneoRegistrationData(
     parseCategoriaNumber(selfProfile?.categoria) ??
     parseCategoriaNumber(user.categoria) ??
     parseCategoriaNumber(session.categoria);
-  const currentUser = {
-    id: user.id,
-    name: user.name,
-    lastname: user.lastname,
-    genero: normalizeGenero(user.genero),
-    categoria: selfCategoria,
+
+  return {
+    status: "READY",
+    torneo,
+    torneoSummary,
+    currentUser: {
+      id: user.id,
+      name: user.name,
+      lastname: user.lastname,
+      genero: normalizeGenero(user.genero),
+      categoria: selfCategoria,
+    },
+    userId: user.id,
   };
+}
+
+async function getRegistrationCandidates(
+  torneo: TorneoBase,
+  currentUser: RegistrationCurrentUser,
+  takenPlayerIds: Set<number>,
+  searchBy = "",
+): Promise<TorneoPartnerCandidate[]> {
+  const trimmedSearch = searchBy.trim();
+
+  const users = await prisma.user.findMany({
+    where: {
+      deletedAt: null,
+      isActive: true,
+      platformRole: "USER",
+      id: {
+        notIn: Array.from(takenPlayerIds),
+      },
+      ...(trimmedSearch
+        ? {
+            OR: [
+              { name: { contains: trimmedSearch } },
+              { lastname: { contains: trimmedSearch } },
+              { email: { contains: trimmedSearch } },
+            ],
+          }
+        : {}),
+    },
+    select: {
+      id: true,
+      name: true,
+      lastname: true,
+      genero: true,
+      categoria: true,
+      perfilesComplejo: {
+        where: {
+          complejoId: torneo.evento.complejo.id,
+        },
+        select: {
+          categoria: true,
+          isBlocked: true,
+        },
+        take: 1,
+      },
+    },
+    orderBy: [{ name: "asc" }, { lastname: "asc" }],
+    take: trimmedSearch ? 120 : 250,
+  });
+
+  return users
+    .map((candidate) => {
+      const categoriaSource =
+        candidate.perfilesComplejo.length > 0
+          ? candidate.perfilesComplejo[0].categoria
+          : candidate.categoria;
+
+      return {
+        id: candidate.id,
+        name: candidate.name,
+        lastname: candidate.lastname,
+        genero: normalizeGenero(candidate.genero),
+        categoria: parseCategoriaNumber(categoriaSource),
+        isBlockedInComplejo: candidate.perfilesComplejo[0]?.isBlocked ?? false,
+      };
+    })
+    .filter((candidate) => !candidate.isBlockedInComplejo)
+    .filter((candidate) =>
+      pairMeetsSexoRule(torneo.sexo, currentUser.genero, candidate.genero),
+    )
+    .filter((candidate) =>
+      pairMeetsCategoriaRule(
+        torneo.categoriaRegla,
+        torneo.categoriaN,
+        currentUser.categoria,
+        candidate.categoria,
+      ),
+    )
+    .map((candidate) => ({
+      id: candidate.id,
+      name: candidate.name,
+      lastname: candidate.lastname,
+      genero: candidate.genero,
+      categoria: candidate.categoria,
+    }));
+}
+
+export async function getPublicTorneoRegistrationData(
+  torneoId: number,
+  searchBy = "",
+): Promise<TorneoRegistrationDataResult> {
+  const base = await getRegistrationBaseContext(torneoId);
+  if (base.status !== "READY") {
+    return base;
+  }
+
+  const { torneo, torneoSummary, currentUser, userId } = base;
 
   const alreadyRegistered = await prisma.pareja.findFirst({
     where: {
       torneoId,
       deletedAt: null,
-      OR: [{ player1Id: user.id }, { player2Id: user.id }],
+      OR: [{ player1Id: userId }, { player2Id: userId }],
     },
     select: {
       id: true,
@@ -447,7 +628,7 @@ export async function getPublicTorneoRegistrationData(
     },
   });
 
-  const takenPlayerIds = new Set<number>([user.id]);
+  const takenPlayerIds = new Set<number>([userId]);
   for (const pair of takenPairs) {
     takenPlayerIds.add(pair.player1Id);
     takenPlayerIds.add(pair.player2Id);
@@ -455,75 +636,12 @@ export async function getPublicTorneoRegistrationData(
 
   const trimmedSearch = searchBy.trim();
 
-  const users = await prisma.user.findMany({
-    where: {
-      deletedAt: null,
-      isActive: true,
-      platformRole: "USER",
-      id: {
-        notIn: Array.from(takenPlayerIds),
-      },
-      ...(trimmedSearch
-        ? {
-            OR: [
-              { name: { contains: trimmedSearch } },
-              { lastname: { contains: trimmedSearch } },
-              { email: { contains: trimmedSearch } },
-            ],
-          }
-        : {}),
-    },
-    select: {
-      id: true,
-      name: true,
-      lastname: true,
-      genero: true,
-      categoria: true,
-      perfilesComplejo: {
-        where: {
-          complejoId: torneo.evento.complejo.id,
-        },
-        select: {
-          categoria: true,
-          isBlocked: true,
-        },
-        take: 1,
-      },
-    },
-    orderBy: [{ name: "asc" }, { lastname: "asc" }],
-    take: trimmedSearch ? 120 : 250,
-  });
-
-  const candidates: TorneoPartnerCandidate[] = users
-    .map((candidate) => ({
-      id: candidate.id,
-      name: candidate.name,
-      lastname: candidate.lastname,
-      genero: normalizeGenero(candidate.genero),
-      categoria:
-        parseCategoriaNumber(candidate.perfilesComplejo[0]?.categoria) ??
-        parseCategoriaNumber(candidate.categoria),
-      isBlockedInComplejo: candidate.perfilesComplejo[0]?.isBlocked ?? false,
-    }))
-    .filter((candidate) => !candidate.isBlockedInComplejo)
-    .filter((candidate) =>
-      pairMeetsSexoRule(torneo.sexo, currentUser.genero, candidate.genero),
-    )
-    .filter((candidate) =>
-      pairMeetsCategoriaRule(
-        torneo.categoriaRegla,
-        torneo.categoriaN,
-        currentUser.categoria,
-        candidate.categoria,
-      ),
-    )
-    .map((candidate) => ({
-      id: candidate.id,
-      name: candidate.name,
-      lastname: candidate.lastname,
-      genero: candidate.genero,
-      categoria: candidate.categoria,
-    }));
+  const candidates = await getRegistrationCandidates(
+    torneo,
+    currentUser,
+    takenPlayerIds,
+    trimmedSearch,
+  );
 
   return {
     status: "READY",
@@ -795,5 +913,398 @@ export async function registerPublicTorneoPair(
   } catch (error) {
     console.error("registerPublicTorneoPair error:", error);
     return { success: false, error: "No se pudo registrar la inscripcion" };
+  }
+}
+
+export async function getPublicTorneoEditRegistrationData(
+  torneoId: number,
+  parejaId: number,
+  searchBy = "",
+): Promise<TorneoEditRegistrationDataResult> {
+  if (!Number.isInteger(parejaId) || parejaId <= 0) {
+    return { status: "NOT_FOUND" };
+  }
+
+  const base = await getRegistrationBaseContext(torneoId);
+  if (base.status !== "READY") {
+    return base;
+  }
+
+  const { torneo, torneoSummary, currentUser, userId } = base;
+
+  const pareja = await prisma.pareja.findFirst({
+    where: {
+      id: parejaId,
+      torneoId,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      player1Id: true,
+      player2Id: true,
+      jugador1: {
+        select: {
+          id: true,
+          name: true,
+          lastname: true,
+          genero: true,
+          categoria: true,
+          perfilesComplejo: {
+            where: { complejoId: torneo.evento.complejo.id },
+            select: { categoria: true },
+            take: 1,
+          },
+        },
+      },
+      jugador2: {
+        select: {
+          id: true,
+          name: true,
+          lastname: true,
+          genero: true,
+          categoria: true,
+          perfilesComplejo: {
+            where: { complejoId: torneo.evento.complejo.id },
+            select: { categoria: true },
+            take: 1,
+          },
+        },
+      },
+    },
+  });
+
+  if (!pareja) {
+    return { status: "NOT_FOUND" };
+  }
+
+  if (pareja.player1Id !== userId && pareja.player2Id !== userId) {
+    return {
+      status: "NOT_ALLOWED",
+      torneo: torneoSummary,
+      currentUser,
+      reason: "No tienes permisos para editar esta inscripcion",
+    };
+  }
+
+  const partnerRaw = pareja.player1Id === userId ? pareja.jugador2 : pareja.jugador1;
+  const currentPartner = {
+    id: partnerRaw.id,
+    name: partnerRaw.name,
+    lastname: partnerRaw.lastname,
+    genero: normalizeGenero(partnerRaw.genero),
+    categoria:
+      partnerRaw.perfilesComplejo.length > 0
+        ? parseCategoriaNumber(partnerRaw.perfilesComplejo[0]?.categoria)
+        : parseCategoriaNumber(partnerRaw.categoria),
+  };
+
+  const takenPairs = await prisma.pareja.findMany({
+    where: {
+      torneoId,
+      deletedAt: null,
+      id: { not: parejaId },
+    },
+    select: {
+      player1Id: true,
+      player2Id: true,
+    },
+  });
+
+  const takenPlayerIds = new Set<number>([userId]);
+  for (const pair of takenPairs) {
+    takenPlayerIds.add(pair.player1Id);
+    takenPlayerIds.add(pair.player2Id);
+  }
+
+  const trimmedSearch = searchBy.trim();
+
+  const candidates = await getRegistrationCandidates(
+    torneo,
+    currentUser,
+    takenPlayerIds,
+    trimmedSearch,
+  );
+
+  return {
+    status: "READY",
+    torneo: torneoSummary,
+    currentUser,
+    currentPartner,
+    search: trimmedSearch,
+    candidates,
+  };
+}
+
+export async function updatePublicTorneoPair(
+  input: UpdateTorneoPairInput,
+): Promise<UpdateTorneoPairResult> {
+  const session = await getSession();
+  if (!session) {
+    return {
+      success: false,
+      error: "Debes iniciar sesion para editar la inscripcion",
+    };
+  }
+
+  const torneoId = Number(input.torneoId);
+  const parejaId = Number(input.parejaId);
+  const partnerId = Number(input.partnerId);
+
+  if (!Number.isInteger(torneoId) || torneoId <= 0) {
+    return { success: false, error: "Torneo invalido" };
+  }
+
+  if (!Number.isInteger(parejaId) || parejaId <= 0) {
+    return { success: false, error: "Inscripcion invalida" };
+  }
+
+  if (!Number.isInteger(partnerId) || partnerId <= 0) {
+    return { success: false, error: "Debes seleccionar una pareja valida" };
+  }
+
+  if (partnerId === session.userId) {
+    return { success: false, error: "No puedes anotarte contigo mismo" };
+  }
+
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const torneo = await tx.torneo.findFirst({
+        where: torneoBaseWhere(torneoId),
+        select: {
+          id: true,
+          sexo: true,
+          categoriaRegla: true,
+          categoriaN: true,
+          evento: {
+            select: {
+              complejo: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!torneo) {
+        return {
+          success: false,
+          error: "Torneo no disponible para editar inscripcion",
+        };
+      }
+
+      const pareja = await tx.pareja.findFirst({
+        where: {
+          id: parejaId,
+          torneoId,
+          deletedAt: null,
+        },
+        select: {
+          id: true,
+          player1Id: true,
+          player2Id: true,
+        },
+      });
+
+      if (!pareja) {
+        return { success: false, error: "Inscripcion no encontrada" };
+      }
+
+      if (pareja.player1Id !== session.userId && pareja.player2Id !== session.userId) {
+        return {
+          success: false,
+          error: "No tienes permisos para editar esta inscripcion",
+        };
+      }
+
+      const currentPartnerId =
+        pareja.player1Id === session.userId ? pareja.player2Id : pareja.player1Id;
+
+      if (currentPartnerId === partnerId) {
+        return {
+          success: true,
+          message: "No hubo cambios en la inscripcion",
+        };
+      }
+
+      const [player1, player2] = await Promise.all([
+        tx.user.findUnique({
+          where: { id: session.userId },
+          select: {
+            id: true,
+            genero: true,
+            categoria: true,
+            deletedAt: true,
+            isActive: true,
+            platformRole: true,
+          },
+        }),
+        tx.user.findUnique({
+          where: { id: partnerId },
+          select: {
+            id: true,
+            genero: true,
+            categoria: true,
+            deletedAt: true,
+            isActive: true,
+            platformRole: true,
+          },
+        }),
+      ]);
+
+      if (
+        !player1 ||
+        player1.deletedAt ||
+        !player1.isActive ||
+        player1.platformRole !== "USER"
+      ) {
+        return {
+          success: false,
+          error: "Tu cuenta no esta habilitada para inscripciones",
+        };
+      }
+
+      if (
+        !player2 ||
+        player2.deletedAt ||
+        !player2.isActive ||
+        player2.platformRole !== "USER"
+      ) {
+        return { success: false, error: "La pareja seleccionada no es valida" };
+      }
+
+      const [player1Profile, player2Profile] = await Promise.all([
+        tx.perfilJugadorComplejo.findUnique({
+          where: {
+            complejoId_userId: {
+              complejoId: torneo.evento.complejo.id,
+              userId: player1.id,
+            },
+          },
+          select: {
+            categoria: true,
+            isBlocked: true,
+          },
+        }),
+        tx.perfilJugadorComplejo.findUnique({
+          where: {
+            complejoId_userId: {
+              complejoId: torneo.evento.complejo.id,
+              userId: player2.id,
+            },
+          },
+          select: {
+            categoria: true,
+            isBlocked: true,
+          },
+        }),
+      ]);
+
+      if (player1Profile?.isBlocked) {
+        return {
+          success: false,
+          error: "Tu perfil esta bloqueado en este complejo",
+        };
+      }
+
+      if (player2Profile?.isBlocked) {
+        return {
+          success: false,
+          error: "La pareja seleccionada esta bloqueada en este complejo",
+        };
+      }
+
+      const player1Genero = normalizeGenero(player1.genero);
+      const player2Genero = normalizeGenero(player2.genero);
+      const player1Categoria =
+        parseCategoriaNumber(player1Profile?.categoria) ??
+        parseCategoriaNumber(player1.categoria) ??
+        parseCategoriaNumber(session.categoria);
+      const player2Categoria =
+        parseCategoriaNumber(player2Profile?.categoria) ??
+        parseCategoriaNumber(player2.categoria);
+
+      if (!pairMeetsSexoRule(torneo.sexo, player1Genero, player2Genero)) {
+        return {
+          success: false,
+          error: "La pareja no cumple la regla de sexo del torneo",
+        };
+      }
+
+      if (
+        !pairMeetsCategoriaRule(
+          torneo.categoriaRegla,
+          torneo.categoriaN,
+          player1Categoria,
+          player2Categoria,
+        )
+      ) {
+        return {
+          success: false,
+          error: "La pareja no cumple la regla de categoria del torneo",
+        };
+      }
+
+      const alreadyPartner = await tx.pareja.findFirst({
+        where: {
+          torneoId,
+          deletedAt: null,
+          id: { not: pareja.id },
+          OR: [{ player1Id: player2.id }, { player2Id: player2.id }],
+        },
+        select: { id: true },
+      });
+
+      if (alreadyPartner) {
+        return {
+          success: false,
+          error:
+            "La pareja seleccionada ya esta inscripta o en lista de suplentes",
+        };
+      }
+
+      const duplicatePair = await tx.pareja.findFirst({
+        where: {
+          torneoId,
+          deletedAt: null,
+          id: { not: pareja.id },
+          OR: [
+            {
+              player1Id: player1.id,
+              player2Id: player2.id,
+            },
+            {
+              player1Id: player2.id,
+              player2Id: player1.id,
+            },
+          ],
+        },
+        select: { id: true },
+      });
+
+      if (duplicatePair) {
+        return {
+          success: false,
+          error: "Esta pareja ya esta cargada en el torneo",
+        };
+      }
+
+      await tx.pareja.update({
+        where: { id: pareja.id },
+        data: {
+          player1Id: session.userId,
+          player2Id: partnerId,
+        },
+      });
+
+      return {
+        success: true,
+        message: "Inscripcion actualizada correctamente",
+      };
+    });
+  } catch (error) {
+    console.error("updatePublicTorneoPair error:", error);
+    return { success: false, error: "No se pudo actualizar la inscripcion" };
   }
 }
