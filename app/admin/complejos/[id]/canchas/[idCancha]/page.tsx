@@ -3,11 +3,11 @@ import { getCanchaById } from "@/actions/canchas";
 import CanchaForm from "@/app/canchas/components/CanchaForm";
 
 export default async function EditAdminCanchaPage(props: {
-  params: { idComplejo: string; id: string };
+  params: { id: string; idCancha: string };
 }) {
   const { params } = props;
-  const complejoId = Number(params.idComplejo);
-  const canchaId = Number(params.id);
+  const complejoId = Number(params.id);
+  const canchaId = Number(params.idCancha);
 
   if (!Number.isInteger(complejoId) || complejoId <= 0) {
     notFound();

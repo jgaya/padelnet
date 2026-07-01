@@ -5,10 +5,10 @@ import { useParams } from "next/navigation";
 import CanchaForm from "@/app/canchas/components/CanchaForm";
 
 export default function NewAdminCanchaPage() {
-  const params = useParams<{ idComplejo: string }>();
+  const params = useParams<{ id: string }>();
   const complejoId = useMemo(
-    () => Number(params.idComplejo ?? ""),
-    [params.idComplejo],
+    () => Number(params.id ?? ""),
+    [params.id],
   );
 
   if (!Number.isInteger(complejoId) || complejoId <= 0) {

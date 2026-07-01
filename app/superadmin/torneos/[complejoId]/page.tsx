@@ -4,28 +4,32 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Button from "react-bootstrap/Button";
-import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import { PencilSquareIcon, PlusIcon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
 import {
-  deleteCancha,
-  listCanchasByComplejo,
-  type CanchaListItem,
-} from "@/actions/canchas";
+  deleteTorneo,
+  listTorneosByComplejo,
+  type TorneoListItem,
+} from "@/actions/torneos";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import type { ListOpts } from "@/types/ui";
 
 const ALLOWED_SORT_FIELDS = new Set([
   "id",
-  "numero",
-  "name",
-  "superficie",
-  "isIndoor",
-  "dobles",
-  "isActive",
+  "nombre",
+  "sexo",
+  "categoriaRegla",
+  "capacidad",
+  "status",
+  "publicado",
+  "zonaCerrada",
+  "inicio",
+  "fin",
+  "createdAt",
 ]);
 
 function SortArrow({
@@ -44,19 +48,18 @@ function SortArrow({
   return <span className="ms-1">{orderDir === "asc" ? "^" : "v"}</span>;
 }
 
-export default function AdminComplejoCanchasPage() {
-  const params = useParams<{ id: string }>();
+export default function SuperadminTorneosComplejoPage() {
+  const params = useParams<{ complejoId: string }>();
   const router = useRouter();
   const searchParams = useSearchParams();
   const showSnackbar = useSnackbar();
   const updateQuery = useUpdateSearchParams();
 
   const complejoId = useMemo(
-    () => Number(params.id ?? ""),
-    [params.id],
+    () => Number(params.complejoId ?? ""),
+    [params.complejoId],
   );
-
-  const [canchas, setCanchas] = useState<CanchaListItem[]>([]);
+  const [torneos, setTorneos] = useState<TorneoListItem[]>([]);
   const [total, setTotal] = useState(0);
 
   const page = Number(searchParams.get("page")) || 1;
@@ -67,31 +70,30 @@ export default function AdminComplejoCanchasPage() {
   const orderDirRaw = searchParams.get("orderDir");
   const orderDir: "asc" | "desc" = orderDirRaw === "desc" ? "desc" : "asc";
 
-  const fetchCanchas = useCallback(async () => {
+  const fetchTorneos = useCallback(async () => {
     if (!Number.isInteger(complejoId) || complejoId <= 0) {
       return;
     }
 
     try {
       const opts: ListOpts = { page, pageSize, orderBy, orderDir, searchBy };
-      const data = await listCanchasByComplejo(complejoId, opts);
-      setCanchas(data.items);
+      const data = await listTorneosByComplejo(complejoId, opts);
+      setTorneos(data.items);
       setTotal(data.total);
     } catch (error) {
-      console.error("Error loading canchas:", error);
-      showSnackbar("No se pudo cargar el listado de canchas", "error");
+      console.error("Error loading torneos:", error);
+      showSnackbar("No se pudo cargar el listado de torneos", "error");
     }
   }, [complejoId, orderBy, orderDir, page, pageSize, searchBy, showSnackbar]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    void fetchCanchas();
-  }, [fetchCanchas]);
+    void fetchTorneos();
+  }, [fetchTorneos]);
 
   function handleSort(field: string) {
     const safeField = ALLOWED_SORT_FIELDS.has(field) ? field : "id";
-    const newOrderDir =
-      safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
+    const newOrderDir = safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
 
     router.push(
       updateQuery({
@@ -102,14 +104,22 @@ export default function AdminComplejoCanchasPage() {
     );
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (
+    torneoId: number,
+    eventoId?: number,
+  ) => {
+    if (!Number.isInteger(eventoId) || eventoId <= 0) {
+      showSnackbar("No se pudo determinar el evento del torneo", "error");
+      return;
+    }
+
     try {
-      await deleteCancha(id);
-      await fetchCanchas();
-      showSnackbar("Cancha eliminada con exito", "success");
+      await deleteTorneo(complejoId, eventoId, torneoId);
+      await fetchTorneos();
+      showSnackbar("Torneo eliminado con exito", "success");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Error al eliminar la cancha";
+        error instanceof Error ? error.message : "Error al eliminar el torneo";
       showSnackbar(message, "error");
     }
   };
@@ -127,26 +137,27 @@ export default function AdminComplejoCanchasPage() {
   return (
     <div className="container padel-complejos-list">
       <TitleBar
-        title={`Canchas del Complejo #${complejoId}`}
+        title={`Torneos del Complejo #${complejoId}`}
         buttons={
           <Button
             as="a"
-            href={`/admin/complejos/${complejoId}/canchas/new`}
+            href={`/admin/complejos/${complejoId}/eventos`}
             variant="primary"
           >
-            Nueva Cancha
+            <PlusIcon className="h-4 w-4 me-1" />
+            Ver eventos
           </Button>
         }
-        backURL={`/admin/complejos`}
+        backURL="/superadmin/torneos"
         total={total}
       />
 
-      <SearchBar placeholder="Buscar cancha, superficie..." />
+      <SearchBar placeholder="Buscar torneo..." />
 
       <div className="card padel-data-card">
         <div className="card-body">
           <TableWithPagination
-            items={canchas}
+            items={torneos}
             page={page}
             total={total}
             pageSize={pageSize}
@@ -156,7 +167,7 @@ export default function AdminComplejoCanchasPage() {
               router.push(updateQuery({ page: newPage }));
             }}
             onSort={handleSort}
-            getRowKey={(cancha) => cancha.id}
+            getRowKey={(torneo) => torneo.id}
             renderHeader={() => (
               <tr>
                 <th
@@ -167,66 +178,89 @@ export default function AdminComplejoCanchasPage() {
                   <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
                 <th
-                  onClick={() => handleSort("numero")}
-                  style={{ cursor: "pointer" }}
-                >
-                  Numero
-                  <SortArrow
-                    field="numero"
-                    orderBy={orderBy}
-                    orderDir={orderDir}
-                  />
-                </th>
-                <th
-                  onClick={() => handleSort("name")}
+                  onClick={() => handleSort("nombre")}
                   style={{ cursor: "pointer" }}
                 >
                   Nombre
                   <SortArrow
-                    field="name"
+                    field="nombre"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
+                </th>
+                <th>Evento</th>
+                <th
+                  onClick={() => handleSort("sexo")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Sexo
+                  <SortArrow
+                    field="sexo"
                     orderBy={orderBy}
                     orderDir={orderDir}
                   />
                 </th>
                 <th
-                  onClick={() => handleSort("superficie")}
+                  onClick={() => handleSort("categoriaRegla")}
                   style={{ cursor: "pointer" }}
                 >
-                  Superficie
+                  Categoria
                   <SortArrow
-                    field="superficie"
+                    field="categoriaRegla"
                     orderBy={orderBy}
                     orderDir={orderDir}
                   />
                 </th>
-                <th>Indoor</th>
-                <th>Dobles</th>
-                <th>Activa</th>
+                <th
+                  onClick={() => handleSort("capacidad")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Capacidad
+                  <SortArrow
+                    field="capacidad"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
+                </th>
+                <th
+                  onClick={() => handleSort("status")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Estado
+                  <SortArrow
+                    field="status"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
+                </th>
+                <th>Publicado</th>
+                <th>Zona cerrada</th>
                 <th>Acciones</th>
               </tr>
             )}
-            renderRow={(cancha) => (
-              <tr key={cancha.id}>
-                <td>{cancha.id}</td>
-                <td>{cancha.numero}</td>
-                <td>{cancha.name || "-"}</td>
-                <td>{cancha.superficie || "-"}</td>
-                <td>{cancha.isIndoor ? "Si" : "No"}</td>
-                <td>{cancha.dobles ? "Si" : "No"}</td>
-                <td>{cancha.isActive ? "Si" : "No"}</td>
+            renderRow={(torneo) => (
+              <tr key={torneo.id}>
+                <td>{torneo.id}</td>
+                <td>{torneo.nombre}</td>
+                <td>{torneo.eventoName || torneo.eventoId}</td>
+                <td>{torneo.sexo}</td>
+                <td>{torneo.categoriaCode}</td>
+                <td>{torneo.capacidad}</td>
+                <td>{torneo.status}</td>
+                <td>{torneo.publicado ? "Si" : "No"}</td>
+                <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
                 <td className="d-flex gap-2 padel-table-actions">
                   <Link
-                    href={`/admin/complejos/${complejoId}/canchas/${cancha.id}`}
+                    href={`/admin/complejos/${complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`}
                     className="btn btn-primario btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>
-
                   <ConfirmationModal
-                    onConfirm={() => handleDelete(cancha.id)}
-                    title={`Borrar Cancha ${cancha.id}`}
-                    message="Estas seguro de que quieres eliminar esta cancha?"
-                    tooltip="Eliminar cancha"
+                    onConfirm={() => handleDelete(torneo.id, torneo.eventoId)}
+                    title={`Borrar Torneo ${torneo.id}`}
+                    message="Estas seguro de que quieres eliminar este torneo?"
+                    tooltip="Eliminar torneo"
                   />
                 </td>
               </tr>

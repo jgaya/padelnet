@@ -3,6 +3,8 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
+import { getCanchaAccessScope } from "@/lib/canchas-auth";
+import { getSession } from "@/lib/session";
 import type { ListOpts } from "@/types/ui";
 
 export type EventoListItem = {
@@ -16,6 +18,8 @@ export type EventoListItem = {
   isOpen: boolean;
   isVisible: boolean;
   isFinished: boolean;
+  complejoId?: number;
+  complejoName?: string;
 };
 
 export type EventoPayload = {
@@ -65,6 +69,13 @@ function mapPrismaError(error: unknown): never {
   throw error instanceof Error ? error : new Error("Operacion invalida");
 }
 
+async function assertSuperadmin() {
+  const session = await getSession();
+  if (!session || session.type !== "superadmin") {
+    throw new Error("No autorizado");
+  }
+}
+
 function toEventoListItem(item: {
   id: number;
   nombre: string;
@@ -76,6 +87,8 @@ function toEventoListItem(item: {
   isOpen: boolean;
   isVisible: boolean;
   isFinished: boolean;
+  complejoId?: number;
+  complejoName?: string;
 }): EventoListItem {
   return {
     id: item.id,
@@ -88,6 +101,151 @@ function toEventoListItem(item: {
     isOpen: item.isOpen,
     isVisible: item.isVisible,
     isFinished: item.isFinished,
+    complejoId: item.complejoId,
+    complejoName: item.complejoName,
+  };
+}
+
+export async function listEventos(
+  opts: ListOpts = {},
+) {
+  await assertSuperadmin();
+
+  const page = Math.max(1, opts.page ?? 1);
+  const pageSize = Math.max(1, opts.pageSize ?? 10);
+  const skip = (page - 1) * pageSize;
+  const orderDir = opts.orderDir === "desc" ? "desc" : "asc";
+  const orderByRaw = opts.orderBy ?? "id";
+  const orderBy = ORDERABLE_FIELDS.has(orderByRaw) ? orderByRaw : "id";
+  const searchBy = opts.searchBy?.trim() ?? "";
+  const maybeEventType = searchBy.toUpperCase();
+  const searchEventType =
+    maybeEventType === "FINDE" || maybeEventType === "SEMANAL"
+      ? (maybeEventType as "FINDE" | "SEMANAL")
+      : null;
+
+  const whereClause: Prisma.EventoWhereInput = {
+    deletedAt: null,
+    ...(searchBy
+      ? {
+          OR: [
+            { nombre: { contains: searchBy } },
+            { descripcion: { contains: searchBy } },
+            ...(searchEventType ? [{ tipo: { equals: searchEventType } }] : []),
+            { complejo: { name: { contains: searchBy } } },
+          ],
+        }
+      : {}),
+  };
+
+  const [items, total] = await Promise.all([
+    prisma.evento.findMany({
+      where: whereClause,
+      skip,
+      take: pageSize,
+      orderBy: { [orderBy]: orderDir },
+      select: {
+        id: true,
+        nombre: true,
+        descripcion: true,
+        posterUrl: true,
+        tipo: true,
+        inicio: true,
+        fin: true,
+        isOpen: true,
+        isVisible: true,
+        isFinished: true,
+        complejoId: true,
+        complejo: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    }),
+    prisma.evento.count({ where: whereClause }),
+  ]);
+
+  return {
+    items: items.map((item) =>
+      toEventoListItem({
+        ...item,
+        complejoName: item.complejo?.name ?? undefined,
+      }),
+    ) as EventoListItem[],
+    total,
+  };
+}
+
+export async function listEventosForAdmin(opts: ListOpts = {}) {
+  const scope = await getCanchaAccessScope();
+
+  const page = Math.max(1, opts.page ?? 1);
+  const pageSize = Math.max(1, opts.pageSize ?? 10);
+  const skip = (page - 1) * pageSize;
+  const orderDir = opts.orderDir === "desc" ? "desc" : "asc";
+  const orderByRaw = opts.orderBy ?? "id";
+  const orderBy = ORDERABLE_FIELDS.has(orderByRaw) ? orderByRaw : "id";
+  const searchBy = opts.searchBy?.trim() ?? "";
+  const maybeEventType = searchBy.toUpperCase();
+  const searchEventType =
+    maybeEventType === "FINDE" || maybeEventType === "SEMANAL"
+      ? (maybeEventType as "FINDE" | "SEMANAL")
+      : null;
+
+  const whereClause: Prisma.EventoWhereInput = {
+    deletedAt: null,
+    ...(scope.isSuperadmin
+      ? {}
+      : { complejoId: { in: scope.allowedComplejoIds } }),
+    ...(searchBy
+      ? {
+          OR: [
+            { nombre: { contains: searchBy } },
+            { descripcion: { contains: searchBy } },
+            ...(searchEventType ? [{ tipo: { equals: searchEventType } }] : []),
+            { complejo: { name: { contains: searchBy } } },
+          ],
+        }
+      : {}),
+  };
+
+  const [items, total] = await Promise.all([
+    prisma.evento.findMany({
+      where: whereClause,
+      skip,
+      take: pageSize,
+      orderBy: { [orderBy]: orderDir },
+      select: {
+        id: true,
+        nombre: true,
+        descripcion: true,
+        posterUrl: true,
+        tipo: true,
+        inicio: true,
+        fin: true,
+        isOpen: true,
+        isVisible: true,
+        isFinished: true,
+        complejoId: true,
+        complejo: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    }),
+    prisma.evento.count({ where: whereClause }),
+  ]);
+
+  return {
+    items: items.map((item) =>
+      toEventoListItem({
+        ...item,
+        complejoName: item.complejo?.name ?? undefined,
+      }),
+    ) as EventoListItem[],
+    total,
   };
 }
 

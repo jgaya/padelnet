@@ -3,6 +3,8 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
+import { getCanchaAccessScope } from "@/lib/canchas-auth";
+import { getSession } from "@/lib/session";
 import type { ListOpts } from "@/types/ui";
 
 export type TorneoListItem = {
@@ -23,6 +25,9 @@ export type TorneoListItem = {
   zonaCerrada: boolean;
   inicio: string | null;
   fin: string | null;
+  complejoId?: number;
+  complejoName?: string;
+  eventoName?: string;
 };
 
 export type TorneoPayload = {
@@ -134,6 +139,13 @@ function mapPrismaError(error: unknown): never {
   throw error instanceof Error ? error : new Error("Operacion invalida");
 }
 
+async function assertSuperadmin() {
+  const session = await getSession();
+  if (!session || session.type !== "superadmin") {
+    throw new Error("No autorizado");
+  }
+}
+
 async function ensureEventoAccess(complejoId: number, eventoId: number) {
   await ensureComplejoManagerAccess(complejoId);
 
@@ -149,6 +161,356 @@ async function ensureEventoAccess(complejoId: number, eventoId: number) {
   if (!evento) {
     throw new Error("Evento no encontrado");
   }
+}
+
+export async function listTorneos(opts: ListOpts = {}) {
+  await assertSuperadmin();
+
+  const page = Math.max(1, opts.page ?? 1);
+  const pageSize = Math.max(1, opts.pageSize ?? 10);
+  const skip = (page - 1) * pageSize;
+  const orderDir = opts.orderDir === "desc" ? "desc" : "asc";
+  const orderByRaw = opts.orderBy ?? "id";
+  const orderBy = ORDERABLE_FIELDS.has(orderByRaw) ? orderByRaw : "id";
+  const searchBy = opts.searchBy?.trim() ?? "";
+  const maybeInt = Number(searchBy);
+  const numericSearch = Number.isInteger(maybeInt) ? maybeInt : null;
+  const normalizedSearch = searchBy.toUpperCase();
+  const searchStatus = [
+    "DRAFT",
+    "PUBLISHED",
+    "IN_PROGRESS",
+    "FINISHED",
+    "ARCHIVED",
+  ].includes(normalizedSearch)
+    ? (normalizedSearch as TorneoPayload["status"])
+    : null;
+  const searchSexo = ["MASCULINO", "FEMENINO", "MIXTO"].includes(
+    normalizedSearch,
+  )
+    ? (normalizedSearch as TorneoPayload["sexo"])
+    : null;
+  const searchCategoriaRegla = [
+    "LIBRE",
+    "MAYOR_IGUAL",
+    "MENOR_IGUAL",
+    "IGUAL",
+    "SUMA",
+  ].includes(normalizedSearch)
+    ? (normalizedSearch as TorneoPayload["categoriaRegla"])
+    : null;
+
+  const whereClause: Prisma.TorneoWhereInput = {
+    deletedAt: null,
+    ...(searchBy
+      ? {
+          OR: [
+            { nombre: { contains: searchBy } },
+            { comentario: { contains: searchBy } },
+            { categoriaCode: { contains: searchBy } },
+            ...(searchStatus ? [{ status: { equals: searchStatus } }] : []),
+            ...(searchSexo ? [{ sexo: { equals: searchSexo } }] : []),
+            ...(searchCategoriaRegla
+              ? [{ categoriaRegla: { equals: searchCategoriaRegla } }]
+              : []),
+            ...(numericSearch
+              ? [{ categoriaN: numericSearch }, { capacidad: numericSearch }]
+              : []),
+            { evento: { nombre: { contains: searchBy } } },
+            { evento: { complejo: { name: { contains: searchBy } } } },
+          ],
+        }
+      : {}),
+  };
+
+  const [items, total] = await Promise.all([
+    prisma.torneo.findMany({
+      where: whereClause,
+      skip,
+      take: pageSize,
+      orderBy: { [orderBy]: orderDir },
+      select: {
+        id: true,
+        eventoId: true,
+        nombre: true,
+        sexo: true,
+        categoriaRegla: true,
+        categoriaN: true,
+        categoriaCode: true,
+        comentario: true,
+        imagenUrl: true,
+        valorInsc: true,
+        jugxZona: true,
+        capacidad: true,
+        status: true,
+        publicado: true,
+        zonaCerrada: true,
+        inicio: true,
+        fin: true,
+        evento: {
+          select: {
+            nombre: true,
+            complejoId: true,
+            complejo: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.torneo.count({ where: whereClause }),
+  ]);
+
+  return {
+    items: items.map((item) =>
+      toTorneoListItem({
+        ...item,
+        complejoId: item.evento?.complejoId ?? undefined,
+        complejoName: item.evento?.complejo?.name ?? undefined,
+        eventoName: item.evento?.nombre ?? undefined,
+      }),
+    ) as TorneoListItem[],
+    total,
+  };
+}
+
+export async function listTorneosForAdmin(opts: ListOpts = {}) {
+  const scope = await getCanchaAccessScope();
+
+  const page = Math.max(1, opts.page ?? 1);
+  const pageSize = Math.max(1, opts.pageSize ?? 10);
+  const skip = (page - 1) * pageSize;
+  const orderDir = opts.orderDir === "desc" ? "desc" : "asc";
+  const orderByRaw = opts.orderBy ?? "id";
+  const orderBy = ORDERABLE_FIELDS.has(orderByRaw) ? orderByRaw : "id";
+  const searchBy = opts.searchBy?.trim() ?? "";
+  const maybeInt = Number(searchBy);
+  const numericSearch = Number.isInteger(maybeInt) ? maybeInt : null;
+  const normalizedSearch = searchBy.toUpperCase();
+  const searchStatus = [
+    "DRAFT",
+    "PUBLISHED",
+    "IN_PROGRESS",
+    "FINISHED",
+    "ARCHIVED",
+  ].includes(normalizedSearch)
+    ? (normalizedSearch as TorneoPayload["status"])
+    : null;
+  const searchSexo = ["MASCULINO", "FEMENINO", "MIXTO"].includes(
+    normalizedSearch,
+  )
+    ? (normalizedSearch as TorneoPayload["sexo"])
+    : null;
+  const searchCategoriaRegla = [
+    "LIBRE",
+    "MAYOR_IGUAL",
+    "MENOR_IGUAL",
+    "IGUAL",
+    "SUMA",
+  ].includes(normalizedSearch)
+    ? (normalizedSearch as TorneoPayload["categoriaRegla"])
+    : null;
+
+  const whereClause: Prisma.TorneoWhereInput = {
+    deletedAt: null,
+    evento: {
+      deletedAt: null,
+      ...(scope.isSuperadmin
+        ? {}
+        : { complejoId: { in: scope.allowedComplejoIds } }),
+    },
+    ...(searchBy
+      ? {
+          OR: [
+            { nombre: { contains: searchBy } },
+            { comentario: { contains: searchBy } },
+            { categoriaCode: { contains: searchBy } },
+            ...(searchStatus ? [{ status: { equals: searchStatus } }] : []),
+            ...(searchSexo ? [{ sexo: { equals: searchSexo } }] : []),
+            ...(searchCategoriaRegla
+              ? [{ categoriaRegla: { equals: searchCategoriaRegla } }]
+              : []),
+            ...(numericSearch
+              ? [{ categoriaN: numericSearch }, { capacidad: numericSearch }]
+              : []),
+            { evento: { nombre: { contains: searchBy } } },
+          ],
+        }
+      : {}),
+  };
+
+  const [items, total] = await Promise.all([
+    prisma.torneo.findMany({
+      where: whereClause,
+      skip,
+      take: pageSize,
+      orderBy: { [orderBy]: orderDir },
+      select: {
+        id: true,
+        eventoId: true,
+        nombre: true,
+        sexo: true,
+        categoriaRegla: true,
+        categoriaN: true,
+        categoriaCode: true,
+        comentario: true,
+        imagenUrl: true,
+        valorInsc: true,
+        jugxZona: true,
+        capacidad: true,
+        status: true,
+        publicado: true,
+        zonaCerrada: true,
+        inicio: true,
+        fin: true,
+        evento: {
+          select: {
+            nombre: true,
+            complejoId: true,
+            complejo: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.torneo.count({ where: whereClause }),
+  ]);
+
+  return {
+    items: items.map((item) =>
+      toTorneoListItem({
+        ...item,
+        complejoId: item.evento?.complejoId ?? undefined,
+        complejoName: item.evento?.complejo?.name ?? undefined,
+        eventoName: item.evento?.nombre ?? undefined,
+      }),
+    ) as TorneoListItem[],
+    total,
+  };
+}
+
+export async function listTorneosByComplejo(
+  complejoId: number,
+  opts: ListOpts = {},
+) {
+  await assertSuperadmin();
+
+  const page = Math.max(1, opts.page ?? 1);
+  const pageSize = Math.max(1, opts.pageSize ?? 10);
+  const skip = (page - 1) * pageSize;
+  const orderDir = opts.orderDir === "desc" ? "desc" : "asc";
+  const orderByRaw = opts.orderBy ?? "id";
+  const orderBy = ORDERABLE_FIELDS.has(orderByRaw) ? orderByRaw : "id";
+  const searchBy = opts.searchBy?.trim() ?? "";
+  const maybeInt = Number(searchBy);
+  const numericSearch = Number.isInteger(maybeInt) ? maybeInt : null;
+  const normalizedSearch = searchBy.toUpperCase();
+  const searchStatus = [
+    "DRAFT",
+    "PUBLISHED",
+    "IN_PROGRESS",
+    "FINISHED",
+    "ARCHIVED",
+  ].includes(normalizedSearch)
+    ? (normalizedSearch as TorneoPayload["status"])
+    : null;
+  const searchSexo = ["MASCULINO", "FEMENINO", "MIXTO"].includes(
+    normalizedSearch,
+  )
+    ? (normalizedSearch as TorneoPayload["sexo"])
+    : null;
+  const searchCategoriaRegla = [
+    "LIBRE",
+    "MAYOR_IGUAL",
+    "MENOR_IGUAL",
+    "IGUAL",
+    "SUMA",
+  ].includes(normalizedSearch)
+    ? (normalizedSearch as TorneoPayload["categoriaRegla"])
+    : null;
+
+  const whereClause: Prisma.TorneoWhereInput = {
+    deletedAt: null,
+    evento: {
+      complejoId,
+      deletedAt: null,
+    },
+    ...(searchBy
+      ? {
+          OR: [
+            { nombre: { contains: searchBy } },
+            { comentario: { contains: searchBy } },
+            { categoriaCode: { contains: searchBy } },
+            ...(searchStatus ? [{ status: { equals: searchStatus } }] : []),
+            ...(searchSexo ? [{ sexo: { equals: searchSexo } }] : []),
+            ...(searchCategoriaRegla
+              ? [{ categoriaRegla: { equals: searchCategoriaRegla } }]
+              : []),
+            ...(numericSearch
+              ? [{ categoriaN: numericSearch }, { capacidad: numericSearch }]
+              : []),
+            { evento: { nombre: { contains: searchBy } } },
+          ],
+        }
+      : {}),
+  };
+
+  const [items, total] = await Promise.all([
+    prisma.torneo.findMany({
+      where: whereClause,
+      skip,
+      take: pageSize,
+      orderBy: { [orderBy]: orderDir },
+      select: {
+        id: true,
+        eventoId: true,
+        nombre: true,
+        sexo: true,
+        categoriaRegla: true,
+        categoriaN: true,
+        categoriaCode: true,
+        comentario: true,
+        imagenUrl: true,
+        valorInsc: true,
+        jugxZona: true,
+        capacidad: true,
+        status: true,
+        publicado: true,
+        zonaCerrada: true,
+        inicio: true,
+        fin: true,
+        evento: {
+          select: {
+            nombre: true,
+            complejoId: true,
+            complejo: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.torneo.count({ where: whereClause }),
+  ]);
+
+  return {
+    items: items.map((item) =>
+      toTorneoListItem({
+        ...item,
+        complejoId: item.evento?.complejoId ?? undefined,
+        complejoName: item.evento?.complejo?.name ?? undefined,
+        eventoName: item.evento?.nombre ?? undefined,
+      }),
+    ) as TorneoListItem[],
+    total,
+  };
 }
 
 function toTorneoListItem(item: {

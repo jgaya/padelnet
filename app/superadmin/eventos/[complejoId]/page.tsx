@@ -1,31 +1,32 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Button from "react-bootstrap/Button";
-import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import { PencilSquareIcon, PlusIcon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
 import {
-  deleteCancha,
-  listCanchasByComplejo,
-  type CanchaListItem,
-} from "@/actions/canchas";
+  deleteEvento,
+  listEventosByComplejo,
+  type EventoListItem,
+} from "@/actions/eventos";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import type { ListOpts } from "@/types/ui";
 
 const ALLOWED_SORT_FIELDS = new Set([
   "id",
-  "numero",
-  "name",
-  "superficie",
-  "isIndoor",
-  "dobles",
-  "isActive",
+  "nombre",
+  "tipo",
+  "inicio",
+  "fin",
+  "isOpen",
+  "isVisible",
+  "isFinished",
+  "createdAt",
 ]);
 
 function SortArrow({
@@ -44,19 +45,18 @@ function SortArrow({
   return <span className="ms-1">{orderDir === "asc" ? "^" : "v"}</span>;
 }
 
-export default function AdminComplejoCanchasPage() {
-  const params = useParams<{ id: string }>();
+export default function SuperadminEventosComplejoPage() {
+  const params = useParams<{ complejoId: string }>();
   const router = useRouter();
   const searchParams = useSearchParams();
   const showSnackbar = useSnackbar();
   const updateQuery = useUpdateSearchParams();
 
   const complejoId = useMemo(
-    () => Number(params.id ?? ""),
-    [params.id],
+    () => Number(params.complejoId ?? ""),
+    [params.complejoId],
   );
-
-  const [canchas, setCanchas] = useState<CanchaListItem[]>([]);
+  const [eventos, setEventos] = useState<EventoListItem[]>([]);
   const [total, setTotal] = useState(0);
 
   const page = Number(searchParams.get("page")) || 1;
@@ -67,26 +67,26 @@ export default function AdminComplejoCanchasPage() {
   const orderDirRaw = searchParams.get("orderDir");
   const orderDir: "asc" | "desc" = orderDirRaw === "desc" ? "desc" : "asc";
 
-  const fetchCanchas = useCallback(async () => {
+  const fetchEventos = useCallback(async () => {
     if (!Number.isInteger(complejoId) || complejoId <= 0) {
       return;
     }
 
     try {
       const opts: ListOpts = { page, pageSize, orderBy, orderDir, searchBy };
-      const data = await listCanchasByComplejo(complejoId, opts);
-      setCanchas(data.items);
+      const data = await listEventosByComplejo(complejoId, opts);
+      setEventos(data.items);
       setTotal(data.total);
     } catch (error) {
-      console.error("Error loading canchas:", error);
-      showSnackbar("No se pudo cargar el listado de canchas", "error");
+      console.error("Error loading eventos:", error);
+      showSnackbar("No se pudo cargar el listado de eventos", "error");
     }
   }, [complejoId, orderBy, orderDir, page, pageSize, searchBy, showSnackbar]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    void fetchCanchas();
-  }, [fetchCanchas]);
+    void fetchEventos();
+  }, [fetchEventos]);
 
   function handleSort(field: string) {
     const safeField = ALLOWED_SORT_FIELDS.has(field) ? field : "id";
@@ -102,14 +102,14 @@ export default function AdminComplejoCanchasPage() {
     );
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (eventoId: number) => {
     try {
-      await deleteCancha(id);
-      await fetchCanchas();
-      showSnackbar("Cancha eliminada con exito", "success");
+      await deleteEvento(complejoId, eventoId);
+      await fetchEventos();
+      showSnackbar("Evento eliminado con exito", "success");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Error al eliminar la cancha";
+        error instanceof Error ? error.message : "Error al eliminar el evento";
       showSnackbar(message, "error");
     }
   };
@@ -127,26 +127,27 @@ export default function AdminComplejoCanchasPage() {
   return (
     <div className="container padel-complejos-list">
       <TitleBar
-        title={`Canchas del Complejo #${complejoId}`}
+        title={`Eventos del Complejo #${complejoId}`}
         buttons={
           <Button
             as="a"
-            href={`/admin/complejos/${complejoId}/canchas/new`}
+            href={`/admin/complejos/${complejoId}/eventos/new`}
             variant="primary"
           >
-            Nueva Cancha
+            <PlusIcon className="h-4 w-4 me-1" />
+            Nuevo Evento
           </Button>
         }
-        backURL={`/admin/complejos`}
+        backURL="/superadmin/eventos"
         total={total}
       />
 
-      <SearchBar placeholder="Buscar cancha, superficie..." />
+      <SearchBar placeholder="Buscar evento..." />
 
       <div className="card padel-data-card">
         <div className="card-body">
           <TableWithPagination
-            items={canchas}
+            items={eventos}
             page={page}
             total={total}
             pageSize={pageSize}
@@ -156,7 +157,7 @@ export default function AdminComplejoCanchasPage() {
               router.push(updateQuery({ page: newPage }));
             }}
             onSort={handleSort}
-            getRowKey={(cancha) => cancha.id}
+            getRowKey={(evento) => evento.id}
             renderHeader={() => (
               <tr>
                 <th
@@ -167,66 +168,77 @@ export default function AdminComplejoCanchasPage() {
                   <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
                 <th
-                  onClick={() => handleSort("numero")}
-                  style={{ cursor: "pointer" }}
-                >
-                  Numero
-                  <SortArrow
-                    field="numero"
-                    orderBy={orderBy}
-                    orderDir={orderDir}
-                  />
-                </th>
-                <th
-                  onClick={() => handleSort("name")}
+                  onClick={() => handleSort("nombre")}
                   style={{ cursor: "pointer" }}
                 >
                   Nombre
                   <SortArrow
-                    field="name"
+                    field="nombre"
                     orderBy={orderBy}
                     orderDir={orderDir}
                   />
                 </th>
                 <th
-                  onClick={() => handleSort("superficie")}
+                  onClick={() => handleSort("tipo")}
                   style={{ cursor: "pointer" }}
                 >
-                  Superficie
+                  Tipo
                   <SortArrow
-                    field="superficie"
+                    field="tipo"
                     orderBy={orderBy}
                     orderDir={orderDir}
                   />
                 </th>
-                <th>Indoor</th>
-                <th>Dobles</th>
-                <th>Activa</th>
+                <th
+                  onClick={() => handleSort("inicio")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Inicio
+                  <SortArrow
+                    field="inicio"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
+                </th>
+                <th
+                  onClick={() => handleSort("fin")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Fin
+                  <SortArrow
+                    field="fin"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
+                </th>
+                <th>Abierto</th>
+                <th>Visible</th>
+                <th>Finalizado</th>
                 <th>Acciones</th>
               </tr>
             )}
-            renderRow={(cancha) => (
-              <tr key={cancha.id}>
-                <td>{cancha.id}</td>
-                <td>{cancha.numero}</td>
-                <td>{cancha.name || "-"}</td>
-                <td>{cancha.superficie || "-"}</td>
-                <td>{cancha.isIndoor ? "Si" : "No"}</td>
-                <td>{cancha.dobles ? "Si" : "No"}</td>
-                <td>{cancha.isActive ? "Si" : "No"}</td>
+            renderRow={(evento) => (
+              <tr key={evento.id}>
+                <td>{evento.id}</td>
+                <td>{evento.nombre}</td>
+                <td>{evento.tipo}</td>
+                <td>{new Date(evento.inicio).toLocaleString("es-AR")}</td>
+                <td>{new Date(evento.fin).toLocaleString("es-AR")}</td>
+                <td>{evento.isOpen ? "Si" : "No"}</td>
+                <td>{evento.isVisible ? "Si" : "No"}</td>
+                <td>{evento.isFinished ? "Si" : "No"}</td>
                 <td className="d-flex gap-2 padel-table-actions">
                   <Link
-                    href={`/admin/complejos/${complejoId}/canchas/${cancha.id}`}
+                    href={`/admin/complejos/${complejoId}/eventos/${evento.id}`}
                     className="btn btn-primario btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>
-
                   <ConfirmationModal
-                    onConfirm={() => handleDelete(cancha.id)}
-                    title={`Borrar Cancha ${cancha.id}`}
-                    message="Estas seguro de que quieres eliminar esta cancha?"
-                    tooltip="Eliminar cancha"
+                    onConfirm={() => handleDelete(evento.id)}
+                    title={`Borrar Evento ${evento.id}`}
+                    message="Estas seguro de que quieres eliminar este evento?"
+                    tooltip="Eliminar evento"
                   />
                 </td>
               </tr>

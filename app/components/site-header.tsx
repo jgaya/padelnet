@@ -20,12 +20,14 @@ const mainLinksByRole: Partial<Record<UserRole, HeaderLink[]>> = {
   jugador: publicMainLinks,
   admin: [
     { href: "/admin/complejos", label: "Gestion" },
-    { href: "/torneos", label: "Torneos", mobileHidden: true },
+    { href: "/admin/eventos", label: "Eventos" },
+    { href: "/admin/torneos", label: "Torneos" },
   ],
   superadmin: [
     { href: "/superadmin/complejos", label: "Complejos" },
+    { href: "/superadmin/eventos", label: "Eventos" },
+    { href: "/superadmin/torneos", label: "Torneos" },
     { href: "/superadmin/usuarios", label: "Usuarios" },
-    { href: "/torneos", label: "Torneos", mobileHidden: true },
   ],
   dataentry: [
     { href: "/admin/complejos", label: "Gestion" },
