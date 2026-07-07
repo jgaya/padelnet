@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -229,7 +230,7 @@ export default function SuperadminEventosComplejoPage() {
                 <td>{evento.isFinished ? "Si" : "No"}</td>
                 <td className="d-flex gap-2 padel-table-actions">
                   <Link
-                    href={`/admin/complejos/${complejoId}/eventos/${evento.id}`}
+                    href={`/superadmin/complejos/${complejoId}/eventos/${evento.id}`}
                     className="btn btn-primario btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />

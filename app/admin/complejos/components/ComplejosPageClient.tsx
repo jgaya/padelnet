@@ -216,7 +216,7 @@ export default function ComplejosPageClient({
                   ) : null}
                   {showEventActions ? (
                     <Link
-                      href={`/admin/complejos/${complejo.id}/eventos`}
+                      href={`${basePath}/${complejo.id}/eventos`}
                       className="btn btn-primario btn-sm padel-action-btn"
                     >
                       <TrophyIcon className="h-4 w-4" />
@@ -224,7 +224,7 @@ export default function ComplejosPageClient({
                   ) : null}
                   {showCanchaActions ? (
                     <Link
-                      href={`/admin/complejos/${complejo.id}/canchas`}
+                      href={`${basePath}/${complejo.id}/canchas`}
                       className="btn btn-secondary btn-sm padel-action-btn"
                     >
                       <Squares2X2Icon className="h-4 w-4" />

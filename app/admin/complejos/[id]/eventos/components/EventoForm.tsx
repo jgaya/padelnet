@@ -23,6 +23,7 @@ export type EventoFormProps = {
   complejoId: number;
   initialData?: Partial<EventoFormData>;
   isEdit?: number;
+  backURL?: string;
 };
 
 const eventoTypeOptions = [
@@ -34,10 +35,13 @@ export default function EventoForm({
   complejoId,
   initialData,
   isEdit,
+  backURL,
 }: EventoFormProps) {
   const router = useRouter();
   const showSnackbar = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
+  const resolvedBackURL =
+    backURL ?? `/complejos/${complejoId}/eventos`;
 
   const {
     register,
@@ -105,7 +109,7 @@ export default function EventoForm({
         "success",
       );
 
-      router.push(`/complejos/${complejoId}/eventos`);
+      router.push(resolvedBackURL);
       router.refresh();
     } catch (error) {
       showSnackbar(
@@ -120,7 +124,7 @@ export default function EventoForm({
   return (
     <FormContainer
       title={isEdit ? "Editar Evento" : "Nuevo Evento"}
-      backURL={`/complejos/${complejoId}/eventos`}
+      backURL={resolvedBackURL}
     >
       <form className="padel-entity-form" onSubmit={handleSubmit(onSubmit)}>
         <FormInput

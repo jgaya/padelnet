@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { PencilSquareIcon, Squares2X2Icon } from "@heroicons/react/24/solid";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import Button from "react-bootstrap/Button";
+import { PencilSquareIcon, TrophyIcon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
-import { deleteEvento, listEventos, type EventoListItem } from "@/actions/eventos";
+import {
+  deleteEvento,
+  listEventosByComplejo,
+  type EventoListItem,
+} from "@/actions/eventos";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import type { ListOpts } from "@/types/ui";
@@ -24,6 +29,21 @@ const ALLOWED_SORT_FIELDS = new Set([
   "isFinished",
   "createdAt",
 ]);
+
+function formatDateTime(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
+
+  return date.toLocaleString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 function SortArrow({
   field,
@@ -41,13 +61,24 @@ function SortArrow({
   return <span className="ms-1">{orderDir === "asc" ? "^" : "v"}</span>;
 }
 
-export default function SuperadminEventosPage() {
-  const [eventos, setEventos] = useState<EventoListItem[]>([]);
-  const [total, setTotal] = useState(0);
+type ComplejoEventosPageClientProps = {
+  basePath: string;
+  backURL: string;
+};
+
+export default function ComplejoEventosPageClient({
+  basePath,
+  backURL,
+}: ComplejoEventosPageClientProps) {
+  const params = useParams<{ id: string }>();
   const router = useRouter();
   const searchParams = useSearchParams();
   const showSnackbar = useSnackbar();
   const updateQuery = useUpdateSearchParams();
+
+  const complejoId = useMemo(() => Number(params.id), [params.id]);
+  const [eventos, setEventos] = useState<EventoListItem[]>([]);
+  const [total, setTotal] = useState(0);
 
   const page = Number(searchParams.get("page")) || 1;
   const pageSize = Number(searchParams.get("pageSize")) || 10;
@@ -58,16 +89,20 @@ export default function SuperadminEventosPage() {
   const orderDir: "asc" | "desc" = orderDirRaw === "desc" ? "desc" : "asc";
 
   const fetchEventos = useCallback(async () => {
+    if (!Number.isInteger(complejoId) || complejoId <= 0) {
+      return;
+    }
+
     try {
       const opts: ListOpts = { page, pageSize, orderBy, orderDir, searchBy };
-      const data = await listEventos(opts);
+      const data = await listEventosByComplejo(complejoId, opts);
       setEventos(data.items);
       setTotal(data.total);
     } catch (error) {
       console.error("Error loading eventos:", error);
       showSnackbar("No se pudo cargar el listado de eventos", "error");
     }
-  }, [orderBy, orderDir, page, pageSize, searchBy, showSnackbar]);
+  }, [complejoId, orderBy, orderDir, page, pageSize, searchBy, showSnackbar]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -87,12 +122,7 @@ export default function SuperadminEventosPage() {
     );
   }
 
-  const handleDelete = async (eventoId: number, complejoId?: number) => {
-    if (!Number.isInteger(complejoId) || complejoId <= 0) {
-      showSnackbar("No se pudo determinar el complejo del evento", "error");
-      return;
-    }
-
+  const handleDelete = async (eventoId: number) => {
     try {
       await deleteEvento(complejoId, eventoId);
       await fetchEventos();
@@ -104,15 +134,34 @@ export default function SuperadminEventosPage() {
     }
   };
 
+  if (!Number.isInteger(complejoId) || complejoId <= 0) {
+    return (
+      <div className="container py-4">
+        <div className="alert alert-danger" role="alert">
+          Identificador de complejo inválido.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container padel-complejos-list">
       <TitleBar
-        title="Eventos del sistema"
-        backURL="/superadmin"
+        title={`Eventos del Complejo #${complejoId}`}
+        buttons={
+          <Button
+            as="a"
+            href={`${basePath}/${complejoId}/eventos/new`}
+            variant="primary"
+          >
+            Nuevo Evento
+          </Button>
+        }
+        backURL={backURL}
         total={total}
       />
 
-      <SearchBar placeholder="Buscar evento, complejo o tipo..." />
+      <SearchBar placeholder="Buscar evento..." />
 
       <div className="card padel-data-card">
         <div className="card-body">
@@ -148,7 +197,6 @@ export default function SuperadminEventosPage() {
                     orderDir={orderDir}
                   />
                 </th>
-                <th>Complejo</th>
                 <th
                   onClick={() => handleSort("tipo")}
                   style={{ cursor: "pointer" }}
@@ -192,30 +240,27 @@ export default function SuperadminEventosPage() {
               <tr key={evento.id}>
                 <td>{evento.id}</td>
                 <td>{evento.nombre}</td>
-                <td>
-                  {evento.complejoName || evento.complejoId || "-"}
-                </td>
                 <td>{evento.tipo}</td>
-                <td>{new Date(evento.inicio).toLocaleString("es-AR")}</td>
-                <td>{new Date(evento.fin).toLocaleString("es-AR")}</td>
+                <td>{formatDateTime(evento.inicio)}</td>
+                <td>{formatDateTime(evento.fin)}</td>
                 <td>{evento.isOpen ? "Si" : "No"}</td>
                 <td>{evento.isVisible ? "Si" : "No"}</td>
                 <td>{evento.isFinished ? "Si" : "No"}</td>
                 <td className="d-flex gap-2 padel-table-actions">
                   <Link
-                    href={`/superadmin/complejos/${evento.complejoId}/eventos/${evento.id}`}
+                    href={`${basePath}/${complejoId}/eventos/${evento.id}`}
                     className="btn btn-primario btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>
                   <Link
-                    href={`/superadmin/eventos/${evento.complejoId}`}
+                    href={`${basePath}/${complejoId}/eventos/${evento.id}/torneos`}
                     className="btn btn-secondary btn-sm padel-action-btn"
                   >
-                    <Squares2X2Icon className="h-4 w-4" />
+                    <TrophyIcon className="h-4 w-4" />
                   </Link>
                   <ConfirmationModal
-                    onConfirm={() => handleDelete(evento.id, evento.complejoId)}
+                    onConfirm={() => handleDelete(evento.id)}
                     title={`Borrar Evento ${evento.id}`}
                     message="Estas seguro de que quieres eliminar este evento?"
                     tooltip="Eliminar evento"

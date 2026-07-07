@@ -1,28 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { PencilSquareIcon, Squares2X2Icon } from "@heroicons/react/24/solid";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import Button from "react-bootstrap/Button";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
-import { deleteEvento, listEventos, type EventoListItem } from "@/actions/eventos";
+import {
+  deleteCancha,
+  listCanchasByComplejo,
+  type CanchaListItem,
+} from "@/actions/canchas";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import type { ListOpts } from "@/types/ui";
 
 const ALLOWED_SORT_FIELDS = new Set([
   "id",
-  "nombre",
-  "tipo",
-  "inicio",
-  "fin",
-  "isOpen",
-  "isVisible",
-  "isFinished",
-  "createdAt",
+  "numero",
+  "name",
+  "superficie",
+  "isIndoor",
+  "dobles",
+  "isActive",
 ]);
 
 function SortArrow({
@@ -41,13 +44,24 @@ function SortArrow({
   return <span className="ms-1">{orderDir === "asc" ? "^" : "v"}</span>;
 }
 
-export default function SuperadminEventosPage() {
-  const [eventos, setEventos] = useState<EventoListItem[]>([]);
-  const [total, setTotal] = useState(0);
+type ComplejoCanchasPageClientProps = {
+  basePath: string;
+  backURL: string;
+};
+
+export default function ComplejoCanchasPageClient({
+  basePath,
+  backURL,
+}: ComplejoCanchasPageClientProps) {
+  const params = useParams<{ id: string }>();
   const router = useRouter();
   const searchParams = useSearchParams();
   const showSnackbar = useSnackbar();
   const updateQuery = useUpdateSearchParams();
+
+  const complejoId = useMemo(() => Number(params.id), [params.id]);
+  const [canchas, setCanchas] = useState<CanchaListItem[]>([]);
+  const [total, setTotal] = useState(0);
 
   const page = Number(searchParams.get("page")) || 1;
   const pageSize = Number(searchParams.get("pageSize")) || 10;
@@ -57,22 +71,26 @@ export default function SuperadminEventosPage() {
   const orderDirRaw = searchParams.get("orderDir");
   const orderDir: "asc" | "desc" = orderDirRaw === "desc" ? "desc" : "asc";
 
-  const fetchEventos = useCallback(async () => {
+  const fetchCanchas = useCallback(async () => {
+    if (!Number.isInteger(complejoId) || complejoId <= 0) {
+      return;
+    }
+
     try {
       const opts: ListOpts = { page, pageSize, orderBy, orderDir, searchBy };
-      const data = await listEventos(opts);
-      setEventos(data.items);
+      const data = await listCanchasByComplejo(complejoId, opts);
+      setCanchas(data.items);
       setTotal(data.total);
     } catch (error) {
-      console.error("Error loading eventos:", error);
-      showSnackbar("No se pudo cargar el listado de eventos", "error");
+      console.error("Error loading canchas:", error);
+      showSnackbar("No se pudo cargar el listado de canchas", "error");
     }
-  }, [orderBy, orderDir, page, pageSize, searchBy, showSnackbar]);
+  }, [complejoId, orderBy, orderDir, page, pageSize, searchBy, showSnackbar]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    void fetchEventos();
-  }, [fetchEventos]);
+    void fetchCanchas();
+  }, [fetchCanchas]);
 
   function handleSort(field: string) {
     const safeField = ALLOWED_SORT_FIELDS.has(field) ? field : "id";
@@ -87,37 +105,51 @@ export default function SuperadminEventosPage() {
     );
   }
 
-  const handleDelete = async (eventoId: number, complejoId?: number) => {
-    if (!Number.isInteger(complejoId) || complejoId <= 0) {
-      showSnackbar("No se pudo determinar el complejo del evento", "error");
-      return;
-    }
-
+  const handleDelete = async (canchaId: number) => {
     try {
-      await deleteEvento(complejoId, eventoId);
-      await fetchEventos();
-      showSnackbar("Evento eliminado con exito", "success");
+      await deleteCancha(canchaId);
+      await fetchCanchas();
+      showSnackbar("Cancha eliminada con exito", "success");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Error al eliminar el evento";
+        error instanceof Error ? error.message : "Error al eliminar la cancha";
       showSnackbar(message, "error");
     }
   };
 
+  if (!Number.isInteger(complejoId) || complejoId <= 0) {
+    return (
+      <div className="container py-4">
+        <div className="alert alert-danger" role="alert">
+          Identificador de complejo inválido.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container padel-complejos-list">
       <TitleBar
-        title="Eventos del sistema"
-        backURL="/superadmin"
+        title={`Canchas del Complejo #${complejoId}`}
+        buttons={
+          <Button
+            as="a"
+            href={`${basePath}/${complejoId}/canchas/new`}
+            variant="primary"
+          >
+            Nueva Cancha
+          </Button>
+        }
+        backURL={backURL}
         total={total}
       />
 
-      <SearchBar placeholder="Buscar evento, complejo o tipo..." />
+      <SearchBar placeholder="Buscar cancha, superficie..." />
 
       <div className="card padel-data-card">
         <div className="card-body">
           <TableWithPagination
-            items={eventos}
+            items={canchas}
             page={page}
             total={total}
             pageSize={pageSize}
@@ -127,7 +159,7 @@ export default function SuperadminEventosPage() {
               router.push(updateQuery({ page: newPage }));
             }}
             onSort={handleSort}
-            getRowKey={(evento) => evento.id}
+            getRowKey={(cancha) => cancha.id}
             renderHeader={() => (
               <tr>
                 <th
@@ -138,87 +170,65 @@ export default function SuperadminEventosPage() {
                   <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
                 <th
-                  onClick={() => handleSort("nombre")}
+                  onClick={() => handleSort("numero")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Numero
+                  <SortArrow
+                    field="numero"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
+                </th>
+                <th
+                  onClick={() => handleSort("name")}
                   style={{ cursor: "pointer" }}
                 >
                   Nombre
                   <SortArrow
-                    field="nombre"
-                    orderBy={orderBy}
-                    orderDir={orderDir}
-                  />
-                </th>
-                <th>Complejo</th>
-                <th
-                  onClick={() => handleSort("tipo")}
-                  style={{ cursor: "pointer" }}
-                >
-                  Tipo
-                  <SortArrow
-                    field="tipo"
+                    field="name"
                     orderBy={orderBy}
                     orderDir={orderDir}
                   />
                 </th>
                 <th
-                  onClick={() => handleSort("inicio")}
+                  onClick={() => handleSort("superficie")}
                   style={{ cursor: "pointer" }}
                 >
-                  Inicio
+                  Superficie
                   <SortArrow
-                    field="inicio"
+                    field="superficie"
                     orderBy={orderBy}
                     orderDir={orderDir}
                   />
                 </th>
-                <th
-                  onClick={() => handleSort("fin")}
-                  style={{ cursor: "pointer" }}
-                >
-                  Fin
-                  <SortArrow
-                    field="fin"
-                    orderBy={orderBy}
-                    orderDir={orderDir}
-                  />
-                </th>
-                <th>Abierto</th>
-                <th>Visible</th>
-                <th>Finalizado</th>
+                <th>Indoor</th>
+                <th>Dobles</th>
+                <th>Activa</th>
                 <th>Acciones</th>
               </tr>
             )}
-            renderRow={(evento) => (
-              <tr key={evento.id}>
-                <td>{evento.id}</td>
-                <td>{evento.nombre}</td>
-                <td>
-                  {evento.complejoName || evento.complejoId || "-"}
-                </td>
-                <td>{evento.tipo}</td>
-                <td>{new Date(evento.inicio).toLocaleString("es-AR")}</td>
-                <td>{new Date(evento.fin).toLocaleString("es-AR")}</td>
-                <td>{evento.isOpen ? "Si" : "No"}</td>
-                <td>{evento.isVisible ? "Si" : "No"}</td>
-                <td>{evento.isFinished ? "Si" : "No"}</td>
+            renderRow={(cancha) => (
+              <tr key={cancha.id}>
+                <td>{cancha.id}</td>
+                <td>{cancha.numero}</td>
+                <td>{cancha.name || "-"}</td>
+                <td>{cancha.superficie || "-"}</td>
+                <td>{cancha.isIndoor ? "Si" : "No"}</td>
+                <td>{cancha.dobles ? "Si" : "No"}</td>
+                <td>{cancha.isActive ? "Si" : "No"}</td>
                 <td className="d-flex gap-2 padel-table-actions">
                   <Link
-                    href={`/superadmin/complejos/${evento.complejoId}/eventos/${evento.id}`}
+                    href={`${basePath}/${complejoId}/canchas/${cancha.id}`}
                     className="btn btn-primario btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>
-                  <Link
-                    href={`/superadmin/eventos/${evento.complejoId}`}
-                    className="btn btn-secondary btn-sm padel-action-btn"
-                  >
-                    <Squares2X2Icon className="h-4 w-4" />
-                  </Link>
                   <ConfirmationModal
-                    onConfirm={() => handleDelete(evento.id, evento.complejoId)}
-                    title={`Borrar Evento ${evento.id}`}
-                    message="Estas seguro de que quieres eliminar este evento?"
-                    tooltip="Eliminar evento"
+                    onConfirm={() => handleDelete(cancha.id)}
+                    title={`Borrar Cancha ${cancha.id}`}
+                    message="Estas seguro de que quieres eliminar esta cancha?"
+                    tooltip="Eliminar cancha"
                   />
                 </td>
               </tr>

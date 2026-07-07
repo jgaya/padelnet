@@ -19,7 +19,7 @@ function toDateTimeLocal(value: string) {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-export default async function EditEventoPage(props: {
+export default async function SuperadminEditEventoPage(props: {
   params: Promise<{ id: string; eventoId: string }>;
 }) {
   const { params } = props;
@@ -59,7 +59,7 @@ export default async function EditEventoPage(props: {
         isFinished: evento.isFinished,
       }}
       isEdit={parsedEventoId}
-      backURL={`/admin/complejos/${complejoId}/eventos`}
+      backURL={`/superadmin/complejos/${complejoId}/eventos`}
     />
   );
 }
