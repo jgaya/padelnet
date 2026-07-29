@@ -2,6 +2,7 @@
 
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
 import { getSession } from "@/lib/session";
 
 type TournamentSexo = "MASCULINO" | "FEMENINO" | "MIXTO";
@@ -94,6 +95,13 @@ export type TorneoRegistrationDataResult =
 export type RegisterTorneoPairInput = {
   torneoId: number;
   partnerId: number;
+};
+
+export type ManagedRegisterTorneoPairInput = {
+  torneoId: number;
+  player1Id: number;
+  player2Id: number;
+  restriccion?: string | null;
 };
 
 export type RegisterTorneoPairResult = {
@@ -897,6 +905,7 @@ export async function registerPublicTorneoPair(
           torneoId,
           player1Id: player1.id,
           player2Id: player2.id,
+          restriccion,
           suplente: shouldGoToWaitlist,
           asignado: !shouldGoToWaitlist,
         },
@@ -912,6 +921,263 @@ export async function registerPublicTorneoPair(
     });
   } catch (error) {
     console.error("registerPublicTorneoPair error:", error);
+    return { success: false, error: "No se pudo registrar la inscripcion" };
+  }
+}
+
+export async function registerManagedTorneoPair(
+  input: ManagedRegisterTorneoPairInput,
+): Promise<RegisterTorneoPairResult> {
+  const torneoId = Number(input.torneoId);
+  const player1Id = Number(input.player1Id);
+  const player2Id = Number(input.player2Id);
+  const restriccion = input.restriccion?.trim() || null;
+
+  if (!Number.isInteger(torneoId) || torneoId <= 0) {
+    return { success: false, error: "Torneo invalido" };
+  }
+
+  if (!Number.isInteger(player1Id) || player1Id <= 0) {
+    return { success: false, error: "Debe indicar el jugador 1" };
+  }
+
+  if (!Number.isInteger(player2Id) || player2Id <= 0) {
+    return { success: false, error: "Debe indicar el jugador 2" };
+  }
+
+  if (player1Id === player2Id) {
+    return { success: false, error: "Los jugadores deben ser distintos" };
+  }
+
+  try {
+    const torneo = await prisma.torneo.findFirst({
+      where: {
+        id: torneoId,
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        nombre: true,
+        sexo: true,
+        categoriaRegla: true,
+        categoriaN: true,
+        capacidad: true,
+        evento: {
+          select: {
+            complejo: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!torneo) {
+      return { success: false, error: "Torneo no encontrado" };
+    }
+
+    await ensureComplejoManagerAccess(torneo.evento.complejo.id);
+
+    const [player1, player2] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: player1Id },
+        select: {
+          id: true,
+          genero: true,
+          categoria: true,
+          deletedAt: true,
+          isActive: true,
+          platformRole: true,
+        },
+      }),
+      prisma.user.findUnique({
+        where: { id: player2Id },
+        select: {
+          id: true,
+          genero: true,
+          categoria: true,
+          deletedAt: true,
+          isActive: true,
+          platformRole: true,
+        },
+      }),
+    ]);
+
+    if (
+      !player1 ||
+      player1.deletedAt ||
+      !player1.isActive ||
+      player1.platformRole !== "USER"
+    ) {
+      return { success: false, error: "El jugador 1 no es valido" };
+    }
+
+    if (
+      !player2 ||
+      player2.deletedAt ||
+      !player2.isActive ||
+      player2.platformRole !== "USER"
+    ) {
+      return { success: false, error: "El jugador 2 no es valido" };
+    }
+
+    const [player1Profile, player2Profile] = await Promise.all([
+      prisma.perfilJugadorComplejo.findUnique({
+        where: {
+          complejoId_userId: {
+            complejoId: torneo.evento.complejo.id,
+            userId: player1.id,
+          },
+        },
+        select: {
+          categoria: true,
+          isBlocked: true,
+        },
+      }),
+      prisma.perfilJugadorComplejo.findUnique({
+        where: {
+          complejoId_userId: {
+            complejoId: torneo.evento.complejo.id,
+            userId: player2.id,
+          },
+        },
+        select: {
+          categoria: true,
+          isBlocked: true,
+        },
+      }),
+    ]);
+
+    if (player1Profile?.isBlocked) {
+      return {
+        success: false,
+        error: "El jugador 1 esta bloqueado en este complejo",
+      };
+    }
+
+    if (player2Profile?.isBlocked) {
+      return {
+        success: false,
+        error: "El jugador 2 esta bloqueado en este complejo",
+      };
+    }
+
+    const player1Genero = normalizeGenero(player1.genero);
+    const player2Genero = normalizeGenero(player2.genero);
+    const player1Categoria =
+      parseCategoriaNumber(player1Profile?.categoria) ??
+      parseCategoriaNumber(player1.categoria);
+    const player2Categoria =
+      parseCategoriaNumber(player2Profile?.categoria) ??
+      parseCategoriaNumber(player2.categoria);
+
+    if (!pairMeetsSexoRule(torneo.sexo, player1Genero, player2Genero)) {
+      return {
+        success: false,
+        error: "La pareja no cumple la regla de sexo del torneo",
+      };
+    }
+
+    if (
+      !pairMeetsCategoriaRule(
+        torneo.categoriaRegla,
+        torneo.categoriaN,
+        player1Categoria,
+        player2Categoria,
+      )
+    ) {
+      return {
+        success: false,
+        error: "La pareja no cumple la regla de categoria del torneo",
+      };
+    }
+
+    const [alreadyMine, alreadyPartner] = await Promise.all([
+      prisma.pareja.findFirst({
+        where: {
+          torneoId,
+          deletedAt: null,
+          OR: [{ player1Id: player1.id }, { player2Id: player1.id }],
+        },
+        select: { id: true },
+      }),
+      prisma.pareja.findFirst({
+        where: {
+          torneoId,
+          deletedAt: null,
+          OR: [{ player1Id: player2.id }, { player2Id: player2.id }],
+        },
+        select: { id: true },
+      }),
+    ]);
+
+    if (alreadyMine) {
+      return {
+        success: false,
+        error: "El jugador 1 ya esta inscripto o en lista de suplentes",
+      };
+    }
+
+    if (alreadyPartner) {
+      return {
+        success: false,
+        error: "El jugador 2 ya esta inscripto o en lista de suplentes",
+      };
+    }
+
+    const duplicatePair = await prisma.pareja.findFirst({
+      where: {
+        torneoId,
+        deletedAt: null,
+        OR: [
+          {
+            player1Id: player1.id,
+            player2Id: player2.id,
+          },
+          {
+            player1Id: player2.id,
+            player2Id: player1.id,
+          },
+        ],
+      },
+      select: { id: true },
+    });
+
+    if (duplicatePair) {
+      return { success: false, error: "Esta pareja ya esta cargada en el torneo" };
+    }
+
+    const mainCount = await prisma.pareja.count({
+      where: {
+        torneoId,
+        deletedAt: null,
+        suplente: false,
+      },
+    });
+
+    const shouldGoToWaitlist = mainCount >= torneo.capacidad;
+
+    await prisma.pareja.create({
+      data: {
+        torneoId,
+        player1Id: player1.id,
+        player2Id: player2.id,
+        suplente: shouldGoToWaitlist,
+        asignado: !shouldGoToWaitlist,
+      },
+    });
+
+    return {
+      success: true,
+      message: shouldGoToWaitlist
+        ? "Inscripcion registrada en lista de suplentes"
+        : "Inscripcion registrada correctamente",
+      isWaitlist: shouldGoToWaitlist,
+    };
+  } catch (error) {
+    console.error("registerManagedTorneoPair error:", error);
     return { success: false, error: "No se pudo registrar la inscripcion" };
   }
 }

@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Button from "react-bootstrap/Button";
-import { PencilSquareIcon, Squares2X2Icon } from "@heroicons/react/24/solid";
+import { PencilSquareIcon, Squares2X2Icon, UserPlusIcon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
@@ -99,18 +98,29 @@ export default function AdminTorneosPage() {
     complejoId?: number,
     eventoId?: number,
   ) => {
-    if (!Number.isInteger(complejoId) || complejoId <= 0) {
+    const safeComplejoId = complejoId;
+    const safeEventoId = eventoId;
+
+    if (
+      typeof safeComplejoId !== "number" ||
+      !Number.isInteger(safeComplejoId) ||
+      safeComplejoId <= 0
+    ) {
       showSnackbar("No se pudo determinar el complejo del torneo", "error");
       return;
     }
 
-    if (!Number.isInteger(eventoId) || eventoId <= 0) {
+    if (
+      typeof safeEventoId !== "number" ||
+      !Number.isInteger(safeEventoId) ||
+      safeEventoId <= 0
+    ) {
       showSnackbar("No se pudo determinar el evento del torneo", "error");
       return;
     }
 
     try {
-      await deleteTorneo(complejoId, eventoId, torneoId);
+      await deleteTorneo(safeComplejoId, safeEventoId, torneoId);
       await fetchTorneos();
       showSnackbar("Torneo eliminado con exito", "success");
     } catch (error) {
@@ -195,6 +205,12 @@ export default function AdminTorneosPage() {
                     className="btn btn-primario btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/inscripciones`}
+                    className="btn btn-success btn-sm padel-action-btn"
+                  >
+                    <UserPlusIcon className="h-4 w-4" />
                   </Link>
                   <Link
                     href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos`}

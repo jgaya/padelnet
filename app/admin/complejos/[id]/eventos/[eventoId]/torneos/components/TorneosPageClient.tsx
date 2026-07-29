@@ -7,6 +7,7 @@ import Button from "react-bootstrap/Button";
 import {
   PencilSquareIcon,
   RectangleGroupIcon,
+  CalendarDaysIcon,
 } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
@@ -438,6 +439,12 @@ export default function TorneosPageClient({
                     className="btn btn-primario btn-sm padel-action-btn"
                   >
                     <RectangleGroupIcon className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}/partidos`}
+                    className="btn btn-primario btn-sm padel-action-btn"
+                  >
+                    <CalendarDaysIcon className="h-4 w-4" />
                   </Link>
                   <ConfirmationModal
                     onConfirm={() => handleDelete(torneo.id)}

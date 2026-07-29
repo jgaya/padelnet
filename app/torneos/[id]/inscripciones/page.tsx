@@ -152,6 +152,12 @@ export default async function TorneoPublicInscripcionesPage(props: {
             >
               Ver detalle del torneo
             </Link>
+            <Link
+              href={`/torneos/${torneoId}/registrarse`}
+              className="inline-flex rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-deep-black transition hover:brightness-95"
+            >
+              Agregar pareja
+            </Link>
           </div>
         </div>
 

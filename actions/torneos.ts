@@ -266,7 +266,23 @@ export async function listTorneos(opts: ListOpts = {}) {
   return {
     items: items.map((item) =>
       toTorneoListItem({
-        ...item,
+        id: item.id,
+        eventoId: item.eventoId,
+        nombre: item.nombre,
+        sexo: item.sexo,
+        categoriaRegla: item.categoriaRegla,
+        categoriaN: item.categoriaN,
+        categoriaCode: item.categoriaCode,
+        comentario: item.comentario,
+        imagenUrl: item.imagenUrl,
+        valorInsc: item.valorInsc,
+        jugxZona: item.jugxZona,
+        capacidad: item.capacidad,
+        status: item.status,
+        publicado: item.publicado,
+        zonaCerrada: item.zonaCerrada,
+        inicio: item.inicio,
+        fin: item.fin,
         complejoId: item.evento?.complejoId ?? undefined,
         complejoName: item.evento?.complejo?.name ?? undefined,
         eventoName: item.evento?.nombre ?? undefined,
@@ -531,6 +547,9 @@ function toTorneoListItem(item: {
   zonaCerrada: boolean;
   inicio: Date | null;
   fin: Date | null;
+  complejoId?: number;
+  complejoName?: string;
+  eventoName?: string;
 }): TorneoListItem {
   return {
     id: item.id,
@@ -550,6 +569,9 @@ function toTorneoListItem(item: {
     zonaCerrada: item.zonaCerrada,
     inicio: item.inicio ? item.inicio.toISOString() : null,
     fin: item.fin ? item.fin.toISOString() : null,
+    complejoId: item.complejoId,
+    complejoName: item.complejoName,
+    eventoName: item.eventoName,
   };
 }
 
