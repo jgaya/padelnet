@@ -262,8 +262,11 @@ export default function TorneosPageClient({
   ]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void fetchTorneos();
+    const load = async () => {
+      await fetchTorneos();
+    };
+
+    void load();
   }, [fetchTorneos]);
 
   function handleSort(field: string) {
@@ -445,6 +448,12 @@ export default function TorneosPageClient({
                     className="btn btn-primario btn-sm padel-action-btn"
                   >
                     <CalendarDaysIcon className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}/resultados`}
+                    className="btn btn-primario btn-sm padel-action-btn"
+                  >
+                    Resultados
                   </Link>
                   <ConfirmationModal
                     onConfirm={() => handleDelete(torneo.id)}

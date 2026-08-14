@@ -9,6 +9,7 @@ type ModalProps = {
   body?: ReactNode;
   footer?: ReactNode;
   size?: "sm" | "lg" | "xl";
+  children?: ReactNode;
 };
 
 const SIZE_CLASSES: Record<NonNullable<ModalProps["size"]>, string> = {
@@ -24,6 +25,7 @@ export default function Modal({
   body,
   footer,
   size = "lg",
+  children,
 }: ModalProps) {
   if (!showModal) {
     return null;
@@ -50,7 +52,7 @@ export default function Modal({
           </div>
         ) : null}
 
-        <div className="px-6 py-5">{body}</div>
+        <div className="px-6 py-5">{children ?? body}</div>
 
         <div className="flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 px-6 py-4">
           {footer ?? (

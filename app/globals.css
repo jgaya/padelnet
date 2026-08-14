@@ -728,21 +728,22 @@ body {
 
 .btn-outline-secondary {
   background-color: transparent;
-  color: var(--btn-secondary-text);
+  color: var(--deep-black);
   border-color: var(--btn-secondary-border);
   border-width: 1.5px;
 }
 
 .btn-outline-secondary:hover:not(:disabled) {
-  background-color: var(--btn-outline-secondary-hover-bg);
-  color: var(--btn-secondary-text);
+  background-color: #ffe7dc;
+  color: var(--deep-black);
   border-color: var(--btn-secondary-border);
   box-shadow: 0 2px 8px rgba(28, 37, 38, 0.1);
 }
 
 .btn-outline-secondary:active:not(:disabled) {
-  background-color: var(--btn-outline-secondary-active-bg);
-  border-color: var(--btn-outline-secondary-text);
+  background-color: #ffd5c2;
+  color: var(--deep-black);
+  border-color: var(--btn-secondary-border);
   box-shadow: 0 1px 4px rgba(28, 37, 38, 0.08);
 }
 
@@ -798,4 +799,118 @@ body {
 .btn-full {
   width: 100%;
   display: flex;
+}
+
+/* ========================================
+   PARTIDOS GENERATOR PAGE
+   ======================================== */
+
+.padel-partidos-page .btn-outline-secondary {
+  background: #ffffff;
+  color: var(--deep-black);
+  border-color: rgba(255, 79, 0, 0.55);
+}
+
+.padel-partidos-page .btn-outline-secondary:hover:not(:disabled) {
+  background: #ffe7dc;
+  color: var(--deep-black);
+  border-color: var(--energy-orange);
+}
+
+.padel-partidos-page .padel-court-option {
+  min-height: 2.65rem;
+  gap: 0.35rem;
+  box-shadow: 0 6px 14px rgba(28, 37, 38, 0.06);
+}
+
+.padel-partidos-page .padel-court-option:has(input:checked) {
+  background: #daf5e6;
+  border-color: var(--padel-green);
+  color: var(--deep-black);
+  box-shadow: 0 8px 18px rgba(0, 200, 83, 0.14);
+}
+
+.padel-schedule-court {
+  border: 1px solid rgba(28, 37, 38, 0.14);
+  border-radius: 0.85rem;
+  background: #f8faf9;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.padel-time-row {
+  border-top: 1px solid rgba(28, 37, 38, 0.08);
+  padding-top: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.padel-time-row:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.padel-partidos-page .form-label {
+  margin-bottom: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--deep-black);
+}
+
+.padel-partidos-page .form-control,
+.padel-partidos-page .form-select {
+  min-height: 2.75rem;
+  border: 1px solid rgba(28, 37, 38, 0.22);
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  color: var(--deep-black);
+  padding: 0.58rem 0.8rem;
+  box-shadow: inset 0 1px 0 rgba(28, 37, 38, 0.04);
+}
+
+.padel-partidos-page .form-control:focus,
+.padel-partidos-page .form-select:focus {
+  border-color: var(--padel-green);
+  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.18);
+  outline: none;
+}
+
+.padel-config-grid > [class*="col-"] {
+  display: flex;
+}
+
+.padel-config-field,
+.padel-config-check {
+  width: 100%;
+  border: 1px solid rgba(28, 37, 38, 0.12);
+  border-radius: 0.85rem;
+  background: #f8faf9;
+  padding: 0.9rem;
+}
+
+.padel-config-check {
+  min-height: 100%;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.padel-partidos-page .form-check-input {
+  width: 1.05rem;
+  height: 1.05rem;
+  border: 1px solid rgba(28, 37, 38, 0.35);
+  accent-color: var(--padel-green);
+}
+
+.padel-partidos-page .form-check-label {
+  color: var(--deep-black);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .padel-time-row {
+    gap: 0.45rem 0;
+  }
+
+  .padel-config-check {
+    min-height: auto;
+  }
 }
