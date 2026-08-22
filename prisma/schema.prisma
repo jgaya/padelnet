@@ -1,576 +1,755 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
+/// Rol a nivel plataforma. USER es el jugador: no tiene privilegios de gestion.
+/// Ser staff de un club NO se marca aca, se marca con una fila en
+/// ComplejoMembership; asi un mismo usuario puede administrar un complejo y ser
+/// jugador en otro.
 enum PlatformRole {
-    USER
-    SUPERADMIN
-    SUPPORT
+  USER
+  SUPERADMIN
 }
 
+/// Rol de un usuario dentro de un complejo concreto.
 enum ComplejoRole {
-    OWNER
-    ADMIN
-    DATAENTRY
-    FISCAL
-    STAFF
+  /// Gestiona el complejo. Absorbe al viejo OWNER: la titularidad ahora es un
+  /// dato (ComplejoMembership.esPropietario), no un nivel de permiso.
+  ADMIN
+  /// Declarados para el futuro; todavia no habilitan ninguna pantalla.
+  DATAENTRY
+  FISCAL
+  STAFF
+}
+
+/// Funcionalidades que el superadmin habilita o deshabilita por complejo.
+/// Al sumar un valor aca hay que agregar la entrada en lib/complejo-features.ts.
+enum ComplejoFeatureKey {
+  NOTIFICACIONES
+  LOGROS
+  TURNOS
 }
 
 enum Genero {
-    M
-    F
-    X
+  M
+  F
+  X
 }
 
 enum EventType {
-    FINDE
-    SEMANAL
+  FINDE
+  SEMANAL
 }
 
 enum TournamentStatus {
-    DRAFT
-    PUBLISHED
-    CLOSED_REGISTRATION
-    IN_PROGRESS
-    FINISHED
-    ARCHIVED
+  DRAFT
+  PUBLISHED
+  CLOSED_REGISTRATION
+  IN_PROGRESS
+  FINISHED
+  ARCHIVED
 }
 
 enum TournamentSexo {
-    MASCULINO
-    FEMENINO
-    MIXTO
+  MASCULINO
+  FEMENINO
+  MIXTO
 }
 
 enum TournamentCategoryRule {
-    LIBRE
-    MAYOR_IGUAL
-    MENOR_IGUAL
-    IGUAL
-    SUMA
+  LIBRE
+  MAYOR_IGUAL
+  MENOR_IGUAL
+  IGUAL
+  SUMA
 }
 
 enum MatchStatus {
-    PENDING
-    SCHEDULED
-    IN_PROGRESS
-    FINISHED
-    WALKOVER
-    CANCELLED
+  PENDING
+  SCHEDULED
+  IN_PROGRESS
+  FINISHED
+  WALKOVER
+  CANCELLED
 }
 
 enum TurnoSlotStatus {
-    LIBRE
-    RESERVADO
-    BLOQUEADO
+  LIBRE
+  RESERVADO
+  BLOQUEADO
+}
+
+/// Cada cuanto se repite un turno fijo. Ver lib/turnos-recurrencia.ts.
+enum TurnoFrecuencia {
+  DIARIA
+  SEMANAL
+  MENSUAL
 }
 
 enum BookingStatus {
-    CONFIRMADA
-    CANCELADA
-    NO_SHOW
+  CONFIRMADA
+  CANCELADA
+  NO_SHOW
 }
 
 enum NotificationType {
-    MATCH_REMINDER
-    MATCH_CHANGED
-    TOURNAMENT_START
-    SYSTEM
+  MATCH_REMINDER
+  MATCH_1H_REMINDER
+  MATCH_CHANGED
+  TOURNAMENT_START
+  TOURNAMENT_UPDATE
+  NEW_TOURNAMENT
+  RESULT_UPDATE
+  SYSTEM
 }
 
 enum NotificationStatus {
-    PENDING
-    SENT
-    FAILED
+  PENDING
+  SENT
+  FAILED
 }
 
 enum PushPlatform {
-    WEB
-    ANDROID
-    IOS
+  WEB
+  ANDROID
+  IOS
 }
 
 model User {
-    id           Int          @id @default(autoincrement())
-    email        String       @unique
-    passwordHash String
-    name         String
-    lastname     String
-    telefono     String?
-    dni          String?      @unique
-    genero       Genero       @default(X)
-    categoria    String?
-    birthDate    DateTime?    @db.Date
-    avatarUrl    String?
-    imageUrl     String?
-    platformRole PlatformRole @default(USER)
-    isActive     Boolean      @default(true)
-    deletedAt    DateTime?
-    createdAt    DateTime     @default(now())
-    updatedAt    DateTime     @updatedAt
+  id            Int          @id @default(autoincrement())
+  email         String       @unique
+  passwordHash  String
+  name          String
+  lastname      String
+  telefono      String?
+  dni           String?      @unique
+  genero        Genero       @default(X)
+  categoria     String?
+  /// Ciudad o barrio de la persona. Lo carga cada uno en su perfil, asi que
+  /// puede venir vacio; el dashboard lo agrupa tal cual esta escrito.
+  localidad     String?
+  birthDate     DateTime?    @db.Date
+  avatarUrl     String?
+  imageUrl      String?
+  platformRole  PlatformRole @default(USER)
+  /// Si el mail fue confirmado. Un usuario sin verificar puede entrar y navegar,
+  /// pero no inscribirse a un torneo: ahi el mail tiene que ser real porque por
+  /// ahi salen los avisos de partidos y cambios de horario.
+  emailVerified Boolean      @default(false)
 
-    memberships      ComplejoMembership[]
-    perfilesComplejo PerfilJugadorComplejo[]
+  // Preferencias de notificaciones push: mapa { NotificationType: boolean }.
+  // Null = el usuario nunca las configuro, se usan las de DEFAULT_NOTIFICATION_PREFERENCES.
+  notificationPreferences Json?
 
-    parejasComoJugador1 Pareja[] @relation("ParejaJugador1")
-    parejasComoJugador2 Pareja[] @relation("ParejaJugador2")
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-    rankings                  Ranking[]
-    recategorizaciones        Recategorizacion[] @relation("RecategorizacionJugador")
-    recategorizacionesCreadas Recategorizacion[] @relation("RecategorizacionCreador")
+  memberships      ComplejoMembership[]
+  perfilesComplejo PerfilJugadorComplejo[]
 
-    eventosCreados Evento[] @relation("EventoCreador")
+  parejasComoJugador1 Pareja[] @relation("ParejaJugador1")
+  parejasComoJugador2 Pareja[] @relation("ParejaJugador2")
 
-    turnosSlotsCreados  TurnoSlot[]    @relation("TurnoSlotCreador")
-    reservasComoJugador TurnoReserva[] @relation("TurnoReservaJugador")
-    reservasCreadas     TurnoReserva[] @relation("TurnoReservaCreador")
+  rankings                  Ranking[]
+  recategorizaciones        Recategorizacion[] @relation("RecategorizacionJugador")
+  recategorizacionesCreadas Recategorizacion[] @relation("RecategorizacionCreador")
 
-    emailVerifications EmailVerification[]
-    pushTokens         PushToken[]
-    notifications      Notification[]
+  eventosCreados Evento[] @relation("EventoCreador")
+
+  turnosSlotsCreados     TurnoSlot[]    @relation("TurnoSlotCreador")
+  reservasComoJugador    TurnoReserva[] @relation("TurnoReservaJugador")
+  reservasCreadas        TurnoReserva[] @relation("TurnoReservaCreador")
+  turnoSeriesComoJugador TurnoSerie[]   @relation("TurnoSerieJugador")
+  turnoSeriesCreadas     TurnoSerie[]   @relation("TurnoSerieCreador")
+
+  emailVerifications EmailVerification[]
+  pushTokens         PushToken[]
+  notifications      Notification[]
+
+  featuresActualizadas ComplejoFeature[] @relation("ComplejoFeatureEditor")
 }
 
 model Complejo {
-    id        Int       @id @default(autoincrement())
-    name      String
-    slug      String    @unique
-    email     String?
-    telefono  String?
-    direccion String?
-    ciudad    String
-    provincia String
-    pais      String    @default("AR")
-    timezone  String    @default("America/Argentina/Buenos_Aires")
-    isActive  Boolean   @default(true)
-    deletedAt DateTime?
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
+  id         Int       @id @default(autoincrement())
+  name       String
+  slug       String    @unique
+  email      String?
+  telefono   String?
+  direccion  String?
+  ciudad     String
+  provincia  String
+  pais       String    @default("AR")
+  timezone   String    @default("America/Argentina/Buenos_Aires")
+  /// Reglamento del club, en Markdown basico (## titulos, - vinetas, parrafos).
+  /// Lo edita el admin; si esta vacio la pagina publica muestra un estado vacio
+  /// en vez del texto de otro complejo.
+  reglamento String?   @db.Text
+  isActive   Boolean   @default(true)
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
-    memberships        ComplejoMembership[]
-    perfilesJugadores  PerfilJugadorComplejo[]
-    canchas            Cancha[]
-    eventos            Evento[]
-    sponsors           ComplejoSponsor[]
-    recategorizaciones Recategorizacion[]
-    generaciones       Generacion[]
+  memberships        ComplejoMembership[]
+  perfilesJugadores  PerfilJugadorComplejo[]
+  canchas            Cancha[]
+  eventos            Evento[]
+  sponsors           ComplejoSponsor[]
+  recategorizaciones Recategorizacion[]
+  generaciones       Generacion[]
+  features           ComplejoFeature[]
+  horarios           ComplejoHorario[]
+  horarioExcepciones ComplejoHorarioExcepcion[]
+  turnoSeries        TurnoSerie[]
+}
+
+/// Horario de atencion de un complejo para un dia de la semana. Si no hay fila
+/// para el dia rige el default de lib/turnos-horario.ts (9:00 a 23:00).
+model ComplejoHorario {
+  id          Int      @id @default(autoincrement())
+  complejoId  Int
+  /// 0 = domingo .. 6 = sabado, igual que Date.getDay().
+  diaSemana   Int
+  /// Minutos desde medianoche. Se guarda como entero y no como DateTime para
+  /// que una hora del dia no arrastre fecha ni zona horaria.
+  aperturaMin Int
+  cierreMin   Int
+  cerrado     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  complejo Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+
+  @@unique([complejoId, diaSemana])
+}
+
+/// Excepcion de horario para una fecha puntual: feriados, cierre por
+/// mantenimiento, jornada extendida. Pisa a ComplejoHorario.
+model ComplejoHorarioExcepcion {
+  id          Int      @id @default(autoincrement())
+  complejoId  Int
+  fecha       DateTime @db.Date
+  aperturaMin Int
+  cierreMin   Int
+  cerrado     Boolean  @default(false)
+  motivo      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  complejo Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+
+  @@unique([complejoId, fecha])
+  @@index([complejoId, fecha])
+}
+
+/// Acceso de un complejo a una funcionalidad de la plataforma. Solo se guardan
+/// las excepciones: si no hay fila, vale el defaultEnabled del catalogo en
+/// lib/complejo-features.ts.
+model ComplejoFeature {
+  id          Int                @id @default(autoincrement())
+  complejoId  Int
+  feature     ComplejoFeatureKey
+  enabled     Boolean
+  updatedById Int?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  complejo  Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+  updatedBy User?    @relation("ComplejoFeatureEditor", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@unique([complejoId, feature])
+  @@index([feature, enabled])
 }
 
 model ComplejoMembership {
-    id         Int          @id @default(autoincrement())
-    complejoId Int
-    userId     Int
-    role       ComplejoRole
-    isActive   Boolean      @default(true)
-    createdAt  DateTime     @default(now())
-    updatedAt  DateTime     @updatedAt
+  id            Int          @id @default(autoincrement())
+  complejoId    Int
+  userId        Int
+  role          ComplejoRole
+  /// Titular del club. Es un dato, no un permiso: todos los ADMIN pueden lo
+  /// mismo. Sirve para facturacion, para no dejar que se quite a si mismo y
+  /// para transferir el complejo.
+  esPropietario Boolean      @default(false)
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
-    complejo Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
-    user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  complejo Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([complejoId, userId])
-    @@index([userId, role])
+  @@unique([complejoId, userId])
+  @@index([userId, role])
 }
 
 model PerfilJugadorComplejo {
-    id         Int      @id @default(autoincrement())
-    complejoId Int
-    userId     Int
-    categoria  String?
-    observado  Boolean  @default(false)
-    isBlocked  Boolean  @default(false)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  complejoId Int
+  userId     Int
+  categoria  String?
+  observado  Boolean  @default(false)
+  isBlocked  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-    complejo Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
-    user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  complejo Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([complejoId, userId])
-    @@index([userId])
+  @@unique([complejoId, userId])
+  @@index([userId])
 }
 
 model Cancha {
-    id         Int       @id @default(autoincrement())
-    complejoId Int
-    name       String?
-    numero     Int
-    superficie String?
-    isIndoor   Boolean   @default(false)
-    dobles     Boolean   @default(true)
-    isActive   Boolean   @default(true)
-    deletedAt  DateTime?
-    createdAt  DateTime  @default(now())
-    updatedAt  DateTime  @updatedAt
+  id         Int       @id @default(autoincrement())
+  complejoId Int
+  name       String?
+  numero     Int
+  superficie String?
+  isIndoor   Boolean   @default(false)
+  dobles     Boolean   @default(true)
+  isActive   Boolean   @default(true)
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
-    complejo   Complejo    @relation(fields: [complejoId], references: [id], onDelete: Cascade)
-    partidos   Partido[]
-    turnoSlots TurnoSlot[]
+  complejo    Complejo     @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+  partidos    Partido[]
+  turnoSlots  TurnoSlot[]
+  turnoSeries TurnoSerie[]
 
-    @@unique([complejoId, numero])
-    @@index([complejoId, isActive])
+  @@unique([complejoId, numero])
+  @@index([complejoId, isActive])
 }
 
 model Evento {
-    id          Int       @id @default(autoincrement())
-    complejoId  Int
-    createdById Int?
-    nombre      String
-    descripcion String?
-    posterUrl   String?
-    tipo        EventType @default(FINDE)
-    inicio      DateTime
-    fin         DateTime
-    isOpen      Boolean   @default(true)
-    isVisible   Boolean   @default(false)
-    isFinished  Boolean   @default(false)
-    deletedAt   DateTime?
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+  id          Int       @id @default(autoincrement())
+  complejoId  Int
+  createdById Int?
+  nombre      String
+  descripcion String?
+  posterUrl   String?
+  tipo        EventType @default(FINDE)
+  inicio      DateTime
+  fin         DateTime
+  isOpen      Boolean   @default(true)
+  isVisible   Boolean   @default(false)
+  isFinished  Boolean   @default(false)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-    complejo     Complejo     @relation(fields: [complejoId], references: [id], onDelete: Cascade)
-    createdBy    User?        @relation("EventoCreador", fields: [createdById], references: [id], onDelete: SetNull)
-    torneos      Torneo[]
-    generaciones Generacion[]
+  complejo     Complejo     @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+  createdBy    User?        @relation("EventoCreador", fields: [createdById], references: [id], onDelete: SetNull)
+  torneos      Torneo[]
+  generaciones Generacion[]
 
-    @@index([complejoId, inicio])
-    @@index([isVisible, isOpen])
+  @@index([complejoId, inicio])
+  @@index([isVisible, isOpen])
 }
 
 model Torneo {
-    id                Int                    @id @default(autoincrement())
-    eventoId          Int
-    nombre            String
-    categoriaCode     String
-    sexo              TournamentSexo         @default(MIXTO)
-    categoriaRegla    TournamentCategoryRule @default(LIBRE)
-    categoriaN        Int?
-    comentario        String?
-    imagenUrl         String?
-    valorInsc         String?
-    jugxZona          Int                    @default(3)
-    capacidad         Int                    @default(24)
-    status            TournamentStatus       @default(DRAFT)
-    publicado         Boolean                @default(false)
-    zonaCerrada       Boolean                @default(false)
-    zonaGenerada      Boolean                @default(false)
-    partidosGenerados Boolean                @default(false)
-    actualizado       Boolean                @default(false)
-    inicio            DateTime?
-    fin               DateTime?
-    deletedAt         DateTime?
-    createdAt         DateTime               @default(now())
-    updatedAt         DateTime               @updatedAt
+  id                Int                    @id @default(autoincrement())
+  eventoId          Int
+  nombre            String
+  categoriaCode     String
+  sexo              TournamentSexo         @default(MIXTO)
+  categoriaRegla    TournamentCategoryRule @default(LIBRE)
+  categoriaN        Int?
+  comentario        String?
+  imagenUrl         String?
+  valorInsc         String?
+  jugxZona          Int                    @default(3)
+  capacidad         Int                    @default(24)
+  status            TournamentStatus       @default(DRAFT)
+  publicado         Boolean                @default(false)
+  zonaCerrada       Boolean                @default(false)
+  zonaGenerada      Boolean                @default(false)
+  partidosGenerados Boolean                @default(false)
+  actualizado       Boolean                @default(false)
+  inicio            DateTime?
+  fin               DateTime?
+  deletedAt         DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
 
-    evento       Evento       @relation(fields: [eventoId], references: [id], onDelete: Cascade)
-    parejas      Pareja[]
-    grupos       Grupo[]
-    partidos     Partido[]
-    rondas       Ronda[]
-    rankings     Ranking[]
-    generaciones Generacion[]
+  evento       Evento       @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+  parejas      Pareja[]
+  grupos       Grupo[]
+  partidos     Partido[]
+  rondas       Ronda[]
+  rankings     Ranking[]
+  generaciones Generacion[]
 
-    @@unique([eventoId, nombre])
-    @@index([eventoId, status])
+  @@unique([eventoId, nombre])
+  @@index([eventoId, status])
 }
 
 model Pareja {
-    id              Int       @id @default(autoincrement())
-    torneoId        Int
-    player1Id       Int
-    player2Id       Int
-    asignado        Boolean   @default(false)
-    suplente        Boolean   @default(false)
-    pago            Boolean   @default(false)
-    restriccion     String?
-    puntos          Int       @default(0)
-    partidoGanados  Int       @default(0)
-    partidoPerdidos Int       @default(0)
-    setGanados      Int       @default(0)
-    setPerdidos     Int       @default(0)
-    gameGanados     Int       @default(0)
-    gamePerdidos    Int       @default(0)
-    posicionActual  Int?
-    posicionFinal   Int?
-    deletedAt       DateTime?
-    createdAt       DateTime  @default(now())
-    updatedAt       DateTime  @updatedAt
+  id              Int       @id @default(autoincrement())
+  torneoId        Int
+  player1Id       Int
+  player2Id       Int
+  asignado        Boolean   @default(false)
+  suplente        Boolean   @default(false)
+  pago            Boolean   @default(false)
+  restriccion     String?
+  puntos          Int       @default(0)
+  partidoGanados  Int       @default(0)
+  partidoPerdidos Int       @default(0)
+  setGanados      Int       @default(0)
+  setPerdidos     Int       @default(0)
+  gameGanados     Int       @default(0)
+  gamePerdidos    Int       @default(0)
+  posicionActual  Int?
+  posicionFinal   Int?
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-    torneo   Torneo @relation(fields: [torneoId], references: [id], onDelete: Cascade)
-    jugador1 User   @relation("ParejaJugador1", fields: [player1Id], references: [id], onDelete: Restrict)
-    jugador2 User   @relation("ParejaJugador2", fields: [player2Id], references: [id], onDelete: Restrict)
+  torneo   Torneo @relation(fields: [torneoId], references: [id], onDelete: Cascade)
+  jugador1 User   @relation("ParejaJugador1", fields: [player1Id], references: [id], onDelete: Restrict)
+  jugador2 User   @relation("ParejaJugador2", fields: [player2Id], references: [id], onDelete: Restrict)
 
-    grupoLinks GrupoPareja[]
+  grupoLinks GrupoPareja[]
 
-    partidosComoP1   Partido[] @relation("PartidoPareja1")
-    partidosComoP2   Partido[] @relation("PartidoPareja2")
-    partidosGanados  Partido[] @relation("PartidoGanador")
-    partidosPerdidos Partido[] @relation("PartidoPerdedor")
+  partidosComoP1   Partido[] @relation("PartidoPareja1")
+  partidosComoP2   Partido[] @relation("PartidoPareja2")
+  partidosGanados  Partido[] @relation("PartidoGanador")
+  partidosPerdidos Partido[] @relation("PartidoPerdedor")
 
-    @@unique([torneoId, player1Id, player2Id])
-    @@index([torneoId, suplente])
+  @@unique([torneoId, player1Id, player2Id])
+  @@index([torneoId, suplente])
 }
 
 model Grupo {
-    id         Int      @id @default(autoincrement())
-    torneoId   Int
-    nombre     String
-    comentario String?
-    cerrado    Boolean  @default(false)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  torneoId   Int
+  nombre     String
+  comentario String?
+  cerrado    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-    torneo   Torneo        @relation(fields: [torneoId], references: [id], onDelete: Cascade)
-    parejas  GrupoPareja[]
-    partidos Partido[]
+  torneo   Torneo        @relation(fields: [torneoId], references: [id], onDelete: Cascade)
+  parejas  GrupoPareja[]
+  partidos Partido[]
 
-    @@unique([torneoId, nombre])
+  @@unique([torneoId, nombre])
 }
 
 model GrupoPareja {
-    id        Int      @id @default(autoincrement())
-    grupoId   Int
-    parejaId  Int
-    seed      Int?
-    createdAt DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  grupoId   Int
+  parejaId  Int
+  seed      Int?
+  createdAt DateTime @default(now())
 
-    grupo  Grupo  @relation(fields: [grupoId], references: [id], onDelete: Cascade)
-    pareja Pareja @relation(fields: [parejaId], references: [id], onDelete: Cascade)
+  grupo  Grupo  @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  pareja Pareja @relation(fields: [parejaId], references: [id], onDelete: Cascade)
 
-    @@unique([grupoId, parejaId])
-    @@unique([grupoId, seed])
+  @@unique([grupoId, parejaId])
+  @@unique([grupoId, seed])
 }
 
 model Partido {
-    id            Int         @id @default(autoincrement())
-    torneoId      Int
-    grupoId       Int?
-    canchaId      Int?
-    scheduledAt   DateTime?
-    status        MatchStatus @default(PENDING)
-    pareja1Id     Int?
-    pareja2Id     Int?
-    ganadorId     Int?
-    perdedorId    Int?
-    walkover      Boolean     @default(false)
-    fiscalizadoBy Int?
-    llave         String?
-    pareja1Letra  String?
-    pareja2Letra  String?
-    notas         String?
-    deletedAt     DateTime?
-    createdAt     DateTime    @default(now())
-    updatedAt     DateTime    @updatedAt
+  id            Int         @id @default(autoincrement())
+  torneoId      Int
+  grupoId       Int?
+  canchaId      Int?
+  scheduledAt   DateTime?
+  /// Largo del partido. Lo escribe la generacion de la grilla; el calendario
+  /// de turnos lo necesita para dibujar el bloque con su tamano real.
+  duracionMin   Int?
+  status        MatchStatus @default(PENDING)
+  pareja1Id     Int?
+  pareja2Id     Int?
+  ganadorId     Int?
+  perdedorId    Int?
+  walkover      Boolean     @default(false)
+  fiscalizadoBy Int?
+  llave         String?
+  pareja1Letra  String?
+  pareja2Letra  String?
+  notas         String?
+  deletedAt     DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
-    torneo Torneo  @relation(fields: [torneoId], references: [id], onDelete: Cascade)
-    grupo  Grupo?  @relation(fields: [grupoId], references: [id], onDelete: SetNull)
-    cancha Cancha? @relation(fields: [canchaId], references: [id], onDelete: SetNull)
+  torneo Torneo  @relation(fields: [torneoId], references: [id], onDelete: Cascade)
+  grupo  Grupo?  @relation(fields: [grupoId], references: [id], onDelete: SetNull)
+  cancha Cancha? @relation(fields: [canchaId], references: [id], onDelete: SetNull)
 
-    pareja1  Pareja? @relation("PartidoPareja1", fields: [pareja1Id], references: [id], onDelete: SetNull)
-    pareja2  Pareja? @relation("PartidoPareja2", fields: [pareja2Id], references: [id], onDelete: SetNull)
-    ganador  Pareja? @relation("PartidoGanador", fields: [ganadorId], references: [id], onDelete: SetNull)
-    perdedor Pareja? @relation("PartidoPerdedor", fields: [perdedorId], references: [id], onDelete: SetNull)
+  pareja1  Pareja? @relation("PartidoPareja1", fields: [pareja1Id], references: [id], onDelete: SetNull)
+  pareja2  Pareja? @relation("PartidoPareja2", fields: [pareja2Id], references: [id], onDelete: SetNull)
+  ganador  Pareja? @relation("PartidoGanador", fields: [ganadorId], references: [id], onDelete: SetNull)
+  perdedor Pareja? @relation("PartidoPerdedor", fields: [perdedorId], references: [id], onDelete: SetNull)
 
-    sets PartidoSet[]
+  sets PartidoSet[]
 
-    @@index([torneoId, scheduledAt])
-    @@index([canchaId, scheduledAt])
-    @@index([grupoId, scheduledAt])
+  @@index([torneoId, scheduledAt])
+  @@index([canchaId, scheduledAt])
+  @@index([grupoId, scheduledAt])
+  /// El avance de la llave y la vista publica del cuadro filtran siempre por
+  /// `torneoId` + `llave is not null`; sin este indice recorren todos los
+  /// partidos del torneo, incluidos los de zona, que son la mayoria.
+  @@index([torneoId, llave])
 }
 
 model PartidoSet {
-    id           Int  @id @default(autoincrement())
-    partidoId    Int
-    numero       Int
-    gamesPareja1 Int
-    gamesPareja2 Int
-    tiebreakP1   Int?
-    tiebreakP2   Int?
+  id           Int  @id @default(autoincrement())
+  partidoId    Int
+  numero       Int
+  gamesPareja1 Int
+  gamesPareja2 Int
+  tiebreakP1   Int?
+  tiebreakP2   Int?
 
-    partido Partido @relation(fields: [partidoId], references: [id], onDelete: Cascade)
+  partido Partido @relation(fields: [partidoId], references: [id], onDelete: Cascade)
 
-    @@unique([partidoId, numero])
+  @@unique([partidoId, numero])
 }
 
 model Ronda {
-    id        Int      @id @default(autoincrement())
-    torneoId  Int
-    nombre    String
-    orden     Int
-    valor     Decimal  @db.Decimal(10, 2)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  torneoId  Int
+  nombre    String
+  orden     Int
+  valor     Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    torneo   Torneo    @relation(fields: [torneoId], references: [id], onDelete: Cascade)
-    rankings Ranking[]
+  torneo   Torneo    @relation(fields: [torneoId], references: [id], onDelete: Cascade)
+  rankings Ranking[]
 
-    @@unique([torneoId, nombre])
-    @@index([torneoId, orden])
+  @@unique([torneoId, nombre])
+  @@index([torneoId, orden])
 }
 
 model Ranking {
-    id        Int       @id @default(autoincrement())
-    jugadorId Int
-    torneoId  Int
-    rondaId   Int
-    valor     Decimal   @db.Decimal(10, 2)
-    deletedAt DateTime?
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
+  id        Int       @id @default(autoincrement())
+  jugadorId Int
+  torneoId  Int
+  rondaId   Int
+  valor     Decimal   @db.Decimal(10, 2)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-    jugador User   @relation(fields: [jugadorId], references: [id], onDelete: Cascade)
-    torneo  Torneo @relation(fields: [torneoId], references: [id], onDelete: Cascade)
-    ronda   Ronda  @relation(fields: [rondaId], references: [id], onDelete: Restrict)
+  jugador User   @relation(fields: [jugadorId], references: [id], onDelete: Cascade)
+  torneo  Torneo @relation(fields: [torneoId], references: [id], onDelete: Cascade)
+  ronda   Ronda  @relation(fields: [rondaId], references: [id], onDelete: Restrict)
 
-    @@unique([jugadorId, torneoId, rondaId])
-    @@index([torneoId, jugadorId])
+  @@unique([jugadorId, torneoId, rondaId])
+  @@index([torneoId, jugadorId])
 }
 
 model Recategorizacion {
-    id          Int      @id @default(autoincrement())
-    complejoId  Int
-    jugadorId   Int
-    createdById Int?
-    fecha       DateTime @db.Date
-    nivelPrevio String
-    nivelNuevo  String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  complejoId  Int
+  jugadorId   Int
+  createdById Int?
+  fecha       DateTime @db.Date
+  nivelPrevio String
+  nivelNuevo  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    complejo  Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
-    jugador   User     @relation("RecategorizacionJugador", fields: [jugadorId], references: [id], onDelete: Cascade)
-    createdBy User?    @relation("RecategorizacionCreador", fields: [createdById], references: [id], onDelete: SetNull)
+  complejo  Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+  jugador   User     @relation("RecategorizacionJugador", fields: [jugadorId], references: [id], onDelete: Cascade)
+  createdBy User?    @relation("RecategorizacionCreador", fields: [createdById], references: [id], onDelete: SetNull)
 
-    @@index([complejoId, fecha])
-    @@index([jugadorId, fecha])
+  @@index([complejoId, fecha])
+  @@index([jugadorId, fecha])
+}
+
+/// Turno fijo que se repite. No tiene fin: `hasta` queda en null mientras la
+/// serie este abierta y cron/turnos-cron.ts va materializando las ocurrencias
+/// dentro de una ventana movil. Se completa cuando el admin corta la serie con
+/// "este turno y los siguientes".
+model TurnoSerie {
+  id               Int             @id @default(autoincrement())
+  complejoId       Int
+  canchaId         Int
+  frecuencia       TurnoFrecuencia
+  /// Primera fecha de la serie.
+  desde            DateTime        @db.Date
+  /// null = serie abierta.
+  hasta            DateTime?       @db.Date
+  /// Minutos desde medianoche; la fecha de cada ocurrencia sale de frecuencia.
+  inicioMin        Int
+  duracionMin      Int
+  /// Titular: jugador registrado, o nombre y telefono sueltos.
+  jugadorId        Int?
+  nombreContacto   String?
+  telefonoContacto String?
+  notas            String?
+  createdById      Int?
+  deletedAt        DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  complejo  Complejo    @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+  cancha    Cancha      @relation(fields: [canchaId], references: [id], onDelete: Cascade)
+  jugador   User?       @relation("TurnoSerieJugador", fields: [jugadorId], references: [id], onDelete: SetNull)
+  createdBy User?       @relation("TurnoSerieCreador", fields: [createdById], references: [id], onDelete: SetNull)
+  slots     TurnoSlot[]
+
+  @@index([complejoId, deletedAt])
+  @@index([canchaId, desde])
 }
 
 model TurnoSlot {
-    id          Int             @id @default(autoincrement())
-    canchaId    Int
-    createdById Int?
-    startAt     DateTime
-    endAt       DateTime
-    duracionMin Int
-    status      TurnoSlotStatus @default(LIBRE)
-    deletedAt   DateTime?
-    createdAt   DateTime        @default(now())
-    updatedAt   DateTime        @updatedAt
+  id          Int             @id @default(autoincrement())
+  canchaId    Int
+  serieId     Int?
+  createdById Int?
+  startAt     DateTime
+  endAt       DateTime
+  duracionMin Int
+  status      TurnoSlotStatus @default(LIBRE)
+  deletedAt   DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 
-    cancha    Cancha        @relation(fields: [canchaId], references: [id], onDelete: Cascade)
-    createdBy User?         @relation("TurnoSlotCreador", fields: [createdById], references: [id], onDelete: SetNull)
-    reserva   TurnoReserva?
+  cancha    Cancha        @relation(fields: [canchaId], references: [id], onDelete: Cascade)
+  serie     TurnoSerie?   @relation(fields: [serieId], references: [id], onDelete: Cascade)
+  createdBy User?         @relation("TurnoSlotCreador", fields: [createdById], references: [id], onDelete: SetNull)
+  reserva   TurnoReserva?
 
-    @@unique([canchaId, startAt, endAt])
-    @@index([canchaId, startAt, status])
+  // Sin unique sobre (canchaId, startAt, endAt): no expresa lo que hace falta.
+  // Con duracion variable no impide el solapamiento real (10:00-11:30 y
+  // 10:30-12:00 lo pasarian), y con deletedAt choca al recrear un turno
+  // cancelado en el mismo horario. El solapamiento se valida en la aplicacion
+  // dentro de una transaccion; en MySQL no hay indice que lo cubra.
+  @@index([canchaId, startAt, status])
+  @@index([serieId, startAt])
 }
 
 model TurnoReserva {
-    id          Int           @id @default(autoincrement())
-    turnoSlotId Int           @unique
-    jugadorId   Int
-    createdById Int?
-    status      BookingStatus @default(CONFIRMADA)
-    notas       String?
-    createdAt   DateTime      @default(now())
-    updatedAt   DateTime      @updatedAt
-    cancelledAt DateTime?
+  id               Int           @id @default(autoincrement())
+  turnoSlotId      Int           @unique
+  /// null cuando la reserva es a nombre de alguien que no esta registrado.
+  jugadorId        Int?
+  nombreContacto   String?
+  telefonoContacto String?
+  createdById      Int?
+  status           BookingStatus @default(CONFIRMADA)
+  pagado           Boolean       @default(false)
+  pagadoAt         DateTime?
+  notas            String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  cancelledAt      DateTime?
 
-    slot      TurnoSlot @relation(fields: [turnoSlotId], references: [id], onDelete: Cascade)
-    jugador   User      @relation("TurnoReservaJugador", fields: [jugadorId], references: [id], onDelete: Restrict)
-    createdBy User?     @relation("TurnoReservaCreador", fields: [createdById], references: [id], onDelete: SetNull)
+  slot      TurnoSlot @relation(fields: [turnoSlotId], references: [id], onDelete: Cascade)
+  jugador   User?     @relation("TurnoReservaJugador", fields: [jugadorId], references: [id], onDelete: SetNull)
+  createdBy User?     @relation("TurnoReservaCreador", fields: [createdById], references: [id], onDelete: SetNull)
 
-    @@index([jugadorId, createdAt])
+  @@index([jugadorId, createdAt])
 }
 
 model Sponsor {
-    id        Int      @id @default(autoincrement())
-    name      String
-    imageUrl  String
-    link      String?
-    isActive  Boolean  @default(true)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String
+  imageUrl  String
+  link      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    complejos ComplejoSponsor[]
+  complejos ComplejoSponsor[]
 }
 
 model ComplejoSponsor {
-    id         Int      @id @default(autoincrement())
-    complejoId Int
-    sponsorId  Int
-    orden      Int      @default(0)
-    isActive   Boolean  @default(true)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  complejoId Int
+  sponsorId  Int
+  orden      Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-    complejo Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
-    sponsor  Sponsor  @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+  complejo Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+  sponsor  Sponsor  @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
 
-    @@unique([complejoId, sponsorId])
-    @@index([complejoId, orden])
+  @@unique([complejoId, sponsorId])
+  @@index([complejoId, orden])
 }
 
 model Generacion {
-    id         Int      @id @default(autoincrement())
-    complejoId Int
-    eventoId   Int?
-    torneoId   Int?
-    tipo       String
-    jsonData   String   @db.LongText
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  complejoId Int
+  eventoId   Int?
+  torneoId   Int?
+  tipo       String
+  jsonData   String   @db.LongText
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-    complejo Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
-    evento   Evento?  @relation(fields: [eventoId], references: [id], onDelete: SetNull)
-    torneo   Torneo?  @relation(fields: [torneoId], references: [id], onDelete: SetNull)
+  complejo Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+  evento   Evento?  @relation(fields: [eventoId], references: [id], onDelete: SetNull)
+  torneo   Torneo?  @relation(fields: [torneoId], references: [id], onDelete: SetNull)
 
-    @@index([complejoId, tipo])
-    @@index([eventoId, tipo])
-    @@index([torneoId, tipo])
+  @@index([complejoId, tipo])
+  @@index([eventoId, tipo])
+  @@index([torneoId, tipo])
 }
 
+/// Para que sirve un token de un solo uso mandado por mail.
+enum TokenEmailPurpose {
+  VERIFICACION
+  RESET_PASSWORD
+}
+
+/// Token de un solo uso enviado por mail. El nombre viene de cuando solo se
+/// usaba para verificar la direccion; hoy tambien cubre el reset de contrasena,
+/// que necesita exactamente lo mismo (token unico, vencimiento y consumo).
+/// `purpose` los separa: un link de verificacion no sirve para cambiar la
+/// contrasena, ni al reves.
 model EmailVerification {
-    id        Int       @id @default(autoincrement())
-    userId    Int
-    token     String
-    expiresAt DateTime
-    usedAt    DateTime?
-    createdAt DateTime  @default(now())
+  id        Int               @id @default(autoincrement())
+  userId    Int
+  token     String
+  purpose   TokenEmailPurpose @default(VERIFICACION)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime          @default(now())
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([token])
-    @@index([userId, expiresAt])
+  @@unique([token])
+  @@index([userId, expiresAt])
 }
 
 model PushToken {
-    id        String        @id @default(cuid())
-    token     String        @unique
-    userId    Int?
-    platform  PushPlatform?
-    createdAt DateTime      @default(now())
-    lastUsed  DateTime      @updatedAt
+  id        String        @id @default(cuid())
+  token     String        @unique
+  userId    Int?
+  platform  PushPlatform?
+  createdAt DateTime      @default(now())
+  lastUsed  DateTime      @updatedAt
 
-    user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model Notification {
-    id          String             @id @default(cuid())
-    userId      Int
-    type        NotificationType
-    title       String
-    body        String
-    scheduledAt DateTime?
-    sentAt      DateTime?
-    status      NotificationStatus @default(PENDING)
-    metadata    Json?
-    createdAt   DateTime           @default(now())
+  id          String             @id @default(cuid())
+  userId      Int
+  type        NotificationType
+  title       String
+  body        String
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  status      NotificationStatus @default(PENDING)
+  metadata    Json?
+  createdAt   DateTime           @default(now())
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([userId, status, createdAt])
+  @@index([userId, status, createdAt])
 }

@@ -40,8 +40,7 @@ export default function EventoForm({
   const router = useRouter();
   const showSnackbar = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
-  const resolvedBackURL =
-    backURL ?? `/complejos/${complejoId}/eventos`;
+  const resolvedBackURL = backURL ?? `/complejos/${complejoId}/eventos`;
 
   const {
     register,
@@ -136,15 +135,15 @@ export default function EventoForm({
         />
 
         <div className="mb-3">
-          <label className="form-label padel-form-label">Descripcion:</label>
+          <label className="padel-form-label">Descripcion:</label>
           <textarea
-            className={`form-control padel-form-input ${errors.descripcion ? "is-invalid" : ""}`}
+            className={`padel-form-input ${errors.descripcion ? "is-invalid" : ""}`}
             rows={3}
             placeholder="Descripcion (opcional)"
             {...register("descripcion")}
           />
           {errors.descripcion && (
-            <div className="invalid-feedback d-block padel-invalid-feedback">
+            <div className="padel-invalid-feedback block">
               {errors.descripcion.message}
             </div>
           )}

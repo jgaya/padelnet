@@ -2,8 +2,11 @@
 
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { notifyInscripcionCancelada } from "@/actions/notificaciones-eventos";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
 import { getSession } from "@/lib/session";
+import { inscripcionesAbiertas } from "@/lib/torneo-elegibilidad";
+import type { TournamentStatus } from "@/types/db";
 
 type TournamentSexo = "MASCULINO" | "FEMENINO" | "MIXTO";
 type TournamentCategoryRule =
@@ -21,13 +24,10 @@ type TorneoBase = {
   categoriaRegla: TournamentCategoryRule;
   categoriaN: number | null;
   capacidad: number;
-  status:
-    | "DRAFT"
-    | "PUBLISHED"
-    | "CLOSED_REGISTRATION"
-    | "IN_PROGRESS"
-    | "FINISHED"
-    | "ARCHIVED";
+  status: TournamentStatus;
+  publicado: boolean;
+  zonaCerrada: boolean;
+  zonaGenerada: boolean;
   evento: {
     id: number;
     nombre: string;
@@ -61,6 +61,8 @@ export type TorneoRegistrationSummary = {
   complejoProvincia: string;
   inscriptosCount: number;
   suplentesCount: number;
+  /** Si todavia se puede entrar y salir del torneo. Ver inscripcionesAbiertas(). */
+  inscripcionesAbiertas: boolean;
 };
 
 export type TorneoRegistrationDataResult =
@@ -121,6 +123,26 @@ export type UpdateTorneoPairResult = {
   success: boolean;
   message?: string;
   error?: string;
+};
+
+export type AdminInscripcionRow = {
+  parejaId: number;
+  jugador1: string;
+  jugador2: string;
+  suplente: boolean;
+  restriccion: string | null;
+  createdAt: string;
+  dadaDeBaja: boolean;
+  /** Si tiene algun partido con resultado: en ese caso no se puede dar de baja. */
+  tieneResultados: boolean;
+};
+
+export type CancelTorneoPairResult = {
+  success: boolean;
+  message?: string;
+  error?: string;
+  /** true si al liberarse el lugar subio una pareja de la lista de suplentes. */
+  promovioSuplente?: boolean;
 };
 
 export type TorneoEditRegistrationDataResult =
@@ -292,6 +314,9 @@ async function getTorneoBaseById(torneoId: number): Promise<TorneoBase | null> {
       categoriaN: true,
       capacidad: true,
       status: true,
+      publicado: true,
+      zonaCerrada: true,
+      zonaGenerada: true,
       evento: {
         select: {
           id: true,
@@ -348,6 +373,7 @@ function buildSummary(
     complejoProvincia: torneo.evento.complejo.provincia,
     inscriptosCount: counts.inscriptosCount,
     suplentesCount: counts.suplentesCount,
+    inscripcionesAbiertas: inscripcionesAbiertas(torneo),
   };
 }
 
@@ -407,8 +433,27 @@ async function getRegistrationBaseContext(
       platformRole: true,
       isActive: true,
       deletedAt: true,
+      emailVerified: true,
     },
   });
+
+  if (user && !user.deletedAt && user.isActive && !user.emailVerified) {
+    // Los avisos de partidos y cambios de horario salen por mail: antes de
+    // anotarse hay que saber que la direccion es real.
+    return {
+      status: "NOT_ALLOWED",
+      torneo: torneoSummary,
+      currentUser: {
+        id: session.userId,
+        name: session.name,
+        lastname: session.lastname,
+        genero: normalizeGenero(session.genero),
+        categoria: parseCategoriaNumber(session.categoria),
+      },
+      reason:
+        "Confirma tu email antes de inscribirte. Revisa tu correo o pedi un link nuevo en /confirmar-email",
+    };
+  }
 
   if (
     !user ||
@@ -660,6 +705,55 @@ export async function getPublicTorneoRegistrationData(
   };
 }
 
+/**
+ * Revive una inscripcion dada de baja, si existe.
+ *
+ * Hace falta porque el unique de Pareja es (torneoId, player1Id, player2Id) y
+ * NO incluye deletedAt: la fila soft-deleted sigue ocupando la clave, asi que
+ * crear una nueva para la misma pareja explota contra la base. El chequeo de
+ * duplicados de mas arriba no lo cubre porque filtra por deletedAt: null.
+ *
+ * Devuelve true si revivio una fila; false si hay que crearla.
+ */
+async function revivirInscripcionPrevia(
+  tx: Prisma.TransactionClient,
+  params: {
+    torneoId: number;
+    player1Id: number;
+    player2Id: number;
+    suplente: boolean;
+    restriccion?: string | null;
+  },
+) {
+  const previa = await tx.pareja.findFirst({
+    where: {
+      torneoId: params.torneoId,
+      deletedAt: { not: null },
+      OR: [
+        { player1Id: params.player1Id, player2Id: params.player2Id },
+        { player1Id: params.player2Id, player2Id: params.player1Id },
+      ],
+    },
+    select: { id: true },
+  });
+
+  if (!previa) return false;
+
+  await tx.pareja.update({
+    where: { id: previa.id },
+    data: {
+      deletedAt: null,
+      suplente: params.suplente,
+      asignado: !params.suplente,
+      ...(params.restriccion !== undefined
+        ? { restriccion: params.restriccion }
+        : {}),
+    },
+  });
+
+  return true;
+}
+
 export async function registerPublicTorneoPair(
   input: RegisterTorneoPairInput,
 ): Promise<RegisterTorneoPairResult> {
@@ -723,6 +817,7 @@ export async function registerPublicTorneoPair(
             deletedAt: true,
             isActive: true,
             platformRole: true,
+            emailVerified: true,
           },
         }),
         tx.user.findUnique({
@@ -734,6 +829,7 @@ export async function registerPublicTorneoPair(
             deletedAt: true,
             isActive: true,
             platformRole: true,
+            emailVerified: true,
           },
         }),
       ]);
@@ -742,6 +838,7 @@ export async function registerPublicTorneoPair(
         !player1 ||
         player1.deletedAt ||
         !player1.isActive ||
+        !player1.emailVerified ||
         player1.platformRole !== "USER"
       ) {
         return {
@@ -900,16 +997,27 @@ export async function registerPublicTorneoPair(
 
       const shouldGoToWaitlist = mainCount >= torneo.capacidad;
 
-      await tx.pareja.create({
-        data: {
-          torneoId,
-          player1Id: player1.id,
-          player2Id: player2.id,
-          restriccion,
-          suplente: shouldGoToWaitlist,
-          asignado: !shouldGoToWaitlist,
-        },
+      const revivida = await revivirInscripcionPrevia(tx, {
+        torneoId,
+        player1Id: player1.id,
+        player2Id: player2.id,
+        suplente: shouldGoToWaitlist,
       });
+
+      if (!revivida) {
+        await tx.pareja.create({
+          data: {
+            torneoId,
+            player1Id: player1.id,
+            player2Id: player2.id,
+            // Sin restriccion: en la inscripcion publica el jugador no declara
+            // franjas horarias, eso solo lo carga el admin desde el panel
+            // (registerManagedTorneoPair).
+            suplente: shouldGoToWaitlist,
+            asignado: !shouldGoToWaitlist,
+          },
+        });
+      }
 
       return {
         success: true,
@@ -1159,14 +1267,27 @@ export async function registerManagedTorneoPair(
 
     const shouldGoToWaitlist = mainCount >= torneo.capacidad;
 
-    await prisma.pareja.create({
-      data: {
+    await prisma.$transaction(async (tx) => {
+      const revivida = await revivirInscripcionPrevia(tx, {
         torneoId,
         player1Id: player1.id,
         player2Id: player2.id,
         suplente: shouldGoToWaitlist,
-        asignado: !shouldGoToWaitlist,
-      },
+        restriccion,
+      });
+
+      if (!revivida) {
+        await tx.pareja.create({
+          data: {
+            torneoId,
+            player1Id: player1.id,
+            player2Id: player2.id,
+            restriccion,
+            suplente: shouldGoToWaitlist,
+            asignado: !shouldGoToWaitlist,
+          },
+        });
+      }
     });
 
     return {
@@ -1404,6 +1525,7 @@ export async function updatePublicTorneoPair(
             deletedAt: true,
             isActive: true,
             platformRole: true,
+            emailVerified: true,
           },
         }),
         tx.user.findUnique({
@@ -1415,6 +1537,7 @@ export async function updatePublicTorneoPair(
             deletedAt: true,
             isActive: true,
             platformRole: true,
+            emailVerified: true,
           },
         }),
       ]);
@@ -1423,6 +1546,7 @@ export async function updatePublicTorneoPair(
         !player1 ||
         player1.deletedAt ||
         !player1.isActive ||
+        !player1.emailVerified ||
         player1.platformRole !== "USER"
       ) {
         return {
@@ -1572,5 +1696,469 @@ export async function updatePublicTorneoPair(
   } catch (error) {
     console.error("updatePublicTorneoPair error:", error);
     return { success: false, error: "No se pudo actualizar la inscripcion" };
+  }
+}
+
+/**
+ * Baja de la propia inscripcion, hecha por el jugador.
+ *
+ * Solo se permite con las inscripciones abiertas: en cuanto se arman las zonas
+ * la pareja ya esta en el cuadro y en los partidos, y sacarla dejaria un hueco.
+ * Para esos casos la baja la tiene que hacer el admin.
+ *
+ * La inscripcion es de a dos, asi que la baja se lleva a la pareja entera y la
+ * puede hacer cualquiera de los dos. Al liberarse un lugar de titular sube la
+ * pareja suplente mas antigua, en la misma transaccion.
+ */
+export async function cancelPublicTorneoPair(
+  torneoId: number,
+  parejaId: number,
+): Promise<CancelTorneoPairResult> {
+  const session = await getSession();
+  if (!session) {
+    return {
+      success: false,
+      error: "Debes iniciar sesion para darte de baja",
+    };
+  }
+
+  const torneoIdNum = Number(torneoId);
+  const parejaIdNum = Number(parejaId);
+
+  if (!Number.isInteger(torneoIdNum) || torneoIdNum <= 0) {
+    return { success: false, error: "Torneo invalido" };
+  }
+
+  if (!Number.isInteger(parejaIdNum) || parejaIdNum <= 0) {
+    return { success: false, error: "Inscripcion invalida" };
+  }
+
+  try {
+    const resultado = await prisma.$transaction(async (tx) => {
+      const torneo = await tx.torneo.findFirst({
+        where: { id: torneoIdNum, deletedAt: null },
+        select: {
+          id: true,
+          nombre: true,
+          status: true,
+          publicado: true,
+          zonaCerrada: true,
+          zonaGenerada: true,
+        },
+      });
+
+      if (!torneo) {
+        return { success: false as const, error: "Torneo no encontrado" };
+      }
+
+      if (!inscripcionesAbiertas(torneo)) {
+        return {
+          success: false as const,
+          error:
+            torneo.zonaGenerada || torneo.zonaCerrada
+              ? "Las zonas del torneo ya estan armadas. Habla con el complejo para darte de baja."
+              : "Las inscripciones de este torneo ya estan cerradas. Habla con el complejo para darte de baja.",
+        };
+      }
+
+      const pareja = await tx.pareja.findFirst({
+        where: { id: parejaIdNum, torneoId: torneoIdNum, deletedAt: null },
+        select: {
+          id: true,
+          player1Id: true,
+          player2Id: true,
+          suplente: true,
+        },
+      });
+
+      if (!pareja) {
+        return { success: false as const, error: "Inscripcion no encontrada" };
+      }
+
+      if (
+        pareja.player1Id !== session.userId &&
+        pareja.player2Id !== session.userId
+      ) {
+        return {
+          success: false as const,
+          error: "No tenes permisos para dar de baja esta inscripcion",
+        };
+      }
+
+      await tx.pareja.update({
+        where: { id: pareja.id },
+        data: { deletedAt: new Date(), asignado: false },
+      });
+
+      // Si se libero un lugar de titular, sube el suplente mas antiguo.
+      let promovida: { id: number; player1Id: number; player2Id: number } | null =
+        null;
+
+      if (!pareja.suplente) {
+        promovida = await tx.pareja.findFirst({
+          where: { torneoId: torneoIdNum, deletedAt: null, suplente: true },
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+          select: { id: true, player1Id: true, player2Id: true },
+        });
+
+        if (promovida) {
+          await tx.pareja.update({
+            where: { id: promovida.id },
+            data: { suplente: false, asignado: true },
+          });
+        }
+      }
+
+      const companeroId =
+        pareja.player1Id === session.userId
+          ? pareja.player2Id
+          : pareja.player1Id;
+
+      return {
+        success: true as const,
+        companeroId,
+        promovioSuplente: Boolean(promovida),
+      };
+    });
+
+    if (!resultado.success) {
+      return resultado;
+    }
+
+    // Fuera de la transaccion: un fallo del push no puede voltear la baja.
+    await notifyInscripcionCancelada(
+      torneoIdNum,
+      resultado.companeroId,
+      `${session.name} ${session.lastname}`.trim(),
+    );
+
+    return {
+      success: true,
+      message: resultado.promovioSuplente
+        ? "Te diste de baja. El lugar lo tomo la primera pareja de la lista de suplentes."
+        : "Te diste de baja del torneo",
+      promovioSuplente: resultado.promovioSuplente,
+    };
+  } catch (error) {
+    console.error("cancelPublicTorneoPair error:", error);
+    return { success: false, error: "No se pudo dar de baja la inscripcion" };
+  }
+}
+
+/** Nombre visible de un jugador, con fallback para datos incompletos. */
+function nombreJugador(
+  user: { name: string; lastname: string } | null | undefined,
+) {
+  if (!user) return "Jugador";
+  return `${user.name} ${user.lastname}`.trim() || "Jugador";
+}
+
+/**
+ * Inscripciones de un torneo para el panel. Incluye las dadas de baja, que el
+ * admin puede reactivar, y marca cuales tienen resultados cargados: esas no se
+ * pueden dar de baja.
+ */
+export async function listManagedTorneoInscripciones(
+  torneoId: number,
+): Promise<AdminInscripcionRow[]> {
+  const torneoIdNum = Number(torneoId);
+  if (!Number.isInteger(torneoIdNum) || torneoIdNum <= 0) return [];
+
+  const torneo = await prisma.torneo.findFirst({
+    where: { id: torneoIdNum, deletedAt: null },
+    select: { evento: { select: { complejoId: true } } },
+  });
+
+  if (!torneo) return [];
+
+  await ensureComplejoManagerAccess(torneo.evento.complejoId);
+
+  const parejas = await prisma.pareja.findMany({
+    where: { torneoId: torneoIdNum },
+    orderBy: [{ suplente: "asc" }, { createdAt: "asc" }, { id: "asc" }],
+    select: {
+      id: true,
+      suplente: true,
+      restriccion: true,
+      createdAt: true,
+      deletedAt: true,
+      jugador1: { select: { name: true, lastname: true } },
+      jugador2: { select: { name: true, lastname: true } },
+    },
+  });
+
+  if (parejas.length === 0) return [];
+
+  // Una sola query para saber cuales tienen resultados, en vez de una por fila.
+  const conResultado = await prisma.partido.findMany({
+    where: {
+      torneoId: torneoIdNum,
+      deletedAt: null,
+      OR: [
+        { ganadorId: { not: null } },
+        { status: { in: ["FINISHED", "WALKOVER"] } },
+      ],
+    },
+    select: { pareja1Id: true, pareja2Id: true },
+  });
+
+  const idsConResultado = new Set(
+    conResultado.flatMap((partido) =>
+      [partido.pareja1Id, partido.pareja2Id].filter(
+        (id): id is number => id !== null,
+      ),
+    ),
+  );
+
+  return parejas.map((pareja) => ({
+    parejaId: pareja.id,
+    jugador1: nombreJugador(pareja.jugador1),
+    jugador2: nombreJugador(pareja.jugador2),
+    suplente: pareja.suplente,
+    restriccion: pareja.restriccion,
+    createdAt: pareja.createdAt.toISOString(),
+    dadaDeBaja: pareja.deletedAt !== null,
+    tieneResultados: idsConResultado.has(pareja.id),
+  }));
+}
+
+/**
+ * Baja de una inscripcion hecha por el admin.
+ *
+ * A diferencia de la del jugador, no exige que las inscripciones esten
+ * abiertas: el caso que importa es justamente el torneo ya armado. Lo que si se
+ * bloquea es dar de baja a una pareja que ya jugo: si tiene algun partido con
+ * resultado, se rechaza para no romper el historial ni el ranking.
+ *
+ * Cuando se permite, ademas de la baja se limpia lo que quedaria colgado: se la
+ * saca de su zona y se dan de baja sus partidos pendientes. Con soft delete
+ * nada de eso cae solo, y dejarlo apuntando a una pareja de baja rompe la zona
+ * y la grilla.
+ */
+export async function cancelManagedTorneoPair(
+  torneoId: number,
+  parejaId: number,
+): Promise<CancelTorneoPairResult> {
+  const torneoIdNum = Number(torneoId);
+  const parejaIdNum = Number(parejaId);
+
+  if (!Number.isInteger(torneoIdNum) || torneoIdNum <= 0) {
+    return { success: false, error: "Torneo invalido" };
+  }
+
+  if (!Number.isInteger(parejaIdNum) || parejaIdNum <= 0) {
+    return { success: false, error: "Inscripcion invalida" };
+  }
+
+  const torneo = await prisma.torneo.findFirst({
+    where: { id: torneoIdNum, deletedAt: null },
+    select: { id: true, evento: { select: { complejoId: true } } },
+  });
+
+  if (!torneo) {
+    return { success: false, error: "Torneo no encontrado" };
+  }
+
+  await ensureComplejoManagerAccess(torneo.evento.complejoId);
+
+  try {
+    const resultado = await prisma.$transaction(async (tx) => {
+      const pareja = await tx.pareja.findFirst({
+        where: { id: parejaIdNum, torneoId: torneoIdNum, deletedAt: null },
+        select: {
+          id: true,
+          suplente: true,
+          player1Id: true,
+          player2Id: true,
+        },
+      });
+
+      if (!pareja) {
+        return { success: false as const, error: "Inscripcion no encontrada" };
+      }
+
+      const conResultado = await tx.partido.count({
+        where: {
+          torneoId: torneoIdNum,
+          deletedAt: null,
+          OR: [
+            { pareja1Id: pareja.id },
+            { pareja2Id: pareja.id },
+            { ganadorId: pareja.id },
+            { perdedorId: pareja.id },
+          ],
+          AND: [
+            {
+              OR: [
+                { ganadorId: { not: null } },
+                { status: { in: ["FINISHED", "WALKOVER"] } },
+              ],
+            },
+          ],
+        },
+      });
+
+      if (conResultado > 0) {
+        return {
+          success: false as const,
+          error:
+            "La pareja ya tiene partidos con resultado cargado. Borra esos resultados antes de darla de baja.",
+        };
+      }
+
+      await tx.pareja.update({
+        where: { id: pareja.id },
+        data: { deletedAt: new Date(), asignado: false },
+      });
+
+      // Sacarla de la zona: GrupoPareja no cae solo con el soft delete.
+      const { count: quitadaDeZona } = await tx.grupoPareja.deleteMany({
+        where: { parejaId: pareja.id },
+      });
+
+      // Sus partidos pendientes ya no se pueden jugar.
+      const { count: partidosDadosDeBaja } = await tx.partido.updateMany({
+        where: {
+          torneoId: torneoIdNum,
+          deletedAt: null,
+          OR: [{ pareja1Id: pareja.id }, { pareja2Id: pareja.id }],
+        },
+        data: { deletedAt: new Date(), status: "CANCELLED" },
+      });
+
+      let promovioSuplente = false;
+      if (!pareja.suplente) {
+        const promovida = await tx.pareja.findFirst({
+          where: { torneoId: torneoIdNum, deletedAt: null, suplente: true },
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+          select: { id: true },
+        });
+
+        if (promovida) {
+          await tx.pareja.update({
+            where: { id: promovida.id },
+            data: { suplente: false, asignado: true },
+          });
+          promovioSuplente = true;
+        }
+      }
+
+      return {
+        success: true as const,
+        jugadores: [pareja.player1Id, pareja.player2Id],
+        promovioSuplente,
+        quitadaDeZona: quitadaDeZona > 0,
+        partidosDadosDeBaja,
+      };
+    });
+
+    if (!resultado.success) {
+      return resultado;
+    }
+
+    // Fuera de la transaccion: que falle el push no puede voltear la baja.
+    for (const jugadorId of resultado.jugadores) {
+      await notifyInscripcionCancelada(torneoIdNum, jugadorId, null);
+    }
+
+    const detalles: string[] = [];
+    if (resultado.promovioSuplente) {
+      detalles.push("subio la primera pareja de la lista de suplentes");
+    }
+    if (resultado.quitadaDeZona) {
+      detalles.push("se la quito de su zona");
+    }
+    if (resultado.partidosDadosDeBaja > 0) {
+      detalles.push(
+        `se dieron de baja ${resultado.partidosDadosDeBaja} partido(s) pendientes`,
+      );
+    }
+
+    return {
+      success: true,
+      message:
+        detalles.length > 0
+          ? `Inscripcion dada de baja: ${detalles.join(", ")}. Conviene regenerar la grilla.`
+          : "Inscripcion dada de baja",
+      promovioSuplente: resultado.promovioSuplente,
+    };
+  } catch (error) {
+    console.error("cancelManagedTorneoPair error:", error);
+    return { success: false, error: "No se pudo dar de baja la inscripcion" };
+  }
+}
+
+/**
+ * Deshace una baja. Como el borrado es logico, la fila sigue estando: se le
+ * saca el deletedAt. Entra como titular si hay cupo, y si no como suplente.
+ *
+ * No se recrean ni la zona ni los partidos: para eso hay que volver a armar las
+ * zonas y regenerar la grilla.
+ */
+export async function reactivateManagedTorneoPair(
+  torneoId: number,
+  parejaId: number,
+): Promise<CancelTorneoPairResult> {
+  const torneoIdNum = Number(torneoId);
+  const parejaIdNum = Number(parejaId);
+
+  if (!Number.isInteger(torneoIdNum) || torneoIdNum <= 0) {
+    return { success: false, error: "Torneo invalido" };
+  }
+
+  if (!Number.isInteger(parejaIdNum) || parejaIdNum <= 0) {
+    return { success: false, error: "Inscripcion invalida" };
+  }
+
+  const torneo = await prisma.torneo.findFirst({
+    where: { id: torneoIdNum, deletedAt: null },
+    select: { id: true, capacidad: true, evento: { select: { complejoId: true } } },
+  });
+
+  if (!torneo) {
+    return { success: false, error: "Torneo no encontrado" };
+  }
+
+  await ensureComplejoManagerAccess(torneo.evento.complejoId);
+
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const pareja = await tx.pareja.findFirst({
+        where: { id: parejaIdNum, torneoId: torneoIdNum, deletedAt: { not: null } },
+        select: { id: true },
+      });
+
+      if (!pareja) {
+        return {
+          success: false as const,
+          error: "No hay una inscripcion dada de baja con ese id",
+        };
+      }
+
+      const titulares = await tx.pareja.count({
+        where: { torneoId: torneoIdNum, deletedAt: null, suplente: false },
+      });
+
+      const vaASuplentes = titulares >= torneo.capacidad;
+
+      await tx.pareja.update({
+        where: { id: pareja.id },
+        data: {
+          deletedAt: null,
+          suplente: vaASuplentes,
+          asignado: !vaASuplentes,
+        },
+      });
+
+      return {
+        success: true as const,
+        message: vaASuplentes
+          ? "Inscripcion reactivada en la lista de suplentes: el cupo esta completo"
+          : "Inscripcion reactivada",
+      };
+    });
+  } catch (error) {
+    console.error("reactivateManagedTorneoPair error:", error);
+    return { success: false, error: "No se pudo reactivar la inscripcion" };
   }
 }

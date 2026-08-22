@@ -18,6 +18,17 @@ import {
   type TorneoPayload,
 } from "@/actions/torneos";
 import { TorneoCrudFormSchema, type TorneoCrudFormData } from "@/types/forms";
+import { RANKING_POSICIONES } from "@/lib/ranking-puntajes";
+
+/** Puntajes por defecto como strings, que es lo que maneja el form. */
+function defaultPuntajesForm(): Record<string, string> {
+  return Object.fromEntries(
+    RANKING_POSICIONES.map((posicion) => [
+      posicion.nombre,
+      String(posicion.defaultValor),
+    ]),
+  );
+}
 
 export type TorneoFormProps = {
   complejoId: number;
@@ -82,6 +93,7 @@ export default function TorneoForm({
       zonaCerrada: false,
       inicio: "",
       fin: "",
+      puntajes: defaultPuntajesForm(),
       ...initialData,
     },
   });
@@ -109,6 +121,7 @@ export default function TorneoForm({
       zonaCerrada: initialData.zonaCerrada ?? false,
       inicio: initialData.inicio ?? "",
       fin: initialData.fin ?? "",
+      puntajes: initialData.puntajes ?? defaultPuntajesForm(),
     });
   }, [initialData, reset]);
 
@@ -140,6 +153,12 @@ export default function TorneoForm({
         zonaCerrada: data.zonaCerrada ?? false,
         inicio: data.inicio || null,
         fin: data.fin || null,
+        puntajes: Object.fromEntries(
+          RANKING_POSICIONES.map((posicion) => [
+            posicion.nombre,
+            Number(data.puntajes?.[posicion.nombre] ?? posicion.defaultValor),
+          ]),
+        ),
       };
 
       if (isEdit) {
@@ -180,15 +199,15 @@ export default function TorneoForm({
         />
 
         <div className="mb-3">
-          <label className="form-label padel-form-label">Comentario:</label>
+          <label className="padel-form-label">Comentario:</label>
           <textarea
-            className={`form-control padel-form-input ${errors.comentario ? "is-invalid" : ""}`}
+            className={`padel-form-input ${errors.comentario ? "is-invalid" : ""}`}
             rows={3}
             placeholder="Comentario (opcional)"
             {...register("comentario")}
           />
           {errors.comentario && (
-            <div className="invalid-feedback d-block padel-invalid-feedback">
+            <div className="padel-invalid-feedback block">
               {errors.comentario.message}
             </div>
           )}
@@ -282,6 +301,42 @@ export default function TorneoForm({
             error={errors.fin}
           />
         </div>
+
+        <fieldset className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4">
+          <legend className="px-2 text-sm font-semibold text-deep-black">
+            Puntajes de ranking
+          </legend>
+          <p className="mb-3 text-xs text-deep-black/70">
+            Puntos que suma cada jugador segun hasta donde llegue su pareja. Se
+            cargan al ranking cuando el torneo se marca como Finalizado.
+          </p>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {RANKING_POSICIONES.map((posicion) => (
+              <div key={posicion.nombre}>
+                <label
+                  className="mb-1.5 block text-xs font-semibold text-deep-black/70"
+                  htmlFor={`puntaje-${posicion.orden}`}
+                >
+                  {posicion.nombre}
+                </label>
+                <input
+                  id={`puntaje-${posicion.orden}`}
+                  type="number"
+                  min={0}
+                  step={1}
+                  className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                  {...register(`puntajes.${posicion.nombre}` as const)}
+                />
+                {errors.puntajes?.[posicion.nombre] ? (
+                  <p className="mt-1 text-xs text-energy-orange">
+                    {errors.puntajes[posicion.nombre]?.message}
+                  </p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </fieldset>
 
         <div className="grid gap-2 sm:grid-cols-2">
           <FormCheckbox

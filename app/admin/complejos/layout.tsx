@@ -1,16 +1,15 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { getSessionRole } from "@/lib/authz";
-import { hasRole } from "@/lib/roles";
+import { administraAlgunComplejo } from "@/lib/authz";
 
 export default async function AdminComplejosLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const role = await getSessionRole();
-
-  if (!hasRole(role, ["superadmin", "admin"])) {
+  // Alcanza con administrar algun complejo: cual, lo decide cada pantalla con
+  // requireComplejoRole. El superadmin entra siempre.
+  if (!(await administraAlgunComplejo())) {
     notFound();
   }
 

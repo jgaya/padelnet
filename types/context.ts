@@ -1,4 +1,3 @@
-import { UserRole } from "@/lib/roles";
 import type { ReactNode } from "react";
 
 export type SnackbarVariant = "success" | "error" | "warning" | "info";
@@ -23,13 +22,15 @@ export type GlobalLoadingContextType = {
   setIsLoading: (value: boolean) => void;
 };
 
+import type { PlatformRole } from "@/lib/roles";
+
 export type User = {
   id?: number;
   userId?: number;
   name: string;
   lastname: string;
   email: string;
-  type: UserRole;
+  platformRole: PlatformRole;
   categoria?: string;
   genero: string;
   telefono?: string;

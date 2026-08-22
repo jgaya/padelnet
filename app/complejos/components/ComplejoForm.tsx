@@ -130,8 +130,8 @@ export default function ComplejoForm({
           error={errors.direccion}
         />
 
-        <div className="row">
-          <div className="col-md-6">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
             <FormInput
               label="Provincia"
               placeholder="Provincia"
@@ -140,7 +140,7 @@ export default function ComplejoForm({
               required
             />
           </div>
-          <div className="col-md-6">
+          <div>
             <FormInput
               label="Ciudad"
               placeholder="Ciudad"

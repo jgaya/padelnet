@@ -16,7 +16,7 @@ export async function getCanchaAccessScope(): Promise<CanchaAccessScope> {
     throw new Error("No autorizado");
   }
 
-  if (session.type === "superadmin") {
+  if (session.platformRole === "SUPERADMIN") {
     return {
       userId: session.userId,
       isSuperadmin: true,
@@ -24,15 +24,13 @@ export async function getCanchaAccessScope(): Promise<CanchaAccessScope> {
     };
   }
 
-  if (session.type !== "admin") {
-    throw new Error("No autorizado");
-  }
-
+  // No se mira ningun rol global: el alcance sale de los complejos donde el
+  // usuario es ADMIN. Si no administra ninguno, no accede.
   const memberships = await prisma.complejoMembership.findMany({
     where: {
       userId: session.userId,
       isActive: true,
-      role: { in: ["OWNER", "ADMIN"] },
+      role: "ADMIN",
       complejo: {
         deletedAt: null,
         isActive: true,

@@ -2,7 +2,6 @@ import React, { ChangeEventHandler, useEffect, useState } from "react";
 import { setHours, setMinutes, format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { Button } from "react-bootstrap";
 import Modal from "@/components/Modal";
 import type { DatePickerProps } from "@/types/ui";
 
@@ -89,22 +88,22 @@ export default function DatePicker({
 
   return (
     <div className={className}>
-      {label !== "" && <label className="form-label">{label}</label>}
-      <div className="input-group">
+      {label !== "" && <label className="padel-form-label">{label}</label>}
+      <div className="flex items-stretch gap-2">
         <input
           type="text"
-          className={`form-control padel-form-input ${isInvalid ? "is-invalid" : ""}`}
+          className={`padel-form-input ${isInvalid ? "is-invalid" : ""}`}
           value={selected ? format(selected, "dd/MM/yyyy HH:mm") : ""}
           readOnly
           placeholder="Seleccione fecha y hora"
         />
-        <Button
+        <button
+          className="btn btn-outline-secondary"
           type="button"
-          className="btn btn-outline-secondary padel-date-trigger"
           onClick={() => setShowModal(true)}
         >
           <CalendarIcon />
-        </Button>
+        </button>
       </div>
       <Modal
         setShowModal={setShowModal}
@@ -114,10 +113,10 @@ export default function DatePicker({
         body={
           <>
             <div className="mb-3">
-              <label className="form-label">Hora</label>
+              <label className="padel-form-label">Hora</label>
               <input
                 type="time"
-                className="form-control padel-form-input"
+                className="padel-form-input"
                 value={timeValue}
                 onChange={handleTimeChange}
               />
@@ -126,7 +125,7 @@ export default function DatePicker({
               mode="single"
               selected={selected}
               onSelect={handleDaySelect}
-              className="border rounded p-2 mx-auto center"
+              className="border rounded p-2 mx-auto"
               styles={{
                 caption: { color: "#666" },
                 head_cell: { color: "#666" },
@@ -142,13 +141,13 @@ export default function DatePicker({
           </>
         }
         footer={
-          <Button
-            type="button"
+          <button
             className="btn btn-primary"
+            type="button"
             onClick={handleSave}
           >
             Confirmar
-          </Button>
+          </button>
         }
       />
     </div>

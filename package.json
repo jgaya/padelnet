@@ -7,13 +7,19 @@
     "build": "next build",
     "start": "next start",
     "postbuild": "next-sitemap",
-    "lint": "eslint ./**/* --ext .js,.jsx,.ts,.tsx --fix",
+    "lint": "eslint . --fix",
     "format": "prettier --write .",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
     "prepare": "husky",
-    "prisma:check": "node scripts/check-prisma-maps.js"
+    "prisma:check": "tsx scripts/check-prisma-tablas.ts",
+    "check:llave": "tsx scripts/check-torneo-llave.ts",
+    "check:turnos": "tsx scripts/check-turnos.ts",
+    "check:resolucion": "tsx scripts/check-llave-resolucion.ts",
+    "check:css": "tsx scripts/check-css-muerto.ts",
+    "check:breadcrumbs": "tsx scripts/check-breadcrumbs.tsx",
+    "check:dashboard": "tsx scripts/check-dashboard.ts"
   },
   "prisma": {
     "seed": "node prisma/seed.mjs"
@@ -22,19 +28,23 @@
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.1",
     "@prisma/client": "^6.10.1",
+    "@tensorflow/tfjs": "^4.22.0",
     "bcryptjs": "^3.0.2",
+    "face-api.js": "^0.22.2",
+    "firebase": "^12.8.0",
+    "firebase-admin": "^13.6.0",
     "jose": "^6.0.12",
     "next": "16.1.6",
+    "node-cron": "^4.2.1",
     "react": "19.2.3",
     "react-bootstrap": "^2.10.10",
     "react-chartjs-2": "^5.3.1",
     "react-day-picker": "^9.8.1",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.61.1",
+    "recharts": "^3.10.1",
     "resend": "^6.6.0",
-    "zod": "^4.0.14",
-    "@tensorflow/tfjs": "^4.22.0",
-    "face-api.js": "^0.22.2"
+    "zod": "^4.0.14"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
@@ -53,6 +63,7 @@
     "prisma": "^6.10.1",
     "tailwindcss": "^4.2.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.12",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0"
   }

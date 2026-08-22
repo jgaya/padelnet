@@ -2,7 +2,9 @@
 
 import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
+import { assertSuperadmin } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
+import type { ComplejoRole, PlatformRole } from "@/lib/roles";
 import type { ListOpts } from "@/types/ui";
 
 export type UsuarioListItem = {
@@ -14,7 +16,7 @@ export type UsuarioListItem = {
   dni: string | null;
   genero: "M" | "F" | "X";
   categoria: string | null;
-  platformRole: "USER" | "SUPERADMIN" | "SUPPORT";
+  platformRole: PlatformRole;
   isActive: boolean;
 };
 
@@ -27,16 +29,18 @@ export type UsuarioPayload = {
   dni?: string | null;
   genero?: "M" | "F" | "X";
   categoria?: string | null;
-  platformRole?: "USER" | "SUPERADMIN" | "SUPPORT";
+  platformRole?: PlatformRole;
   complejoId?: number | null;
-  complejoRole?: "OWNER" | "ADMIN" | "DATAENTRY" | "FISCAL" | "STAFF" | null;
+  complejoRole?: ComplejoRole | null;
+  esPropietario?: boolean;
   isActive?: boolean;
   birthDate?: string | null;
 };
 
 export type UsuarioEditItem = UsuarioListItem & {
   complejoId: number | null;
-  complejoRole: "OWNER" | "ADMIN" | "DATAENTRY" | "FISCAL" | "STAFF" | null;
+  complejoRole: ComplejoRole | null;
+  esPropietario: boolean;
 };
 
 export type ComplejoOption = {
@@ -96,15 +100,14 @@ function mapPrismaError(error: unknown): never {
   throw error instanceof Error ? error : new Error("Operacion invalida");
 }
 
-async function resolveSupportAssignment(data: UsuarioPayload) {
-  const platformRole = data.platformRole ?? "USER";
-
-  if (platformRole !== "SUPPORT") {
-    return null;
-  }
-
+/**
+ * Asignacion del usuario a un complejo. Ya no depende del platformRole: ser
+ * staff de un club es tener una fila en ComplejoMembership, y es independiente
+ * de si en la plataforma es USER o SUPERADMIN.
+ */
+async function resolveAsignacionComplejo(data: UsuarioPayload) {
   if (!data.complejoId || !data.complejoRole) {
-    throw new Error("Para usuarios SUPPORT debe indicar complejo y rol");
+    return null;
   }
 
   const complejo = await prisma.complejo.findFirst({
@@ -119,10 +122,15 @@ async function resolveSupportAssignment(data: UsuarioPayload) {
   return {
     complejoId: complejo.id,
     complejoRole: data.complejoRole,
+    esPropietario: data.esPropietario ?? false,
   };
 }
 
 export async function listComplejosForUsuarios(): Promise<ComplejoOption[]> {
+  // Gestion de usuarios: solo superadmin. Sin esto la action queda expuesta como
+  // endpoint POST y se puede crear un superadmin desde afuera.
+  await assertSuperadmin();
+
   const complejos = await prisma.complejo.findMany({
     where: { deletedAt: null, isActive: true },
     orderBy: { name: "asc" },
@@ -133,6 +141,10 @@ export async function listComplejosForUsuarios(): Promise<ComplejoOption[]> {
 }
 
 export async function listUsuarios(opts: ListOpts = {}) {
+  // Gestion de usuarios: solo superadmin. Sin esto la action queda expuesta como
+  // endpoint POST y se puede crear un superadmin desde afuera.
+  await assertSuperadmin();
+
   const page = Math.max(1, opts.page ?? 1);
   const pageSize = Math.max(1, opts.pageSize ?? 10);
   const skip = (page - 1) * pageSize;
@@ -190,6 +202,10 @@ export async function listUsuarios(opts: ListOpts = {}) {
 }
 
 export async function createUsuario(data: UsuarioPayload) {
+  // Gestion de usuarios: solo superadmin. Sin esto la action queda expuesta como
+  // endpoint POST y se puede crear un superadmin desde afuera.
+  await assertSuperadmin();
+
   const name = data.name?.trim();
   const lastname = data.lastname?.trim();
   const email = data.email?.trim().toLowerCase();
@@ -201,7 +217,7 @@ export async function createUsuario(data: UsuarioPayload) {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const supportAssignment = await resolveSupportAssignment({
+  const asignacion = await resolveAsignacionComplejo({
     ...data,
     platformRole,
   });
@@ -225,12 +241,13 @@ export async function createUsuario(data: UsuarioPayload) {
         select: { id: true },
       });
 
-      if (supportAssignment) {
+      if (asignacion) {
         await tx.complejoMembership.create({
           data: {
             userId: user.id,
-            complejoId: supportAssignment.complejoId,
-            role: supportAssignment.complejoRole,
+            complejoId: asignacion.complejoId,
+            role: asignacion.complejoRole,
+            esPropietario: asignacion.esPropietario,
             isActive: true,
           },
         });
@@ -247,6 +264,10 @@ export async function assignUsuarioAdminToComplejo(
   userId: number,
   complejoId: number,
 ) {
+  // Gestion de usuarios: solo superadmin. Sin esto la action queda expuesta como
+  // endpoint POST y se puede crear un superadmin desde afuera.
+  await assertSuperadmin();
+
   const user = await prisma.user.findFirst({
     where: { id: userId, deletedAt: null },
     select: { id: true },
@@ -288,6 +309,10 @@ export async function assignUsuarioAdminToComplejo(
 }
 
 export async function updateUsuario(id: number, data: UsuarioPayload) {
+  // Gestion de usuarios: solo superadmin. Sin esto la action queda expuesta como
+  // endpoint POST y se puede crear un superadmin desde afuera.
+  await assertSuperadmin();
+
   const name = data.name?.trim();
   const lastname = data.lastname?.trim();
   const email = data.email?.trim().toLowerCase();
@@ -297,7 +322,7 @@ export async function updateUsuario(id: number, data: UsuarioPayload) {
     throw new Error("Faltan campos obligatorios");
   }
 
-  const supportAssignment = await resolveSupportAssignment({
+  const asignacion = await resolveAsignacionComplejo({
     ...data,
     platformRole,
   });
@@ -327,7 +352,7 @@ export async function updateUsuario(id: number, data: UsuarioPayload) {
         select: { id: true },
       });
 
-      if (supportAssignment) {
+      if (asignacion) {
         await tx.complejoMembership.updateMany({
           where: { userId: id, isActive: true },
           data: { isActive: false },
@@ -337,17 +362,18 @@ export async function updateUsuario(id: number, data: UsuarioPayload) {
           where: {
             complejoId_userId: {
               userId: id,
-              complejoId: supportAssignment.complejoId,
+              complejoId: asignacion.complejoId,
             },
           },
           update: {
-            role: supportAssignment.complejoRole,
+            role: asignacion.complejoRole,
             isActive: true,
           },
           create: {
             userId: id,
-            complejoId: supportAssignment.complejoId,
-            role: supportAssignment.complejoRole,
+            complejoId: asignacion.complejoId,
+            role: asignacion.complejoRole,
+            esPropietario: asignacion.esPropietario,
             isActive: true,
           },
         });
@@ -361,6 +387,10 @@ export async function updateUsuario(id: number, data: UsuarioPayload) {
 }
 
 export async function deleteUsuario(id: number) {
+  // Gestion de usuarios: solo superadmin. Sin esto la action queda expuesta como
+  // endpoint POST y se puede crear un superadmin desde afuera.
+  await assertSuperadmin();
+
   const user = await prisma.user.findFirst({
     where: { id, deletedAt: null },
     select: { id: true },
@@ -382,6 +412,10 @@ export async function deleteUsuario(id: number) {
 }
 
 export async function getUsuarioById(id: number) {
+  // Gestion de usuarios: solo superadmin. Sin esto la action queda expuesta como
+  // endpoint POST y se puede crear un superadmin desde afuera.
+  await assertSuperadmin();
+
   const user = await prisma.user.findFirst({
     where: { id, deletedAt: null },
     select: {
@@ -402,6 +436,7 @@ export async function getUsuarioById(id: number) {
         select: {
           complejoId: true,
           role: true,
+          esPropietario: true,
         },
       },
     },
@@ -426,5 +461,6 @@ export async function getUsuarioById(id: number) {
     isActive: user.isActive,
     complejoId: membership?.complejoId ?? null,
     complejoRole: membership?.role ?? null,
+    esPropietario: membership?.esPropietario ?? false,
   } as UsuarioEditItem;
 }

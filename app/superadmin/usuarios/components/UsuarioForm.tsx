@@ -33,17 +33,20 @@ const generoOptions = [
 ];
 
 const roleOptions = [
-  { value: "USER", label: "Usuario" },
-  { value: "SUPPORT", label: "Support" },
+  { value: "USER", label: "Jugador" },
   { value: "SUPERADMIN", label: "Superadmin" },
 ];
 
+/**
+ * Roles dentro de un complejo. Solo ADMIN habilita pantallas hoy; el resto esta
+ * declarado para el futuro y se marca como tal para no prometer lo que no hay.
+ */
 const complejoRoleOptions = [
-  { value: "OWNER", label: "Owner" },
-  { value: "ADMIN", label: "Admin" },
-  { value: "DATAENTRY", label: "Data entry" },
-  { value: "FISCAL", label: "Fiscal" },
-  { value: "STAFF", label: "Staff" },
+  { value: "", label: "Sin rol en ningun complejo" },
+  { value: "ADMIN", label: "Administrador" },
+  { value: "DATAENTRY", label: "Data entry (aun sin funciones)" },
+  { value: "FISCAL", label: "Fiscal (aun sin funciones)" },
+  { value: "STAFF", label: "Staff (aun sin funciones)" },
 ];
 
 export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
@@ -80,8 +83,11 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
     },
   });
 
-  const selectedPlatformRole = watch("platformRole");
-  const isSupportRole = selectedPlatformRole === "SUPPORT";
+  // Ser staff de un club es independiente del rol de plataforma: un jugador
+  // puede administrar un complejo, y un superadmin puede no administrar ninguno
+  // en particular. Lo que manda es el selector de rol en complejo.
+  const selectedComplejoRole = watch("complejoRole");
+  const tieneRolEnComplejo = Boolean(selectedComplejoRole);
 
   useEffect(() => {
     if (initialData) {
@@ -97,6 +103,8 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
         platformRole: initialData.platformRole ?? "USER",
         complejoId: initialData.complejoId ?? "",
         complejoRole: initialData.complejoRole,
+        // Sin esto, editar a un titular le borraba la marca al guardar.
+        esPropietario: initialData.esPropietario ?? false,
         isActive: initialData.isActive ?? true,
         birthDate: initialData.birthDate ?? "",
       });
@@ -119,13 +127,13 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
   }, [showSnackbar]);
 
   useEffect(() => {
-    if (isSupportRole) {
+    if (tieneRolEnComplejo) {
       return;
     }
 
     setValue("complejoId", "");
-    setValue("complejoRole", undefined);
-  }, [isSupportRole, setValue]);
+    setValue("esPropietario", false);
+  }, [tieneRolEnComplejo, setValue]);
 
   const onSubmit = async (data: UsuarioFormData) => {
     setIsLoading(true);
@@ -136,7 +144,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
       }
 
       const payload: UsuarioPayload = {
-        ...(data.platformRole === "SUPPORT" && data.complejoId
+        ...(data.complejoRole && data.complejoId
           ? { complejoId: Number(data.complejoId) }
           : { complejoId: null }),
         name: data.name,
@@ -148,8 +156,9 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
         genero: data.genero,
         categoria: data.categoria || null,
         platformRole: data.platformRole,
-        complejoRole:
-          data.platformRole === "SUPPORT" ? (data.complejoRole ?? null) : null,
+        complejoRole: data.complejoRole || null,
+        esPropietario:
+          Boolean(data.complejoRole) && Boolean(data.esPropietario),
         isActive: data.isActive ?? true,
         birthDate: data.birthDate || null,
       };
@@ -262,35 +271,54 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
           />
         </div>
 
-        {isSupportRole && (
+        <fieldset className="mb-3 rounded-xl border border-slate-200 p-3">
+          <legend className="px-1 text-sm font-semibold text-slate-700">
+            Acceso a un complejo
+          </legend>
+          <p className="mb-3 text-sm text-slate-600">
+            Opcional, e independiente del rol de plataforma: un jugador puede
+            administrar un complejo y seguir siendo jugador en los demas.
+          </p>
+
           <div className="grid gap-4 sm:grid-cols-2">
             <FormSelect
-              label="Complejo"
-              register={register("complejoId")}
-              error={errors.complejoId}
-              options={complejos.map((complejo) => ({
-                value: complejo.id,
-                label: `${complejo.name} (#${complejo.id})`,
-              }))}
-              required
-              disabled={isLoadingComplejos || complejos.length === 0}
-            />
-            <FormSelect
-              label="Rol en complejo"
+              label="Rol en el complejo"
               register={register("complejoRole")}
               error={errors.complejoRole}
               options={complejoRoleOptions}
-              required
             />
+            {tieneRolEnComplejo ? (
+              <FormSelect
+                label="Complejo"
+                register={register("complejoId")}
+                error={errors.complejoId}
+                options={complejos.map((complejo) => ({
+                  value: complejo.id,
+                  label: `${complejo.name} (#${complejo.id})`,
+                }))}
+                required
+                disabled={isLoadingComplejos || complejos.length === 0}
+              />
+            ) : null}
           </div>
-        )}
 
-        {isSupportRole && !isLoadingComplejos && complejos.length === 0 && (
-          <p className="mb-3 text-sm text-amber-700">
-            No hay complejos activos para asociar. Cree o active un complejo
-            primero.
-          </p>
-        )}
+          {tieneRolEnComplejo ? (
+            <FormCheckbox
+              label="Es el titular del complejo"
+              register={register("esPropietario")}
+              error={errors.esPropietario}
+            />
+          ) : null}
+
+          {tieneRolEnComplejo &&
+          !isLoadingComplejos &&
+          complejos.length === 0 ? (
+            <p className="mb-0 text-sm text-amber-700">
+              No hay complejos activos para asociar. Cree o active un complejo
+              primero.
+            </p>
+          ) : null}
+        </fieldset>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <FormInput

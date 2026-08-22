@@ -3,11 +3,16 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PencilSquareIcon, Squares2X2Icon, UserPlusIcon } from "@heroicons/react/24/solid";
+import {
+  PencilSquareIcon,
+  Squares2X2Icon,
+  UserPlusIcon,
+} from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
+import NuevoEnComplejoModal from "@/app/admin/components/NuevoEnComplejoModal";
 import {
   deleteTorneo,
   listTorneosForAdmin,
@@ -82,7 +87,8 @@ export default function AdminTorneosPage() {
 
   function handleSort(field: string) {
     const safeField = ALLOWED_SORT_FIELDS.has(field) ? field : "id";
-    const newOrderDir = safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
+    const newOrderDir =
+      safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
 
     router.push(
       updateQuery({
@@ -132,12 +138,17 @@ export default function AdminTorneosPage() {
 
   return (
     <div className="container padel-complejos-list">
-      <TitleBar title="Torneos accesibles" backURL="/admin/complejos" total={total} />
+      <TitleBar
+        title="Torneos accesibles"
+        backURL="/admin/complejos"
+        total={total}
+        buttons={<NuevoEnComplejoModal modo="TORNEO" etiqueta="Nuevo torneo" />}
+      />
 
       <SearchBar placeholder="Buscar torneo, evento o complejo..." />
 
-      <div className="card padel-data-card">
-        <div className="card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="p-4">
           <TableWithPagination
             items={torneos}
             page={page}
@@ -152,21 +163,41 @@ export default function AdminTorneosPage() {
             getRowKey={(torneo) => torneo.id}
             renderHeader={() => (
               <tr>
-                <th onClick={() => handleSort("id")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("id")}
+                  style={{ cursor: "pointer" }}
+                >
                   ID
                   <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
-                <th onClick={() => handleSort("nombre")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("nombre")}
+                  style={{ cursor: "pointer" }}
+                >
                   Nombre
-                  <SortArrow field="nombre" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="nombre"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th>Evento</th>
                 <th>Complejo</th>
-                <th onClick={() => handleSort("sexo")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("sexo")}
+                  style={{ cursor: "pointer" }}
+                >
                   Sexo
-                  <SortArrow field="sexo" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="sexo"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("categoriaRegla")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("categoriaRegla")}
+                  style={{ cursor: "pointer" }}
+                >
                   Categoria
                   <SortArrow
                     field="categoriaRegla"
@@ -174,13 +205,27 @@ export default function AdminTorneosPage() {
                     orderDir={orderDir}
                   />
                 </th>
-                <th onClick={() => handleSort("capacidad")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("capacidad")}
+                  style={{ cursor: "pointer" }}
+                >
                   Capacidad
-                  <SortArrow field="capacidad" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="capacidad"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("status")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("status")}
+                  style={{ cursor: "pointer" }}
+                >
                   Estado
-                  <SortArrow field="status" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="status"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th>Publicado</th>
                 <th>Zona cerrada</th>
@@ -199,16 +244,16 @@ export default function AdminTorneosPage() {
                 <td>{torneo.status}</td>
                 <td>{torneo.publicado ? "Si" : "No"}</td>
                 <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
-                <td className="d-flex gap-2 padel-table-actions">
+                <td className="flex gap-2 padel-table-actions">
                   <Link
                     href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>
                   <Link
                     href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/inscripciones`}
-                    className="btn btn-success btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <UserPlusIcon className="h-4 w-4" />
                   </Link>
@@ -220,7 +265,11 @@ export default function AdminTorneosPage() {
                   </Link>
                   <ConfirmationModal
                     onConfirm={() =>
-                      handleDelete(torneo.id, torneo.complejoId, torneo.eventoId)
+                      handleDelete(
+                        torneo.id,
+                        torneo.complejoId,
+                        torneo.eventoId,
+                      )
                     }
                     title={`Borrar Torneo ${torneo.id}`}
                     message="Estas seguro de que quieres eliminar este torneo?"

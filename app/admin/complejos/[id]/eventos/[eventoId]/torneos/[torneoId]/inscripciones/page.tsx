@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { registerManagedTorneoPair } from "@/actions/torneos-inscripcion";
+import {
+  cancelManagedTorneoPair,
+  listManagedTorneoInscripciones,
+  reactivateManagedTorneoPair,
+  registerManagedTorneoPair,
+} from "@/actions/torneos-inscripcion";
 import { prisma } from "@/lib/prisma";
+
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { migasGestion } from "@/lib/breadcrumbs-gestion";
 
 function categoriaRuleLabel(
   regla: "LIBRE" | "MAYOR_IGUAL" | "MENOR_IGUAL" | "IGUAL" | "SUMA",
@@ -86,39 +94,44 @@ export default async function AdminTorneoInscripcionesPage(props: {
     notFound();
   }
 
-  const [inscriptosCount, suplentesCount, candidates] = await Promise.all([
-    prisma.pareja.count({
-      where: { torneoId: torneoIdNum, deletedAt: null, suplente: false },
-    }),
-    prisma.pareja.count({
-      where: { torneoId: torneoIdNum, deletedAt: null, suplente: true },
-    }),
-    prisma.user.findMany({
-      where: {
-        deletedAt: null,
-        isActive: true,
-        platformRole: "USER",
-        ...(search
-          ? {
-              OR: [
-                { name: { contains: search } },
-                { lastname: { contains: search } },
-                { email: { contains: search } },
-              ],
-            }
-          : {}),
-      },
-      select: {
-        id: true,
-        name: true,
-        lastname: true,
-        genero: true,
-        categoria: true,
-      },
-      orderBy: [{ name: "asc" }, { lastname: "asc" }],
-      take: search ? 80 : 200,
-    }),
-  ]);
+  const [inscriptosCount, suplentesCount, candidates, inscripciones] =
+    await Promise.all([
+      prisma.pareja.count({
+        where: { torneoId: torneoIdNum, deletedAt: null, suplente: false },
+      }),
+      prisma.pareja.count({
+        where: { torneoId: torneoIdNum, deletedAt: null, suplente: true },
+      }),
+      prisma.user.findMany({
+        where: {
+          deletedAt: null,
+          isActive: true,
+          platformRole: "USER",
+          ...(search
+            ? {
+                OR: [
+                  { name: { contains: search } },
+                  { lastname: { contains: search } },
+                  { email: { contains: search } },
+                ],
+              }
+            : {}),
+        },
+        select: {
+          id: true,
+          name: true,
+          lastname: true,
+          genero: true,
+          categoria: true,
+        },
+        orderBy: [{ name: "asc" }, { lastname: "asc" }],
+        take: search ? 80 : 200,
+      }),
+      listManagedTorneoInscripciones(torneoIdNum),
+    ]);
+
+  const activas = inscripciones.filter((row) => !row.dadaDeBaja);
+  const bajas = inscripciones.filter((row) => row.dadaDeBaja);
 
   const flashError = query.error?.trim() || "";
   const flashOk = query.ok?.trim() || "";
@@ -152,20 +165,81 @@ export default async function AdminTorneoInscripcionesPage(props: {
     });
 
     if (!result.success) {
-      nextParams.set("error", result.error || "No se pudo registrar la inscripcion");
+      nextParams.set(
+        "error",
+        result.error || "No se pudo registrar la inscripcion",
+      );
       redirect(
         `/admin/complejos/${complejoId}/eventos/${eventoIdNum}/torneos/${rawTorneoId}/inscripciones?${nextParams.toString()}`,
       );
     }
 
-    nextParams.set("ok", result.message || "Inscripcion registrada correctamente");
+    nextParams.set(
+      "ok",
+      result.message || "Inscripcion registrada correctamente",
+    );
     redirect(
       `/admin/complejos/${complejoId}/eventos/${eventoIdNum}/torneos/${rawTorneoId}/inscripciones?${nextParams.toString()}`,
     );
   }
 
+  const volverAlListado = (mensaje: { ok?: string; error?: string }) => {
+    const nextParams = new URLSearchParams();
+    if (search) nextParams.set("q", search);
+    if (mensaje.ok) nextParams.set("ok", mensaje.ok);
+    if (mensaje.error) nextParams.set("error", mensaje.error);
+
+    return `/admin/complejos/${complejoId}/eventos/${eventoIdNum}/torneos/${torneoIdNum}/inscripciones?${nextParams.toString()}`;
+  };
+
+  async function submitBaja(formData: FormData) {
+    "use server";
+
+    const rawParejaId = Number(formData.get("parejaId"));
+    if (!Number.isInteger(rawParejaId) || rawParejaId <= 0) {
+      redirect(volverAlListado({ error: "Inscripcion invalida" }));
+    }
+
+    const result = await cancelManagedTorneoPair(torneoIdNum, rawParejaId);
+
+    redirect(
+      volverAlListado(
+        result.success
+          ? { ok: result.message || "Inscripcion dada de baja" }
+          : { error: result.error || "No se pudo dar de baja la inscripcion" },
+      ),
+    );
+  }
+
+  async function submitReactivar(formData: FormData) {
+    "use server";
+
+    const rawParejaId = Number(formData.get("parejaId"));
+    if (!Number.isInteger(rawParejaId) || rawParejaId <= 0) {
+      redirect(volverAlListado({ error: "Inscripcion invalida" }));
+    }
+
+    const result = await reactivateManagedTorneoPair(torneoIdNum, rawParejaId);
+
+    redirect(
+      volverAlListado(
+        result.success
+          ? { ok: result.message || "Inscripcion reactivada" }
+          : { error: result.error || "No se pudo reactivar la inscripcion" },
+      ),
+    );
+  }
+
+  const migas = await migasGestion({
+    complejoId,
+    eventoId: eventoIdNum,
+    torneoId: torneoIdNum,
+    seccion: "Inscripciones",
+  });
+
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
+      <Breadcrumbs migas={migas} />
       <div className="overflow-hidden rounded-3xl border border-deep-black/10 bg-white shadow-sm">
         <div className="border-b border-deep-black/10 bg-gradient-to-r from-padel-green/15 via-white to-energy-orange/15 px-5 py-6 sm:px-7">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
@@ -207,7 +281,140 @@ export default async function AdminTorneoInscripcionesPage(props: {
             </p>
           ) : null}
 
-          <form method="get" className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <section className="rounded-2xl border border-deep-black/10 bg-white">
+            <div className="border-b border-deep-black/10 bg-surface-soft px-4 py-3">
+              <h2 className="text-lg font-semibold text-deep-black">
+                Inscripciones ({activas.length})
+              </h2>
+              <p className="mt-0.5 text-sm text-deep-black/70">
+                No se puede dar de baja una pareja que ya tenga partidos con
+                resultado cargado. Al dar de baja se la quita de su zona y se
+                cancelan sus partidos pendientes, asi que conviene regenerar la
+                grilla despues.
+              </p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead className="bg-white text-deep-black/70">
+                  <tr>
+                    <th className="px-3 py-2 text-left font-semibold">
+                      Pareja
+                    </th>
+                    <th className="px-3 py-2 text-left font-semibold">
+                      Estado
+                    </th>
+                    <th className="px-3 py-2 text-left font-semibold">
+                      Restriccion
+                    </th>
+                    <th className="px-3 py-2 text-right font-semibold"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activas.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="px-3 py-4 text-center text-deep-black/65"
+                      >
+                        Todavia no hay parejas inscriptas.
+                      </td>
+                    </tr>
+                  ) : (
+                    activas.map((row, index) => (
+                      <tr
+                        key={row.parejaId}
+                        className={
+                          index % 2 === 0 ? "bg-white" : "bg-surface-soft/50"
+                        }
+                      >
+                        <td className="px-3 py-2 font-medium text-deep-black">
+                          {row.jugador1} / {row.jugador2}
+                        </td>
+                        <td className="px-3 py-2">
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                              row.suplente
+                                ? "bg-energy-orange/15 text-energy-orange"
+                                : "bg-padel-green/15 text-padel-green"
+                            }`}
+                          >
+                            {row.suplente ? "Suplente" : "Titular"}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2 text-deep-black/70">
+                          {row.restriccion ?? "-"}
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          {row.tieneResultados ? (
+                            <span className="text-xs text-deep-black/55">
+                              Ya jugo: no se puede dar de baja
+                            </span>
+                          ) : (
+                            <form action={submitBaja} className="inline">
+                              <input
+                                type="hidden"
+                                name="parejaId"
+                                value={row.parejaId}
+                              />
+                              <button
+                                type="submit"
+                                className="rounded-full border border-energy-orange bg-white px-3 py-1.5 text-xs font-semibold text-energy-orange transition hover:bg-energy-orange hover:text-white"
+                              >
+                                Dar de baja
+                              </button>
+                            </form>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {bajas.length > 0 ? (
+              <div className="border-t border-deep-black/10 px-4 py-3">
+                <h3 className="text-sm font-semibold text-deep-black">
+                  Dadas de baja ({bajas.length})
+                </h3>
+                <p className="mt-0.5 mb-2 text-xs text-deep-black/65">
+                  Reactivar solo repone la inscripcion. La zona y los partidos
+                  hay que volver a armarlos.
+                </p>
+                <ul className="space-y-1">
+                  {bajas.map((row) => (
+                    <li
+                      key={row.parejaId}
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-surface-soft px-3 py-1.5"
+                    >
+                      <span className="text-sm text-deep-black/70">
+                        {row.jugador1} / {row.jugador2}
+                      </span>
+                      <form action={submitReactivar}>
+                        <input
+                          type="hidden"
+                          name="parejaId"
+                          value={row.parejaId}
+                        />
+                        <button
+                          type="submit"
+                          className="rounded-full border border-deep-black/20 bg-white px-3 py-1.5 text-xs font-semibold text-deep-black transition hover:bg-white/60"
+                        >
+                          Reactivar
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </section>
+
+          <form
+            method="get"
+            className="flex flex-col gap-2 sm:flex-row sm:items-center"
+          >
             <input
               name="q"
               type="text"
@@ -248,7 +455,9 @@ export default async function AdminTorneoInscripcionesPage(props: {
                   <option value="">Seleccionar jugador 1</option>
                   {candidates.map((candidate) => (
                     <option key={candidate.id} value={candidate.id}>
-                      {candidate.name} {candidate.lastname} ({generoLabel(candidate.genero)} - Categoria {candidate.categoria ?? "N/D"})
+                      {candidate.name} {candidate.lastname} (
+                      {generoLabel(candidate.genero)} - Categoria{" "}
+                      {candidate.categoria ?? "N/D"})
                     </option>
                   ))}
                 </select>
@@ -266,7 +475,9 @@ export default async function AdminTorneoInscripcionesPage(props: {
                   <option value="">Seleccionar jugador 2</option>
                   {candidates.map((candidate) => (
                     <option key={candidate.id} value={candidate.id}>
-                      {candidate.name} {candidate.lastname} ({generoLabel(candidate.genero)} - Categoria {candidate.categoria ?? "N/D"})
+                      {candidate.name} {candidate.lastname} (
+                      {generoLabel(candidate.genero)} - Categoria{" "}
+                      {candidate.categoria ?? "N/D"})
                     </option>
                   ))}
                 </select>
@@ -278,7 +489,8 @@ export default async function AdminTorneoInscripcionesPage(props: {
                 Restriccion de disponibilidad (opcional)
               </label>
               <p className="mb-3 text-sm text-deep-black/70">
-                Si no se completa, el campo queda en blanco. Formato: Día,HH:mm,HH:mm
+                Si no se completa, el campo queda en blanco. Formato:
+                Día,HH:mm,HH:mm
               </p>
               <div className="grid gap-3 md:grid-cols-3">
                 <select

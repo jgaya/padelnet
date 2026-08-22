@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
-import EventoForm from "@/app/complejos/[id]/eventos/components/EventoForm";
+import EventoForm from "@/app/admin/complejos/[id]/eventos/components/EventoForm";
+
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { migasGestion } from "@/lib/breadcrumbs-gestion";
 
 export default async function NewEventoPage(props: {
   params: Promise<{ id: string }>;
@@ -12,10 +15,15 @@ export default async function NewEventoPage(props: {
     notFound();
   }
 
+  const migas = await migasGestion({ complejoId, seccion: "Nuevo evento" });
+
   return (
-    <EventoForm
-      complejoId={complejoId}
-      backURL={`/admin/complejos/${complejoId}/eventos`}
-    />
+    <>
+      <Breadcrumbs migas={migas} />
+      <EventoForm
+        complejoId={complejoId}
+        backURL={`/admin/complejos/${complejoId}/eventos`}
+      />
+    </>
   );
 }

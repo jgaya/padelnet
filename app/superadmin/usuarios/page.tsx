@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Button from "react-bootstrap/Button";
 import { PencilSquareIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import Modal from "@/components/Modal";
@@ -168,9 +167,9 @@ export default function UsuariosPage() {
       <TitleBar
         title="Lista de Usuarios"
         buttons={
-          <Button as="a" href="/superadmin/usuarios/new" variant="primary">
+          <Link className="btn btn-primary" href="/superadmin/usuarios/new">
             Nuevo Usuario
-          </Button>
+          </Link>
         }
         backURL="/"
         total={total}
@@ -178,8 +177,8 @@ export default function UsuariosPage() {
 
       <SearchBar />
 
-      <div className="card padel-data-card">
-        <div className="card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="p-4">
           <TableWithPagination
             items={users}
             page={page}
@@ -257,10 +256,10 @@ export default function UsuariosPage() {
                 <td>{user.email}</td>
                 <td>{user.platformRole}</td>
                 <td>{user.isActive ? "Si" : "No"}</td>
-                <td className="d-flex gap-2 padel-table-actions">
+                <td className="flex gap-2 padel-table-actions">
                   <Link
                     href={`/superadmin/usuarios/${user.id}`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>
@@ -309,12 +308,12 @@ export default function UsuariosPage() {
               <p>No hay complejos activos disponibles.</p>
             ) : (
               <div>
-                <label className="form-label" htmlFor="complejo-select">
+                <label className="padel-form-label" htmlFor="complejo-select">
                   Complejo
                 </label>
                 <select
                   id="complejo-select"
-                  className="form-select"
+                  className="padel-form-select"
                   value={selectedComplejoId}
                   onChange={(event) =>
                     setSelectedComplejoId(event.target.value)
@@ -333,19 +332,19 @@ export default function UsuariosPage() {
         }
         footer={
           <>
-            <Button
-              variant="secondary"
+            <button
+              className="btn btn-secondary"
               onClick={() => setShowAssignModal(false)}
             >
               Cancelar
-            </Button>
-            <Button
-              variant="primary"
+            </button>
+            <button
+              className="btn btn-primary"
               onClick={() => void confirmAssignAdminToComplejo()}
               disabled={isLoadingComplejos || complejos.length === 0}
             >
               Asignar Admin
-            </Button>
+            </button>
           </>
         }
         size="sm"

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Button from "react-bootstrap/Button";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
@@ -109,9 +108,9 @@ export default function CanchasPage() {
       <TitleBar
         title="Lista de Canchas"
         buttons={
-          <Button as="a" href="/canchas/new" variant="primary">
+          <Link className="btn btn-primary" href="/canchas/new">
             Nueva Cancha
-          </Button>
+          </Link>
         }
         backURL="/"
         total={total}
@@ -119,8 +118,8 @@ export default function CanchasPage() {
 
       <SearchBar placeholder="Buscar cancha, superficie o complejo..." />
 
-      <div className="card padel-data-card">
-        <div className="card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="p-4">
           <TableWithPagination
             items={canchas}
             page={page}
@@ -202,10 +201,10 @@ export default function CanchasPage() {
                 <td>{cancha.isIndoor ? "Si" : "No"}</td>
                 <td>{cancha.dobles ? "Si" : "No"}</td>
                 <td>{cancha.isActive ? "Si" : "No"}</td>
-                <td className="d-flex gap-2 padel-table-actions">
+                <td className="flex gap-2 padel-table-actions">
                   <Link
                     href={`/canchas/${cancha.id}`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>

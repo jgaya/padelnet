@@ -59,7 +59,7 @@ export default function SearchBar({
         </select>
       </div>
 
-      <div className="search-box padel-searchbar-right flex items-center gap-2 sm:ml-auto">
+      <div className="padel-searchbar-right flex items-center gap-2 sm:ml-auto">
         <input
           type="text"
           name="search"
@@ -72,7 +72,7 @@ export default function SearchBar({
 
         <button
           type="button"
-          className="padel-search-clear-btn rounded-full border border-energy-orange/35 bg-energy-orange/15 px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-energy-orange/25"
+          className="rounded-full border border-energy-orange/35 bg-energy-orange/15 px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-energy-orange/25"
           onClick={handleClear}
         >
           Limpiar

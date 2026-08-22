@@ -1,14 +1,14 @@
-import Button from "react-bootstrap/Button";
 import styles from "../page.module.css";
 
 type ZonasControlsProps = {
   pairsPerZone: number;
   zoneCount: number;
+  /** Reparto de zonas que la tabla dicta para la cantidad de inscriptos. */
+  tablaResumen: string | null;
   onPairsPerZoneChange: (value: number) => void;
   onZoneCountChange: (value: number) => void;
   onCreateZones: () => void;
-  onAutoAssignRandom: () => void;
-  onAutoAssignOrder: () => void;
+  onAutoAssign: () => void;
   onSave: () => void;
   saving: boolean;
 };
@@ -16,24 +16,24 @@ type ZonasControlsProps = {
 export default function ZonasControls({
   pairsPerZone,
   zoneCount,
+  tablaResumen,
   onPairsPerZoneChange,
   onZoneCountChange,
   onCreateZones,
-  onAutoAssignRandom,
-  onAutoAssignOrder,
+  onAutoAssign,
   onSave,
   saving,
 }: ZonasControlsProps) {
   return (
-    <div className={`card padel-data-card ${styles.zonaControlsCard}`}>
-      <div className={`card-body ${styles.zonaControls}`}>
-        <div className="row g-3 align-items-end">
-          <div className="col-12 col-md-3">
-            <label className="form-label padel-form-label">
-              Parejas por zona
-            </label>
+    <div
+      className={`rounded-2xl border border-deep-black/10 bg-white padel-data-card ${styles.zonaControlsCard}`}
+    >
+      <div className={`p-4 ${styles.zonaControls}`}>
+        <div className="grid items-end gap-4 md:grid-cols-12">
+          <div className="md:col-span-3">
+            <label className="padel-form-label">Parejas por zona</label>
             <select
-              className={`form-select padel-form-select ${styles.zonaControlSelect}`}
+              className={`padel-form-select ${styles.zonaControlSelect}`}
               value={pairsPerZone}
               onChange={(event) =>
                 onPairsPerZoneChange(Number(event.target.value))
@@ -43,14 +43,12 @@ export default function ZonasControls({
               <option value={4}>4</option>
             </select>
           </div>
-          <div className="col-12 col-md-3">
-            <label className="form-label padel-form-label">
-              Cantidad de zonas
-            </label>
+          <div className="md:col-span-3">
+            <label className="padel-form-label">Cantidad de zonas</label>
             <input
               type="number"
               min={1}
-              className={`form-control padel-form-input ${styles.zonaControlInput}`}
+              className={`padel-form-input ${styles.zonaControlInput}`}
               value={zoneCount}
               onChange={(event) =>
                 onZoneCountChange(Number(event.target.value))
@@ -58,42 +56,39 @@ export default function ZonasControls({
             />
           </div>
           <div
-            className={`col-12 col-md-6 d-flex flex-wrap gap-2 ${styles.zonaControlsActions}`}
+            className={`flex flex-wrap gap-2 md:col-span-6 ${styles.zonaControlsActions}`}
           >
-            <Button
+            <button
+              className={`btn btn-secondary ${`${styles.zonaBtn} ${styles.zonaBtnPrimary}`}`}
               type="button"
-              variant="secondary"
-              className={`${styles.zonaBtn} ${styles.zonaBtnPrimary}`}
               onClick={onCreateZones}
             >
               Crear zonas
-            </Button>
-            <Button
+            </button>
+            <button
+              className={`btn btn-outline-secondary ${`${styles.zonaBtn} ${styles.zonaBtnOutline}`}`}
               type="button"
-              variant="outline-secondary"
-              className={`${styles.zonaBtn} ${styles.zonaBtnOutline}`}
-              onClick={onAutoAssignRandom}
+              onClick={onAutoAssign}
+              disabled={!tablaResumen}
             >
-              Aleatorio
-            </Button>
-            <Button
+              Armar zonas por tabla
+            </button>
+            <button
+              className={`btn ${`${styles.zonaBtn} ${styles.zonaBtnSave}`}`}
               type="button"
-              variant="outline-secondary"
-              className={`${styles.zonaBtn} ${styles.zonaBtnOutline}`}
-              onClick={onAutoAssignOrder}
-            >
-              Por orden de inscripcion
-            </Button>
-            <Button
-              type="button"
-              className={`${styles.zonaBtn} ${styles.zonaBtnSave}`}
               onClick={onSave}
               disabled={saving}
             >
               {saving ? "Guardando..." : "Guardar zonas"}
-            </Button>
+            </button>
           </div>
         </div>
+
+        <p className="mt-3 mb-0 text-sm text-slate-600">
+          {tablaResumen
+            ? `Segun la cantidad de inscriptos, la tabla arma ${tablaResumen}. "Armar zonas por tabla" usa el orden de siembra de arriba y reemplaza las zonas actuales.`
+            : "La tabla de llaves cubre de 7 a 48 parejas inscriptas: fuera de ese rango hay que armar las zonas a mano."}
+        </p>
       </div>
     </div>
   );

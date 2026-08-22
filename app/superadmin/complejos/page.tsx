@@ -10,6 +10,7 @@ export default function SuperadminComplejosPage() {
       canDelete
       showEventActions
       showCanchaActions
+      showFeatureActions
     />
   );
 }

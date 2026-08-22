@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { getEventoById } from "@/actions/eventos";
 import EventoForm from "@/app/admin/complejos/[id]/eventos/components/EventoForm";
 
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { migasGestion } from "@/lib/breadcrumbs-gestion";
+
 function toDateTimeLocal(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
@@ -44,22 +47,27 @@ export default async function EditEventoPage(props: {
     notFound();
   }
 
+  const migas = await migasGestion({ complejoId, eventoId: parsedEventoId });
+
   return (
-    <EventoForm
-      complejoId={complejoId}
-      initialData={{
-        nombre: evento.nombre,
-        descripcion: evento.descripcion || "",
-        posterUrl: evento.posterUrl || "",
-        tipo: evento.tipo,
-        inicio: toDateTimeLocal(evento.inicio),
-        fin: toDateTimeLocal(evento.fin),
-        isOpen: evento.isOpen,
-        isVisible: evento.isVisible,
-        isFinished: evento.isFinished,
-      }}
-      isEdit={parsedEventoId}
-      backURL={`/admin/complejos/${complejoId}/eventos`}
-    />
+    <>
+      <Breadcrumbs migas={migas} />
+      <EventoForm
+        complejoId={complejoId}
+        initialData={{
+          nombre: evento.nombre,
+          descripcion: evento.descripcion || "",
+          posterUrl: evento.posterUrl || "",
+          tipo: evento.tipo,
+          inicio: toDateTimeLocal(evento.inicio),
+          fin: toDateTimeLocal(evento.fin),
+          isOpen: evento.isOpen,
+          isVisible: evento.isVisible,
+          isFinished: evento.isFinished,
+        }}
+        isEdit={parsedEventoId}
+        backURL={`/admin/complejos/${complejoId}/eventos`}
+      />
+    </>
   );
 }

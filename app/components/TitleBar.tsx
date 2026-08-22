@@ -14,7 +14,7 @@ export default function TitleBar({
   return (
     <div className="mb-4 flex items-center justify-between titleBar">
       <Mark title={`${title} ${total ? `(${total})` : ""}`} tag="h1"></Mark>
-      <div className="d-flex">
+      <div className="flex">
         {buttons}
         <BackButton />
         {/* <Route path={backURL} text={"Volver"} clase="btn-secondary-outline" /> */}

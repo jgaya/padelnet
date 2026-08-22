@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Button from "react-bootstrap/Button";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
@@ -18,9 +17,22 @@ import {
   PencilSquareIcon,
   TrophyIcon,
   Squares2X2Icon,
+  AdjustmentsHorizontalIcon,
+  CalendarDaysIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/24/solid";
 
-type ComplejoRow = Complejo & { canchas: Cancha[] };
+/**
+ * La gestion de un complejo (eventos, canchas, turnos) vive en un solo arbol,
+ * /admin/**, cuyo layout ya acepta al superadmin. `basePath` queda solo para lo
+ * que es propio de cada seccion: editar el complejo y sus funcionalidades.
+ */
+const GESTION_BASE = "/admin/complejos";
+
+type ComplejoRow = Complejo & {
+  canchas: Cancha[];
+  turnosHabilitado?: boolean;
+};
 
 type ComplejosPageClientProps = {
   basePath?: string;
@@ -30,6 +42,7 @@ type ComplejosPageClientProps = {
   canDelete?: boolean;
   showEventActions?: boolean;
   showCanchaActions?: boolean;
+  showFeatureActions?: boolean;
 };
 
 const ALLOWED_SORT_FIELDS = new Set([
@@ -64,6 +77,7 @@ export default function ComplejosPageClient({
   canDelete = false,
   showEventActions = true,
   showCanchaActions = false,
+  showFeatureActions = false,
 }: ComplejosPageClientProps) {
   const [complejos, setComplejos] = useState<ComplejoRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -127,9 +141,9 @@ export default function ComplejosPageClient({
         title="Lista de Complejos"
         buttons={
           canCreate ? (
-            <Button as="a" href={`${basePath}/new`} variant="primary">
+            <Link className="btn btn-primary" href={`${basePath}/new`}>
               Nuevo Complejo
-            </Button>
+            </Link>
           ) : null
         }
         backURL={backURL}
@@ -138,8 +152,8 @@ export default function ComplejosPageClient({
 
       <SearchBar placeholder="Buscar complejo..." />
 
-      <div className="card padel-data-card">
-        <div className="card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="p-4">
           <TableWithPagination
             items={complejos}
             page={page}
@@ -205,29 +219,55 @@ export default function ComplejosPageClient({
                 <td>{complejo.ciudad}</td>
                 <td>{complejo.provincia}</td>
                 <td>{complejo.telefono || "-"}</td>
-                <td className="d-flex gap-2 padel-table-actions">
+                <td className="flex gap-2 padel-table-actions">
                   {canEdit ? (
                     <Link
                       href={`${basePath}/${complejo.id}`}
-                      className="btn btn-primario btn-sm padel-action-btn"
+                      className="btn btn-primary btn-sm padel-action-btn"
                     >
                       <PencilSquareIcon className="w-4 h-4" />
                     </Link>
                   ) : null}
                   {showEventActions ? (
                     <Link
-                      href={`${basePath}/${complejo.id}/eventos`}
-                      className="btn btn-primario btn-sm padel-action-btn"
+                      href={`${GESTION_BASE}/${complejo.id}/eventos`}
+                      className="btn btn-primary btn-sm padel-action-btn"
                     >
                       <TrophyIcon className="h-4 w-4" />
                     </Link>
                   ) : null}
                   {showCanchaActions ? (
                     <Link
-                      href={`${basePath}/${complejo.id}/canchas`}
+                      href={`${GESTION_BASE}/${complejo.id}/canchas`}
                       className="btn btn-secondary btn-sm padel-action-btn"
                     >
                       <Squares2X2Icon className="h-4 w-4" />
+                    </Link>
+                  ) : null}
+                  <Link
+                    href={`${GESTION_BASE}/${complejo.id}/reglamento`}
+                    title="Reglamento"
+                    className="btn btn-secondary btn-sm padel-action-btn"
+                  >
+                    <DocumentTextIcon className="h-4 w-4" />
+                  </Link>
+                  {/* Solo si el superadmin le prendio la funcionalidad. */}
+                  {complejo.turnosHabilitado ? (
+                    <Link
+                      href={`${GESTION_BASE}/${complejo.id}/turnos`}
+                      title="Turnos de cancha"
+                      className="btn btn-secondary btn-sm padel-action-btn"
+                    >
+                      <CalendarDaysIcon className="h-4 w-4" />
+                    </Link>
+                  ) : null}
+                  {showFeatureActions ? (
+                    <Link
+                      href={`${basePath}/${complejo.id}/funcionalidades`}
+                      title="Funcionalidades"
+                      className="btn btn-secondary btn-sm padel-action-btn"
+                    >
+                      <AdjustmentsHorizontalIcon className="h-4 w-4" />
                     </Link>
                   ) : null}
                   {canDelete ? (

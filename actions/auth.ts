@@ -5,8 +5,8 @@ import { Prisma } from "@prisma/client";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { enviarConfirmacionDeRegistro } from "@/actions/email";
 import { createSession, decrypt, deleteSession } from "@/lib/session";
-import type { UserRole } from "@/lib/roles";
 
 export type LoginInput = {
   email: string;
@@ -27,6 +27,7 @@ export type RegisterInput = {
   dni: string;
   birthDate: string;
   categoria: string;
+  localidad?: string;
   genero?: "M" | "F" | "X";
 };
 
@@ -34,18 +35,6 @@ export type RegisterResult = {
   success: boolean;
   error?: string;
 };
-
-function mapPlatformRoleToUserRole(platformRole: string): UserRole {
-  switch (platformRole) {
-    case "SUPERADMIN":
-      return "superadmin";
-    case "SUPPORT":
-      return "admin";
-    case "USER":
-    default:
-      return "jugador";
-  }
-}
 
 async function verifyRecaptchaToken(recaptchaToken?: string) {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
@@ -141,38 +130,34 @@ export async function login(input: LoginInput): Promise<LoginResult> {
       return { success: false, error: "Usuario o contrasena incorrectos" };
     }
 
-    let role = mapPlatformRoleToUserRole(user.platformRole);
-
-    if (role === "jugador") {
-      const membership = await prisma.complejoMembership.findFirst({
-        where: {
-          userId: user.id,
+    // No se calcula ningun rol global: el rol dentro de cada complejo se
+    // resuelve contra la DB en cada request (lib/authz.ts). Lo unico que se
+    // cachea es si administra algun complejo, y solo para pintar el menu.
+    const membershipAdmin = await prisma.complejoMembership.findFirst({
+      where: {
+        userId: user.id,
+        isActive: true,
+        role: "ADMIN",
+        complejo: {
+          deletedAt: null,
           isActive: true,
-          role: { in: ["OWNER", "ADMIN"] },
-          complejo: {
-            deletedAt: null,
-            isActive: true,
-          },
         },
-        select: { id: true },
-      });
+      },
+      select: { id: true },
+    });
 
-      if (membership) {
-        role = "admin";
-      }
-    }
-
-    await createSession(
-      user.id,
-      user.email,
-      role,
-      user.name,
-      user.lastname,
-      user.categoria ?? "",
-      user.genero,
-      user.avatarUrl ?? user.imageUrl ?? "",
-      user.dni ?? undefined,
-    );
+    await createSession({
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      lastname: user.lastname,
+      categoria: user.categoria ?? "",
+      genero: user.genero,
+      image: user.avatarUrl ?? user.imageUrl ?? "",
+      dni: user.dni ?? undefined,
+      platformRole: user.platformRole,
+      esAdminDeComplejo: Boolean(membershipAdmin),
+    });
 
     return { success: true };
   } catch (error) {
@@ -190,6 +175,7 @@ export async function registerUser(
   const password = input.password;
   const dni = input.dni.trim();
   const categoria = input.categoria.trim();
+  const localidad = input.localidad?.trim() || null;
   const birthDate = parseBirthDate(input.birthDate.trim());
 
   if (
@@ -234,7 +220,7 @@ export async function registerUser(
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    await prisma.user.create({
+    const creado = await prisma.user.create({
       data: {
         name,
         lastname,
@@ -244,11 +230,16 @@ export async function registerUser(
         birthDate,
         genero: input.genero ?? "X",
         categoria,
+        localidad,
         platformRole: "USER",
         isActive: true,
       },
       select: { id: true },
     });
+
+    // El mail de confirmacion no puede voltear el alta: si falla, la cuenta ya
+    // existe y el usuario puede pedir el reenvio desde /confirmar-email.
+    await enviarConfirmacionDeRegistro(creado.id);
 
     return { success: true };
   } catch (error) {

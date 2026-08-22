@@ -3,13 +3,17 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Button from "react-bootstrap/Button";
 import { PencilSquareIcon, Squares2X2Icon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
-import { deleteEvento, listEventosForAdmin, type EventoListItem } from "@/actions/eventos";
+import NuevoEnComplejoModal from "@/app/admin/components/NuevoEnComplejoModal";
+import {
+  deleteEvento,
+  listEventosForAdmin,
+  type EventoListItem,
+} from "@/actions/eventos";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import type { ListOpts } from "@/types/ui";
@@ -77,7 +81,8 @@ export default function AdminEventosPage() {
 
   function handleSort(field: string) {
     const safeField = ALLOWED_SORT_FIELDS.has(field) ? field : "id";
-    const newOrderDir = safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
+    const newOrderDir =
+      safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
 
     router.push(
       updateQuery({
@@ -89,7 +94,13 @@ export default function AdminEventosPage() {
   }
 
   const handleDelete = async (eventoId: number, complejoId?: number) => {
-    if (!Number.isInteger(complejoId) || complejoId <= 0) {
+    // El typeof es el que estrecha el tipo: Number.isInteger no es un type
+    // predicate, asi que por si solo deja complejoId como number | undefined.
+    if (
+      typeof complejoId !== "number" ||
+      !Number.isInteger(complejoId) ||
+      complejoId <= 0
+    ) {
       showSnackbar("No se pudo determinar el complejo del evento", "error");
       return;
     }
@@ -107,12 +118,17 @@ export default function AdminEventosPage() {
 
   return (
     <div className="container padel-complejos-list">
-      <TitleBar title="Eventos accesibles" backURL="/admin/complejos" total={total} />
+      <TitleBar
+        title="Eventos accesibles"
+        backURL="/admin/complejos"
+        total={total}
+        buttons={<NuevoEnComplejoModal modo="EVENTO" etiqueta="Nuevo evento" />}
+      />
 
       <SearchBar placeholder="Buscar evento, complejo o tipo..." />
 
-      <div className="card padel-data-card">
-        <div className="card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="p-4">
           <TableWithPagination
             items={eventos}
             page={page}
@@ -127,26 +143,57 @@ export default function AdminEventosPage() {
             getRowKey={(evento) => evento.id}
             renderHeader={() => (
               <tr>
-                <th onClick={() => handleSort("id")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("id")}
+                  style={{ cursor: "pointer" }}
+                >
                   ID
                   <SortArrow field="id" orderBy={orderBy} orderDir={orderDir} />
                 </th>
-                <th onClick={() => handleSort("nombre")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("nombre")}
+                  style={{ cursor: "pointer" }}
+                >
                   Nombre
-                  <SortArrow field="nombre" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="nombre"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th>Complejo</th>
-                <th onClick={() => handleSort("tipo")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("tipo")}
+                  style={{ cursor: "pointer" }}
+                >
                   Tipo
-                  <SortArrow field="tipo" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="tipo"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("inicio")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("inicio")}
+                  style={{ cursor: "pointer" }}
+                >
                   Inicio
-                  <SortArrow field="inicio" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="inicio"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
-                <th onClick={() => handleSort("fin")} style={{ cursor: "pointer" }}>
+                <th
+                  onClick={() => handleSort("fin")}
+                  style={{ cursor: "pointer" }}
+                >
                   Fin
-                  <SortArrow field="fin" orderBy={orderBy} orderDir={orderDir} />
+                  <SortArrow
+                    field="fin"
+                    orderBy={orderBy}
+                    orderDir={orderDir}
+                  />
                 </th>
                 <th>Abierto</th>
                 <th>Visible</th>
@@ -165,10 +212,10 @@ export default function AdminEventosPage() {
                 <td>{evento.isOpen ? "Si" : "No"}</td>
                 <td>{evento.isVisible ? "Si" : "No"}</td>
                 <td>{evento.isFinished ? "Si" : "No"}</td>
-                <td className="d-flex gap-2 padel-table-actions">
+                <td className="flex gap-2 padel-table-actions">
                   <Link
                     href={`/admin/complejos/${evento.complejoId}/eventos/${evento.id}`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>

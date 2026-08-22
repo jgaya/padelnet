@@ -9,9 +9,11 @@ import {
   getAdminTorneoZonasData,
   saveAdminTorneoZonas,
   type AdminTorneoZonasData,
+  type AdminZonaGrupo,
   type AdminZonaPareja,
   type SaveTorneoZonasPayload,
 } from "@/actions/torneos-zonas";
+import { buildZonasDesdeTabla, getLlavePorParejas } from "@/lib/torneo-llave";
 import ZonasControls from "./components/ZonasControls";
 import ZonasPool from "./components/ZonasPool";
 import ZonaCard from "./components/ZonaCard";
@@ -50,6 +52,45 @@ function zonaLabel(index: number) {
   return `Zona ${index + 1}`;
 }
 
+/**
+ * Reconstruye el orden de siembra a partir de zonas ya guardadas: la posicion k
+ * de la Zona L corresponde a la siembra que la tabla puso ahi. Sirve para que la
+ * pantalla vuelva a mostrar la siembra con la que se armaron las zonas, en vez
+ * de resetearla al orden de inscripcion cada vez que se entra.
+ *
+ * Devuelve null si las zonas guardadas no encajan con la tabla (armado manual).
+ */
+function seedOrderFromGroups(
+  grupos: AdminZonaGrupo[],
+  totalInscriptos: number,
+): number[] | null {
+  const entry = getLlavePorParejas(totalInscriptos);
+  if (!entry || entry.grupo.length !== grupos.length) return null;
+
+  const porLetra = new Map(
+    grupos.map((grupo) => [
+      grupo.nombre.match(/zona\s+([A-Z])/i)?.[1]?.toUpperCase() ?? "",
+      grupo,
+    ]),
+  );
+
+  const seedOrder: number[] = new Array(totalInscriptos);
+
+  for (const zonaTabla of entry.grupo) {
+    const letra = zonaTabla.nombre.split(" ")[1]?.toUpperCase() ?? "";
+    const grupo = porLetra.get(letra);
+    if (!grupo || grupo.parejaIds.length !== zonaTabla.parejas.length) {
+      return null;
+    }
+
+    for (const [posicion, siembra] of zonaTabla.parejas.entries()) {
+      seedOrder[siembra - 1] = grupo.parejaIds[posicion];
+    }
+  }
+
+  return seedOrder.every((id) => typeof id === "number") ? seedOrder : null;
+}
+
 function parseDragPayload(event: DragEvent<HTMLElement>): DragPayload | null {
   const raw = event.dataTransfer.getData("application/json");
   if (!raw) return null;
@@ -85,6 +126,12 @@ export default function ZonasPageClient() {
 
   const [data, setData] = useState<AdminTorneoZonasData | null>(null);
   const [groups, setGroups] = useState<GroupState[]>([]);
+  /**
+   * Orden de siembra: ids de pareja inscripta, de la siembra 1 a la N. Es la
+   * entrada de la tabla que arma las zonas. No se persiste porque una vez
+   * generadas las zonas la composicion queda en GrupoPareja.
+   */
+  const [seedOrder, setSeedOrder] = useState<number[]>([]);
   const [pairsPerZone, setPairsPerZone] = useState(3);
   const [zoneCount, setZoneCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -127,6 +174,14 @@ export default function ZonasPageClient() {
       }));
 
       setGroups(mappedGroups);
+
+      // Si las zonas guardadas siguen la tabla se recupera la siembra con la que
+      // se armaron; si no, se arranca del orden de inscripcion.
+      const inscriptosPorFecha = [...result.inscriptos].sort(sortByCreatedAt);
+      setSeedOrder(
+        seedOrderFromGroups(result.grupos, result.inscriptos.length) ??
+          inscriptosPorFecha.map((pair) => pair.id),
+      );
 
       const suggested =
         mappedGroups.length > 0
@@ -188,6 +243,21 @@ export default function ZonasPageClient() {
 
   const totalInscriptos = data?.inscriptos.length ?? 0;
   const totalSuplentes = data?.suplentes.length ?? 0;
+
+  /** Parejas en orden de siembra, para el panel de siembra. */
+  const seededPairs = useMemo(
+    () =>
+      seedOrder
+        .map((parejaId) => pairMap.get(parejaId))
+        .filter((pair): pair is AdminZonaPareja => Boolean(pair)),
+    [pairMap, seedOrder],
+  );
+
+  /** Distribucion de zonas que la tabla le corresponde a esta cantidad. */
+  const tablaEntry = useMemo(
+    () => getLlavePorParejas(totalInscriptos),
+    [totalInscriptos],
+  );
 
   const handleCreateZones = () => {
     const count = Number(zoneCount);
@@ -364,15 +434,11 @@ export default function ZonasPageClient() {
     );
   };
 
-  const handleAutoAssign = (mode: "random" | "order") => {
-    if (groups.length === 0) {
-      showSnackbar("Primero crea las zonas", "warning");
-      return;
-    }
-
+  /** Reordena la siembra sin tocar las zonas ya armadas. */
+  const handleSeedOrder = (mode: "random" | "order") => {
     const source = data?.inscriptos ?? [];
     if (source.length === 0) {
-      showSnackbar("No hay parejas inscriptas para asignar", "warning");
+      showSnackbar("No hay parejas inscriptas para ordenar", "warning");
       return;
     }
 
@@ -381,16 +447,69 @@ export default function ZonasPageClient() {
         ? shufflePairs(source)
         : [...source].sort(sortByCreatedAt);
 
-    setGroups((prev) => {
-      let cursor = 0;
-      return prev.map((group) => {
-        const slice = ordered
-          .slice(cursor, cursor + pairsPerZone)
-          .map((pair) => pair.id);
-        cursor += pairsPerZone;
-        return { ...group, parejaIds: slice };
-      });
+    setSeedOrder(ordered.map((pair) => pair.id));
+  };
+
+  const moveSeed = (index: number, delta: number) => {
+    setSeedOrder((prev) => {
+      const target = index + delta;
+      if (target < 0 || target >= prev.length) return prev;
+      const next = [...prev];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
     });
+  };
+
+  /**
+   * Arma las zonas con la tabla de la llave: la cantidad de zonas y su tamano
+   * los dicta la cantidad de parejas, y puede mezclar zonas de 3 y de 4.
+   */
+  const handleAutoAssign = () => {
+    if (seedOrder.length === 0) {
+      showSnackbar("No hay parejas inscriptas para asignar", "warning");
+      return;
+    }
+
+    const hasAssignments = groups.some((group) => group.parejaIds.length > 0);
+    if (
+      hasAssignments &&
+      !window.confirm(
+        "Se van a reemplazar las zonas actuales por las que dicta la tabla. Deseas continuar?",
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const zonas = buildZonasDesdeTabla(seedOrder);
+
+      // Se reusan los ids de las zonas existentes con el mismo nombre para no
+      // recrear filas y perder la relacion con los partidos ya cargados.
+      const idsPorNombre = new Map(
+        groups
+          .filter((group) => group.id !== null)
+          .map((group) => [group.nombre.trim(), group.id]),
+      );
+
+      setGroups(
+        zonas.map((zona) => ({
+          clientId: createClientId(),
+          id: idsPorNombre.get(zona.nombre) ?? null,
+          nombre: zona.nombre,
+          parejaIds: zona.parejaIds,
+        })),
+      );
+      setZoneCount(zonas.length);
+      showSnackbar(
+        `Zonas armadas: ${zonas.length} para ${seedOrder.length} parejas`,
+        "success",
+      );
+    } catch (err) {
+      showSnackbar(
+        err instanceof Error ? err.message : "No se pudieron armar las zonas",
+        "error",
+      );
+    }
   };
 
   const movePairWithinGroup = (
@@ -437,9 +556,17 @@ export default function ZonasPageClient() {
       return false;
     }
 
+    // La tabla mezcla zonas de 3 y de 4 en el mismo torneo, asi que se valida el
+    // rango en lugar de comparar contra pairsPerZone.
     for (const group of groups) {
-      if (group.parejaIds.length > pairsPerZone) {
-        showSnackbar("Hay zonas con mas parejas de las permitidas", "error");
+      if (
+        group.parejaIds.length > 0 &&
+        ![3, 4].includes(group.parejaIds.length)
+      ) {
+        showSnackbar(
+          `La ${group.nombre} tiene ${group.parejaIds.length} parejas: cada zona debe tener 3 o 4`,
+          "error",
+        );
         return false;
       }
     }
@@ -485,8 +612,8 @@ export default function ZonasPageClient() {
     return (
       <div className="container padel-complejos-list">
         <TitleBar title="Zonas" />
-        <div className="card padel-data-card">
-          <div className="card-body">Parametros invalidos.</div>
+        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+          <div className="p-4">Parametros invalidos.</div>
         </div>
       </div>
     );
@@ -497,14 +624,14 @@ export default function ZonasPageClient() {
       <TitleBar title={`Zonas - ${data?.torneo.nombre ?? ""}`} />
 
       {loading ? (
-        <div className="card padel-data-card">
-          <div className="card-body">Cargando zonas...</div>
+        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+          <div className="p-4">Cargando zonas...</div>
         </div>
       ) : null}
 
       {!loading && error ? (
-        <div className="card padel-data-card">
-          <div className="card-body">{error}</div>
+        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+          <div className="p-4">{error}</div>
         </div>
       ) : null}
 
@@ -516,6 +643,10 @@ export default function ZonasPageClient() {
             unassignedCount={unassignedPairs.length}
             unassignedInscriptos={unassignedInscriptos}
             unassignedSuplentes={unassignedSuplentes}
+            seededPairs={seededPairs}
+            onMoveSeedUp={(index) => moveSeed(index, -1)}
+            onMoveSeedDown={(index) => moveSeed(index, 1)}
+            onSeedOrder={handleSeedOrder}
             onDropPool={handleDropOnPool}
             onDragStart={(event, parejaId) =>
               handleDragStart(event, parejaId, null)
@@ -525,18 +656,24 @@ export default function ZonasPageClient() {
           <ZonasControls
             pairsPerZone={pairsPerZone}
             zoneCount={zoneCount}
+            tablaResumen={
+              tablaEntry
+                ? `${tablaEntry.grupo.length} zonas (${tablaEntry.grupo
+                    .map((zona) => zona.parejas.length)
+                    .join("/")})`
+                : null
+            }
             onPairsPerZoneChange={setPairsPerZone}
             onZoneCountChange={setZoneCount}
             onCreateZones={handleCreateZones}
-            onAutoAssignRandom={() => handleAutoAssign("random")}
-            onAutoAssignOrder={() => handleAutoAssign("order")}
+            onAutoAssign={handleAutoAssign}
             onSave={handleSave}
             saving={saving}
           />
 
           {groups.length === 0 ? (
-            <div className="card padel-data-card">
-              <div className="card-body">
+            <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+              <div className="p-4">
                 Crea las zonas para empezar a asignar parejas.
               </div>
             </div>

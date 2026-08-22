@@ -103,6 +103,7 @@ export const RegisterSchema = z
       .trim()
       .min(1, "La fecha de nacimiento es obligatoria"),
     categoria: z.string().trim().min(1, "La categoria es obligatoria"),
+    localidad: z.string().trim().max(80).optional(),
     genero: GeneroSchema,
     password: z
       .string()
@@ -261,8 +262,24 @@ export const TorneoCrudFormSchema = z
     zonaCerrada: z.boolean(),
     inicio: z.string().trim().optional(),
     fin: z.string().trim().optional(),
+    // Puntos de ranking por posicion final. Se manejan como strings, igual que
+    // capacidad y jugxZona; las claves son los nombres de RANKING_POSICIONES.
+    puntajes: z.record(z.string(), z.string()).optional(),
   })
   .superRefine((data, ctx) => {
+    for (const [posicion, valor] of Object.entries(data.puntajes ?? {})) {
+      if (valor === "") continue;
+
+      const numero = Number(valor);
+      if (!Number.isInteger(numero) || numero < 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["puntajes", posicion],
+          message: "Los puntos deben ser un entero mayor o igual a cero",
+        });
+      }
+    }
+
     const requiresCategoriaN = data.categoriaRegla !== "LIBRE";
 
     if (requiresCategoriaN) {
@@ -354,12 +371,16 @@ export const UsuarioFormSchema = z
     categoria: z.string().trim().optional(),
     platformRole: PlatformRoleSchema,
     complejoId: z.string().trim().optional(),
-    complejoRole: ComplejoRoleSchema.optional(),
+    // El "" del option vacio significa "sin rol en ningun complejo".
+    complejoRole: ComplejoRoleSchema.or(z.literal("")).optional(),
+    esPropietario: z.boolean().optional(),
     isActive: z.boolean(),
     birthDate: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.platformRole !== "SUPPORT") {
+    // El acceso a un complejo ya no depende del rol de plataforma: lo dispara
+    // haber elegido un rol de complejo. Si se eligio, hace falta el complejo.
+    if (!data.complejoRole) {
       return;
     }
 
@@ -367,21 +388,13 @@ export const UsuarioFormSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["complejoId"],
-        message: "Seleccione un complejo para usuarios de soporte",
+        message: "Seleccione el complejo al que se le da acceso",
       });
     } else if (!Number.isInteger(Number(data.complejoId))) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["complejoId"],
         message: "El complejo seleccionado no es valido",
-      });
-    }
-
-    if (!data.complejoRole) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["complejoRole"],
-        message: "Seleccione un rol en el complejo para usuarios de soporte",
       });
     }
   });
@@ -402,6 +415,7 @@ export const PerfilFormSchema = z.object({
   telefono: z.string().trim().optional(),
   dni: z.string().trim().optional(),
   genero: GeneroSchema,
+  localidad: z.string().trim().max(80).optional(),
   birthDate: z.string().optional(),
   imageUrl: urlOrPathSchema.optional(),
   avatarUrl: urlOrPathSchema.optional(),
@@ -484,3 +498,17 @@ export type TooltipButtonProps = {
   size?: "sm" | "lg";
   style?: CSSProperties;
 };
+
+export const NuevaPasswordFormSchema = z
+  .object({
+    password: z
+      .string()
+      .min(6, "La contrasena debe tener al menos 6 caracteres"),
+    password2: z.string(),
+  })
+  .refine((data) => data.password === data.password2, {
+    path: ["password2"],
+    message: "Las contrasenas no coinciden",
+  });
+
+export type NuevaPasswordFormData = z.infer<typeof NuevaPasswordFormSchema>;

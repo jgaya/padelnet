@@ -3,6 +3,7 @@ import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/app/components/site-header";
 import { SnackbarProvider } from "@/context/SnackbarContext";
+import PushNotificationsListener from "@/app/components/PushNotificationsListener";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,6 +32,7 @@ export default function RootLayout({
         className={`${inter.variable} ${montserrat.variable} font-sans antialiased`}
       >
         <SnackbarProvider>
+          <PushNotificationsListener />
           <div className="flex min-h-screen flex-col">
             <SiteHeader />
             <main className="flex-1">{children}</main>

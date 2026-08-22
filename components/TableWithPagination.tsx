@@ -30,9 +30,9 @@ export default function TableWithPagination<T>({
 
   return (
     <div className="padel-table-wrapper">
-      <div className="table-responsive padel-table-responsive">
+      <div className="padel-table-responsive">
         <table className="padel-data-table">
-          <thead className="padel-data-table-head">{renderHeader()}</thead>
+          <thead>{renderHeader()}</thead>
           <tbody>
             {items &&
               items.map((it) => (
@@ -44,11 +44,11 @@ export default function TableWithPagination<T>({
         </table>
       </div>
 
-      <div className="pagination-cnt padel-pagination-cnt">
+      <div className="padel-pagination-cnt">
         <div className="padel-pagination-meta">
-          <div className="mobileTotal">Total</div>
-          <div className="totalPaginas">
-            <span className="text">Pagina {page} de </span> {totalPages}
+          <div>Total</div>
+          <div>
+            <span>Pagina {page} de </span> {totalPages}
           </div>
         </div>
 
@@ -66,16 +66,13 @@ export default function TableWithPagination<T>({
 
             {pageButtons.map((p, idx) =>
               p === "ellipsis" ? (
-                <li
-                  key={`e-${idx}`}
-                  className="page-item disabled ellipsis pageInterior"
-                >
+                <li key={`e-${idx}`} className="page-item disabled">
                   <span className="page-link">...</span>
                 </li>
               ) : (
                 <li
                   key={p}
-                  className={`page-item${page === p ? " active" : ""} ${idx < p - 2 || idx > p + 2 ? "pageInterior" : ""}`}
+                  className={`page-item${page === p ? " active" : ""}`}
                 >
                   <button
                     className="page-link"

@@ -1,5 +1,13 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
+
+import { getEnabledComplejosForFeature } from "@/actions/complejo-features";
+import {
+  administraAlgunComplejo,
+  assertSuperadmin,
+  requireComplejoRole,
+} from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import type { Cancha, Complejo } from "@/types/db";
@@ -16,7 +24,11 @@ export type ComplejoPayload = {
   timezone?: string;
 };
 
-type ComplejoListItem = Complejo & { canchas: Cancha[] };
+type ComplejoListItem = Complejo & {
+  canchas: Cancha[];
+  /** Si el complejo tiene la seccion de turnos habilitada por el superadmin. */
+  turnosHabilitado: boolean;
+};
 
 export type PublicComplejoItem = {
   id: number;
@@ -41,16 +53,17 @@ const ORDERABLE_FIELDS = new Set([
   "createdAt",
 ]);
 
-async function assertSuperadmin() {
-  const session = await getSession();
-  if (!session || session.type !== "superadmin") {
-    throw new Error("No autorizado");
-  }
-}
-
+/**
+ * El listado lo ven el superadmin y cualquiera que administre al menos un
+ * complejo. El filtrado por complejo lo hace accessClause mas abajo.
+ */
 async function getComplejosListAccess() {
   const session = await getSession();
-  if (!session || !["superadmin", "admin"].includes(session.type)) {
+  if (!session) {
+    throw new Error("No autorizado");
+  }
+
+  if (session.platformRole !== "SUPERADMIN" && !(await administraAlgunComplejo())) {
     throw new Error("No autorizado");
   }
 
@@ -122,20 +135,23 @@ export async function listComplejos(opts: ListOpts = {}) {
       }
     : {};
 
-  const accessClause =
-    session.type === "superadmin"
+  // Anotado a proposito: al armar la clausula en un const suelto TS ensancha
+  // los literales y dejan de encajar con el enum ComplejoRole. Donde va inline
+  // (lib/authz.ts, lib/canchas-auth.ts) la infiere del contexto y no hace falta.
+  const accessClause: Prisma.ComplejoWhereInput =
+    session.platformRole === "SUPERADMIN"
       ? {}
       : {
           memberships: {
             some: {
               userId: session.userId,
               isActive: true,
-              role: { in: ["OWNER", "ADMIN"] },
+              role: "ADMIN",
             },
           },
         };
 
-  const whereClause = {
+  const whereClause: Prisma.ComplejoWhereInput = {
     deletedAt: null,
     isActive: true,
     ...searchClause,
@@ -153,7 +169,17 @@ export async function listComplejos(opts: ListOpts = {}) {
     prisma.complejo.count({ where: whereClause }),
   ]);
 
-  const items = itemsRaw as ComplejoListItem[];
+  // La feature de turnos se resuelve en lote para no hacer una query por fila.
+  const conTurnos = await getEnabledComplejosForFeature(
+    "TURNOS",
+    itemsRaw.map((complejo) => complejo.id),
+  );
+
+  const items = itemsRaw.map((complejo) => ({
+    ...complejo,
+    turnosHabilitado: conTurnos.has(complejo.id),
+  })) as ComplejoListItem[];
+
   return { items, total };
 }
 
@@ -299,4 +325,52 @@ export async function getComplejoById(id: number) {
     throw new Error("Complejo no encontrado");
   }
   return complejo as Complejo;
+}
+
+// ---------------------------------------------------------------------------
+// Reglamento del complejo
+// ---------------------------------------------------------------------------
+
+/**
+ * Reglamento para la pantalla de edicion. Publico lo lee la pagina del complejo
+ * directamente, que ya trae el complejo entero.
+ */
+export async function getReglamentoComplejo(complejoId: number) {
+  await requireComplejoRole(complejoId, ["ADMIN"]);
+
+  const complejo = await prisma.complejo.findFirst({
+    where: { id: complejoId, deletedAt: null },
+    select: { id: true, name: true, reglamento: true },
+  });
+
+  if (!complejo) {
+    throw new Error("Complejo no encontrado");
+  }
+
+  return complejo;
+}
+
+export async function guardarReglamentoComplejo(
+  complejoId: number,
+  reglamento: string,
+) {
+  await requireComplejoRole(complejoId, ["ADMIN"]);
+
+  const texto = reglamento?.trim() ?? "";
+
+  if (texto.length > 20000) {
+    return {
+      success: false as const,
+      error: "El reglamento no puede superar los 20.000 caracteres",
+    };
+  }
+
+  await prisma.complejo.update({
+    where: { id: complejoId },
+    // Vacio se guarda como null: la pagina publica distingue "sin reglamento"
+    // de "reglamento en blanco".
+    data: { reglamento: texto || null },
+  });
+
+  return { success: true as const };
 }

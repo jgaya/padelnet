@@ -38,188 +38,6 @@ function torneoStatusLabel(status: PublicTorneoDetail["status"]) {
 
 type ActiveTab = "grupos" | "llave";
 
-const MOCK_GRUPOS: PublicTorneoDetail["grupos"] = [
-  {
-    id: -1,
-    nombre: "Zona A",
-    rows: [
-      {
-        parejaId: -11,
-        parejaNombre: "Perez / Gomez",
-        pts: 6,
-        pg: 3,
-        pp: 0,
-        sg: 6,
-        sp: 2,
-        gg: 38,
-        gp: 24,
-      },
-      {
-        parejaId: -12,
-        parejaNombre: "Lopez / Diaz",
-        pts: 5,
-        pg: 2,
-        pp: 1,
-        sg: 5,
-        sp: 3,
-        gg: 34,
-        gp: 29,
-      },
-      {
-        parejaId: -13,
-        parejaNombre: "Sosa / Ruiz",
-        pts: 4,
-        pg: 1,
-        pp: 2,
-        sg: 3,
-        sp: 5,
-        gg: 27,
-        gp: 33,
-      },
-      {
-        parejaId: -14,
-        parejaNombre: "Acosta / Medina",
-        pts: 3,
-        pg: 0,
-        pp: 3,
-        sg: 2,
-        sp: 6,
-        gg: 21,
-        gp: 34,
-      },
-    ],
-  },
-  {
-    id: -2,
-    nombre: "Zona B",
-    rows: [
-      {
-        parejaId: -21,
-        parejaNombre: "Fernandez / Nunez",
-        pts: 6,
-        pg: 3,
-        pp: 0,
-        sg: 6,
-        sp: 1,
-        gg: 40,
-        gp: 23,
-      },
-      {
-        parejaId: -22,
-        parejaNombre: "Rossi / Vidal",
-        pts: 5,
-        pg: 2,
-        pp: 1,
-        sg: 4,
-        sp: 3,
-        gg: 31,
-        gp: 28,
-      },
-      {
-        parejaId: -23,
-        parejaNombre: "Molina / Silva",
-        pts: 4,
-        pg: 1,
-        pp: 2,
-        sg: 3,
-        sp: 5,
-        gg: 29,
-        gp: 35,
-      },
-      {
-        parejaId: -24,
-        parejaNombre: "Ibarra / Torres",
-        pts: 3,
-        pg: 0,
-        pp: 3,
-        sg: 1,
-        sp: 6,
-        gg: 20,
-        gp: 34,
-      },
-    ],
-  },
-];
-
-function mockDate(dayOffset: number, hour: number) {
-  return new Date(Date.UTC(2026, 3, 9 + dayOffset, hour, 0, 0)).toISOString();
-}
-
-const MOCK_LLAVE: PublicTorneoDetail["llave"] = [
-  {
-    round: "DIECISEISAVOS",
-    label: "Dieciseisavos de final",
-    matches: Array.from({ length: 16 }, (_, index) => ({
-      id: -1000 - index,
-      round: "DIECISEISAVOS" as const,
-      scheduledAt: mockDate(0, 10 + (index % 8)),
-      status: "FINISHED" as const,
-      pareja1: `Pareja ${index * 2 + 1}`,
-      pareja2: `Pareja ${index * 2 + 2}`,
-      cancha: `Cancha ${(index % 3) + 1}`,
-      score: "6-4 | 6-3",
-    })),
-  },
-  {
-    round: "OCTAVOS",
-    label: "Octavos de final",
-    matches: Array.from({ length: 8 }, (_, index) => ({
-      id: -1100 - index,
-      round: "OCTAVOS" as const,
-      scheduledAt: mockDate(1, 10 + index),
-      status: "FINISHED" as const,
-      pareja1: `Ganador D${index * 2 + 1}`,
-      pareja2: `Ganador D${index * 2 + 2}`,
-      cancha: `Cancha ${(index % 3) + 1}`,
-      score: "6-2 | 6-4",
-    })),
-  },
-  {
-    round: "CUARTOS",
-    label: "Cuartos de final",
-    matches: Array.from({ length: 4 }, (_, index) => ({
-      id: -1200 - index,
-      round: "CUARTOS" as const,
-      scheduledAt: mockDate(2, 11 + index),
-      status: "FINISHED" as const,
-      pareja1: `Ganador O${index * 2 + 1}`,
-      pareja2: `Ganador O${index * 2 + 2}`,
-      cancha: `Cancha ${(index % 2) + 1}`,
-      score: "7-5 | 6-4",
-    })),
-  },
-  {
-    round: "SEMIFINAL",
-    label: "Semifinal",
-    matches: Array.from({ length: 2 }, (_, index) => ({
-      id: -1300 - index,
-      round: "SEMIFINAL" as const,
-      scheduledAt: mockDate(3, 18 + index),
-      status: "FINISHED" as const,
-      pareja1: `Ganador Q${index * 2 + 1}`,
-      pareja2: `Ganador Q${index * 2 + 2}`,
-      cancha: `Cancha ${index + 1}`,
-      score: "6-4 | 7-6",
-    })),
-  },
-  {
-    round: "FINAL",
-    label: "Final",
-    matches: [
-      {
-        id: -1400,
-        round: "FINAL",
-        scheduledAt: mockDate(4, 19),
-        status: "SCHEDULED",
-        pareja1: "Ganador S1",
-        pareja2: "Ganador S2",
-        cancha: "Cancha Central",
-        score: "-",
-      },
-    ],
-  },
-];
-
 export default function TorneoDetailTabs({
   detail,
 }: {
@@ -233,10 +51,8 @@ export default function TorneoDetailTabs({
     [detail.complejoCiudad, detail.complejoNombre, detail.complejoProvincia],
   );
 
-  const hasRealGrupos = detail.grupos.length > 0;
-  const hasRealLlave = detail.llave.some((column) => column.matches.length > 0);
-  const gruposToRender = hasRealGrupos ? detail.grupos : MOCK_GRUPOS;
-  const llaveToRender = hasRealLlave ? detail.llave : MOCK_LLAVE;
+  const hayZonas = detail.grupos.length > 0;
+  const hayLlave = detail.llave.some((column) => column.matches.length > 0);
 
   return (
     <div className="space-y-5">
@@ -308,13 +124,14 @@ export default function TorneoDetailTabs({
         <div className="p-1 sm:p-4">
           {activeTab === "grupos" ? (
             <div className="space-y-4">
-              {!hasRealGrupos ? (
-                <p className="rounded-xl border border-energy-orange/25 bg-energy-orange/10 px-4 py-2 text-xs font-semibold text-energy-orange">
-                  Mostrando datos de ejemplo para zonas.
+              {!hayZonas ? (
+                <p className="rounded-2xl border border-deep-black/10 bg-surface-soft px-4 py-6 text-center text-sm text-deep-black/70">
+                  Todavia no hay zonas publicadas. Se publican cuando el
+                  complejo las arma.
                 </p>
               ) : null}
 
-              {gruposToRender.map((grupo) => (
+              {detail.grupos.map((grupo) => (
                 <article
                   key={grupo.id}
                   className="overflow-hidden rounded-2xl border border-deep-black/10"
@@ -385,13 +202,13 @@ export default function TorneoDetailTabs({
             </div>
           ) : (
             <div className="space-y-3">
-              {!hasRealLlave ? (
-                <p className="rounded-xl border border-energy-orange/25 bg-energy-orange/10 px-4 py-2 text-xs font-semibold text-energy-orange">
-                  Mostrando datos de ejemplo para la llave.
+              {hayLlave ? (
+                <Bracket columns={detail.llave} />
+              ) : (
+                <p className="rounded-2xl border border-deep-black/10 bg-surface-soft px-4 py-6 text-center text-sm text-deep-black/70">
+                  El cuadro se publica cuando terminen los partidos de zona.
                 </p>
-              ) : null}
-
-              <Bracket columns={llaveToRender} />
+              )}
             </div>
           )}
         </div>

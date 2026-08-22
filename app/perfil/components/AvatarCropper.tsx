@@ -276,12 +276,12 @@ export default function AvatarCropper({
 
   return (
     <div className="mb-4">
-      <label className="form-label padel-form-label">Imagen y avatar</label>
-      <div className="d-flex flex-column gap-3">
+      <label className="padel-form-label">Imagen y avatar</label>
+      <div className="flex flex-col gap-3">
         <div>
           <input
             type="file"
-            className="form-control padel-form-input"
+            className="padel-form-input"
             accept="image/*"
             onChange={handleFileChange}
             disabled={disabled || isBusy}
@@ -289,12 +289,14 @@ export default function AvatarCropper({
         </div>
 
         {loadingModels && (
-          <small className="text-muted">Cargando modelos de deteccion...</small>
+          <small className="text-deep-black/60">
+            Cargando modelos de deteccion...
+          </small>
         )}
 
-        <div className="d-flex flex-wrap gap-3">
-          <div className="d-flex flex-column gap-2">
-            <small className="text-muted">Imagen cuadrada</small>
+        <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col gap-2">
+            <small className="text-deep-black/60">Imagen cuadrada</small>
             <div
               style={{
                 width: 200,
@@ -320,8 +322,8 @@ export default function AvatarCropper({
             </div>
           </div>
 
-          <div className="d-flex flex-column gap-2">
-            <small className="text-muted">Avatar</small>
+          <div className="flex flex-col gap-2">
+            <small className="text-deep-black/60">Avatar</small>
             <div
               style={{
                 width: 200,
@@ -361,11 +363,7 @@ export default function AvatarCropper({
           </button>
         </div>
 
-        {error && (
-          <div className="invalid-feedback d-block padel-invalid-feedback">
-            {error}
-          </div>
-        )}
+        {error && <div className="padel-invalid-feedback block">{error}</div>}
       </div>
 
       <img ref={imgRef} alt="original" style={{ display: "none" }} />

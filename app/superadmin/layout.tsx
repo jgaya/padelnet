@@ -1,16 +1,20 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { getSessionRole } from "@/lib/authz";
-import { hasRole } from "@/lib/roles";
+import { esSuperadmin } from "@/lib/authz";
+
+/**
+ * Estas pantallas leen la sesion y filtran por querystring (useSearchParams),
+ * asi que no tiene sentido prerenderizarlas en el build: sin esto Next intenta
+ * generarlas estaticas y falla con "should be wrapped in a suspense boundary".
+ */
+export const dynamic = "force-dynamic";
 
 export default async function AdminComplejosLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const role = await getSessionRole();
-
-  if (!hasRole(role, ["superadmin"])) {
+  if (!(await esSuperadmin())) {
     notFound();
   }
 

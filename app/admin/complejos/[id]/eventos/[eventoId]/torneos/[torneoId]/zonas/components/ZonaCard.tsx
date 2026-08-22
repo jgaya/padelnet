@@ -1,5 +1,4 @@
 import type { DragEvent } from "react";
-import Button from "react-bootstrap/Button";
 import type { AdminZonaPareja } from "@/actions/torneos-zonas";
 import type { GroupState } from "../types";
 import styles from "../page.module.css";
@@ -55,14 +54,13 @@ export default function ZonaCard({
           <span className={styles.zonaCounter}>
             {group.parejaIds.length}/{pairsPerZone}
           </span>
-          <Button
+          <button
+            className="btn btn-outline-secondary btn-sm"
             type="button"
-            variant="outline-secondary"
-            size="sm"
             onClick={() => onRemoveZone(group.clientId)}
           >
             Quitar
-          </Button>
+          </button>
         </div>
       </div>
 

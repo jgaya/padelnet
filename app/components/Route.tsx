@@ -1,6 +1,5 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Button } from "react-bootstrap";
 import { useSidebarClose } from "@/hooks/useSidebarClose";
 import { useUser } from "@/context/UserContext";
 import type { RouteProps } from "@/types/ui";
@@ -29,17 +28,15 @@ export default function Route({
   const icono = `bi bi-${icon}`;
   return (
     <>
-      <Button
-        className={clase}
+      <button
+        className={`btn btn-${variant} ${size ? `btn-${size}` : ""} ${clase ?? ""}`}
         onClick={handle}
         style={{ height: "fit-content" }}
-        variant={variant}
-        size={size}
         disabled={disabled}
       >
         {icon !== "" && <i className={icono}></i>}
         {text}
-      </Button>
+      </button>
     </>
   );
 }

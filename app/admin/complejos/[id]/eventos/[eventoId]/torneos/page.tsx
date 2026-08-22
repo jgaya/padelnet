@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { getEventoById } from "@/actions/eventos";
 import TorneosPageClient from "@/app/admin/complejos/[id]/eventos/[eventoId]/torneos/components/TorneosPageClient";
 
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { migasGestion } from "@/lib/breadcrumbs-gestion";
+
 export default async function TorneosPage(props: {
   params: Promise<{ id: string; eventoId: string }>;
 }) {
@@ -26,11 +29,20 @@ export default async function TorneosPage(props: {
     notFound();
   }
 
+  const migas = await migasGestion({
+    complejoId,
+    eventoId: parsedEventoId,
+    seccion: "Torneos",
+  });
+
   return (
-    <TorneosPageClient
-      complejoId={complejoId}
-      eventoId={parsedEventoId}
-      eventoNombre={evento.nombre}
-    />
+    <>
+      <Breadcrumbs migas={migas} />
+      <TorneosPageClient
+        complejoId={complejoId}
+        eventoId={parsedEventoId}
+        eventoNombre={evento.nombre}
+      />
+    </>
   );
 }

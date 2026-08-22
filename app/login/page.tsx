@@ -181,7 +181,16 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <div className="mt-4 flex items-center justify-between text-sm">
+            <div className="mt-3 text-sm">
+              <Link
+                href="/recuperar"
+                className="font-semibold text-deep-black/70 transition hover:text-padel-green"
+              >
+                Olvidaste tu contrasena?
+              </Link>
+            </div>
+
+            <div className="mt-3 flex items-center justify-between text-sm">
               <Link
                 href="/"
                 className="font-semibold text-deep-black/70 transition hover:text-padel-green"

@@ -1,0 +1,227 @@
+/*
+ * Grilla del calendario de turnos.
+ *
+ * La vista diaria es una grilla CSS: una columna fija para las horas y una por
+ * cancha. Los bloques se posicionan en absoluto dentro de la columna, con top y
+ * height calculados a partir de los minutos, que es lo unico que permite
+ * dibujar turnos de duracion arbitraria sin alinearlos a una celda.
+ */
+
+.calendario {
+  --hora-alto: 56px;
+  --col-horas: 64px;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+.grilla {
+  display: grid;
+  grid-template-columns: var(--col-horas) repeat(var(--columnas), minmax(160px, 1fr));
+  min-width: fit-content;
+}
+
+.encabezado {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #0f172a;
+  color: #fff;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-align: center;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.encabezadoHoras {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  background: #0f172a;
+}
+
+.columnaHoras {
+  position: relative;
+  border-right: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.marcaHora {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding-right: 0.4rem;
+  font-size: 0.7rem;
+  color: #64748b;
+  text-align: right;
+  transform: translateY(-0.5em);
+}
+
+.columna {
+  position: relative;
+  border-left: 1px solid #e2e8f0;
+}
+
+.lineaHora {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #eef2f7;
+}
+
+.fueraDeHorario {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    #f1f5f9,
+    #f1f5f9 6px,
+    #e8eef5 6px,
+    #e8eef5 12px
+  );
+}
+
+.bloque {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.45rem;
+  font-size: 0.72rem;
+  line-height: 1.15;
+  overflow: hidden;
+  border: 1px solid transparent;
+  text-align: left;
+}
+
+.bloqueTurno {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #14532d;
+  cursor: pointer;
+}
+
+.bloqueTurno:hover {
+  background: #bbf7d0;
+}
+
+.bloqueImpago {
+  background: #fef3c7;
+  border-color: #d97706;
+  color: #78350f;
+}
+
+.bloqueImpago:hover {
+  background: #fde68a;
+}
+
+.bloqueBloqueado {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #334155;
+  cursor: pointer;
+}
+
+/* Los partidos de torneo son informativos: no se clickean. */
+.bloquePartido {
+  background: #dbeafe;
+  border-color: #2563eb;
+  color: #1e3a8a;
+  cursor: not-allowed;
+}
+
+.bloqueTitulo {
+  font-weight: 600;
+  display: block;
+}
+
+.bloqueHora {
+  opacity: 0.8;
+}
+
+.libre {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.libre:hover {
+  border-color: var(--padel-green, #00c853);
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+/* --- Vista semanal y mensual --- */
+
+.semana {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.mes {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.diaCelda {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.6rem;
+  background: #fff;
+  padding: 0.45rem;
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.diaCelda:hover {
+  border-color: var(--padel-green, #00c853);
+}
+
+.diaCeldaOtroMes {
+  background: #f8fafc;
+  color: #94a3b8;
+}
+
+.diaCeldaCerrado {
+  background: #f1f5f9;
+}
+
+.diaNumero {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.diaChip {
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .calendario {
+    --hora-alto: 44px;
+  }
+
+  .diaCelda {
+    min-height: 72px;
+  }
+}

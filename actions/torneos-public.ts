@@ -2,6 +2,17 @@
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
+import type { TournamentStatus } from "@/types/db";
+import {
+  calcularPosiciones,
+  compararPosiciones,
+} from "@/lib/torneo-posiciones";
+import {
+  categoriaLabel,
+  cumpleCategoria,
+  cumpleSexo,
+  parseCategoriaNumber,
+} from "@/lib/torneo-elegibilidad";
 
 export type PublicTorneoItem = {
   id: number;
@@ -13,7 +24,7 @@ export type PublicTorneoItem = {
   categoriaRegla: "LIBRE" | "MAYOR_IGUAL" | "MENOR_IGUAL" | "IGUAL" | "SUMA";
   categoriaN: number | null;
   capacidad: number;
-  status: "DRAFT" | "PUBLISHED" | "IN_PROGRESS" | "FINISHED" | "ARCHIVED";
+  status: TournamentStatus;
   publicado: boolean;
   zonaCerrada: boolean;
   inicio: string | null;
@@ -90,7 +101,7 @@ export type PublicTorneoDetail = {
   id: number;
   nombre: string;
   comentario: string | null;
-  status: "DRAFT" | "PUBLISHED" | "IN_PROGRESS" | "FINISHED" | "ARCHIVED";
+  status: TournamentStatus;
   sexo: "MASCULINO" | "FEMENINO" | "MIXTO";
   categoriaRegla: "LIBRE" | "MAYOR_IGUAL" | "MENOR_IGUAL" | "IGUAL" | "SUMA";
   categoriaN: number | null;
@@ -124,7 +135,7 @@ export type PublicTorneoInscripcionesResult = {
     complejoCiudad: string;
     complejoProvincia: string;
     capacidad: number;
-    status: "DRAFT" | "PUBLISHED" | "IN_PROGRESS" | "FINISHED" | "ARCHIVED";
+    status: TournamentStatus;
     inscriptosCount: number;
     suplentesCount: number;
   };
@@ -133,99 +144,13 @@ export type PublicTorneoInscripcionesResult = {
   currentUserParejaId: number | null;
 };
 
-function parseCategoriaNumber(
-  categoria: string | null | undefined,
-): number | null {
-  if (!categoria) {
-    return null;
-  }
-
-  const matched = categoria.match(/\d+/);
-  if (!matched) {
-    return null;
-  }
-
-  const value = Number(matched[0]);
-  if (!Number.isInteger(value) || value <= 0) {
-    return null;
-  }
-
-  return value;
-}
-
-function categoriaLabel(
-  regla: PublicTorneoItem["categoriaRegla"],
-  categoriaN: number | null,
-) {
-  switch (regla) {
-    case "MAYOR_IGUAL":
-      return `Categoria ${categoriaN}+`;
-    case "MENOR_IGUAL":
-      return `Categoria ${categoriaN}-`;
-    case "IGUAL":
-      return `Categoria ${categoriaN}`;
-    case "SUMA":
-      return `Suma categorias = ${categoriaN}`;
-    case "LIBRE":
-    default:
-      return "Libre";
-  }
-}
-
-function cumpleSexo(
-  torneoSexo: PublicTorneoItem["sexo"],
-  genero: "M" | "F" | "X" | null,
-) {
-  if (torneoSexo === "MIXTO") {
-    return true;
-  }
-
-  if (!genero || genero === "X") {
-    return false;
-  }
-
-  if (torneoSexo === "MASCULINO") {
-    return genero === "M";
-  }
-
-  if (torneoSexo === "FEMENINO") {
-    return genero === "F";
-  }
-
-  return false;
-}
-
-function cumpleCategoria(
-  regla: Exclude<PublicTorneoItem["categoriaRegla"], "LIBRE"> | "LIBRE",
-  categoriaN: number | null,
-  categoriaJugador: number | null,
-) {
-  if (regla === "LIBRE") {
-    return true;
-  }
-
-  if (!categoriaN || !categoriaJugador) {
-    return false;
-  }
-
-  switch (regla) {
-    case "MAYOR_IGUAL":
-      return categoriaJugador >= categoriaN;
-    case "MENOR_IGUAL":
-      return categoriaJugador <= categoriaN;
-    case "IGUAL":
-      return categoriaJugador === categoriaN;
-    case "SUMA":
-      // Sin compañero definido, validamos que exista alguna combinación posible.
-      return categoriaJugador <= categoriaN;
-    default:
-      return true;
-  }
-}
 
 export async function listPublicTorneos(): Promise<PublicTorneosResult> {
   const session = await getSession();
-  const isJugador = session?.type === "jugador";
+  // Cualquier usuario logueado puede inscribirse a un torneo, incluido el que
+  // administra otro complejo. Antes esto exigia el rol global "jugador", asi que
+  // un admin no veia su elegibilidad ni si ya estaba anotado.
+  const isJugador = Boolean(session);
   const sessionCategoria = parseCategoriaNumber(session?.categoria);
   const genero =
     session?.genero === "M" ||
@@ -447,31 +372,6 @@ function buildParejaNombre(
   const p1 = jugador1 ? `${jugador1.name} ${jugador1.lastname}` : "Jugador 1";
   const p2 = jugador2 ? `${jugador2.name} ${jugador2.lastname}` : "Jugador 2";
   return `${p1} / ${p2}`;
-}
-
-function computeMatchSetStats(
-  sets: Array<{
-    gamesPareja1: number;
-    gamesPareja2: number;
-  }>,
-) {
-  let setWinsP1 = 0;
-  let setWinsP2 = 0;
-  let gamesP1 = 0;
-  let gamesP2 = 0;
-
-  for (const set of sets) {
-    gamesP1 += set.gamesPareja1;
-    gamesP2 += set.gamesPareja2;
-
-    if (set.gamesPareja1 > set.gamesPareja2) {
-      setWinsP1 += 1;
-    } else if (set.gamesPareja2 > set.gamesPareja1) {
-      setWinsP2 += 1;
-    }
-  }
-
-  return { setWinsP1, setWinsP2, gamesP1, gamesP2 };
 }
 
 function resolveRoundFromLlave(llave: string | null): TorneoLlaveRound | null {
@@ -832,84 +732,36 @@ export async function getPublicTorneoDetail(
   }
 
   const grupos: TorneoGrupoCard[] = torneo.grupos.map((grupo) => {
-    const statsByPareja = new Map<number, TorneoGrupoStatsRow>();
+    const nombrePorPareja = new Map(
+      grupo.parejas.map((link) => [
+        link.pareja.id,
+        buildParejaNombre(link.pareja.jugador1, link.pareja.jugador2),
+      ]),
+    );
 
-    for (const link of grupo.parejas) {
-      const parejaId = link.pareja.id;
-      statsByPareja.set(parejaId, {
-        parejaId,
-        parejaNombre: buildParejaNombre(
-          link.pareja.jugador1,
-          link.pareja.jugador2,
-        ),
-        pts: 0,
-        pg: 0,
-        pp: 0,
-        sg: 0,
-        sp: 0,
-        gg: 0,
-        gp: 0,
-      });
-    }
+    // Mismo calculo que usa el armado de la llave (lib/torneo-posiciones.ts):
+    // si divergieran, el cuadro se armaria con un orden distinto al publicado.
+    const posiciones = calcularPosiciones(
+      [...nombrePorPareja.keys()],
+      grupo.partidos,
+    );
 
-    for (const partido of grupo.partidos) {
-      if (!partido.pareja1Id || !partido.pareja2Id) {
-        continue;
-      }
-
-      const p1 = statsByPareja.get(partido.pareja1Id);
-      const p2 = statsByPareja.get(partido.pareja2Id);
-      if (!p1 || !p2) {
-        continue;
-      }
-
-      const { setWinsP1, setWinsP2, gamesP1, gamesP2 } = computeMatchSetStats(
-        partido.sets,
-      );
-
-      p1.sg += setWinsP1;
-      p1.sp += setWinsP2;
-      p1.gg += gamesP1;
-      p1.gp += gamesP2;
-
-      p2.sg += setWinsP2;
-      p2.sp += setWinsP1;
-      p2.gg += gamesP2;
-      p2.gp += gamesP1;
-
-      let winnerId = partido.ganadorId;
-      if (!winnerId) {
-        if (setWinsP1 > setWinsP2) {
-          winnerId = partido.pareja1Id;
-        } else if (setWinsP2 > setWinsP1) {
-          winnerId = partido.pareja2Id;
-        }
-      }
-
-      if (winnerId === partido.pareja1Id) {
-        p1.pg += 1;
-        p1.pts += 2;
-        p2.pp += 1;
-        p2.pts += 1;
-      } else if (winnerId === partido.pareja2Id) {
-        p2.pg += 1;
-        p2.pts += 2;
-        p1.pp += 1;
-        p1.pts += 1;
-      }
-    }
-
-    const rows = Array.from(statsByPareja.values()).sort((a, b) => {
-      if (b.pts !== a.pts) return b.pts - a.pts;
-      if (b.pg !== a.pg) return b.pg - a.pg;
-      const setDiffA = a.sg - a.sp;
-      const setDiffB = b.sg - b.sp;
-      if (setDiffB !== setDiffA) return setDiffB - setDiffA;
-      const gameDiffA = a.gg - a.gp;
-      const gameDiffB = b.gg - b.gp;
-      if (gameDiffB !== gameDiffA) return gameDiffB - gameDiffA;
-      return a.parejaNombre.localeCompare(b.parejaNombre, "es");
-    });
+    // A igualdad total el modulo deja el orden indefinido a proposito. Para la
+    // tabla publica se desempata por nombre, que al menos es estable.
+    const rows: TorneoGrupoStatsRow[] = posiciones
+      .slice()
+      .sort((a, b) => {
+        const porCriterios = compararPosiciones(a, b);
+        if (porCriterios !== 0) return porCriterios;
+        return (nombrePorPareja.get(a.parejaId) ?? "").localeCompare(
+          nombrePorPareja.get(b.parejaId) ?? "",
+          "es",
+        );
+      })
+      .map((fila) => ({
+        ...fila,
+        parejaNombre: nombrePorPareja.get(fila.parejaId) ?? "Pareja",
+      }));
 
     return {
       id: grupo.id,

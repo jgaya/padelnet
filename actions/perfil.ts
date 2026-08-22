@@ -1,6 +1,6 @@
 "use server";
 
-import { Prisma } from "@prisma/client";
+import { Prisma, type Genero } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createSession, getSession } from "@/lib/session";
 
@@ -11,6 +11,7 @@ export type PerfilPayload = {
   telefono?: string | null;
   dni?: string | null;
   genero?: "M" | "F" | "X";
+  localidad?: string | null;
   birthDate?: string | null;
   imageUrl?: string | null;
   avatarUrl?: string | null;
@@ -63,7 +64,21 @@ function mapPrismaError(error: unknown): never {
   throw error instanceof Error ? error : new Error("Operacion invalida");
 }
 
-export async function getMyProfile() {
+export type PerfilData = {
+  id: number;
+  name: string;
+  lastname: string;
+  email: string;
+  telefono: string;
+  dni: string;
+  genero: Genero;
+  localidad: string;
+  birthDate: string;
+  imageUrl: string;
+  avatarUrl: string;
+};
+
+export async function getMyProfile(): Promise<PerfilData> {
   const session = await getSession();
   if (!session) {
     throw new Error("No autenticado");
@@ -79,6 +94,7 @@ export async function getMyProfile() {
       telefono: true,
       dni: true,
       genero: true,
+      localidad: true,
       birthDate: true,
       avatarUrl: true,
       imageUrl: true,
@@ -97,6 +113,7 @@ export async function getMyProfile() {
     telefono: user.telefono ?? "",
     dni: user.dni ?? "",
     genero: user.genero,
+    localidad: user.localidad ?? "",
     birthDate: formatDateInput(user.birthDate),
     imageUrl: user.imageUrl ?? "",
     avatarUrl: user.avatarUrl ?? "",
@@ -124,6 +141,7 @@ export async function updateMyProfile(data: PerfilPayload) {
     telefono: normalizeNullable(data.telefono),
     dni: normalizeNullable(data.dni),
     genero: data.genero ?? "X",
+    localidad: normalizeNullable(data.localidad),
     birthDate: parseBirthDate(data.birthDate),
     imageUrl: normalizeNullable(data.imageUrl),
     avatarUrl: normalizeNullable(data.avatarUrl),
@@ -146,17 +164,20 @@ export async function updateMyProfile(data: PerfilPayload) {
       },
     });
 
-    await createSession(
-      user.id,
-      user.email,
-      session.type,
-      user.name,
-      user.lastname,
-      user.categoria ?? session.categoria ?? "",
-      user.genero,
-      user.avatarUrl ?? user.imageUrl ?? "",
-      user.dni ?? undefined,
-    );
+    // Se reemite la sesion con los datos nuevos del perfil. Los permisos no se
+    // tocan aca: se conservan tal cual estaban.
+    await createSession({
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      lastname: user.lastname,
+      categoria: user.categoria ?? session.categoria ?? "",
+      genero: user.genero,
+      image: user.avatarUrl ?? user.imageUrl ?? "",
+      dni: user.dni ?? undefined,
+      platformRole: session.platformRole,
+      esAdminDeComplejo: session.esAdminDeComplejo,
+    });
 
     return { success: true };
   } catch (error) {

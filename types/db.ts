@@ -10,11 +10,10 @@ const jsonSchema = z.unknown();
 const dateSchema = z.coerce.date();
 const nullableDateSchema = z.coerce.date().nullable();
 
-export const PlatformRoleSchema = z.enum(["USER", "SUPERADMIN", "SUPPORT"]);
+export const PlatformRoleSchema = z.enum(["USER", "SUPERADMIN"]);
 export type PlatformRole = z.infer<typeof PlatformRoleSchema>;
 
 export const ComplejoRoleSchema = z.enum([
-  "OWNER",
   "ADMIN",
   "DATAENTRY",
   "FISCAL",
@@ -22,7 +21,9 @@ export const ComplejoRoleSchema = z.enum([
 ]);
 export type ComplejoRole = z.infer<typeof ComplejoRoleSchema>;
 
-export const GeneroSchema = z.enum(["M", "F"]);
+// Incluye "X" porque es el valor por defecto del enum Genero en Prisma: sin el,
+// un usuario con genero X no podia guardar su perfil.
+export const GeneroSchema = z.enum(["M", "F", "X"]);
 export type Genero = z.infer<typeof GeneroSchema>;
 
 export const EventTypeSchema = z.enum(["FINDE", "SEMANAL"]);
@@ -134,6 +135,8 @@ export const ComplejoMembershipSchema = z.object({
   complejoId: z.number().int(),
   userId: z.number().int(),
   role: ComplejoRoleSchema,
+  /** Titular del club. Es un dato, no un nivel de permiso. */
+  esPropietario: z.boolean(),
   isActive: z.boolean(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
@@ -263,6 +266,7 @@ export const PartidoSchema = z.object({
   grupoId: z.number().int().nullable(),
   canchaId: z.number().int().nullable(),
   scheduledAt: nullableDateSchema,
+  duracionMin: z.number().int().nullable(),
   status: MatchStatusSchema,
   pareja1Id: z.number().int().nullable(),
   pareja2Id: z.number().int().nullable(),
@@ -327,9 +331,62 @@ export const RecategorizacionSchema = z.object({
 });
 export type Recategorizacion = z.infer<typeof RecategorizacionSchema>;
 
+export const TurnoFrecuenciaSchema = z.enum(["DIARIA", "SEMANAL", "MENSUAL"]);
+export type TurnoFrecuencia = z.infer<typeof TurnoFrecuenciaSchema>;
+
+export const TurnoSerieSchema = z.object({
+  id: z.number().int(),
+  complejoId: z.number().int(),
+  canchaId: z.number().int(),
+  frecuencia: TurnoFrecuenciaSchema,
+  desde: dateSchema,
+  /** null = serie abierta, la extiende cron/turnos-cron.ts. */
+  hasta: nullableDateSchema,
+  inicioMin: z.number().int(),
+  duracionMin: z.number().int(),
+  jugadorId: z.number().int().nullable(),
+  nombreContacto: z.string().nullable(),
+  telefonoContacto: z.string().nullable(),
+  notas: z.string().nullable(),
+  createdById: z.number().int().nullable(),
+  deletedAt: nullableDateSchema,
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+});
+export type TurnoSerie = z.infer<typeof TurnoSerieSchema>;
+
+export const ComplejoHorarioSchema = z.object({
+  id: z.number().int(),
+  complejoId: z.number().int(),
+  /** 0 = domingo .. 6 = sabado. */
+  diaSemana: z.number().int().min(0).max(6),
+  aperturaMin: z.number().int(),
+  cierreMin: z.number().int(),
+  cerrado: z.boolean(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+});
+export type ComplejoHorario = z.infer<typeof ComplejoHorarioSchema>;
+
+export const ComplejoHorarioExcepcionSchema = z.object({
+  id: z.number().int(),
+  complejoId: z.number().int(),
+  fecha: dateSchema,
+  aperturaMin: z.number().int(),
+  cierreMin: z.number().int(),
+  cerrado: z.boolean(),
+  motivo: z.string().nullable(),
+  createdAt: dateSchema,
+  updatedAt: dateSchema,
+});
+export type ComplejoHorarioExcepcion = z.infer<
+  typeof ComplejoHorarioExcepcionSchema
+>;
+
 export const TurnoSlotSchema = z.object({
   id: z.number().int(),
   canchaId: z.number().int(),
+  serieId: z.number().int().nullable(),
   createdById: z.number().int().nullable(),
   startAt: dateSchema,
   endAt: dateSchema,
@@ -344,9 +401,14 @@ export type TurnoSlot = z.infer<typeof TurnoSlotSchema>;
 export const TurnoReservaSchema = z.object({
   id: z.number().int(),
   turnoSlotId: z.number().int(),
-  jugadorId: z.number().int(),
+  /** null cuando la reserva va a nombre de alguien no registrado. */
+  jugadorId: z.number().int().nullable(),
+  nombreContacto: z.string().nullable(),
+  telefonoContacto: z.string().nullable(),
   createdById: z.number().int().nullable(),
   status: BookingStatusSchema,
+  pagado: z.boolean(),
+  pagadoAt: nullableDateSchema,
   notas: z.string().nullable(),
   createdAt: dateSchema,
   updatedAt: dateSchema,
@@ -438,8 +500,11 @@ export const DbTableSchemas = {
   Ronda: RondaSchema,
   Ranking: RankingSchema,
   Recategorizacion: RecategorizacionSchema,
+  TurnoSerie: TurnoSerieSchema,
   TurnoSlot: TurnoSlotSchema,
   TurnoReserva: TurnoReservaSchema,
+  ComplejoHorario: ComplejoHorarioSchema,
+  ComplejoHorarioExcepcion: ComplejoHorarioExcepcionSchema,
   Sponsor: SponsorSchema,
   ComplejoSponsor: ComplejoSponsorSchema,
   Generacion: GeneracionSchema,

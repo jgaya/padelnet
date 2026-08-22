@@ -1,11 +1,8 @@
 import { notFound, redirect } from "next/navigation";
-import { getSessionRole } from "@/lib/authz";
-import { hasRole } from "@/lib/roles";
+import { esSuperadmin } from "@/lib/authz";
 
 export default async function NewComplejoPage() {
-  const role = await getSessionRole();
-
-  if (!hasRole(role, ["superadmin"])) {
+  if (!(await esSuperadmin())) {
     notFound();
   }
 

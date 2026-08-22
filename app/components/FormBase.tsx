@@ -7,7 +7,7 @@ import type {
   //   FieldValues,
   UseFormRegisterReturn,
 } from "react-hook-form";
-import { Button, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { Tooltip, OverlayTrigger } from "react-bootstrap";
 import TitleBar from "@/app/components/TitleBar";
 // import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import DatePicker from "@/app/components/DatePicker";
@@ -35,19 +35,17 @@ export function FormInput({
 }: FormInputProps) {
   return (
     <div className="mb-3">
-      <label className="form-label padel-form-label">
-        {label}:{required && <span className="text-danger ms-1">*</span>}
+      <label className="padel-form-label">
+        {label}:{required && <span className="text-energy-orange ms-1">*</span>}
       </label>
       <input
         type={type}
-        className={`form-control padel-form-input ${error ? "is-invalid" : ""}`}
+        className={`padel-form-input ${error ? "is-invalid" : ""}`}
         placeholder={placeholder}
         {...register}
       />
       {error && (
-        <div className="invalid-feedback d-block padel-invalid-feedback">
-          {error.message}
-        </div>
+        <div className="padel-invalid-feedback block">{error.message}</div>
       )}
     </div>
   );
@@ -56,24 +54,22 @@ export function FormInput({
 export function FormCheckbox({ label, register, error }: FormCheckboxProps) {
   return (
     <div className="mb-3">
-      <div className="form-check padel-form-check">
+      <div className="padel-form-check">
         <input
           type="checkbox"
-          className={`form-check-input padel-form-check-input ${error ? "is-invalid" : ""}`}
+          className={`padel-form-check-input ${error ? "is-invalid" : ""}`}
           id={register.name || "checkbox"}
           {...register}
         />
         <label
-          className="form-check-label padel-form-check-label"
+          className="padel-form-check-label"
           htmlFor={register.name || "checkbox"}
         >
           {label}
         </label>
       </div>
       {error && (
-        <div className="invalid-feedback d-block padel-invalid-feedback">
-          {error.message}
-        </div>
+        <div className="padel-invalid-feedback block">{error.message}</div>
       )}
     </div>
   );
@@ -89,11 +85,11 @@ export function FormSelect({
 }: FormSelectProps) {
   return (
     <div className="mb-3">
-      <label className="form-label padel-form-label">
-        {label}:{required && <span className="text-danger ms-1">*</span>}
+      <label className="padel-form-label">
+        {label}:{required && <span className="text-energy-orange ms-1">*</span>}
       </label>
       <select
-        className={`form-select padel-form-select ${error ? "is-invalid" : ""}`}
+        className={`padel-form-select ${error ? "is-invalid" : ""}`}
         {...register}
         disabled={disabled}
       >
@@ -105,9 +101,7 @@ export function FormSelect({
         ))}
       </select>
       {error && (
-        <div className="invalid-feedback d-block padel-invalid-feedback">
-          {error.message}
-        </div>
+        <div className="padel-invalid-feedback block">{error.message}</div>
       )}
     </div>
   );
@@ -123,12 +117,15 @@ export function FormActions({
   return (
     <div className="mt-4 flex justify-end gap-2">
       {moreButtons}
-      <Button type="submit" className="btn btn-primary" disabled={isLoading}>
+      <button className="btn btn-primary" type="submit" disabled={isLoading}>
         {isLoading ? "Procesando..." : submitText}
-      </Button>
-      <Button variant="secondary" onClick={() => router.push(cancelPath)}>
+      </button>
+      <button
+        className="btn btn-secondary"
+        onClick={() => router.push(cancelPath)}
+      >
         Cancelar
-      </Button>
+      </button>
     </div>
   );
 }
@@ -140,8 +137,8 @@ export function FormContainer({
 }: FormContainerProps) {
   return (
     <div className="container padel-form-container">
-      <div className="card padel-form-card">
-        <div className="card-body padel-form-card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-form-card">
+        <div className="p-4 padel-form-card-body">
           <TitleBar title={title} backURL={backURL} />
           {children}
         </div>
@@ -181,8 +178,8 @@ export function FormDatePicker({
 
   return (
     <div className="mb-3">
-      <label className="form-label padel-form-label">
-        {label}:{required && <span className="text-danger ms-1">*</span>}
+      <label className="padel-form-label">
+        {label}:{required && <span className="text-energy-orange ms-1">*</span>}
       </label>
       {register ? (
         <>
@@ -202,9 +199,7 @@ export function FormDatePicker({
         />
       )}
       {error && (
-        <div className="invalid-feedback d-block padel-invalid-feedback">
-          {error.message}
-        </div>
+        <div className="padel-invalid-feedback block">{error.message}</div>
       )}
     </div>
   );
@@ -250,8 +245,8 @@ declare global {
 
 //   return (
 //     <div className="mb-3">
-//       <label className="form-label">{label}:</label>
-//       <div className="d-flex gap-3 flex-column">
+//       <label className="padel-form-label">{label}:</label>
+//       <div className="flex gap-3 flex-col">
 //         <div
 //           style={{
 //             width: 120,
@@ -276,7 +271,7 @@ declare global {
 //             <div style={{ color: "#888", fontSize: 12 }}>Sin imagen</div>
 //           )}
 //         </div>
-//         <div className="d-flex">
+//         <div className="flex">
 //           <CldUploadWidget
 //             signatureEndpoint="/api/sign-cloudinary-params"
 //             onSuccess={(result, { widget }) => {
@@ -294,14 +289,10 @@ declare global {
 //             }}
 //           >
 //             {({ open }) => (
-//               <Button
-//                 variant=""
-//                 type="button"
-//                 className="btn btn-secondary"
-//                 onClick={() => open()}
+//               <button className="btn btn-secondary" type="button" onClick={() => open()}
 //               >
 //                 Subir Imagen
-//               </Button>
+//               </button>
 //             )}
 //           </CldUploadWidget>
 //         </div>
@@ -309,18 +300,18 @@ declare global {
 //           <input
 //             type="url"
 //             value={resource?.secure_url || value || ""}
-//             className={`form-control ${error ? "is-invalid" : ""}`}
+//             className={`padel-form-input ${error ? "is-invalid" : ""}`}
 //             readOnly
 //             {...register}
 //           />
 //         </div>
 //         {hint && (
 //           <div>
-//             <small className="text-muted">{hint}</small>
+//             <small className="text-deep-black/60">{hint}</small>
 //           </div>
 //         )}
 //         {error && (
-//           <div className="invalid-feedback d-block">{error.message}</div>
+//           <div className="padel-invalid-feedback block">{error.message}</div>
 //         )}
 //       </div>
 //     </div>
@@ -380,17 +371,15 @@ export function TooltipButton({
       delay={{ show: 250, hide: 400 }}
       overlay={renderTooltip}
     >
-      <Button
-        variant={variant}
-        className={className}
+      <button
+        className={`btn btn-${variant ?? "primary"} ${size ? `btn-${size}` : ""} ${className ?? ""}`}
         onClick={onClick}
         disabled={disabled}
         type={type}
-        size={size}
         style={style}
       >
         {children}
-      </Button>
+      </button>
     </OverlayTrigger>
   );
 }
@@ -471,13 +460,13 @@ export function FormPassword({
 
   return (
     <div className="mb-3">
-      <label className="form-label padel-form-label">
-        {label}:{required && <span className="text-danger ms-1">*</span>}
+      <label className="padel-form-label">
+        {label}:{required && <span className="text-energy-orange ms-1">*</span>}
       </label>
       <div style={{ position: "relative" }}>
         <input
           type={showPass ? "text" : "password"}
-          className={`form-control padel-form-input ${error ? "is-invalid" : ""}`}
+          className={`padel-form-input ${error ? "is-invalid" : ""}`}
           placeholder={placeholder}
           style={{ paddingRight: "3.25rem" }}
           {...register}
@@ -494,9 +483,7 @@ export function FormPassword({
         </button>
       </div>
       {error && (
-        <div className="invalid-feedback d-block padel-invalid-feedback">
-          {error.message}
-        </div>
+        <div className="padel-invalid-feedback block">{error.message}</div>
       )}
     </div>
   );

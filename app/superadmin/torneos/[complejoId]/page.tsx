@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import Button from "react-bootstrap/Button";
 import { PencilSquareIcon, PlusIcon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
@@ -93,7 +92,8 @@ export default function SuperadminTorneosComplejoPage() {
 
   function handleSort(field: string) {
     const safeField = ALLOWED_SORT_FIELDS.has(field) ? field : "id";
-    const newOrderDir = safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
+    const newOrderDir =
+      safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
 
     router.push(
       updateQuery({
@@ -104,11 +104,14 @@ export default function SuperadminTorneosComplejoPage() {
     );
   }
 
-  const handleDelete = async (
-    torneoId: number,
-    eventoId?: number,
-  ) => {
-    if (!Number.isInteger(eventoId) || eventoId <= 0) {
+  const handleDelete = async (torneoId: number, eventoId?: number) => {
+    // El typeof es el que estrecha el tipo: Number.isInteger no es un type
+    // predicate, asi que por si solo deja eventoId como number | undefined.
+    if (
+      typeof eventoId !== "number" ||
+      !Number.isInteger(eventoId) ||
+      eventoId <= 0
+    ) {
       showSnackbar("No se pudo determinar el evento del torneo", "error");
       return;
     }
@@ -127,7 +130,10 @@ export default function SuperadminTorneosComplejoPage() {
   if (!Number.isInteger(complejoId) || complejoId <= 0) {
     return (
       <div className="container py-4">
-        <div className="alert alert-danger" role="alert">
+        <div
+          className="rounded-xl border border-energy-orange/25 bg-energy-orange/10 px-4 py-3 text-sm text-energy-orange"
+          role="alert"
+        >
           Identificador de complejo inválido.
         </div>
       </div>
@@ -139,14 +145,13 @@ export default function SuperadminTorneosComplejoPage() {
       <TitleBar
         title={`Torneos del Complejo #${complejoId}`}
         buttons={
-          <Button
-            as="a"
+          <a
+            className="btn btn-primary"
             href={`/admin/complejos/${complejoId}/eventos`}
-            variant="primary"
           >
             <PlusIcon className="h-4 w-4 me-1" />
             Ver eventos
-          </Button>
+          </a>
         }
         backURL="/superadmin/torneos"
         total={total}
@@ -154,8 +159,8 @@ export default function SuperadminTorneosComplejoPage() {
 
       <SearchBar placeholder="Buscar torneo..." />
 
-      <div className="card padel-data-card">
-        <div className="card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="p-4">
           <TableWithPagination
             items={torneos}
             page={page}
@@ -249,10 +254,10 @@ export default function SuperadminTorneosComplejoPage() {
                 <td>{torneo.status}</td>
                 <td>{torneo.publicado ? "Si" : "No"}</td>
                 <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
-                <td className="d-flex gap-2 padel-table-actions">
+                <td className="flex gap-2 padel-table-actions">
                   <Link
                     href={`/admin/complejos/${complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>

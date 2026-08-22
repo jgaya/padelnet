@@ -1,0 +1,41 @@
+import { NextResponse } from "next/server";
+
+import { extenderSeriesDeTurnos } from "@/cron/turnos-cron";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+function isAuthorized(request: Request) {
+  const secret = process.env.CRON_SECRET;
+
+  // Sin secret configurado no se habilita el endpoint: mismo criterio que
+  // /api/cron/notifications, es preferible fallar cerrado.
+  if (!secret) return false;
+
+  const header = request.headers.get("authorization");
+  return header === `Bearer ${secret}`;
+}
+
+export async function POST(request: Request) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
+  try {
+    const result = await extenderSeriesDeTurnos();
+    return NextResponse.json({ success: true, ...result });
+  } catch (error) {
+    console.error("Error extendiendo las series de turnos", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Error extendiendo las series de turnos",
+      },
+      { status: 500 },
+    );
+  }
+}

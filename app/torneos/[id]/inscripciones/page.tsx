@@ -101,9 +101,12 @@ function TableSection({
 
 export default async function TorneoPublicInscripcionesPage(props: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ ok?: string }>;
 }) {
-  const { params } = props;
+  const { params, searchParams } = props;
   const { id } = await params;
+  const query = await searchParams;
+  const flashOk = query.ok?.trim() || "";
 
   const torneoId = Number(id);
   if (!Number.isInteger(torneoId) || torneoId <= 0) {
@@ -129,6 +132,12 @@ export default async function TorneoPublicInscripcionesPage(props: {
             {data.torneo.eventoNombre} - {data.torneo.complejoNombre} (
             {data.torneo.complejoCiudad}, {data.torneo.complejoProvincia})
           </p>
+
+          {flashOk ? (
+            <p className="mt-3 rounded-xl border border-padel-green/25 bg-padel-green/10 px-4 py-2 text-sm text-padel-green">
+              {flashOk}
+            </p>
+          ) : null}
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
             <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">

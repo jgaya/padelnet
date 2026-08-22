@@ -159,8 +159,10 @@ export default function CanchaForm({
         {fixedComplejoId ? (
           <>
             <div className="mb-4">
-              <label className="form-label">Complejo</label>
-              <div className="form-control bg-light">#{fixedComplejoId}</div>
+              <label className="padel-form-label">Complejo</label>
+              <div className="padel-form-input bg-surface-soft">
+                #{fixedComplejoId}
+              </div>
               <input
                 type="hidden"
                 value={String(fixedComplejoId)}

@@ -226,6 +226,19 @@ export async function saveAdminTorneoZonas(
     }
   }
 
+  // jugxZona es el tamano nominal del torneo, no un limite por zona: la tabla de
+  // llaves mezcla zonas de 3 y de 4 en el mismo torneo (14 parejas -> 4/4/3/3).
+  for (const grupo of normalized) {
+    if (
+      grupo.parejaIds.length > 0 &&
+      ![3, 4].includes(grupo.parejaIds.length)
+    ) {
+      throw new Error(
+        `La ${grupo.nombre} tiene ${grupo.parejaIds.length} parejas: cada zona debe tener 3 o 4`,
+      );
+    }
+  }
+
   const nameSet = new Set<string>();
   for (const grupo of normalized) {
     if (nameSet.has(grupo.nombre)) {

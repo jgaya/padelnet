@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { getSessionRole } from "@/lib/authz";
+import { esSuperadmin, puedeGestionarComplejo } from "@/lib/authz";
 
 export default async function AdminComplejoPage(props: {
   params: Promise<{ id: string }>;
@@ -7,17 +7,16 @@ export default async function AdminComplejoPage(props: {
   const { id } = await props.params;
   const complejoId = Number(id);
 
-  if (Number.isNaN(complejoId)) {
+  if (!Number.isInteger(complejoId) || complejoId <= 0) {
     notFound();
   }
 
-  const role = await getSessionRole();
-
-  if (role === "superadmin") {
+  if (await esSuperadmin()) {
     redirect(`/superadmin/complejos/${complejoId}`);
   }
 
-  if (role === "admin") {
+  // Se pregunta por este complejo en particular: administrar otro no alcanza.
+  if (await puedeGestionarComplejo(complejoId)) {
     redirect(`/admin/complejos/${complejoId}/eventos`);
   }
 

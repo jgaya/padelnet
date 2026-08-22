@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getCurrentUser } from "@/actions/auth";
 import { AvatarMenu } from "./avatar-menu";
 import { getSession } from "@/lib/session";
-import type { UserRole } from "@/lib/roles";
 
 type HeaderLink = {
   href: string;
@@ -16,47 +15,49 @@ const publicMainLinks: HeaderLink[] = [
   { href: "/torneos", label: "Torneos", mobileHidden: true },
 ];
 
-const mainLinksByRole: Partial<Record<UserRole, HeaderLink[]>> = {
-  jugador: publicMainLinks,
-  admin: [
-    { href: "/admin/complejos", label: "Gestion" },
-    { href: "/admin/eventos", label: "Eventos" },
-    { href: "/admin/torneos", label: "Torneos" },
-  ],
-  superadmin: [
-    { href: "/superadmin/complejos", label: "Complejos" },
-    { href: "/superadmin/eventos", label: "Eventos" },
-    { href: "/superadmin/torneos", label: "Torneos" },
-    { href: "/superadmin/usuarios", label: "Usuarios" },
-  ],
-  dataentry: [
-    { href: "/admin/complejos", label: "Gestion" },
-    { href: "/torneos", label: "Torneos", mobileHidden: true },
-  ],
-  fiscal: [{ href: "/torneos", label: "Torneos" }],
-};
-
-const baseProfileLinks = [
-  { href: "/perfil", label: "Mi perfil" },
-  { href: "/#ajustes", label: "Ajustes" },
-  { href: "/#suscripcion", label: "Suscripcion" },
+const gestionMainLinks: HeaderLink[] = [
+  { href: "/admin", label: "Panel" },
+  { href: "/admin/complejos", label: "Gestion" },
+  { href: "/admin/eventos", label: "Eventos" },
+  { href: "/admin/torneos", label: "Torneos" },
 ];
+
+const superadminMainLinks: HeaderLink[] = [
+  { href: "/superadmin", label: "Panel" },
+  { href: "/superadmin/complejos", label: "Complejos" },
+  { href: "/superadmin/eventos", label: "Eventos" },
+  { href: "/superadmin/torneos", label: "Torneos" },
+  { href: "/superadmin/usuarios", label: "Usuarios" },
+  {
+    href: "/superadmin/funcionalidades",
+    label: "Funcionalidades",
+    mobileHidden: true,
+  },
+];
+
+const baseProfileLinks = [{ href: "/perfil", label: "Mi perfil" }];
 
 export async function SiteHeader() {
   const [currentUser, session] = await Promise.all([
     getCurrentUser(),
     getSession(),
   ]);
-  const mainLinks = session?.type
-    ? (mainLinksByRole[session.type] ?? publicMainLinks)
-    : publicMainLinks;
-  const profileLinks =
-    session?.type === "superadmin"
-      ? [
-          { href: "/superadmin/complejos", label: "Gestion complejos" },
-          ...baseProfileLinks,
-        ]
-      : baseProfileLinks;
+  // El menu no sale de un rol global: sale de si administra algo. Un usuario
+  // que sea ADMIN de un complejo y jugador de otro ve el menu de gestion, y
+  // cada pantalla despues decide sobre que complejo puede actuar.
+  const esSuperadmin = session?.platformRole === "SUPERADMIN";
+  const mainLinks = esSuperadmin
+    ? superadminMainLinks
+    : session?.esAdminDeComplejo
+      ? gestionMainLinks
+      : publicMainLinks;
+
+  const profileLinks = esSuperadmin
+    ? [
+        { href: "/superadmin/complejos", label: "Gestion complejos" },
+        ...baseProfileLinks,
+      ]
+    : baseProfileLinks;
 
   return (
     <header className="sticky top-0 z-50 border-b border-deep-black/10 bg-white/95 backdrop-blur">

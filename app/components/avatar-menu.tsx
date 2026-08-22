@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { logout } from "@/actions/auth";
+import EnableNotifications from "@/app/components/PermisionPush";
 
 type AvatarMenuUser = {
+  id: number;
   name: string;
   lastname: string;
   email: string;
@@ -112,6 +114,9 @@ export function AvatarMenu({ user, profileLinks }: AvatarMenuProps) {
             {item.label}
           </Link>
         ))}
+        <div className="px-3 py-2">
+          <EnableNotifications userId={user.id} showState={false} />
+        </div>
 
         <form action={logout} className="mt-1">
           <button

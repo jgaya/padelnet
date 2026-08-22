@@ -3,7 +3,6 @@ import Link from "next/link";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import Button from "react-bootstrap/Button";
 import { PencilSquareIcon, PlusIcon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
@@ -118,7 +117,10 @@ export default function SuperadminEventosComplejoPage() {
   if (!Number.isInteger(complejoId) || complejoId <= 0) {
     return (
       <div className="container py-4">
-        <div className="alert alert-danger" role="alert">
+        <div
+          className="rounded-xl border border-energy-orange/25 bg-energy-orange/10 px-4 py-3 text-sm text-energy-orange"
+          role="alert"
+        >
           Identificador de complejo inválido.
         </div>
       </div>
@@ -130,14 +132,13 @@ export default function SuperadminEventosComplejoPage() {
       <TitleBar
         title={`Eventos del Complejo #${complejoId}`}
         buttons={
-          <Button
-            as="a"
+          <a
+            className="btn btn-primary"
             href={`/admin/complejos/${complejoId}/eventos/new`}
-            variant="primary"
           >
             <PlusIcon className="h-4 w-4 me-1" />
             Nuevo Evento
-          </Button>
+          </a>
         }
         backURL="/superadmin/eventos"
         total={total}
@@ -145,8 +146,8 @@ export default function SuperadminEventosComplejoPage() {
 
       <SearchBar placeholder="Buscar evento..." />
 
-      <div className="card padel-data-card">
-        <div className="card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="p-4">
           <TableWithPagination
             items={eventos}
             page={page}
@@ -228,10 +229,10 @@ export default function SuperadminEventosComplejoPage() {
                 <td>{evento.isOpen ? "Si" : "No"}</td>
                 <td>{evento.isVisible ? "Si" : "No"}</td>
                 <td>{evento.isFinished ? "Si" : "No"}</td>
-                <td className="d-flex gap-2 padel-table-actions">
+                <td className="flex gap-2 padel-table-actions">
                   <Link
-                    href={`/superadmin/complejos/${complejoId}/eventos/${evento.id}`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    href={`/admin/complejos/${complejoId}/eventos/${evento.id}`}
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>

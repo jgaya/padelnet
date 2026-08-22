@@ -22,6 +22,7 @@ type PerfilFormProps = {
 const generoOptions = [
   { value: "M", label: "Masculino" },
   { value: "F", label: "Femenino" },
+  { value: "X", label: "Sin especificar" },
 ];
 
 export default function PerfilForm({ initialData }: PerfilFormProps) {
@@ -54,6 +55,7 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
         telefono: data.telefono || null,
         dni: data.dni || null,
         genero: data.genero,
+        localidad: data.localidad || null,
         birthDate: data.birthDate || null,
         imageUrl: data.imageUrl || null,
         avatarUrl: data.avatarUrl || null,
@@ -126,6 +128,12 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
             register={register("dni")}
             error={errors.dni}
           />
+          <FormInput
+            label="Localidad"
+            placeholder="Ciudad o barrio"
+            register={register("localidad")}
+            error={errors.localidad}
+          />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -155,12 +163,12 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
         <input type="hidden" {...register("imageUrl")} />
         <input type="hidden" {...register("avatarUrl")} />
         {errors.imageUrl && (
-          <div className="invalid-feedback d-block padel-invalid-feedback">
+          <div className="padel-invalid-feedback block">
             {errors.imageUrl.message}
           </div>
         )}
         {errors.avatarUrl && (
-          <div className="invalid-feedback d-block padel-invalid-feedback">
+          <div className="padel-invalid-feedback block">
             {errors.avatarUrl.message}
           </div>
         )}

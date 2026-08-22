@@ -5,6 +5,17 @@ import { prisma } from "@/lib/prisma";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
 import { getCanchaAccessScope } from "@/lib/canchas-auth";
 import { getSession } from "@/lib/session";
+import type { TournamentStatus } from "@/types/db";
+import {
+  notifyTorneoActualizado,
+  notifyTorneoIniciado,
+  notifyTorneoPublicado,
+} from "@/actions/notificaciones-eventos";
+import {
+  aplicarRankingTorneo,
+  writeTorneoPuntajes,
+} from "@/actions/torneos-ranking";
+import type { PuntajesPorPosicion } from "@/lib/ranking-puntajes";
 import type { ListOpts } from "@/types/ui";
 
 export type TorneoListItem = {
@@ -20,7 +31,7 @@ export type TorneoListItem = {
   valorInsc: string | null;
   jugxZona: number;
   capacidad: number;
-  status: "DRAFT" | "PUBLISHED" | "IN_PROGRESS" | "FINISHED" | "ARCHIVED";
+  status: TournamentStatus;
   publicado: boolean;
   zonaCerrada: boolean;
   inicio: string | null;
@@ -40,11 +51,13 @@ export type TorneoPayload = {
   valorInsc?: string | null;
   jugxZona?: number;
   capacidad: number;
-  status?: "DRAFT" | "PUBLISHED" | "IN_PROGRESS" | "FINISHED" | "ARCHIVED";
+  status?: TournamentStatus;
   publicado?: boolean;
   zonaCerrada?: boolean;
   inicio?: string | null;
   fin?: string | null;
+  /** Puntos por posicion final; sin esto se usan los valores por defecto. */
+  puntajes?: PuntajesPorPosicion | null;
 };
 
 const ORDERABLE_FIELDS = new Set([
@@ -141,7 +154,7 @@ function mapPrismaError(error: unknown): never {
 
 async function assertSuperadmin() {
   const session = await getSession();
-  if (!session || session.type !== "superadmin") {
+  if (!session || session.platformRole !== "SUPERADMIN") {
     throw new Error("No autorizado");
   }
 }
@@ -542,7 +555,7 @@ function toTorneoListItem(item: {
   valorInsc: string | null;
   jugxZona: number;
   capacidad: number;
-  status: "DRAFT" | "PUBLISHED" | "IN_PROGRESS" | "FINISHED" | "ARCHIVED";
+  status: TournamentStatus;
   publicado: boolean;
   zonaCerrada: boolean;
   inicio: Date | null;
@@ -703,7 +716,7 @@ export async function createTorneo(
   const jugxZona = normalizeJugxZona(data.jugxZona);
 
   try {
-    return await prisma.torneo.create({
+    const creado = await prisma.torneo.create({
       data: {
         eventoId,
         nombre,
@@ -724,6 +737,18 @@ export async function createTorneo(
       },
       select: { id: true },
     });
+
+    // Puntajes de ranking del torneo: se crean siempre, con los valores del
+    // form o los del catalogo por defecto.
+    await writeTorneoPuntajes(creado.id, data.puntajes ?? null);
+
+    // Si nace publicado se avisa; si nace en borrador, el aviso sale cuando se
+    // publique desde updateTorneo.
+    if (data.publicado) {
+      await notifyTorneoPublicado(creado.id);
+    }
+
+    return creado;
   } catch (error) {
     mapPrismaError(error);
   }
@@ -743,7 +768,16 @@ export async function updateTorneo(
       eventoId,
       deletedAt: null,
     },
-    select: { id: true },
+    // Se traen los campos que disparan notificaciones, para comparar el estado
+    // previo contra el nuevo.
+    select: {
+      id: true,
+      nombre: true,
+      publicado: true,
+      status: true,
+      inicio: true,
+      fin: true,
+    },
   });
 
   if (!existing) {
@@ -773,7 +807,7 @@ export async function updateTorneo(
   const jugxZona = normalizeJugxZona(data.jugxZona);
 
   try {
-    return await prisma.torneo.update({
+    const actualizado = await prisma.torneo.update({
       where: { id: torneoId },
       data: {
         nombre,
@@ -794,6 +828,44 @@ export async function updateTorneo(
       },
       select: { id: true },
     });
+
+    await writeTorneoPuntajes(torneoId, data.puntajes ?? null);
+
+    const publicadoNuevo = data.publicado ?? false;
+    const statusNuevo = data.status ?? "DRAFT";
+
+    if (!existing.publicado && publicadoNuevo) {
+      // Recien se hace publico: se avisa a los jugadores de la categoria.
+      await notifyTorneoPublicado(torneoId);
+    } else if (existing.publicado && publicadoNuevo) {
+      // Ya era publico: solo se avisa a los inscriptos lo que cambio.
+      const cambios: string[] = [];
+
+      if (existing.nombre !== nombre) {
+        cambios.push(`ahora se llama ${nombre}`);
+      }
+      if (existing.inicio?.getTime() !== inicio?.getTime()) {
+        cambios.push("cambio la fecha de inicio");
+      }
+      if (existing.fin?.getTime() !== fin?.getTime()) {
+        cambios.push("cambio la fecha de fin");
+      }
+
+      await notifyTorneoActualizado(torneoId, cambios);
+    }
+
+    if (existing.status !== "IN_PROGRESS" && statusNuevo === "IN_PROGRESS") {
+      await notifyTorneoIniciado(torneoId);
+    }
+
+    // Al finalizar el torneo se cargan los puntos de ranking. Se recalcula cada
+    // vez que pasa a FINISHED, asi corregir un resultado y volver a finalizar
+    // deja los puntos correctos.
+    if (statusNuevo === "FINISHED") {
+      await aplicarRankingTorneo(torneoId);
+    }
+
+    return actualizado;
   } catch (error) {
     mapPrismaError(error);
   }

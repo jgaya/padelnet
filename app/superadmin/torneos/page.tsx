@@ -12,6 +12,7 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
+import NuevoEnComplejoModal from "@/app/admin/components/NuevoEnComplejoModal";
 import {
   deleteTorneo,
   listTorneos,
@@ -86,7 +87,8 @@ export default function SuperadminTorneosPage() {
 
   function handleSort(field: string) {
     const safeField = ALLOWED_SORT_FIELDS.has(field) ? field : "id";
-    const newOrderDir = safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
+    const newOrderDir =
+      safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
 
     router.push(
       updateQuery({
@@ -136,12 +138,17 @@ export default function SuperadminTorneosPage() {
 
   return (
     <div className="container padel-complejos-list">
-      <TitleBar title="Torneos del sistema" backURL="/superadmin" total={total} />
+      <TitleBar
+        title="Torneos del sistema"
+        backURL="/superadmin"
+        total={total}
+        buttons={<NuevoEnComplejoModal modo="TORNEO" etiqueta="Nuevo torneo" />}
+      />
 
       <SearchBar placeholder="Buscar torneo, evento o complejo..." />
 
-      <div className="card padel-data-card">
-        <div className="card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="p-4">
           <TableWithPagination
             items={torneos}
             page={page}
@@ -227,7 +234,8 @@ export default function SuperadminTorneosPage() {
             )}
             renderRow={(torneo) => {
               const hasComplejoId =
-                Number.isInteger(torneo.complejoId) && (torneo.complejoId ?? 0) > 0;
+                Number.isInteger(torneo.complejoId) &&
+                (torneo.complejoId ?? 0) > 0;
 
               return (
                 <tr key={torneo.id}>
@@ -241,17 +249,17 @@ export default function SuperadminTorneosPage() {
                   <td>{torneo.status}</td>
                   <td>{torneo.publicado ? "Si" : "No"}</td>
                   <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
-                  <td className="d-flex gap-2 padel-table-actions">
+                  <td className="flex gap-2 padel-table-actions">
                     {hasComplejoId ? (
                       <Link
-                        href={`/superadmin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`}
-                        className="btn btn-primario btn-sm padel-action-btn"
+                        href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`}
+                        className="btn btn-primary btn-sm padel-action-btn"
                       >
                         <PencilSquareIcon className="h-4 w-4" />
                       </Link>
                     ) : (
                       <span
-                        className="btn btn-primario btn-sm padel-action-btn disabled"
+                        className="btn btn-primary btn-sm padel-action-btn disabled"
                         title="No hay complejo asociado"
                       >
                         <PencilSquareIcon className="h-4 w-4" />
@@ -259,14 +267,14 @@ export default function SuperadminTorneosPage() {
                     )}
                     {hasComplejoId ? (
                       <Link
-                        href={`/superadmin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/inscripciones`}
-                        className="btn btn-success btn-sm padel-action-btn"
+                        href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/inscripciones`}
+                        className="btn btn-primary btn-sm padel-action-btn"
                       >
                         Inscribir
                       </Link>
                     ) : (
                       <span
-                        className="btn btn-success btn-sm padel-action-btn disabled"
+                        className="btn btn-primary btn-sm padel-action-btn disabled"
                         title="No hay complejo asociado"
                       >
                         Inscribir
@@ -289,7 +297,7 @@ export default function SuperadminTorneosPage() {
                     )}
                     {hasComplejoId ? (
                       <Link
-                        href={`/superadmin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/partidos`}
+                        href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/partidos`}
                         className="btn btn-secondary btn-sm padel-action-btn"
                       >
                         <CalendarDaysIcon className="h-4 w-4" />
@@ -304,7 +312,11 @@ export default function SuperadminTorneosPage() {
                     )}
                     <ConfirmationModal
                       onConfirm={() =>
-                        handleDelete(torneo.id, torneo.complejoId, torneo.eventoId)
+                        handleDelete(
+                          torneo.id,
+                          torneo.complejoId,
+                          torneo.eventoId,
+                        )
                       }
                       title={`Borrar Torneo ${torneo.id}`}
                       message="Estas seguro de que quieres eliminar este torneo?"

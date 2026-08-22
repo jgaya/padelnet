@@ -1,77 +1,33 @@
 import "server-only";
 
-import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/session";
+import { getComplejoAccess, requireComplejoRole } from "@/lib/authz";
 
 export type ComplejoManagerAccess = {
   userId: number;
   complejoId: number;
   isSuperadmin: boolean;
+  esPropietario: boolean;
 };
 
+/**
+ * Guard de las actions que gestionan un complejo. Es una fachada delgada sobre
+ * requireComplejoRole: se conserva el nombre porque lo usan una decena de
+ * actions, pero la logica de permisos vive en lib/authz.ts.
+ */
 export async function ensureComplejoManagerAccess(
   complejoId: number,
 ): Promise<ComplejoManagerAccess> {
-  if (!Number.isInteger(complejoId) || complejoId <= 0) {
-    throw new Error("Complejo invalido");
-  }
-
-  const session = await getSession();
-  if (!session) {
-    throw new Error("No autorizado");
-  }
-
-  const complejo = await prisma.complejo.findFirst({
-    where: {
-      id: complejoId,
-      deletedAt: null,
-      isActive: true,
-    },
-    select: { id: true },
-  });
-
-  if (!complejo) {
-    throw new Error("Complejo no encontrado");
-  }
-
-  if (session.type === "superadmin") {
-    return {
-      userId: session.userId,
-      complejoId,
-      isSuperadmin: true,
-    };
-  }
-
-  if (session.type !== "admin") {
-    throw new Error("No autorizado");
-  }
-
-  const membership = await prisma.complejoMembership.findFirst({
-    where: {
-      userId: session.userId,
-      complejoId,
-      isActive: true,
-      role: { in: ["OWNER", "ADMIN"] },
-    },
-    select: { id: true },
-  });
-
-  if (!membership) {
-    throw new Error("No autorizado");
-  }
+  const acceso = await requireComplejoRole(complejoId, ["ADMIN"]);
 
   return {
-    userId: session.userId,
-    complejoId,
-    isSuperadmin: false,
+    userId: acceso.userId,
+    complejoId: acceso.complejoId,
+    isSuperadmin: acceso.esSuperadmin,
+    esPropietario: acceso.esPropietario,
   };
 }
 
 export async function canManageComplejo(complejoId: number): Promise<boolean> {
-  try {
-    await ensureComplejoManagerAccess(complejoId);
-    return true;
-  } catch {
-    return false;
-  }
+  const acceso = await getComplejoAccess(complejoId);
+  return acceso?.rol === "ADMIN";
 }

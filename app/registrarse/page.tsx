@@ -43,6 +43,7 @@ export default function RegistrarsePage() {
       dni: "",
       birthDate: "",
       categoria: "",
+      localidad: "",
       genero: undefined,
       password: "",
       confirmPassword: "",
@@ -61,6 +62,7 @@ export default function RegistrarsePage() {
         dni: values.dni,
         birthDate: values.birthDate,
         categoria: values.categoria,
+        localidad: values.localidad,
         genero: values.genero,
         password: values.password,
       });
@@ -170,6 +172,13 @@ export default function RegistrarsePage() {
               error={errors.categoria}
               options={categoriaOptions}
               required
+            />
+
+            <FormInput
+              label="Localidad"
+              placeholder="Ciudad o barrio (opcional)"
+              register={register("localidad")}
+              error={errors.localidad}
             />
 
             <FormSelect

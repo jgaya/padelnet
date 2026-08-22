@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Button from "react-bootstrap/Button";
 import {
   PencilSquareIcon,
   RectangleGroupIcon,
@@ -300,13 +299,12 @@ export default function TorneosPageClient({
       <TitleBar
         title={`Torneos - ${eventoNombre}`}
         buttons={
-          <Button
-            as="a"
-            href={`/complejos/${complejoId}/eventos/${eventoId}/torneos/new`}
-            variant="primary"
+          <a
+            className="btn btn-primary"
+            href={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/new`}
           >
             Nuevo Torneo
-          </Button>
+          </a>
         }
         backURL={`/complejos/${complejoId}/eventos`}
         total={total}
@@ -314,8 +312,8 @@ export default function TorneosPageClient({
 
       <SearchBar placeholder="Buscar torneo..." />
 
-      <div className="card padel-data-card">
-        <div className="card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="p-4">
           <TableWithPagination
             items={torneos}
             page={page}
@@ -430,28 +428,28 @@ export default function TorneosPageClient({
                 <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
                 <td>{formatDateTime(torneo.inicio)}</td>
                 <td>{formatDateTime(torneo.fin)}</td>
-                <td className="d-flex gap-2 padel-table-actions">
+                <td className="flex gap-2 padel-table-actions">
                   <Link
                     href={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>
                   <Link
                     href={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}/zonas`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <RectangleGroupIcon className="h-4 w-4" />
                   </Link>
                   <Link
                     href={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}/partidos`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <CalendarDaysIcon className="h-4 w-4" />
                   </Link>
                   <Link
                     href={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}/resultados`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     Resultados
                   </Link>

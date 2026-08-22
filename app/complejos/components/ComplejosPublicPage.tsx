@@ -1,43 +1,15 @@
+import Link from "next/link";
+
 import type { PublicComplejoItem } from "@/actions/complejos";
+import {
+  buildMapsQuery,
+  mapUrls,
+  phoneHref,
+} from "@/app/complejos/components/mapUtils";
 
 type ComplejosPublicPageProps = {
   complejos: PublicComplejoItem[];
 };
-
-function buildMapsQuery(complejo: PublicComplejoItem) {
-  const pieces = [
-    complejo.name,
-    complejo.direccion,
-    complejo.ciudad,
-    complejo.provincia,
-    complejo.pais,
-  ]
-    .map((piece) => piece?.trim())
-    .filter((piece): piece is string => Boolean(piece));
-
-  return pieces.join(", ");
-}
-
-function mapUrls(query: string) {
-  const encoded = encodeURIComponent(query);
-  return {
-    embed: `https://www.google.com/maps?q=${encoded}&output=embed`,
-    external: `https://www.google.com/maps/search/?api=1&query=${encoded}`,
-  };
-}
-
-function phoneHref(phone: string | null) {
-  if (!phone) {
-    return null;
-  }
-
-  const normalized = phone.replace(/[^\d+]/g, "");
-  if (!normalized) {
-    return null;
-  }
-
-  return `tel:${normalized}`;
-}
 
 export default function ComplejosPublicPage({
   complejos,
@@ -79,7 +51,12 @@ export default function ComplejosPublicPage({
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div>
                           <h2 className="text-2xl font-semibold leading-tight text-deep-black">
-                            {complejo.name}
+                            <Link
+                              href={`/complejos/${complejo.id}`}
+                              className="transition hover:text-padel-green"
+                            >
+                              {complejo.name}
+                            </Link>
                           </h2>
                           <p className="mt-1 text-sm text-deep-black/70">
                             {complejo.ciudad}, {complejo.provincia}
@@ -178,14 +155,22 @@ export default function ComplejosPublicPage({
                         />
                       </div>
 
-                      <a
-                        href={urls.external}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex rounded-full border border-deep-black/20 bg-white px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
-                      >
-                        Abrir en Google Maps
-                      </a>
+                      <div className="flex flex-wrap gap-2">
+                        <Link
+                          href={`/complejos/${complejo.id}`}
+                          className="inline-flex rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-deep-black transition hover:brightness-95"
+                        >
+                          Ver complejo
+                        </Link>
+                        <a
+                          href={urls.external}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex rounded-full border border-deep-black/20 bg-white px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+                        >
+                          Abrir en Google Maps
+                        </a>
+                      </div>
                     </div>
                   </article>
                 );

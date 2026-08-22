@@ -71,7 +71,7 @@ function mapPrismaError(error: unknown): never {
 
 async function assertSuperadmin() {
   const session = await getSession();
-  if (!session || session.type !== "superadmin") {
+  if (!session || session.platformRole !== "SUPERADMIN") {
     throw new Error("No autorizado");
   }
 }

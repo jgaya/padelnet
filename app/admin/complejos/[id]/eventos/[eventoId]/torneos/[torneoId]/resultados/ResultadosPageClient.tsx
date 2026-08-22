@@ -29,9 +29,27 @@ function formatDateTime(value: string | null) {
 }
 
 const DEFAULT_SETS = [
-  { numero: 1, gamesPareja1: 0, gamesPareja2: 0, tiebreakP1: null, tiebreakP2: null },
-  { numero: 2, gamesPareja1: 0, gamesPareja2: 0, tiebreakP1: null, tiebreakP2: null },
-  { numero: 3, gamesPareja1: 0, gamesPareja2: 0, tiebreakP1: null, tiebreakP2: null },
+  {
+    numero: 1,
+    gamesPareja1: 0,
+    gamesPareja2: 0,
+    tiebreakP1: null,
+    tiebreakP2: null,
+  },
+  {
+    numero: 2,
+    gamesPareja1: 0,
+    gamesPareja2: 0,
+    tiebreakP1: null,
+    tiebreakP2: null,
+  },
+  {
+    numero: 3,
+    gamesPareja1: 0,
+    gamesPareja2: 0,
+    tiebreakP1: null,
+    tiebreakP2: null,
+  },
 ];
 
 export default function ResultadosPageClient() {
@@ -48,7 +66,8 @@ export default function ResultadosPageClient() {
 
   const [loading, setLoading] = useState(true);
   const [matches, setMatches] = useState<TorneoPartidoListItem[]>([]);
-  const [selectedMatch, setSelectedMatch] = useState<TorneoPartidoListItem | null>(null);
+  const [selectedMatch, setSelectedMatch] =
+    useState<TorneoPartidoListItem | null>(null);
   const [showResultModal, setShowResultModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [winnerId, setWinnerId] = useState<number | null>(null);
@@ -105,9 +124,7 @@ export default function ResultadosPageClient() {
     value: number | null,
   ) => {
     setSets((prev) =>
-      prev.map((set, i) =>
-        i === index ? { ...set, [field]: value } : set,
-      ),
+      prev.map((set, i) => (i === index ? { ...set, [field]: value } : set)),
     );
   };
 
@@ -159,8 +176,8 @@ export default function ResultadosPageClient() {
     return match.ganadorId === match.pareja1Id
       ? match.pareja1Nombre
       : match.ganadorId === match.pareja2Id
-      ? match.pareja2Nombre
-      : "-";
+        ? match.pareja2Nombre
+        : "-";
   };
 
   const statusBadge = (status: TorneoPartidoListItem["status"]) => {
@@ -188,15 +205,19 @@ export default function ResultadosPageClient() {
         backURL={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos`}
       />
 
-      <div className="card padel-data-card">
-        <div className="card-header d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="flex flex-col items-start justify-between gap-2 border-b border-deep-black/10 px-4 py-3 md:flex-row md:items-center">
           <div>
-            <h2 className="h5 mb-1">Partidos</h2>
-            <p className="text-muted mb-0">Listado de partidos del torneo y estado de resultados.</p>
+            <h2 className="text-base font-semibold mb-1">Partidos</h2>
+            <p className="text-deep-black/60 mb-0">
+              Listado de partidos del torneo y estado de resultados.
+            </p>
           </div>
-          <span className="badge bg-secondary">{matches.length} partidos</span>
+          <span className="inline-flex items-center rounded-full bg-deep-black/60 px-2.5 py-1 text-xs font-semibold text-white">
+            {matches.length} partidos
+          </span>
         </div>
-        <div className="card-body">
+        <div className="p-4">
           {loading ? (
             <p>Cargando partidos...</p>
           ) : matches.length === 0 ? (
@@ -261,7 +282,7 @@ export default function ResultadosPageClient() {
                         <td className="whitespace-nowrap px-4 py-3 text-sm">
                           <button
                             type="button"
-                            className="btn btn-primario btn-sm"
+                            className="btn btn-primary btn-sm"
                             onClick={() => openResultModal(match)}
                           >
                             Cargar resultado
@@ -289,159 +310,206 @@ export default function ResultadosPageClient() {
         }}
         title="Cargar resultado"
         size="lg"
-      >
-        {selectedMatch ? (
-          <div>
-            <div className="mb-4">
-              <p className="mb-2 text-sm text-muted">
-                Ingresa el ganador y los juegos por set para el partido.
-              </p>
-              <div className="row g-3">
-                <div className="col-12 col-md-6">
-                  <label className="form-label">Ganador</label>
-                  <select
-                    className="form-select"
-                    value={winnerId ?? ""}
-                    onChange={(event) => {
-                      setWinnerId(Number(event.target.value) || null);
-                    }}
-                  >
-                    <option value="">Seleccionar ganador</option>
-                    {selectedMatch.pareja1Id ? (
-                      <option value={selectedMatch.pareja1Id}>
-                        {selectedMatch.pareja1Nombre}
-                      </option>
-                    ) : null}
-                    {selectedMatch.pareja2Id ? (
-                      <option value={selectedMatch.pareja2Id}>
-                        {selectedMatch.pareja2Nombre}
-                      </option>
-                    ) : null}
-                  </select>
-                </div>
-                <div className="col-12 col-md-6">
-                  <label className="form-label">Estado del partido</label>
-                  <input
-                    readOnly
-                    className="form-control bg-light"
-                    value={selectedMatch.status}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="card padel-data-card mb-3">
-              <div className="card-header">
-                <h3 className="h6 mb-0">Sets</h3>
-              </div>
-              <div className="card-body p-0">
-                <div className="table-responsive">
-                  <table className="table table-bordered mb-0">
-                    <thead className="table-light">
-                      <tr>
-                        <th scope="col">Set</th>
-                        <th scope="col">{selectedMatch.pareja1Nombre}</th>
-                        <th scope="col">{selectedMatch.pareja2Nombre}</th>
-                        <th scope="col">Tiebreak {selectedMatch.pareja1Nombre}</th>
-                        <th scope="col">Tiebreak {selectedMatch.pareja2Nombre}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sets.map((set, index) => (
-                        <tr key={set.numero}>
-                          <th scope="row">{set.numero}</th>
-                          <td>
-                            <input
-                              type="number"
-                              min={0}
-                              className="form-control"
-                              value={set.gamesPareja1}
-                              onChange={(event) =>
-                                handleSetChange(
-                                  index,
-                                  "gamesPareja1",
-                                  Number(event.target.value),
-                                )
-                              }
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              min={0}
-                              className="form-control"
-                              value={set.gamesPareja2}
-                              onChange={(event) =>
-                                handleSetChange(
-                                  index,
-                                  "gamesPareja2",
-                                  Number(event.target.value),
-                                )
-                              }
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              min={0}
-                              className="form-control"
-                              value={set.tiebreakP1 ?? ""}
-                              onChange={(event) =>
-                                handleSetChange(
-                                  index,
-                                  "tiebreakP1",
-                                  event.target.value === ""
-                                    ? null
-                                    : Number(event.target.value),
-                                )
-                              }
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              min={0}
-                              className="form-control"
-                              value={set.tiebreakP2 ?? ""}
-                              onChange={(event) =>
-                                handleSetChange(
-                                  index,
-                                  "tiebreakP2",
-                                  event.target.value === ""
-                                    ? null
-                                    : Number(event.target.value),
-                                )
-                              }
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <div className="d-flex justify-content-end gap-2">
+        footer={
+          selectedMatch ? (
+            <>
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="inline-flex items-center rounded-full border border-deep-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
                 onClick={() => setShowResultModal(false)}
               >
                 Cancelar
               </button>
               <button
                 type="button"
-                className="btn btn-primario"
+                className="inline-flex items-center rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
                 onClick={() => void handleSaveResult()}
                 disabled={saving || winnerId === null}
               >
                 {saving ? "Guardando..." : "Guardar resultado"}
               </button>
+            </>
+          ) : undefined
+        }
+      >
+        {selectedMatch ? (
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-deep-black/10 bg-gradient-to-r from-padel-green/15 via-white to-energy-orange/15 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
+                Partido
+              </p>
+              <p className="mt-1 text-base font-semibold text-deep-black">
+                {selectedMatch.pareja1Nombre} vs {selectedMatch.pareja2Nombre}
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-semibold">
+                <Badge
+                  text={statusBadge(selectedMatch.status).label}
+                  variant={statusBadge(selectedMatch.status).variant}
+                  className="uppercase"
+                />
+                <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+                  {formatDateTime(selectedMatch.scheduledAt)}
+                </span>
+                <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+                  {selectedMatch.canchaLabel}
+                </span>
+                {selectedMatch.llave ? (
+                  <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+                    Llave: {selectedMatch.llave}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            <p className="text-sm text-deep-black/70">
+              Ingresa el ganador y los juegos por set para el partido.
+            </p>
+
+            <div className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4">
+              <label
+                className="mb-2 block text-sm font-semibold text-deep-black"
+                htmlFor="resultado-ganador"
+              >
+                Ganador
+              </label>
+              <select
+                id="resultado-ganador"
+                className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                value={winnerId ?? ""}
+                onChange={(event) => {
+                  setWinnerId(Number(event.target.value) || null);
+                }}
+              >
+                <option value="">Seleccionar ganador</option>
+                {selectedMatch.pareja1Id ? (
+                  <option value={selectedMatch.pareja1Id}>
+                    {selectedMatch.pareja1Nombre}
+                  </option>
+                ) : null}
+                {selectedMatch.pareja2Id ? (
+                  <option value={selectedMatch.pareja2Id}>
+                    {selectedMatch.pareja2Nombre}
+                  </option>
+                ) : null}
+              </select>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-deep-black/60">
+                Sets
+              </h3>
+              {sets.map((set, index) => (
+                <div
+                  key={set.numero}
+                  className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4"
+                >
+                  <p className="mb-3 text-sm font-semibold text-deep-black">
+                    Set {set.numero}
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label
+                        className="mb-1.5 block truncate text-xs font-semibold text-deep-black/70"
+                        htmlFor={`set-${set.numero}-games-1`}
+                      >
+                        Games {selectedMatch.pareja1Nombre}
+                      </label>
+                      <input
+                        id={`set-${set.numero}-games-1`}
+                        type="number"
+                        min={0}
+                        className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                        value={set.gamesPareja1}
+                        onChange={(event) =>
+                          handleSetChange(
+                            index,
+                            "gamesPareja1",
+                            Number(event.target.value),
+                          )
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className="mb-1.5 block truncate text-xs font-semibold text-deep-black/70"
+                        htmlFor={`set-${set.numero}-games-2`}
+                      >
+                        Games {selectedMatch.pareja2Nombre}
+                      </label>
+                      <input
+                        id={`set-${set.numero}-games-2`}
+                        type="number"
+                        min={0}
+                        className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                        value={set.gamesPareja2}
+                        onChange={(event) =>
+                          handleSetChange(
+                            index,
+                            "gamesPareja2",
+                            Number(event.target.value),
+                          )
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className="mb-1.5 block truncate text-xs font-semibold text-deep-black/70"
+                        htmlFor={`set-${set.numero}-tiebreak-1`}
+                      >
+                        Tiebreak {selectedMatch.pareja1Nombre}
+                      </label>
+                      <input
+                        id={`set-${set.numero}-tiebreak-1`}
+                        type="number"
+                        min={0}
+                        placeholder="-"
+                        className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black placeholder:text-deep-black/40 focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                        value={set.tiebreakP1 ?? ""}
+                        onChange={(event) =>
+                          handleSetChange(
+                            index,
+                            "tiebreakP1",
+                            event.target.value === ""
+                              ? null
+                              : Number(event.target.value),
+                          )
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className="mb-1.5 block truncate text-xs font-semibold text-deep-black/70"
+                        htmlFor={`set-${set.numero}-tiebreak-2`}
+                      >
+                        Tiebreak {selectedMatch.pareja2Nombre}
+                      </label>
+                      <input
+                        id={`set-${set.numero}-tiebreak-2`}
+                        type="number"
+                        min={0}
+                        placeholder="-"
+                        className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black placeholder:text-deep-black/40 focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                        value={set.tiebreakP2 ?? ""}
+                        onChange={(event) =>
+                          handleSetChange(
+                            index,
+                            "tiebreakP2",
+                            event.target.value === ""
+                              ? null
+                              : Number(event.target.value),
+                          )
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         ) : (
-          <p>No hay partido seleccionado.</p>
+          <p className="text-sm text-deep-black/70">
+            No hay partido seleccionado.
+          </p>
         )}
       </Modal>
     </div>

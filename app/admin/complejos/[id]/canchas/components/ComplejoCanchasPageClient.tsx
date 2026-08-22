@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import Button from "react-bootstrap/Button";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
@@ -94,7 +93,8 @@ export default function ComplejoCanchasPageClient({
 
   function handleSort(field: string) {
     const safeField = ALLOWED_SORT_FIELDS.has(field) ? field : "id";
-    const newOrderDir = safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
+    const newOrderDir =
+      safeField === orderBy && orderDir === "asc" ? "desc" : "asc";
 
     router.push(
       updateQuery({
@@ -120,7 +120,10 @@ export default function ComplejoCanchasPageClient({
   if (!Number.isInteger(complejoId) || complejoId <= 0) {
     return (
       <div className="container py-4">
-        <div className="alert alert-danger" role="alert">
+        <div
+          className="rounded-xl border border-energy-orange/25 bg-energy-orange/10 px-4 py-3 text-sm text-energy-orange"
+          role="alert"
+        >
           Identificador de complejo inválido.
         </div>
       </div>
@@ -132,13 +135,12 @@ export default function ComplejoCanchasPageClient({
       <TitleBar
         title={`Canchas del Complejo #${complejoId}`}
         buttons={
-          <Button
-            as="a"
+          <a
+            className="btn btn-primary"
             href={`${basePath}/${complejoId}/canchas/new`}
-            variant="primary"
           >
             Nueva Cancha
-          </Button>
+          </a>
         }
         backURL={backURL}
         total={total}
@@ -146,8 +148,8 @@ export default function ComplejoCanchasPageClient({
 
       <SearchBar placeholder="Buscar cancha, superficie..." />
 
-      <div className="card padel-data-card">
-        <div className="card-body">
+      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="p-4">
           <TableWithPagination
             items={canchas}
             page={page}
@@ -217,10 +219,10 @@ export default function ComplejoCanchasPageClient({
                 <td>{cancha.isIndoor ? "Si" : "No"}</td>
                 <td>{cancha.dobles ? "Si" : "No"}</td>
                 <td>{cancha.isActive ? "Si" : "No"}</td>
-                <td className="d-flex gap-2 padel-table-actions">
+                <td className="flex gap-2 padel-table-actions">
                   <Link
                     href={`${basePath}/${complejoId}/canchas/${cancha.id}`}
-                    className="btn btn-primario btn-sm padel-action-btn"
+                    className="btn btn-primary btn-sm padel-action-btn"
                   >
                     <PencilSquareIcon className="h-4 w-4" />
                   </Link>

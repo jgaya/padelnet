@@ -1,0 +1,41 @@
+import { NextResponse } from "next/server";
+
+import { processPendingNotifications } from "@/cron/notification-cron";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+function isAuthorized(request: Request) {
+  const secret = process.env.CRON_SECRET;
+
+  // Sin secret configurado no se habilita el endpoint: es preferible fallar
+  // cerrado antes que dejar la cola de notificaciones abierta a cualquiera.
+  if (!secret) return false;
+
+  const header = request.headers.get("authorization");
+  return header === `Bearer ${secret}`;
+}
+
+export async function POST(request: Request) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
+  try {
+    const result = await processPendingNotifications();
+    return NextResponse.json({ success: true, ...result });
+  } catch (error) {
+    console.error("Error procesando notificaciones pendientes", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Error procesando notificaciones",
+      },
+      { status: 500 },
+    );
+  }
+}

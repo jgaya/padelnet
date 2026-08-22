@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { getEventoById } from "@/actions/eventos";
 import TorneoForm from "@/app/admin/complejos/[id]/eventos/[eventoId]/torneos/components/TorneoForm";
 
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { migasGestion } from "@/lib/breadcrumbs-gestion";
+
 export default async function NewTorneoPage(props: {
   params: Promise<{ id: string; eventoId: string }>;
 }) {
@@ -26,5 +29,16 @@ export default async function NewTorneoPage(props: {
     notFound();
   }
 
-  return <TorneoForm complejoId={complejoId} eventoId={parsedEventoId} />;
+  const migas = await migasGestion({
+    complejoId,
+    eventoId: parsedEventoId,
+    seccion: "Nuevo torneo",
+  });
+
+  return (
+    <>
+      <Breadcrumbs migas={migas} />
+      <TorneoForm complejoId={complejoId} eventoId={parsedEventoId} />
+    </>
+  );
 }

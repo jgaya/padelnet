@@ -184,7 +184,9 @@ export default function PartidosPageClient() {
       );
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "No se pudo generar la vista previa";
+        err instanceof Error
+          ? err.message
+          : "No se pudo generar la vista previa";
       showSnackbar(message, "error");
     } finally {
       setGenerating(false);
@@ -205,7 +207,9 @@ export default function PartidosPageClient() {
         payload,
       );
       showSnackbar(
-        `Partidos guardados correctamente (${result.partidosGenerados})`,
+        result.partidosSinAgendar > 0
+          ? `Partidos guardados: ${result.partidosGenerados} (${result.partidosSinAgendar} de llave sin horario)`
+          : `Partidos guardados correctamente (${result.partidosGenerados})`,
         "success",
       );
       setPreview(null);
@@ -223,8 +227,8 @@ export default function PartidosPageClient() {
     return (
       <div className="container padel-complejos-list padel-partidos-page">
         <TitleBar title="Crear partidos" />
-        <div className="card padel-data-card">
-          <div className="card-body">Parametros invalidos.</div>
+        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+          <div className="p-4">Parametros invalidos.</div>
         </div>
       </div>
     );
@@ -234,7 +238,7 @@ export default function PartidosPageClient() {
     <div className="container padel-complejos-list padel-partidos-page">
       <TitleBar title={`Crear partidos - ${data?.torneo.nombre ?? ""}`} />
 
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="flex justify-between items-center mb-3">
         <div>
           <p className="mb-1">
             <strong>Evento:</strong> {data?.torneo.eventoNombre ?? "-"}
@@ -254,23 +258,23 @@ export default function PartidosPageClient() {
       </div>
 
       {loading ? (
-        <div className="card padel-data-card">
-          <div className="card-body">Cargando configuracion...</div>
+        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+          <div className="p-4">Cargando configuracion...</div>
         </div>
       ) : null}
 
       {!loading && error ? (
-        <div className="card padel-data-card">
-          <div className="card-body">{error}</div>
+        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+          <div className="p-4">{error}</div>
         </div>
       ) : null}
 
       {!loading && data ? (
         <>
-          <div className="card padel-data-card mb-3">
-            <div className="card-body">
+          <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card mb-3">
+            <div className="p-4">
               <h5 className="mb-3">1. Selecciona las canchas</h5>
-              <div className="d-flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2">
                 {data.canchas.map((cancha) => (
                   <label
                     key={cancha.id}
@@ -291,26 +295,33 @@ export default function PartidosPageClient() {
           </div>
 
           {selectedCanchaIds.length > 0 ? (
-            <div className="card padel-data-card mb-3">
-              <div className="card-body">
+            <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card mb-3">
+              <div className="p-4">
                 <h5 className="mb-3">2. Define los horarios por dia</h5>
                 {selectedCanchaIds.map((canchaId) => {
-                  const cancha = data.canchas.find((item) => item.id === canchaId);
+                  const cancha = data.canchas.find(
+                    (item) => item.id === canchaId,
+                  );
                   if (!cancha) return null;
 
                   return (
                     <div key={cancha.id} className="padel-schedule-court">
                       <h6 className="mb-3">{cancha.label}</h6>
                       {days.map((day, index) => (
-                        <div key={day.key} className="row g-3 align-items-end padel-time-row">
-                          <div className="col-md-3">
-                            <label className="form-label">{day.label}</label>
+                        <div
+                          key={day.key}
+                          className="grid items-end gap-3 padel-time-row md:grid-cols-12"
+                        >
+                          <div className="md:col-span-3">
+                            <label className="padel-form-label">
+                              {day.label}
+                            </label>
                           </div>
-                          <div className="col-md-4">
-                            <label className="form-label">Inicio</label>
+                          <div className="md:col-span-4">
+                            <label className="padel-form-label">Inicio</label>
                             <input
                               type="time"
-                              className="form-control"
+                              className="padel-form-input"
                               value={
                                 canchaWindows[cancha.id]?.[index]?.start ??
                                 "09:00"
@@ -325,11 +336,11 @@ export default function PartidosPageClient() {
                               }
                             />
                           </div>
-                          <div className="col-md-4">
-                            <label className="form-label">Fin</label>
+                          <div className="md:col-span-4">
+                            <label className="padel-form-label">Fin</label>
                             <input
                               type="time"
-                              className="form-control"
+                              className="padel-form-input"
                               value={
                                 canchaWindows[cancha.id]?.[index]?.end ??
                                 "18:00"
@@ -353,53 +364,57 @@ export default function PartidosPageClient() {
             </div>
           ) : null}
 
-          <div className="card padel-data-card">
-            <div className="card-body">
+          <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+            <div className="p-4">
               <h5 className="mb-3">3. Configura la generacion</h5>
-              <div className="row g-3 align-items-stretch mb-3 padel-config-grid">
-                <div className="col-md-3">
+              <div className="mb-3 grid items-stretch gap-3 padel-config-grid md:grid-cols-12">
+                <div className="md:col-span-3">
                   <div className="padel-config-field">
-                  <label className="form-label">Duracion del partido</label>
-                  <select
-                    className="form-select"
-                    value={durationMin}
-                    onChange={(event) => {
-                      setDurationMin(Number(event.target.value));
-                      invalidatePreview();
-                    }}
-                  >
-                    {[60, 75, 90, 105, 120].map((value) => (
-                      <option key={value} value={value}>
-                        {value} min
-                      </option>
-                    ))}
-                  </select>
+                    <label className="padel-form-label">
+                      Duracion del partido
+                    </label>
+                    <select
+                      className="padel-form-select"
+                      value={durationMin}
+                      onChange={(event) => {
+                        setDurationMin(Number(event.target.value));
+                        invalidatePreview();
+                      }}
+                    >
+                      {[60, 75, 90, 105, 120].map((value) => (
+                        <option key={value} value={value}>
+                          {value} min
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-                <div className="col-md-4">
+                <div className="md:col-span-4">
                   <div className="padel-config-field">
-                  <label className="form-label">Descanso misma pareja</label>
-                  <select
-                    className="form-select"
-                    value={gapMultiplier}
-                    onChange={(event) => {
-                      setGapMultiplier(Number(event.target.value));
-                      invalidatePreview();
-                    }}
-                  >
-                    {[0, 0.5, 1, 1.5, 2, 2.5, 3].map((value) => (
-                      <option key={value} value={value}>
-                        {value}x duracion
-                      </option>
-                    ))}
-                  </select>
+                    <label className="padel-form-label">
+                      Descanso misma pareja
+                    </label>
+                    <select
+                      className="padel-form-select"
+                      value={gapMultiplier}
+                      onChange={(event) => {
+                        setGapMultiplier(Number(event.target.value));
+                        invalidatePreview();
+                      }}
+                    >
+                      {[0, 0.5, 1, 1.5, 2, 2.5, 3].map((value) => (
+                        <option key={value} value={value}>
+                          {value}x duracion
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-                <div className="col-md-5">
-                  <div className="form-check padel-config-check">
+                <div className="md:col-span-5">
+                  <div className="padel-form-check padel-config-check">
                     <input
                       id="extra-slot-dia1"
-                      className="form-check-input"
+                      className="padel-form-check-input"
                       type="checkbox"
                       checked={allowExtraFirstDay}
                       onChange={(event) => {
@@ -407,14 +422,17 @@ export default function PartidosPageClient() {
                         invalidatePreview();
                       }}
                     />
-                    <label className="form-check-label" htmlFor="extra-slot-dia1">
+                    <label
+                      className="padel-form-check-label"
+                      htmlFor="extra-slot-dia1"
+                    >
                       Permitir ultimo slot corto en el primer dia
                     </label>
                   </div>
                 </div>
               </div>
               <button
-                className="btn btn-primario"
+                className="btn btn-primary"
                 onClick={() => void handleGenerate()}
                 disabled={generating || selectedCanchaIds.length === 0}
               >
@@ -424,18 +442,21 @@ export default function PartidosPageClient() {
           </div>
 
           {preview ? (
-            <div className="card padel-data-card mt-3">
-              <div className="card-body">
-                <div className="d-flex flex-wrap justify-content-between gap-2 mb-3">
+            <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card mt-3">
+              <div className="p-4">
+                <div className="flex flex-wrap justify-between gap-2 mb-3">
                   <div>
                     <h5 className="mb-1">4. Revisar y guardar</h5>
                     <p className="mb-0">
                       Slots usados: {preview.slotsOcupados}/
-                      {preview.slotsDisponibles} | Sin asignar:{" "}
-                      {preview.unassigned.length}
+                      {preview.slotsDisponibles} | Llave sin horario:{" "}
+                      {preview.unassignedLlave.length}
+                      {preview.unassignedZona.length > 0
+                        ? ` | Zona sin horario: ${preview.unassignedZona.length}`
+                        : ""}
                     </p>
                   </div>
-                  <div className="d-flex gap-2">
+                  <div className="flex gap-2">
                     <button
                       className="btn btn-outline-secondary"
                       type="button"
@@ -445,24 +466,48 @@ export default function PartidosPageClient() {
                       Rehacer
                     </button>
                     <button
-                      className="btn btn-primario"
+                      className="btn btn-primary"
                       type="button"
                       onClick={() => void handleSave()}
-                      disabled={saving || preview.unassigned.length > 0}
+                      disabled={saving || preview.unassignedZona.length > 0}
                     >
                       {saving ? "Guardando..." : "Guardar en DB"}
                     </button>
                   </div>
                 </div>
 
-                {preview.unassigned.length > 0 ? (
-                  <div className="alert alert-warning">
-                    <strong>Partidos sin horario:</strong>
+                {preview.unassignedZona.length > 0 ? (
+                  <div className="rounded-xl border border-energy-orange/25 bg-energy-orange/10 px-4 py-3 text-sm text-energy-orange">
+                    <strong>
+                      Partidos de zona que no entran en la grilla:
+                    </strong>
+                    <p className="mb-0 mt-1">
+                      Agrega canchas, dias u horarios para poder guardar.
+                    </p>
                     <ul className="mb-0 mt-2">
-                      {preview.unassigned.map((match) => (
+                      {preview.unassignedZona.map((match) => (
                         <li key={match.key}>
                           {match.grupoNombre}: {match.pareja1Nombre} vs{" "}
                           {match.pareja2Nombre}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+
+                {preview.unassignedLlave.length > 0 ? (
+                  <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                    <strong>Partidos de llave sin horario:</strong>
+                    <p className="mb-0 mt-1">
+                      Se guardan igual, sin horario ni cancha, para poder
+                      agendarlos despues.
+                    </p>
+                    <ul className="mb-0 mt-2">
+                      {preview.unassignedLlave.map((match) => (
+                        <li key={match.key}>
+                          {match.llave}: {match.pareja1Nombre} vs{" "}
+                          {match.pareja2Nombre}
+                          {match.conBye ? " (con Bye, no se juega)" : ""}
                         </li>
                       ))}
                     </ul>
@@ -476,7 +521,7 @@ export default function PartidosPageClient() {
                         <th className="px-4 py-3">Dia</th>
                         <th className="px-4 py-3">Hora</th>
                         <th className="px-4 py-3">Cancha</th>
-                        <th className="px-4 py-3">Zona</th>
+                        <th className="px-4 py-3">Instancia</th>
                         <th className="px-4 py-3">Partido</th>
                       </tr>
                     </thead>
@@ -496,9 +541,10 @@ export default function PartidosPageClient() {
                             {match.canchaLabel}
                           </td>
                           <td className="whitespace-nowrap px-4 py-3">
-                            {match.grupoNombre}
+                            {match.llave ?? match.grupoNombre ?? "-"}
                           </td>
                           <td className="px-4 py-3">
+                            <span className="text-slate-500">{match.key}</span>{" "}
                             {match.pareja1Nombre} vs {match.pareja2Nombre}
                             {match.restricted ? (
                               <span className="ml-2 inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800">
