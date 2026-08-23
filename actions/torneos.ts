@@ -1,6 +1,6 @@
 "use server";
 
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
 import { getCanchaAccessScope } from "@/lib/canchas-auth";
@@ -868,6 +868,132 @@ export async function updateTorneo(
     return actualizado;
   } catch (error) {
     mapPrismaError(error);
+  }
+}
+
+export type TorneoAccionResult =
+  | { success: true; message: string }
+  | { success: false; error: string };
+
+/**
+ * Publica el torneo: DRAFT -> PUBLISHED.
+ *
+ * Mueve `status` y `publicado` juntos porque son las dos condiciones que pide
+ * `inscripcionesAbiertas`; con una sola el torneo queda publicado a medias y
+ * nadie se puede anotar.
+ */
+export async function publicarTorneo(
+  complejoId: number,
+  eventoId: number,
+  torneoId: number,
+): Promise<TorneoAccionResult> {
+  try {
+    await ensureEventoAccess(complejoId, eventoId);
+
+    const torneo = await prisma.torneo.findFirst({
+      where: { id: torneoId, eventoId, deletedAt: null },
+      select: { id: true, status: true, publicado: true },
+    });
+
+    if (!torneo) {
+      return { success: false, error: "Torneo no encontrado" };
+    }
+
+    if (torneo.status !== "DRAFT") {
+      return {
+        success: false,
+        error: "Solo se puede publicar un torneo que este en borrador",
+      };
+    }
+
+    await prisma.torneo.update({
+      where: { id: torneoId },
+      data: { status: "PUBLISHED", publicado: true },
+    });
+
+    // Si ya venia con publicado en true el aviso salio antes: no se repite.
+    if (!torneo.publicado) {
+      await notifyTorneoPublicado(torneoId);
+    }
+
+    return { success: true, message: "Torneo publicado" };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "No se pudo publicar el torneo",
+    };
+  }
+}
+
+/**
+ * Termina el torneo: IN_PROGRESS -> FINISHED, y carga los puntos de ranking.
+ *
+ * A IN_PROGRESS se llega solo al cerrar zonas y armar la llave, asi que este
+ * boton aparece recien cuando el torneo esta realmente en juego.
+ *
+ * Tambien acepta un torneo ya FINISHED y en ese caso solo recalcula el
+ * ranking. Hace falta para dos cosas: reintentar si el calculo fallo (el
+ * estado ya quedo cambiado y sin esto no habria segunda chance) y rehacer los
+ * puntos despues de corregir un resultado. `aplicarRankingTorneo` borra y
+ * reescribe, asi que repetirlo no duplica nada.
+ */
+export async function finalizarTorneo(
+  complejoId: number,
+  eventoId: number,
+  torneoId: number,
+): Promise<TorneoAccionResult> {
+  try {
+    await ensureEventoAccess(complejoId, eventoId);
+
+    const torneo = await prisma.torneo.findFirst({
+      where: { id: torneoId, eventoId, deletedAt: null },
+      select: { id: true, status: true },
+    });
+
+    if (!torneo) {
+      return { success: false, error: "Torneo no encontrado" };
+    }
+
+    if (torneo.status !== "IN_PROGRESS" && torneo.status !== "FINISHED") {
+      return {
+        success: false,
+        error: "Solo se puede terminar un torneo que se este jugando",
+      };
+    }
+
+    const yaEstaba = torneo.status === "FINISHED";
+
+    if (!yaEstaba) {
+      await prisma.torneo.update({
+        where: { id: torneoId },
+        data: { status: "FINISHED" },
+      });
+    }
+
+    const ranking = await aplicarRankingTorneo(torneoId);
+
+    if (!ranking.success) {
+      return {
+        success: false,
+        error: `El torneo quedo terminado pero fallo el ranking: ${
+          ranking.message ?? "error desconocido"
+        }. Volve a intentarlo con "Recalcular ranking".`,
+      };
+    }
+
+    return {
+      success: true,
+      message: yaEstaba
+        ? `Ranking recalculado: ${ranking.rankingsCreados} puntajes.`
+        : `Torneo terminado. Se cargaron ${ranking.rankingsCreados} puntajes de ranking.`,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "No se pudo terminar el torneo",
+    };
   }
 }
 

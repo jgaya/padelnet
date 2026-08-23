@@ -111,6 +111,61 @@ export function cumpleCategoria(
 }
 
 /**
+ * Generos que pueden llegar a integrar una pareja valida del torneo.
+ *
+ * Ojo que para MIXTO esto es mas estricto que `cumpleSexo`: la pareja mixta se
+ * arma con un M y una F, asi que un jugador con genero X no entra en ningun
+ * torneo, ni siquiera en los mixtos. Sirve para filtrar en SQL.
+ */
+export function generosElegibles(torneoSexo: TorneoSexo): Array<"M" | "F"> {
+  if (torneoSexo === "MASCULINO") {
+    return ["M"];
+  }
+
+  if (torneoSexo === "FEMENINO") {
+    return ["F"];
+  }
+
+  return ["M", "F"];
+}
+
+/**
+ * Condicion necesaria de categoria para que un jugador pueda integrar *alguna*
+ * pareja valida del torneo. Es el filtro que corresponde cuando todavia no hay
+ * companero elegido, como en los combos del alta de inscripciones.
+ *
+ * Se diferencia de `cumpleCategoria` solo en SUMA: aca hace falta que quede
+ * lugar para un companero de categoria 1 o mayor, asi que un jugador con
+ * categoria N justa no puede sumar N con nadie.
+ */
+export function categoriaPuedeIntegrarPareja(
+  regla: TorneoCategoriaRegla,
+  categoriaN: number | null,
+  categoriaJugador: number | null,
+) {
+  if (regla === "LIBRE") {
+    return true;
+  }
+
+  if (!categoriaN || !categoriaJugador) {
+    return false;
+  }
+
+  switch (regla) {
+    case "MAYOR_IGUAL":
+      return categoriaJugador >= categoriaN;
+    case "MENOR_IGUAL":
+      return categoriaJugador <= categoriaN;
+    case "IGUAL":
+      return categoriaJugador === categoriaN;
+    case "SUMA":
+      return categoriaJugador <= categoriaN - 1;
+    default:
+      return true;
+  }
+}
+
+/**
  * Un torneo tiene las inscripciones abiertas mientras este publicado, en
  * PUBLISHED, y no se hayan armado las zonas. Una vez armadas, la pareja ya esta
  * en el cuadro y en los partidos: sacarla dejaria un hueco, asi que la baja

@@ -32,6 +32,17 @@ export function getFirebaseMessaging() {
   return admin.messaging(initAdminApp());
 }
 
+/**
+ * Verifica el ID token que devuelve el popup de Google en el cliente.
+ *
+ * Es lo que convierte "el navegador dice que es fulano" en algo confiable: la
+ * firma la valida Firebase contra las claves publicas de Google, asi que un
+ * token fabricado a mano no pasa.
+ */
+export function verificarIdToken(idToken: string) {
+  return admin.auth(initAdminApp()).verifyIdToken(idToken);
+}
+
 export const firebaseAdmin = {
   send: (...args: Parameters<admin.messaging.Messaging["send"]>) =>
     getFirebaseMessaging().send(...args),

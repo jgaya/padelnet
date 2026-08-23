@@ -3,9 +3,13 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PencilSquareIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
-import ConfirmationModal from "@/components/ConfirmationModal";
+import {
+  PencilSquareIcon,
+  ShieldCheckIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
 import Modal from "@/components/Modal";
+import RowActions from "@/components/RowActions";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
@@ -256,28 +260,34 @@ export default function UsuariosPage() {
                 <td>{user.email}</td>
                 <td>{user.platformRole}</td>
                 <td>{user.isActive ? "Si" : "No"}</td>
-                <td className="flex gap-2 padel-table-actions">
-                  <Link
-                    href={`/superadmin/usuarios/${user.id}`}
-                    className="btn btn-primary btn-sm padel-action-btn"
-                  >
-                    <PencilSquareIcon className="h-4 w-4" />
-                  </Link>
-
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-sm padel-action-btn"
-                    onClick={() => openAssignAdminModal(user.id)}
-                    title="Asignar Admin a Complejo"
-                  >
-                    <ShieldCheckIcon className="h-4 w-4" />
-                  </button>
-
-                  <ConfirmationModal
-                    onConfirm={() => handleDelete(user.id)}
-                    title={`Borrar Usuario ${user.id}`}
-                    message="Estas seguro de que quieres eliminar este usuario?"
-                    tooltip="Eliminar usuario"
+                <td className="padel-table-actions">
+                  <RowActions
+                    actions={[
+                      {
+                        key: "editar",
+                        label: "Editar usuario",
+                        icon: <PencilSquareIcon className="h-4 w-4" />,
+                        href: `/superadmin/usuarios/${user.id}`,
+                      },
+                      {
+                        key: "admin",
+                        label: "Asignar admin a un complejo",
+                        icon: <ShieldCheckIcon className="h-4 w-4" />,
+                        onClick: () => openAssignAdminModal(user.id),
+                      },
+                      {
+                        key: "eliminar",
+                        label: "Eliminar usuario",
+                        icon: <TrashIcon className="h-4 w-4" />,
+                        variant: "danger",
+                        onClick: () => handleDelete(user.id),
+                        confirm: {
+                          title: `Borrar Usuario ${user.id}`,
+                          message:
+                            "Estas seguro de que quieres eliminar este usuario?",
+                        },
+                      },
+                    ]}
                   />
                 </td>
               </tr>

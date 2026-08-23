@@ -1,10 +1,13 @@
 "use client";
-import Link from "next/link";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { PencilSquareIcon, PlusIcon } from "@heroicons/react/24/solid";
-import ConfirmationModal from "@/components/ConfirmationModal";
+import {
+  PencilSquareIcon,
+  PlusIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
+import RowActions from "@/components/RowActions";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
@@ -229,18 +232,28 @@ export default function SuperadminEventosComplejoPage() {
                 <td>{evento.isOpen ? "Si" : "No"}</td>
                 <td>{evento.isVisible ? "Si" : "No"}</td>
                 <td>{evento.isFinished ? "Si" : "No"}</td>
-                <td className="flex gap-2 padel-table-actions">
-                  <Link
-                    href={`/admin/complejos/${complejoId}/eventos/${evento.id}`}
-                    className="btn btn-primary btn-sm padel-action-btn"
-                  >
-                    <PencilSquareIcon className="h-4 w-4" />
-                  </Link>
-                  <ConfirmationModal
-                    onConfirm={() => handleDelete(evento.id)}
-                    title={`Borrar Evento ${evento.id}`}
-                    message="Estas seguro de que quieres eliminar este evento?"
-                    tooltip="Eliminar evento"
+                <td className="padel-table-actions">
+                  <RowActions
+                    actions={[
+                      {
+                        key: "editar",
+                        label: "Editar evento",
+                        icon: <PencilSquareIcon className="h-4 w-4" />,
+                        href: `/admin/complejos/${complejoId}/eventos/${evento.id}`,
+                      },
+                      {
+                        key: "eliminar",
+                        label: "Eliminar evento",
+                        icon: <TrashIcon className="h-4 w-4" />,
+                        variant: "danger",
+                        onClick: () => handleDelete(evento.id),
+                        confirm: {
+                          title: `Borrar Evento ${evento.id}`,
+                          message:
+                            "Estas seguro de que quieres eliminar este evento?",
+                        },
+                      },
+                    ]}
                   />
                 </td>
               </tr>

@@ -1,10 +1,18 @@
+// Prisma 7: el generador viejo `prisma-client-js` ya no existe. El nuevo
+// `prisma-client` emite TypeScript en `output` en vez de escribir dentro de
+// node_modules, asi que la carpeta generada se importa como codigo propio.
+// `importFileExtension = "ts"` es para que tsx resuelva los imports internos
+// del cliente (si no, busca ./internal/class.js y no lo encuentra).
 generator client {
-  provider = "prisma-client-js"
+  provider            = "prisma-client"
+  output              = "../lib/generated/prisma"
+  importFileExtension = "ts"
 }
 
+// La url se configura en prisma.config.ts: en v7 `url` dentro del datasource
+// quedo deprecada.
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
 /// Rol a nivel plataforma. USER es el jugador: no tiene privilegios de gestion.
@@ -123,15 +131,26 @@ enum PushPlatform {
 model User {
   id            Int          @id @default(autoincrement())
   email         String       @unique
-  passwordHash  String
+  /// Null en las cuentas que entran solo con Google: no tienen contrasena.
+  /// Tambien se anula al vincular una cuenta que nunca habia verificado el
+  /// mail, para que quien la haya creado no siga entrando.
+  passwordHash  String?
+  /// UID de Firebase Auth. Es la identidad estable del proveedor: el mail se
+  /// puede cambiar, esto no.
+  firebaseUid   String?      @unique
   name          String
   lastname      String
   telefono      String?
   dni           String?      @unique
   genero        Genero       @default(X)
   categoria     String?
-  /// Ciudad o barrio de la persona. Lo carga cada uno en su perfil, asi que
-  /// puede venir vacio; el dashboard lo agrupa tal cual esta escrito.
+  /// Provincia de la persona, con el nombre canonico de lib/ubicaciones.ts. Se
+  /// guarda el nombre y no el id de INDEC para que siga siendo legible en el
+  /// dashboard y en cualquier export.
+  provincia     String?
+  /// Ciudad o barrio de la persona. Sale del combo que depende de la provincia,
+  /// pero admite texto libre via la opcion "Otra": el dataset no cubre todos los
+  /// parajes. Puede venir vacio; el dashboard lo agrupa tal cual esta escrito.
   localidad     String?
   birthDate     DateTime?    @db.Date
   avatarUrl     String?

@@ -1,4 +1,5 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
 import { getMessaging, isSupported, type Messaging } from "firebase/messaging";
 
 const firebaseConfig = {
@@ -24,6 +25,15 @@ function getFirebaseApp(): FirebaseApp | null {
  * sin soporte (Safari viejo, iOS fuera de PWA) y rompia cualquier pagina que
  * importara este archivo.
  */
+/**
+ * Auth del cliente, para el popup de Google. Devuelve null si Firebase no esta
+ * configurado, asi el boton simplemente no se dibuja en vez de romper.
+ */
+export function getAuthInstance(): Auth | null {
+  const app = getFirebaseApp();
+  return app ? getAuth(app) : null;
+}
+
 export async function getMessagingInstance(): Promise<Messaging | null> {
   if (typeof window === "undefined") return null;
 

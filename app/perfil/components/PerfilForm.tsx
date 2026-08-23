@@ -11,6 +11,9 @@ import {
   FormInput,
   FormSelect,
 } from "@/app/components/FormBase";
+import UbicacionFields, {
+  type UbicacionValue,
+} from "@/app/components/UbicacionFields";
 import { updateMyProfile, type PerfilPayload } from "@/actions/perfil";
 import { PerfilFormSchema, type PerfilFormData } from "@/types/forms";
 import AvatarCropper from "./AvatarCropper";
@@ -44,6 +47,11 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
   const currentImageUrl = watch("imageUrl");
   const currentAvatarUrl = watch("avatarUrl");
 
+  const handleUbicacionChange = ({ provincia, localidad }: UbicacionValue) => {
+    setValue("provincia", provincia);
+    setValue("localidad", localidad);
+  };
+
   const onSubmit = async (data: PerfilFormData) => {
     setIsLoading(true);
 
@@ -55,6 +63,7 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
         telefono: data.telefono || null,
         dni: data.dni || null,
         genero: data.genero,
+        provincia: data.provincia || null,
         localidad: data.localidad || null,
         birthDate: data.birthDate || null,
         imageUrl: data.imageUrl || null,
@@ -128,11 +137,15 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
             register={register("dni")}
             error={errors.dni}
           />
-          <FormInput
-            label="Localidad"
-            placeholder="Ciudad o barrio"
-            register={register("localidad")}
-            error={errors.localidad}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <UbicacionFields
+            provincia={watch("provincia") ?? ""}
+            localidad={watch("localidad") ?? ""}
+            onChange={handleUbicacionChange}
+            errorProvincia={errors.provincia}
+            errorLocalidad={errors.localidad}
           />
         </div>
 

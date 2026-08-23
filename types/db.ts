@@ -23,7 +23,12 @@ export type ComplejoRole = z.infer<typeof ComplejoRoleSchema>;
 
 // Incluye "X" porque es el valor por defecto del enum Genero en Prisma: sin el,
 // un usuario con genero X no podia guardar su perfil.
-export const GeneroSchema = z.enum(["M", "F", "X"]);
+// El mensaje es explicito porque este schema alimenta selects con un option
+// vacio: sin el, el usuario que no elige nada ve el default de zod, que dice
+// 'Invalid option: expected one of "M"|"F"|"X"'.
+export const GeneroSchema = z.enum(["M", "F", "X"], {
+  message: "Elegi una opcion",
+});
 export type Genero = z.infer<typeof GeneroSchema>;
 
 export const EventTypeSchema = z.enum(["FINDE", "SEMANAL"]);

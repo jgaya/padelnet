@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PencilSquareIcon } from "@heroicons/react/24/solid";
-import ConfirmationModal from "@/components/ConfirmationModal";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
+import RowActions from "@/components/RowActions";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
@@ -201,19 +201,28 @@ export default function CanchasPage() {
                 <td>{cancha.isIndoor ? "Si" : "No"}</td>
                 <td>{cancha.dobles ? "Si" : "No"}</td>
                 <td>{cancha.isActive ? "Si" : "No"}</td>
-                <td className="flex gap-2 padel-table-actions">
-                  <Link
-                    href={`/canchas/${cancha.id}`}
-                    className="btn btn-primary btn-sm padel-action-btn"
-                  >
-                    <PencilSquareIcon className="h-4 w-4" />
-                  </Link>
-
-                  <ConfirmationModal
-                    onConfirm={() => handleDelete(cancha.id)}
-                    title={`Borrar Cancha ${cancha.id}`}
-                    message="Estas seguro de que quieres eliminar esta cancha?"
-                    tooltip="Eliminar cancha"
+                <td className="padel-table-actions">
+                  <RowActions
+                    actions={[
+                      {
+                        key: "editar",
+                        label: "Editar cancha",
+                        icon: <PencilSquareIcon className="h-4 w-4" />,
+                        href: `/canchas/${cancha.id}`,
+                      },
+                      {
+                        key: "eliminar",
+                        label: "Eliminar cancha",
+                        icon: <TrashIcon className="h-4 w-4" />,
+                        variant: "danger",
+                        onClick: () => handleDelete(cancha.id),
+                        confirm: {
+                          title: `Borrar Cancha ${cancha.id}`,
+                          message:
+                            "Estas seguro de que quieres eliminar esta cancha?",
+                        },
+                      },
+                    ]}
                   />
                 </td>
               </tr>

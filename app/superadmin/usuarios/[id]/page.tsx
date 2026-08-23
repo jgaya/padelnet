@@ -24,6 +24,8 @@ export default async function EditUsuarioPage(props: {
         dni: user.dni || "",
         genero: user.genero,
         categoria: user.categoria || "",
+        provincia: user.provincia || "",
+        localidad: user.localidad || "",
         platformRole: user.platformRole,
         complejoId: user.complejoId ? String(user.complejoId) : "",
         complejoRole: user.complejoRole ?? undefined,

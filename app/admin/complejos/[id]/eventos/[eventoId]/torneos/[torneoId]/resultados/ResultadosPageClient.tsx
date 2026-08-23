@@ -28,29 +28,71 @@ function formatDateTime(value: string | null) {
   });
 }
 
-const DEFAULT_SETS = [
-  {
-    numero: 1,
-    gamesPareja1: 0,
-    gamesPareja2: 0,
-    tiebreakP1: null,
-    tiebreakP2: null,
-  },
-  {
-    numero: 2,
-    gamesPareja1: 0,
-    gamesPareja2: 0,
-    tiebreakP1: null,
-    tiebreakP2: null,
-  },
-  {
-    numero: 3,
-    gamesPareja1: 0,
-    gamesPareja2: 0,
-    tiebreakP1: null,
-    tiebreakP2: null,
-  },
+const SETS_POR_PARTIDO = 3;
+
+/**
+ * Resultados validos de un set, ordenados de mejor a peor para la pareja 1.
+ * Al elegirlos de una lista cerrada no se pueden cargar sets imposibles
+ * (por ejemplo 4-3 o 6-6).
+ */
+const SET_SCORE_PAIRS: Array<[number, number]> = [
+  [6, 0],
+  [6, 1],
+  [6, 2],
+  [6, 3],
+  [6, 4],
+  [7, 5],
+  [7, 6],
+  [6, 7],
+  [5, 7],
+  [4, 6],
+  [3, 6],
+  [2, 6],
+  [1, 6],
+  [0, 6],
 ];
+
+const SET_SCORE_OPTIONS = SET_SCORE_PAIRS.map(
+  ([gamesPareja1, gamesPareja2]) => ({
+    value: `${gamesPareja1}-${gamesPareja2}`,
+    gamesPareja1,
+    gamesPareja2,
+  }),
+);
+
+const EMPTY_SET_SCORES: string[] = Array.from(
+  { length: SETS_POR_PARTIDO },
+  () => "",
+);
+
+function setsToScores(sets: TorneoPartidoSetItem[]): string[] {
+  return EMPTY_SET_SCORES.map((_, index) => {
+    const set = sets.find((item) => item.numero === index + 1);
+    if (!set) return "";
+
+    const value = `${set.gamesPareja1}-${set.gamesPareja2}`;
+    return SET_SCORE_OPTIONS.some((option) => option.value === value)
+      ? value
+      : "";
+  });
+}
+
+function scoresToSets(scores: string[]): TorneoPartidoSetItem[] {
+  return scores.flatMap((score, index) => {
+    const option = SET_SCORE_OPTIONS.find((item) => item.value === score);
+    if (!option) return [];
+
+    return [
+      {
+        numero: index + 1,
+        gamesPareja1: option.gamesPareja1,
+        gamesPareja2: option.gamesPareja2,
+        tiebreakP1: null,
+        tiebreakP2: null,
+      },
+    ];
+  });
+}
 
 export default function ResultadosPageClient() {
   const params = useParams<{
@@ -71,7 +113,7 @@ export default function ResultadosPageClient() {
   const [showResultModal, setShowResultModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [winnerId, setWinnerId] = useState<number | null>(null);
-  const [sets, setSets] = useState<TorneoPartidoSetItem[]>(DEFAULT_SETS);
+  const [setScores, setSetScores] = useState<string[]>(EMPTY_SET_SCORES);
 
   const paramsAreValid =
     Number.isInteger(complejoId) &&
@@ -114,17 +156,13 @@ export default function ResultadosPageClient() {
   const openResultModal = (match: TorneoPartidoListItem) => {
     setSelectedMatch(match);
     setWinnerId(match.ganadorId ?? match.pareja1Id ?? match.pareja2Id ?? null);
-    setSets(match.sets.length > 0 ? match.sets : DEFAULT_SETS);
+    setSetScores(setsToScores(match.sets));
     setShowResultModal(true);
   };
 
-  const handleSetChange = (
-    index: number,
-    field: keyof Omit<TorneoPartidoSetItem, "numero">,
-    value: number | null,
-  ) => {
-    setSets((prev) =>
-      prev.map((set, i) => (i === index ? { ...set, [field]: value } : set)),
+  const handleSetScoreChange = (index: number, value: string) => {
+    setSetScores((prev) =>
+      prev.map((score, i) => (i === index ? value : score)),
     );
   };
 
@@ -141,6 +179,12 @@ export default function ResultadosPageClient() {
     const loserId = getLoserId();
     if (!loserId) {
       showSnackbar("Debe seleccionar un ganador valido", "error");
+      return;
+    }
+
+    const sets = scoresToSets(setScores);
+    if (sets.length === 0) {
+      showSnackbar("Debe cargar el resultado de al menos un set", "error");
       return;
     }
 
@@ -304,7 +348,7 @@ export default function ResultadosPageClient() {
           if (!open) {
             setSelectedMatch(null);
             setWinnerId(null);
-            setSets(DEFAULT_SETS);
+            setSetScores(EMPTY_SET_SCORES);
           }
           setShowResultModal(open);
         }}
@@ -362,7 +406,8 @@ export default function ResultadosPageClient() {
             </div>
 
             <p className="text-sm text-deep-black/70">
-              Ingresa el ganador y los juegos por set para el partido.
+              Selecciona el ganador y el resultado de cada set jugado. Los sets
+              sin resultado no se guardan.
             </p>
 
             <div className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4">
@@ -398,110 +443,36 @@ export default function ResultadosPageClient() {
               <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-deep-black/60">
                 Sets
               </h3>
-              {sets.map((set, index) => (
+              {setScores.map((score, index) => (
                 <div
-                  key={set.numero}
+                  key={index + 1}
                   className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4"
                 >
-                  <p className="mb-3 text-sm font-semibold text-deep-black">
-                    Set {set.numero}
+                  <label
+                    className="mb-1.5 block text-sm font-semibold text-deep-black"
+                    htmlFor={`set-${index + 1}-resultado`}
+                  >
+                    Set {index + 1}
+                  </label>
+                  <p className="mb-2 truncate text-xs font-semibold text-deep-black/60">
+                    {selectedMatch.pareja1Nombre} -{" "}
+                    {selectedMatch.pareja2Nombre}
                   </p>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <label
-                        className="mb-1.5 block truncate text-xs font-semibold text-deep-black/70"
-                        htmlFor={`set-${set.numero}-games-1`}
-                      >
-                        Games {selectedMatch.pareja1Nombre}
-                      </label>
-                      <input
-                        id={`set-${set.numero}-games-1`}
-                        type="number"
-                        min={0}
-                        className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
-                        value={set.gamesPareja1}
-                        onChange={(event) =>
-                          handleSetChange(
-                            index,
-                            "gamesPareja1",
-                            Number(event.target.value),
-                          )
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label
-                        className="mb-1.5 block truncate text-xs font-semibold text-deep-black/70"
-                        htmlFor={`set-${set.numero}-games-2`}
-                      >
-                        Games {selectedMatch.pareja2Nombre}
-                      </label>
-                      <input
-                        id={`set-${set.numero}-games-2`}
-                        type="number"
-                        min={0}
-                        className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
-                        value={set.gamesPareja2}
-                        onChange={(event) =>
-                          handleSetChange(
-                            index,
-                            "gamesPareja2",
-                            Number(event.target.value),
-                          )
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label
-                        className="mb-1.5 block truncate text-xs font-semibold text-deep-black/70"
-                        htmlFor={`set-${set.numero}-tiebreak-1`}
-                      >
-                        Tiebreak {selectedMatch.pareja1Nombre}
-                      </label>
-                      <input
-                        id={`set-${set.numero}-tiebreak-1`}
-                        type="number"
-                        min={0}
-                        placeholder="-"
-                        className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black placeholder:text-deep-black/40 focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
-                        value={set.tiebreakP1 ?? ""}
-                        onChange={(event) =>
-                          handleSetChange(
-                            index,
-                            "tiebreakP1",
-                            event.target.value === ""
-                              ? null
-                              : Number(event.target.value),
-                          )
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label
-                        className="mb-1.5 block truncate text-xs font-semibold text-deep-black/70"
-                        htmlFor={`set-${set.numero}-tiebreak-2`}
-                      >
-                        Tiebreak {selectedMatch.pareja2Nombre}
-                      </label>
-                      <input
-                        id={`set-${set.numero}-tiebreak-2`}
-                        type="number"
-                        min={0}
-                        placeholder="-"
-                        className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black placeholder:text-deep-black/40 focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
-                        value={set.tiebreakP2 ?? ""}
-                        onChange={(event) =>
-                          handleSetChange(
-                            index,
-                            "tiebreakP2",
-                            event.target.value === ""
-                              ? null
-                              : Number(event.target.value),
-                          )
-                        }
-                      />
-                    </div>
-                  </div>
+                  <select
+                    id={`set-${index + 1}-resultado`}
+                    className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                    value={score}
+                    onChange={(event) =>
+                      handleSetScoreChange(index, event.target.value)
+                    }
+                  >
+                    <option value="">Sin jugar</option>
+                    {SET_SCORE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.gamesPareja1} - {option.gamesPareja2}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               ))}
             </div>

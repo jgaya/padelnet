@@ -1,12 +1,13 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { enviarConfirmacionDeRegistro } from "@/actions/email";
 import { createSession, decrypt, deleteSession } from "@/lib/session";
+import { normalizarProvincia } from "@/lib/ubicaciones";
 
 export type LoginInput = {
   email: string;
@@ -27,6 +28,7 @@ export type RegisterInput = {
   dni: string;
   birthDate: string;
   categoria: string;
+  provincia?: string;
   localidad?: string;
   genero?: "M" | "F" | "X";
 };
@@ -175,6 +177,9 @@ export async function registerUser(
   const password = input.password;
   const dni = input.dni.trim();
   const categoria = input.categoria.trim();
+  // La provincia se normaliza contra las 24 de lib/ubicaciones: si llega algo
+  // que no esta en la lista, se guarda null en lugar de basura.
+  const provincia = normalizarProvincia(input.provincia);
   const localidad = input.localidad?.trim() || null;
   const birthDate = parseBirthDate(input.birthDate.trim());
 
@@ -230,6 +235,7 @@ export async function registerUser(
         birthDate,
         genero: input.genero ?? "X",
         categoria,
+        provincia,
         localidad,
         platformRole: "USER",
         isActive: true,

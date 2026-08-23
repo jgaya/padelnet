@@ -4,9 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { cerrarZonasYArmarLlave } from "@/actions/torneos-partidos";
+import { finalizarTorneo, publicarTorneo } from "@/actions/torneos";
+import Tooltip from "@/components/Tooltip";
 // Solo el tipo: se borra al compilar, asi que no arrastra el modulo server-only.
 import type { EstadoAvanceTorneo } from "@/lib/torneo-avance";
 import { useSnackbar } from "@/context/SnackbarContext";
+
+const ESTADO_LABEL: Record<EstadoAvanceTorneo["status"], string> = {
+  DRAFT: "Borrador",
+  PUBLISHED: "Publicado",
+  CLOSED_REGISTRATION: "Inscripciones cerradas",
+  IN_PROGRESS: "Jugandose",
+  FINISHED: "Terminado",
+  ARCHIVED: "Archivado",
+};
 
 type AvanceTorneoPanelProps = {
   complejoId: number;
@@ -36,34 +47,67 @@ export default function AvanceTorneoPanel({
     estado.zonaPartidosTotal > 0 &&
     estado.zonaPartidosCargados === estado.zonaPartidosTotal;
 
-  const handleCerrar = async () => {
+  const puedePublicar = estado.status === "DRAFT";
+  const enJuego = estado.status === "IN_PROGRESS";
+  const terminado = estado.status === "FINISHED";
+
+  /**
+   * Corre una accion del torneo y recarga. La pagina es un server component,
+   * asi que sin el reload el panel sigue mostrando el estado viejo.
+   */
+  const correr = async (
+    accion: () => Promise<
+      { success: true; message: string } | { success: false; error: string }
+    >,
+    errorGenerico: string,
+  ) => {
     setTrabajando(true);
     try {
-      const result = await cerrarZonasYArmarLlave(
-        complejoId,
-        eventoId,
-        torneoId,
-      );
+      const result = await accion();
 
       if (!result.success) {
         showSnackbar(result.error, "error");
-        return;
+        return false;
       }
 
       showSnackbar(result.message, "success");
-      setCerrado(true);
-      // La pagina es un server component: hay que recargar para ver el estado
-      // nuevo del panel.
       window.location.reload();
+      return true;
     } catch (error) {
       showSnackbar(
-        error instanceof Error ? error.message : "No se pudo armar la llave",
+        error instanceof Error ? error.message : errorGenerico,
         "error",
       );
+      return false;
     } finally {
       setTrabajando(false);
     }
   };
+
+  const handleCerrar = async () => {
+    // Solo se bloquea si salio bien: si fallo, el admin tiene que poder
+    // reintentar sin recargar a mano.
+    if (
+      await correr(
+        () => cerrarZonasYArmarLlave(complejoId, eventoId, torneoId),
+        "No se pudo armar la llave",
+      )
+    ) {
+      setCerrado(true);
+    }
+  };
+
+  const handlePublicar = () =>
+    correr(
+      () => publicarTorneo(complejoId, eventoId, torneoId),
+      "No se pudo publicar el torneo",
+    );
+
+  const handleTerminar = () =>
+    correr(
+      () => finalizarTorneo(complejoId, eventoId, torneoId),
+      "No se pudo terminar el torneo",
+    );
 
   return (
     <section className="mb-4 overflow-hidden rounded-2xl border border-deep-black/10 bg-white">
@@ -75,6 +119,18 @@ export default function AvanceTorneoPanel({
 
       <div className="space-y-4 px-4 py-4">
         <div className="flex flex-wrap gap-2 text-xs font-semibold">
+          <span
+            className={`rounded-full px-3 py-1 ${
+              terminado
+                ? "bg-padel-green/15 text-padel-green"
+                : enJuego
+                  ? "bg-energy-orange/15 text-energy-orange"
+                  : "bg-surface-soft text-deep-black/80"
+            }`}
+          >
+            Estado: {ESTADO_LABEL[estado.status]}
+          </span>
+
           <span
             className={`rounded-full px-3 py-1 ${
               zonaCompleta
@@ -125,18 +181,62 @@ export default function AvanceTorneoPanel({
         )}
 
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
-            onClick={() => void handleCerrar()}
-            disabled={!puedeArmar || trabajando || cerrado}
+          {puedePublicar ? (
+            <Tooltip label="Lo hace visible y abre las inscripciones. Avisa a los jugadores de la categoria.">
+              <button
+                type="button"
+                className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={() => void handlePublicar()}
+                disabled={trabajando}
+              >
+                {trabajando ? "Publicando..." : "Publicar torneo"}
+              </button>
+            </Tooltip>
+          ) : null}
+
+          {enJuego || terminado ? (
+            <Tooltip
+              label={
+                terminado
+                  ? "Borra y vuelve a calcular los puntos con los resultados actuales."
+                  : "Cierra el torneo y reparte los puntos de ranking entre los jugadores."
+              }
+            >
+              <button
+                type="button"
+                className="rounded-full bg-energy-orange px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={() => void handleTerminar()}
+                disabled={trabajando}
+              >
+                {trabajando
+                  ? "Procesando..."
+                  : terminado
+                    ? "Recalcular ranking"
+                    : "Terminar torneo y cargar ranking"}
+              </button>
+            </Tooltip>
+          ) : null}
+
+          <Tooltip
+            label={
+              estado.zonaCerrada
+                ? "Descarta la llave actual y la rearma desde las posiciones de zona."
+                : "Define los cruces con los clasificados y pone el torneo en juego."
+            }
           >
-            {trabajando
-              ? "Armando..."
-              : estado.zonaCerrada
-                ? "Volver a armar la llave"
-                : "Cerrar zonas y armar la llave"}
-          </button>
+            <button
+              type="button"
+              className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => void handleCerrar()}
+              disabled={!puedeArmar || trabajando || cerrado}
+            >
+              {trabajando
+                ? "Armando..."
+                : estado.zonaCerrada
+                  ? "Volver a armar la llave"
+                  : "Cerrar zonas y armar la llave"}
+            </button>
+          </Tooltip>
 
           <Link
             href={`${raiz}/zonas`}

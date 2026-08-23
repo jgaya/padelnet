@@ -6,11 +6,11 @@ importScripts(
 );
 
 firebase.initializeApp({
-    apiKey: "AIzaSyA1j_aC1a5FwkP3HBVnc77RbtsEr_nYYO4",
-    authDomain: "padel-dc6f7.firebaseapp.com",
-    projectId: "padel-dc6f7",
-    messagingSenderId: "550505077465",
-    appId: "1:550505077465:web:e50641377ddd2c4eb1fcc8",
+    apiKey: "AIzaSyDaJ-SC1rw0ogZq1T0GmX7I7fSzm_KH54U",
+    authDomain: "padelnet-f2b1f.firebaseapp.com",
+    projectId: "padelnet-f2b1f",
+    messagingSenderId: "705903188285",
+    appId: "1:705903188285:web:ef1c1fa1a42ad8d3360d54",
 });
 
 const messaging = firebase.messaging();

@@ -23,6 +23,7 @@ export default async function SuperadminDashboardPage() {
       titulo="Panel general"
       subtitulo="Todos los complejos de la plataforma."
       datos={datos}
+      migas={[{ label: "Inicio", href: "/" }, { label: "Panel general" }]}
     />
   );
 }

@@ -12,6 +12,7 @@ import {
   FormPassword,
 } from "@/app/components/FormBase";
 import { login } from "@/actions/auth";
+import GoogleButton from "@/app/components/GoogleButton";
 import { LoginSchema, type LoginFormData } from "@/types/forms";
 
 declare global {
@@ -180,6 +181,16 @@ export default function LoginPage() {
                 {isLoading ? "Ingresando..." : "Iniciar sesion"}
               </button>
             </form>
+
+            <div className="my-4 flex items-center gap-3">
+              <span className="h-px flex-1 bg-deep-black/10" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-deep-black/50">
+                o
+              </span>
+              <span className="h-px flex-1 bg-deep-black/10" />
+            </div>
+
+            <GoogleButton />
 
             <div className="mt-3 text-sm">
               <Link

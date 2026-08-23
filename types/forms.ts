@@ -5,7 +5,7 @@ import type {
   UseFormRegisterReturn,
   UseFormSetValue,
 } from "react-hook-form";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { z } from "zod";
 import {
   ComplejoRoleSchema,
@@ -103,6 +103,7 @@ export const RegisterSchema = z
       .trim()
       .min(1, "La fecha de nacimiento es obligatoria"),
     categoria: z.string().trim().min(1, "La categoria es obligatoria"),
+    provincia: z.string().trim().max(80).optional(),
     localidad: z.string().trim().max(80).optional(),
     genero: GeneroSchema,
     password: z
@@ -131,6 +132,42 @@ export const RegisterSchema = z
   });
 
 export type RegisterFormData = z.infer<typeof RegisterSchema>;
+
+/**
+ * Los datos que Google no puede aportar y el sitio igual necesita. Mismas
+ * reglas que RegisterSchema para esos campos.
+ */
+export const CompletarPerfilSchema = z
+  .object({
+    dni: z.string().trim().min(1, "El DNI es obligatorio"),
+    birthDate: z
+      .string()
+      .trim()
+      .min(1, "La fecha de nacimiento es obligatoria")
+      .refine(
+        (value) => !Number.isNaN(new Date(value).getTime()),
+        "Fecha de nacimiento invalida",
+      ),
+    categoria: z.string().trim().min(1, "La categoria es obligatoria"),
+    genero: GeneroSchema,
+    provincia: z.string().trim().max(80).optional(),
+    localidad: z.string().trim().max(80).optional(),
+  })
+  // Va en superRefine y no en un .refine sobre GeneroSchema porque eso
+  // estrecharia el tipo de salida a "M" | "F" y dejaria de coincidir con el de
+  // entrada, que es lo que el resolver de react-hook-form necesita que sean
+  // iguales.
+  .superRefine((data, ctx) => {
+    if (data.genero === "X") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["genero"],
+        message: "Elegi una opcion para poder inscribirte a torneos",
+      });
+    }
+  });
+
+export type CompletarPerfilFormData = z.infer<typeof CompletarPerfilSchema>;
 
 export const ComplejoFormSchema = z.object({
   name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres"),
@@ -366,18 +403,33 @@ export const UsuarioFormSchema = z
       .or(z.literal(""))
       .optional(),
     telefono: z.string().trim().optional(),
-    dni: z.string().trim().optional(),
+    dni: z.string().trim().min(1, "El DNI es obligatorio"),
     genero: GeneroSchema,
     categoria: z.string().trim().optional(),
+    provincia: z.string().trim().max(80).optional(),
+    localidad: z.string().trim().max(80).optional(),
     platformRole: PlatformRoleSchema,
     complejoId: z.string().trim().optional(),
     // El "" del option vacio significa "sin rol en ningun complejo".
     complejoRole: ComplejoRoleSchema.or(z.literal("")).optional(),
     esPropietario: z.boolean().optional(),
     isActive: z.boolean(),
-    birthDate: z.string().optional(),
+    birthDate: z
+      .string()
+      .trim()
+      .min(1, "La fecha de nacimiento es obligatoria"),
   })
   .superRefine((data, ctx) => {
+    // Que este cargada no alcanza: tiene que ser una fecha real. El input es
+    // type="date" pero el valor tambien puede venir de initialData.
+    if (data.birthDate && Number.isNaN(new Date(data.birthDate).getTime())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["birthDate"],
+        message: "Fecha de nacimiento invalida",
+      });
+    }
+
     // El acceso a un complejo ya no depende del rol de plataforma: lo dispara
     // haber elegido un rol de complejo. Si se eligio, hace falta el complejo.
     if (!data.complejoRole) {
@@ -415,6 +467,7 @@ export const PerfilFormSchema = z.object({
   telefono: z.string().trim().optional(),
   dni: z.string().trim().optional(),
   genero: GeneroSchema,
+  provincia: z.string().trim().max(80).optional(),
   localidad: z.string().trim().max(80).optional(),
   birthDate: z.string().optional(),
   imageUrl: urlOrPathSchema.optional(),
@@ -479,24 +532,6 @@ export type FormImageUploadProps<TFormValues extends FieldValues> = {
   control: Control<TFormValues>;
   register: UseFormRegisterReturn;
   setValue: UseFormSetValue<TFormValues>;
-};
-
-export type TooltipWrapperProps = {
-  tooltip: string;
-  children: ReactNode;
-  placement?: "top" | "right" | "bottom" | "left";
-};
-
-export type TooltipButtonProps = {
-  tooltip: string;
-  children?: ReactNode;
-  className?: string;
-  variant?: string;
-  onClick?: () => void;
-  disabled?: boolean;
-  type?: "button" | "submit" | "reset";
-  size?: "sm" | "lg";
-  style?: CSSProperties;
 };
 
 export const NuevaPasswordFormSchema = z

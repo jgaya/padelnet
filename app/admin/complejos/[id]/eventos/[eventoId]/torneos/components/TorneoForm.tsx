@@ -18,17 +18,12 @@ import {
   type TorneoPayload,
 } from "@/actions/torneos";
 import { TorneoCrudFormSchema, type TorneoCrudFormData } from "@/types/forms";
-import { RANKING_POSICIONES } from "@/lib/ranking-puntajes";
-
-/** Puntajes por defecto como strings, que es lo que maneja el form. */
-function defaultPuntajesForm(): Record<string, string> {
-  return Object.fromEntries(
-    RANKING_POSICIONES.map((posicion) => [
-      posicion.nombre,
-      String(posicion.defaultValor),
-    ]),
-  );
-}
+import {
+  RANKING_POSICIONES,
+  clavePuntajeForm,
+  puntajesDesdeForm,
+  puntajesFormPorDefecto,
+} from "@/lib/ranking-puntajes";
 
 export type TorneoFormProps = {
   complejoId: number;
@@ -69,6 +64,8 @@ export default function TorneoForm({
   const showSnackbar = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
 
+  const listadoURL = `/admin/complejos/${complejoId}/eventos/${eventoId}/torneos`;
+
   const {
     register,
     handleSubmit,
@@ -93,7 +90,7 @@ export default function TorneoForm({
       zonaCerrada: false,
       inicio: "",
       fin: "",
-      puntajes: defaultPuntajesForm(),
+      puntajes: puntajesFormPorDefecto(),
       ...initialData,
     },
   });
@@ -121,7 +118,7 @@ export default function TorneoForm({
       zonaCerrada: initialData.zonaCerrada ?? false,
       inicio: initialData.inicio ?? "",
       fin: initialData.fin ?? "",
-      puntajes: initialData.puntajes ?? defaultPuntajesForm(),
+      puntajes: initialData.puntajes ?? puntajesFormPorDefecto(),
     });
   }, [initialData, reset]);
 
@@ -153,12 +150,7 @@ export default function TorneoForm({
         zonaCerrada: data.zonaCerrada ?? false,
         inicio: data.inicio || null,
         fin: data.fin || null,
-        puntajes: Object.fromEntries(
-          RANKING_POSICIONES.map((posicion) => [
-            posicion.nombre,
-            Number(data.puntajes?.[posicion.nombre] ?? posicion.defaultValor),
-          ]),
-        ),
+        puntajes: puntajesDesdeForm(data.puntajes),
       };
 
       if (isEdit) {
@@ -172,7 +164,7 @@ export default function TorneoForm({
         "success",
       );
 
-      router.push(`/complejos/${complejoId}/eventos/${eventoId}/torneos`);
+      router.push(listadoURL);
       router.refresh();
     } catch (error) {
       showSnackbar(
@@ -184,12 +176,21 @@ export default function TorneoForm({
     }
   };
 
+  // Red de seguridad: si la validacion frena el submit y el error quedo colgado
+  // de un campo que el form no dibuja, sin esto no se ve absolutamente nada.
+  const onInvalid = () => {
+    showSnackbar("Revisa los campos marcados del formulario", "error");
+  };
+
   return (
     <FormContainer
       title={isEdit ? "Editar Torneo" : "Nuevo Torneo"}
-      backURL={`/complejos/${complejoId}/eventos/${eventoId}/torneos`}
+      backURL={listadoURL}
     >
-      <form className="padel-entity-form" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="padel-entity-form"
+        onSubmit={handleSubmit(onSubmit, onInvalid)}
+      >
         <FormInput
           label="Nombre"
           placeholder="Nombre del torneo"
@@ -312,29 +313,33 @@ export default function TorneoForm({
           </p>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {RANKING_POSICIONES.map((posicion) => (
-              <div key={posicion.nombre}>
-                <label
-                  className="mb-1.5 block text-xs font-semibold text-deep-black/70"
-                  htmlFor={`puntaje-${posicion.orden}`}
-                >
-                  {posicion.nombre}
-                </label>
-                <input
-                  id={`puntaje-${posicion.orden}`}
-                  type="number"
-                  min={0}
-                  step={1}
-                  className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
-                  {...register(`puntajes.${posicion.nombre}` as const)}
-                />
-                {errors.puntajes?.[posicion.nombre] ? (
-                  <p className="mt-1 text-xs text-energy-orange">
-                    {errors.puntajes[posicion.nombre]?.message}
-                  </p>
-                ) : null}
-              </div>
-            ))}
+            {RANKING_POSICIONES.map((posicion) => {
+              const clave = clavePuntajeForm(posicion.orden);
+
+              return (
+                <div key={posicion.nombre}>
+                  <label
+                    className="mb-1.5 block text-xs font-semibold text-deep-black/70"
+                    htmlFor={`puntaje-${posicion.orden}`}
+                  >
+                    {posicion.nombre}
+                  </label>
+                  <input
+                    id={`puntaje-${posicion.orden}`}
+                    type="number"
+                    min={0}
+                    step={1}
+                    className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                    {...register(`puntajes.${clave}` as const)}
+                  />
+                  {errors.puntajes?.[clave] ? (
+                    <p className="mt-1 text-xs text-energy-orange">
+                      {errors.puntajes[clave]?.message}
+                    </p>
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
         </fieldset>
 
@@ -353,7 +358,7 @@ export default function TorneoForm({
 
         <FormActions
           submitText={isEdit ? "Guardar cambios" : "Guardar torneo"}
-          cancelPath={`/complejos/${complejoId}/eventos/${eventoId}/torneos`}
+          cancelPath={listadoURL}
           isLoading={isLoading}
         />
       </form>

@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 
 import { getReglamentoComplejo } from "@/actions/complejos";
 
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { migasGestion } from "@/lib/breadcrumbs-gestion";
 import ReglamentoEditor from "./components/ReglamentoEditor";
 
 export const dynamic = "force-dynamic";
@@ -22,8 +24,11 @@ export default async function AdminReglamentoPage(props: {
     notFound();
   }
 
+  const migas = await migasGestion({ complejoId, seccion: "Reglamento" });
+
   return (
     <div className="container p-4">
+      <Breadcrumbs migas={migas} />
       <ReglamentoEditor
         complejoId={complejo.id}
         complejoNombre={complejo.name}

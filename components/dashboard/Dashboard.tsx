@@ -1,5 +1,6 @@
 import type { DatosDashboard } from "@/lib/dashboard";
 import { tieneDatoReal } from "@/lib/dashboard-calculos";
+import Breadcrumbs, { type Miga } from "@/components/Breadcrumbs";
 import { PADEL_GREEN } from "./paleta";
 
 import BotonRefrescar from "./BotonRefrescar";
@@ -16,6 +17,11 @@ type DashboardProps = {
   titulo: string;
   subtitulo: string;
   datos: DatosDashboard;
+  /**
+   * Migas de la pantalla. Van adentro del contenedor del dashboard para que
+   * queden alineadas con el titulo; puestas afuera se irian contra el borde.
+   */
+  migas?: Miga[];
 };
 
 /**
@@ -29,6 +35,7 @@ export default function Dashboard({
   titulo,
   subtitulo,
   datos,
+  migas,
 }: DashboardProps) {
   const { kpis } = datos;
   // Solo cuentan los eventos donde alguien cargo su localidad: si todos los
@@ -40,6 +47,8 @@ export default function Dashboard({
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
+      {migas ? <Breadcrumbs migas={migas} /> : null}
+
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-deep-black sm:text-3xl">

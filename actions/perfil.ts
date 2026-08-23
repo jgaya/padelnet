@@ -1,8 +1,9 @@
 "use server";
 
-import { Prisma, type Genero } from "@prisma/client";
+import { Prisma, type Genero } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createSession, getSession } from "@/lib/session";
+import { normalizarProvincia } from "@/lib/ubicaciones";
 
 export type PerfilPayload = {
   name: string;
@@ -11,6 +12,7 @@ export type PerfilPayload = {
   telefono?: string | null;
   dni?: string | null;
   genero?: "M" | "F" | "X";
+  provincia?: string | null;
   localidad?: string | null;
   birthDate?: string | null;
   imageUrl?: string | null;
@@ -72,6 +74,7 @@ export type PerfilData = {
   telefono: string;
   dni: string;
   genero: Genero;
+  provincia: string;
   localidad: string;
   birthDate: string;
   imageUrl: string;
@@ -94,6 +97,7 @@ export async function getMyProfile(): Promise<PerfilData> {
       telefono: true,
       dni: true,
       genero: true,
+      provincia: true,
       localidad: true,
       birthDate: true,
       avatarUrl: true,
@@ -113,6 +117,7 @@ export async function getMyProfile(): Promise<PerfilData> {
     telefono: user.telefono ?? "",
     dni: user.dni ?? "",
     genero: user.genero,
+    provincia: user.provincia ?? "",
     localidad: user.localidad ?? "",
     birthDate: formatDateInput(user.birthDate),
     imageUrl: user.imageUrl ?? "",
@@ -141,6 +146,7 @@ export async function updateMyProfile(data: PerfilPayload) {
     telefono: normalizeNullable(data.telefono),
     dni: normalizeNullable(data.dni),
     genero: data.genero ?? "X",
+    provincia: normalizarProvincia(data.provincia),
     localidad: normalizeNullable(data.localidad),
     birthDate: parseBirthDate(data.birthDate),
     imageUrl: normalizeNullable(data.imageUrl),

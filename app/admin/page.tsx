@@ -24,5 +24,12 @@ export default async function AdminDashboardPage() {
       ? "Todos los complejos de la plataforma."
       : `Datos de ${alcance.complejoIds.length} complejo${alcance.complejoIds.length === 1 ? "" : "s"} que administras.`;
 
-  return <Dashboard titulo="Panel" subtitulo={subtitulo} datos={datos} />;
+  return (
+    <Dashboard
+      titulo="Panel"
+      subtitulo={subtitulo}
+      datos={datos}
+      migas={[{ label: "Inicio", href: "/" }, { label: "Panel" }]}
+    />
+  );
 }

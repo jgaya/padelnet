@@ -1,14 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   CalendarDaysIcon,
   PencilSquareIcon,
   Squares2X2Icon,
+  TrashIcon,
+  UserPlusIcon,
 } from "@heroicons/react/24/solid";
-import ConfirmationModal from "@/components/ConfirmationModal";
+import RowActions from "@/components/RowActions";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
@@ -249,78 +250,59 @@ export default function SuperadminTorneosPage() {
                   <td>{torneo.status}</td>
                   <td>{torneo.publicado ? "Si" : "No"}</td>
                   <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
-                  <td className="flex gap-2 padel-table-actions">
-                    {hasComplejoId ? (
-                      <Link
-                        href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`}
-                        className="btn btn-primary btn-sm padel-action-btn"
-                      >
-                        <PencilSquareIcon className="h-4 w-4" />
-                      </Link>
-                    ) : (
-                      <span
-                        className="btn btn-primary btn-sm padel-action-btn disabled"
-                        title="No hay complejo asociado"
-                      >
-                        <PencilSquareIcon className="h-4 w-4" />
-                      </span>
-                    )}
-                    {hasComplejoId ? (
-                      <Link
-                        href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/inscripciones`}
-                        className="btn btn-primary btn-sm padel-action-btn"
-                      >
-                        Inscribir
-                      </Link>
-                    ) : (
-                      <span
-                        className="btn btn-primary btn-sm padel-action-btn disabled"
-                        title="No hay complejo asociado"
-                      >
-                        Inscribir
-                      </span>
-                    )}
-                    {hasComplejoId ? (
-                      <Link
-                        href={`/superadmin/torneos/${torneo.complejoId}`}
-                        className="btn btn-secondary btn-sm padel-action-btn"
-                      >
-                        <Squares2X2Icon className="h-4 w-4" />
-                      </Link>
-                    ) : (
-                      <span
-                        className="btn btn-secondary btn-sm padel-action-btn disabled"
-                        title="No hay complejo asociado"
-                      >
-                        <Squares2X2Icon className="h-4 w-4" />
-                      </span>
-                    )}
-                    {hasComplejoId ? (
-                      <Link
-                        href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/partidos`}
-                        className="btn btn-secondary btn-sm padel-action-btn"
-                      >
-                        <CalendarDaysIcon className="h-4 w-4" />
-                      </Link>
-                    ) : (
-                      <span
-                        className="btn btn-secondary btn-sm padel-action-btn disabled"
-                        title="No hay complejo asociado"
-                      >
-                        <CalendarDaysIcon className="h-4 w-4" />
-                      </span>
-                    )}
-                    <ConfirmationModal
-                      onConfirm={() =>
-                        handleDelete(
-                          torneo.id,
-                          torneo.complejoId,
-                          torneo.eventoId,
-                        )
-                      }
-                      title={`Borrar Torneo ${torneo.id}`}
-                      message="Estas seguro de que quieres eliminar este torneo?"
-                      tooltip="Eliminar torneo"
+                  <td className="padel-table-actions">
+                    <RowActions
+                      actions={[
+                        {
+                          key: "editar",
+                          label: "Editar torneo",
+                          icon: <PencilSquareIcon className="h-4 w-4" />,
+                          href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`,
+                          disabled: !hasComplejoId,
+                          disabledReason: "No hay complejo asociado",
+                        },
+                        {
+                          key: "inscripciones",
+                          label: "Inscribir parejas",
+                          icon: <UserPlusIcon className="h-4 w-4" />,
+                          href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/inscripciones`,
+                          disabled: !hasComplejoId,
+                          disabledReason: "No hay complejo asociado",
+                        },
+                        {
+                          key: "hermanos",
+                          label: "Ver todos los torneos del complejo",
+                          icon: <Squares2X2Icon className="h-4 w-4" />,
+                          href: `/superadmin/torneos/${torneo.complejoId}`,
+                          disabled: !hasComplejoId,
+                          disabledReason: "No hay complejo asociado",
+                        },
+                        {
+                          key: "partidos",
+                          label: "Programar partidos",
+                          icon: <CalendarDaysIcon className="h-4 w-4" />,
+                          href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/partidos`,
+                          disabled: !hasComplejoId,
+                          disabledReason: "No hay complejo asociado",
+                        },
+                        {
+                          key: "eliminar",
+                          label: "Eliminar torneo",
+                          icon: <TrashIcon className="h-4 w-4" />,
+                          variant: "danger",
+                          onClick: () =>
+                            handleDelete(
+                              torneo.id,
+                              torneo.complejoId,
+                              torneo.eventoId,
+                            ),
+                          confirm: {
+                            title: `Borrar Torneo ${torneo.id}`,
+                            message:
+                              "Estas seguro de que quieres eliminar este torneo?",
+                          },
+                        },
+                      ]}
                     />
                   </td>
                 </tr>

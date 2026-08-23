@@ -7,7 +7,6 @@ import type {
   //   FieldValues,
   UseFormRegisterReturn,
 } from "react-hook-form";
-import { Tooltip, OverlayTrigger } from "react-bootstrap";
 import TitleBar from "@/app/components/TitleBar";
 // import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import DatePicker from "@/app/components/DatePicker";
@@ -21,8 +20,6 @@ import type {
   //   FormImageUploadProps,
   FormInputProps,
   FormSelectProps,
-  TooltipButtonProps,
-  TooltipWrapperProps,
 } from "@/types/forms";
 
 export function FormInput({
@@ -122,6 +119,8 @@ export function FormActions({
       </button>
       <button
         className="btn btn-secondary"
+        // Sin type explicito el boton es submit y cancelar dispara el guardado.
+        type="button"
         onClick={() => router.push(cancelPath)}
       >
         Cancelar
@@ -318,71 +317,10 @@ declare global {
 //   );
 // }
 
-export function TooltipWrapper({
-  tooltip,
-  children,
-  placement = "top",
-}: TooltipWrapperProps) {
-  const renderTooltip = (props: React.ComponentProps<typeof Tooltip>) => (
-    <Tooltip
-      id="tooltip-wrapper"
-      {...props}
-      style={{ ...props.style, color: "white !important" }}
-    >
-      {tooltip}
-    </Tooltip>
-  );
-
-  return (
-    <OverlayTrigger
-      placement={placement}
-      delay={{ show: 250, hide: 400 }}
-      overlay={renderTooltip}
-    >
-      <span>{children}</span>
-    </OverlayTrigger>
-  );
-}
-
-export function TooltipButton({
-  tooltip,
-  children,
-  className = "",
-  variant = "primary",
-  onClick,
-  disabled = false,
-  type = "button",
-  size,
-  style,
-}: TooltipButtonProps) {
-  const renderTooltip = (props: React.ComponentProps<typeof Tooltip>) => (
-    <Tooltip
-      id="button-tooltip"
-      {...props}
-      style={{ ...props.style, color: "white !important" }}
-    >
-      {tooltip}
-    </Tooltip>
-  );
-
-  return (
-    <OverlayTrigger
-      placement="top"
-      delay={{ show: 250, hide: 400 }}
-      overlay={renderTooltip}
-    >
-      <button
-        className={`btn btn-${variant ?? "primary"} ${size ? `btn-${size}` : ""} ${className ?? ""}`}
-        onClick={onClick}
-        disabled={disabled}
-        type={type}
-        style={style}
-      >
-        {children}
-      </button>
-    </OverlayTrigger>
-  );
-}
+// TooltipWrapper y TooltipButton vivian aca y usaban OverlayTrigger de
+// react-bootstrap. El CSS de Bootstrap nunca se importo en el proyecto, asi que
+// se habrian renderizado sin estilo ni posicion; ademas no los usaba nadie. El
+// reemplazo es components/Tooltip.tsx, hecho con Tailwind.
 
 // === NUEVO COMPONENTE: FormPassword ===
 type FormPasswordProps = {

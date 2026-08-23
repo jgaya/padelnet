@@ -1,7 +1,31 @@
-import { PrismaClient } from "@prisma/client";
+// El seed corre fuera de Next (via `tsx`), asi que carga el .env por su cuenta:
+// desde Prisma 7 el CLI ya no lo hace solo.
+import "dotenv/config";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import bcrypt from "bcryptjs";
+import { PrismaClient } from "../lib/generated/prisma/client";
+import type { Genero, PlatformRole } from "../lib/generated/prisma/enums";
 
-const prisma = new PrismaClient();
+const url = process.env.DATABASE_URL;
+
+if (!url) {
+  throw new Error("Falta DATABASE_URL");
+}
+
+const prisma = new PrismaClient({ adapter: new PrismaMariaDb(url) });
+
+type DatosUsuario = {
+  email: string;
+  name: string;
+  lastname: string;
+  dni: string;
+  genero: Genero;
+  platformRole: PlatformRole;
+  telefono: string;
+  categoria?: string;
+  localidad?: string;
+  passwordHash: string;
+};
 
 /**
  * Valores que se reparten ciclicamente entre los jugadores.
@@ -119,7 +143,7 @@ async function upsertUser({
   categoria,
   localidad,
   passwordHash,
-}) {
+}: DatosUsuario) {
   return prisma.user.upsert({
     where: { email },
     update: {
@@ -205,8 +229,13 @@ const COMPLEJOS_DEMO = [
   },
 ];
 
+type ComplejoDemo = (typeof COMPLEJOS_DEMO)[number];
+
 /** Crea un complejo con su admin, sus canchas y sus jugadores. */
-async function sembrarComplejo(definicion, passwordHash) {
+async function sembrarComplejo(
+  definicion: ComplejoDemo,
+  passwordHash: string,
+) {
   const { slug, name, ciudad, provincia, admin, canchas, jugadores, baseDni } =
     definicion;
 
@@ -647,7 +676,7 @@ async function main() {
     console.log(
       ` - ${complejo.name} (${complejo.ciudad})`.padEnd(42) +
         `admin: ${usuarioAdmin.email}`.padEnd(38) +
-        `${definicion.canchas} canchas, ${jugadores.length} jugadores`,
+        `${definicion?.canchas ?? 0} canchas, ${jugadores.length} jugadores`,
     );
   }
 }

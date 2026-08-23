@@ -1,38 +1,31 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/actions/auth";
 import { AvatarMenu } from "./avatar-menu";
+import { MainNav, type NavLink } from "./main-nav";
 import { getSession } from "@/lib/session";
+import { getComplejosConTurnos } from "@/lib/turnos-acceso";
+import { hrefTurnos } from "@/lib/turnos-menu";
 
-type HeaderLink = {
-  href: string;
-  label: string;
-  mobileHidden?: boolean;
-};
-
-const publicMainLinks: HeaderLink[] = [
+const publicMainLinks: NavLink[] = [
   { href: "/#inicio", label: "Inicio" },
   { href: "/complejos", label: "Complejos" },
-  { href: "/torneos", label: "Torneos", mobileHidden: true },
+  { href: "/torneos", label: "Torneos" },
 ];
 
-const gestionMainLinks: HeaderLink[] = [
+const gestionMainLinks: NavLink[] = [
   { href: "/admin", label: "Panel" },
   { href: "/admin/complejos", label: "Gestion" },
   { href: "/admin/eventos", label: "Eventos" },
   { href: "/admin/torneos", label: "Torneos" },
 ];
 
-const superadminMainLinks: HeaderLink[] = [
+const superadminMainLinks: NavLink[] = [
   { href: "/superadmin", label: "Panel" },
   { href: "/superadmin/complejos", label: "Complejos" },
   { href: "/superadmin/eventos", label: "Eventos" },
   { href: "/superadmin/torneos", label: "Torneos" },
   { href: "/superadmin/usuarios", label: "Usuarios" },
-  {
-    href: "/superadmin/funcionalidades",
-    label: "Funcionalidades",
-    mobileHidden: true,
-  },
+  { href: "/superadmin/funcionalidades", label: "Funcionalidades" },
 ];
 
 const baseProfileLinks = [{ href: "/perfil", label: "Mi perfil" }];
@@ -46,11 +39,25 @@ export async function SiteHeader() {
   // que sea ADMIN de un complejo y jugador de otro ve el menu de gestion, y
   // cada pantalla despues decide sobre que complejo puede actuar.
   const esSuperadmin = session?.platformRole === "SUPERADMIN";
-  const mainLinks = esSuperadmin
+  const esAdmin = Boolean(session?.esAdminDeComplejo) && !esSuperadmin;
+
+  let mainLinks = esSuperadmin
     ? superadminMainLinks
-    : session?.esAdminDeComplejo
+    : esAdmin
       ? gestionMainLinks
       : publicMainLinks;
+
+  // Turnos es una funcionalidad que el superadmin prende por complejo: el item
+  // aparece solo si alguno de los complejos que administra la tiene. La
+  // consulta se hace unicamente para el menu de gestion.
+  if (esAdmin) {
+    const complejosConTurnos = await getComplejosConTurnos();
+    const href = hrefTurnos(complejosConTurnos);
+
+    if (href) {
+      mainLinks = [...mainLinks, { href, label: "Turnos" }];
+    }
+  }
 
   const profileLinks = esSuperadmin
     ? [
@@ -71,22 +78,7 @@ export async function SiteHeader() {
           </span>
         </Link>
 
-        <nav aria-label="Principal" className="flex items-center gap-1">
-          {mainLinks.map((link) => {
-            const hideOnMobile = link.mobileHidden
-              ? "hidden sm:inline-flex"
-              : "inline-flex";
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`${hideOnMobile} rounded-full px-3 py-2 text-xs font-semibold text-deep-black transition hover:bg-padel-green/10 hover:text-padel-green sm:text-sm`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
+        <MainNav links={mainLinks} />
 
         <AvatarMenu user={currentUser} profileLinks={profileLinks} />
       </div>

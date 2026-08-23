@@ -1,10 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { PencilSquareIcon, PlusIcon } from "@heroicons/react/24/solid";
-import ConfirmationModal from "@/components/ConfirmationModal";
+import {
+  PencilSquareIcon,
+  PlusIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
+import RowActions from "@/components/RowActions";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
@@ -254,18 +257,28 @@ export default function SuperadminTorneosComplejoPage() {
                 <td>{torneo.status}</td>
                 <td>{torneo.publicado ? "Si" : "No"}</td>
                 <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
-                <td className="flex gap-2 padel-table-actions">
-                  <Link
-                    href={`/admin/complejos/${complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`}
-                    className="btn btn-primary btn-sm padel-action-btn"
-                  >
-                    <PencilSquareIcon className="h-4 w-4" />
-                  </Link>
-                  <ConfirmationModal
-                    onConfirm={() => handleDelete(torneo.id, torneo.eventoId)}
-                    title={`Borrar Torneo ${torneo.id}`}
-                    message="Estas seguro de que quieres eliminar este torneo?"
-                    tooltip="Eliminar torneo"
+                <td className="padel-table-actions">
+                  <RowActions
+                    actions={[
+                      {
+                        key: "editar",
+                        label: "Editar torneo",
+                        icon: <PencilSquareIcon className="h-4 w-4" />,
+                        href: `/admin/complejos/${complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`,
+                      },
+                      {
+                        key: "eliminar",
+                        label: "Eliminar torneo",
+                        icon: <TrashIcon className="h-4 w-4" />,
+                        variant: "danger",
+                        onClick: () => handleDelete(torneo.id, torneo.eventoId),
+                        confirm: {
+                          title: `Borrar Torneo ${torneo.id}`,
+                          message:
+                            "Estas seguro de que quieres eliminar este torneo?",
+                        },
+                      },
+                    ]}
                   />
                 </td>
               </tr>

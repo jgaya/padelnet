@@ -4,7 +4,7 @@ import { assertSuperadmin } from "@/lib/authz";
 import { createBulkNotifications, toJsonInput } from "@/lib/notificaciones";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { isComplejoFeatureEnabled } from "@/actions/complejo-features";
 import {
     NotificationCreateSchema,

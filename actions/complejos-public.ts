@@ -1,6 +1,6 @@
 "use server";
 
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/generated/prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
@@ -389,6 +389,10 @@ export async function getPublicComplejoRanking(
       deletedAt: null,
       torneo: {
         ...TORNEO_PUBLICO_WHERE,
+        // Los puntos se cargan recien al pasar el torneo a FINISHED, que es
+        // justo el estado que TORNEO_PUBLICO_WHERE deja afuera. Sin este
+        // override la tabla de ranking siempre sale vacia.
+        status: { in: ["PUBLISHED", "IN_PROGRESS", "FINISHED"] },
         evento: {
           ...(TORNEO_PUBLICO_WHERE.evento as Prisma.EventoWhereInput),
           complejoId,

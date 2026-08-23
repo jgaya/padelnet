@@ -1,7 +1,8 @@
 import "server-only";
 
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/generated/prisma/client";
 
+import type { TournamentStatus } from "@/types/db";
 import { notifyTorneoIniciado } from "@/actions/notificaciones-eventos";
 import { prisma } from "@/lib/prisma";
 import { FASES_LLAVE, type FaseLlave } from "@/lib/torneo-llave";
@@ -216,6 +217,9 @@ export async function propagarResultado(torneoId: number, partidoId: number) {
 // ---------------------------------------------------------------------------
 
 export type EstadoAvanceTorneo = {
+  /** Estado del torneo, para saber que transiciones ofrecer en el panel. */
+  status: TournamentStatus;
+  publicado: boolean;
   zonaPartidosTotal: number;
   zonaPartidosCargados: number;
   /** Partidos de zona que todavia no tienen parejas (especiales sin resolver). */
@@ -326,6 +330,7 @@ async function cargarTorneoParaAvance(torneoId: number) {
     select: {
       id: true,
       status: true,
+      publicado: true,
       zonaCerrada: true,
       grupos: {
         orderBy: [{ nombre: "asc" }, { id: "asc" }],
@@ -418,6 +423,8 @@ export async function getEstadoAvance(
   }
 
   return {
+    status: torneo.status,
+    publicado: torneo.publicado,
     zonaPartidosTotal: partidosZona.length,
     zonaPartidosCargados,
     zonaPartidosSinResolver,

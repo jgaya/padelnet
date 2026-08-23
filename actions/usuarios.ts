@@ -1,10 +1,11 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { assertSuperadmin } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import type { ComplejoRole, PlatformRole } from "@/lib/roles";
+import { normalizarProvincia } from "@/lib/ubicaciones";
 import type { ListOpts } from "@/types/ui";
 
 export type UsuarioListItem = {
@@ -29,6 +30,8 @@ export type UsuarioPayload = {
   dni?: string | null;
   genero?: "M" | "F" | "X";
   categoria?: string | null;
+  provincia?: string | null;
+  localidad?: string | null;
   platformRole?: PlatformRole;
   complejoId?: number | null;
   complejoRole?: ComplejoRole | null;
@@ -38,6 +41,10 @@ export type UsuarioPayload = {
 };
 
 export type UsuarioEditItem = UsuarioListItem & {
+  // Solo se leen al editar: el listado no los muestra y no vale la pena sumarlos
+  // a su query.
+  provincia: string | null;
+  localidad: string | null;
   complejoId: number | null;
   complejoRole: ComplejoRole | null;
   esPropietario: boolean;
@@ -69,6 +76,21 @@ function parseBirthDate(value?: string | null): Date | null {
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) {
     throw new Error("Fecha de nacimiento invalida");
+  }
+
+  return parsed;
+}
+
+/**
+ * Igual que parseBirthDate pero exigiendo el dato.
+ *
+ * La validacion de zod vive en el cliente y se puede saltear llamando a la
+ * action directo, asi que la regla se repite del lado del servidor.
+ */
+function parseBirthDateRequerida(value?: string | null): Date {
+  const parsed = parseBirthDate(value);
+  if (!parsed) {
+    throw new Error("La fecha de nacimiento es obligatoria");
   }
 
   return parsed;
@@ -211,10 +233,17 @@ export async function createUsuario(data: UsuarioPayload) {
   const email = data.email?.trim().toLowerCase();
   const password = data.password?.trim();
   const platformRole = data.platformRole ?? "USER";
+  const dni = data.dni?.trim();
 
   if (!name || !lastname || !email || !password) {
     throw new Error("Faltan campos obligatorios");
   }
+
+  if (!dni) {
+    throw new Error("El DNI es obligatorio");
+  }
+
+  const birthDate = parseBirthDateRequerida(data.birthDate);
 
   const passwordHash = await bcrypt.hash(password, 10);
   const asignacion = await resolveAsignacionComplejo({
@@ -231,12 +260,14 @@ export async function createUsuario(data: UsuarioPayload) {
           email,
           passwordHash,
           telefono: normalizeNullable(data.telefono),
-          dni: normalizeNullable(data.dni),
+          dni,
           genero: data.genero ?? "X",
           categoria: normalizeNullable(data.categoria),
+          provincia: normalizarProvincia(data.provincia),
+          localidad: normalizeNullable(data.localidad),
           platformRole,
           isActive: data.isActive ?? true,
-          birthDate: parseBirthDate(data.birthDate),
+          birthDate,
         },
         select: { id: true },
       });
@@ -317,10 +348,17 @@ export async function updateUsuario(id: number, data: UsuarioPayload) {
   const lastname = data.lastname?.trim();
   const email = data.email?.trim().toLowerCase();
   const platformRole = data.platformRole ?? "USER";
+  const dni = data.dni?.trim();
 
   if (!name || !lastname || !email) {
     throw new Error("Faltan campos obligatorios");
   }
+
+  if (!dni) {
+    throw new Error("El DNI es obligatorio");
+  }
+
+  const birthDate = parseBirthDateRequerida(data.birthDate);
 
   const asignacion = await resolveAsignacionComplejo({
     ...data,
@@ -332,12 +370,14 @@ export async function updateUsuario(id: number, data: UsuarioPayload) {
     lastname,
     email,
     telefono: normalizeNullable(data.telefono),
-    dni: normalizeNullable(data.dni),
+    dni,
     genero: data.genero ?? "X",
     categoria: normalizeNullable(data.categoria),
+    provincia: normalizarProvincia(data.provincia),
+    localidad: normalizeNullable(data.localidad),
     platformRole,
     isActive: data.isActive ?? true,
-    birthDate: parseBirthDate(data.birthDate),
+    birthDate,
   };
 
   if (data.password && data.password.trim().length > 0) {
@@ -427,6 +467,8 @@ export async function getUsuarioById(id: number) {
       dni: true,
       genero: true,
       categoria: true,
+      provincia: true,
+      localidad: true,
       platformRole: true,
       isActive: true,
       memberships: {
@@ -457,6 +499,8 @@ export async function getUsuarioById(id: number) {
     dni: user.dni,
     genero: user.genero,
     categoria: user.categoria,
+    provincia: user.provincia,
+    localidad: user.localidad,
     platformRole: user.platformRole,
     isActive: user.isActive,
     complejoId: membership?.complejoId ?? null,

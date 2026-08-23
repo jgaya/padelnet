@@ -19,6 +19,9 @@ import {
   type ComplejoOption,
   type UsuarioPayload,
 } from "@/actions/usuarios";
+import UbicacionFields, {
+  type UbicacionValue,
+} from "@/app/components/UbicacionFields";
 import { UsuarioFormSchema, type UsuarioFormData } from "@/types/forms";
 
 export type UsuarioFormProps = {
@@ -74,6 +77,8 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
       dni: "",
       genero: "X",
       categoria: "",
+      provincia: "",
+      localidad: "",
       platformRole: "USER",
       complejoId: "",
       complejoRole: undefined,
@@ -100,6 +105,8 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
         dni: initialData.dni ?? "",
         genero: initialData.genero ?? "X",
         categoria: initialData.categoria ?? "",
+        provincia: initialData.provincia ?? "",
+        localidad: initialData.localidad ?? "",
         platformRole: initialData.platformRole ?? "USER",
         complejoId: initialData.complejoId ?? "",
         complejoRole: initialData.complejoRole,
@@ -135,6 +142,11 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
     setValue("esPropietario", false);
   }, [tieneRolEnComplejo, setValue]);
 
+  const handleUbicacionChange = ({ provincia, localidad }: UbicacionValue) => {
+    setValue("provincia", provincia);
+    setValue("localidad", localidad);
+  };
+
   const onSubmit = async (data: UsuarioFormData) => {
     setIsLoading(true);
 
@@ -155,6 +167,8 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
         dni: data.dni || null,
         genero: data.genero,
         categoria: data.categoria || null,
+        provincia: data.provincia || null,
+        localidad: data.localidad || null,
         platformRole: data.platformRole,
         complejoRole: data.complejoRole || null,
         esPropietario:
@@ -239,9 +253,10 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
           />
           <FormInput
             label="DNI"
-            placeholder="DNI (opcional)"
+            placeholder="DNI"
             register={register("dni")}
             error={errors.dni}
+            required
           />
         </div>
 
@@ -258,6 +273,16 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
             placeholder="Ej: 6, 7ma, C4 (opcional)"
             register={register("categoria")}
             error={errors.categoria}
+          />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <UbicacionFields
+            provincia={watch("provincia") ?? ""}
+            localidad={watch("localidad") ?? ""}
+            onChange={handleUbicacionChange}
+            errorProvincia={errors.provincia}
+            errorLocalidad={errors.localidad}
           />
         </div>
 
@@ -326,6 +351,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
             type="date"
             register={register("birthDate")}
             error={errors.birthDate}
+            required
           />
           <div className="flex items-end pb-2">
             <FormCheckbox

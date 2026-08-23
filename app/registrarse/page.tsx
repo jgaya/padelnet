@@ -7,22 +7,16 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormInput, FormPassword, FormSelect } from "@/app/components/FormBase";
 import { registerUser } from "@/actions/auth";
+import GoogleButton from "@/app/components/GoogleButton";
+import UbicacionFields, {
+  type UbicacionValue,
+} from "@/app/components/UbicacionFields";
+import { CATEGORIA_OPTIONS } from "@/lib/categorias";
 import { RegisterSchema, type RegisterFormData } from "@/types/forms";
 
 const generoOptions = [
   { value: "M", label: "Masculino" },
   { value: "F", label: "Femenino" },
-];
-
-const categoriaOptions = [
-  { value: "1", label: "1" },
-  { value: "2", label: "2" },
-  { value: "3", label: "3" },
-  { value: "4", label: "4" },
-  { value: "5", label: "5" },
-  { value: "6", label: "6" },
-  { value: "7", label: "7" },
-  { value: "8", label: "8" },
 ];
 
 export default function RegistrarsePage() {
@@ -33,6 +27,8 @@ export default function RegistrarsePage() {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(RegisterSchema),
@@ -43,12 +39,18 @@ export default function RegistrarsePage() {
       dni: "",
       birthDate: "",
       categoria: "",
+      provincia: "",
       localidad: "",
       genero: undefined,
       password: "",
       confirmPassword: "",
     },
   });
+
+  const handleUbicacionChange = ({ provincia, localidad }: UbicacionValue) => {
+    setValue("provincia", provincia);
+    setValue("localidad", localidad);
+  };
 
   const onSubmit = async (values: RegisterFormData) => {
     setIsLoading(true);
@@ -62,6 +64,7 @@ export default function RegistrarsePage() {
         dni: values.dni,
         birthDate: values.birthDate,
         categoria: values.categoria,
+        provincia: values.provincia,
         localidad: values.localidad,
         genero: values.genero,
         password: values.password,
@@ -170,15 +173,16 @@ export default function RegistrarsePage() {
               label="Categoria"
               register={register("categoria")}
               error={errors.categoria}
-              options={categoriaOptions}
+              options={CATEGORIA_OPTIONS}
               required
             />
 
-            <FormInput
-              label="Localidad"
-              placeholder="Ciudad o barrio (opcional)"
-              register={register("localidad")}
-              error={errors.localidad}
+            <UbicacionFields
+              provincia={watch("provincia") ?? ""}
+              localidad={watch("localidad") ?? ""}
+              onChange={handleUbicacionChange}
+              errorProvincia={errors.provincia}
+              errorLocalidad={errors.localidad}
             />
 
             <FormSelect
@@ -213,6 +217,20 @@ export default function RegistrarsePage() {
               {isLoading ? "Creando cuenta..." : "Crear cuenta"}
             </button>
           </form>
+
+          <div className="my-4 flex items-center gap-3">
+            <span className="h-px flex-1 bg-deep-black/10" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-deep-black/50">
+              o
+            </span>
+            <span className="h-px flex-1 bg-deep-black/10" />
+          </div>
+
+          <GoogleButton texto="Crear cuenta con Google" />
+          <p className="mt-2 text-center text-xs text-deep-black/60">
+            Con Google no hace falta confirmar el mail. Despues te pedimos DNI,
+            fecha de nacimiento y categoria.
+          </p>
 
           <div className="mt-4 flex items-center justify-between text-sm">
             <Link

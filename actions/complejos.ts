@@ -1,6 +1,6 @@
 "use server";
 
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/generated/prisma/client";
 
 import { getEnabledComplejosForFeature } from "@/actions/complejo-features";
 import {

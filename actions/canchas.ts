@@ -1,6 +1,6 @@
 "use server";
 
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getCanchaAccessScope } from "@/lib/canchas-auth";
 import type { ListOpts } from "@/types/ui";

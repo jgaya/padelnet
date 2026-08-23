@@ -4,6 +4,7 @@ import TorneoForm from "@/app/admin/complejos/[id]/eventos/[eventoId]/torneos/co
 
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { migasGestion } from "@/lib/breadcrumbs-gestion";
+import { toDateTimeLocal } from "@/lib/fechas";
 
 export default async function NewTorneoPage(props: {
   params: Promise<{ id: string; eventoId: string }>;
@@ -38,7 +39,16 @@ export default async function NewTorneoPage(props: {
   return (
     <>
       <Breadcrumbs migas={migas} />
-      <TorneoForm complejoId={complejoId} eventoId={parsedEventoId} />
+      <TorneoForm
+        complejoId={complejoId}
+        eventoId={parsedEventoId}
+        // Un torneo arranca y termina por defecto junto con su evento; el admin
+        // puede correr las fechas desde el form si el torneo tiene otra ventana.
+        initialData={{
+          inicio: toDateTimeLocal(evento.inicio),
+          fin: toDateTimeLocal(evento.fin),
+        }}
+      />
     </>
   );
 }

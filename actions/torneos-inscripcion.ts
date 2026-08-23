@@ -1,10 +1,11 @@
 "use server";
 
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { notifyInscripcionCancelada } from "@/actions/notificaciones-eventos";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
 import { getSession } from "@/lib/session";
+import { perfilCompleto } from "@/lib/google-cuenta";
 import { inscripcionesAbiertas } from "@/lib/torneo-elegibilidad";
 import type { TournamentStatus } from "@/types/db";
 
@@ -430,12 +431,38 @@ async function getRegistrationBaseContext(
       lastname: true,
       genero: true,
       categoria: true,
+      dni: true,
+      birthDate: true,
       platformRole: true,
       isActive: true,
       deletedAt: true,
       emailVerified: true,
     },
   });
+
+  // Las cuentas de Google entran con el mail ya verificado pero sin DNI, fecha
+  // ni categoria: se las manda a completar antes de dejarlas anotarse.
+  if (
+    user &&
+    !user.deletedAt &&
+    user.isActive &&
+    user.emailVerified &&
+    !perfilCompleto(user)
+  ) {
+    return {
+      status: "NOT_ALLOWED",
+      torneo: torneoSummary,
+      currentUser: {
+        id: session.userId,
+        name: session.name,
+        lastname: session.lastname,
+        genero: normalizeGenero(session.genero),
+        categoria: parseCategoriaNumber(session.categoria),
+      },
+      reason:
+        "Completa tu perfil antes de inscribirte: falta DNI, fecha de nacimiento, categoria o genero. Podes cargarlos en /completar-perfil",
+    };
+  }
 
   if (user && !user.deletedAt && user.isActive && !user.emailVerified) {
     // Los avisos de partidos y cambios de horario salen por mail: antes de
@@ -814,6 +841,8 @@ export async function registerPublicTorneoPair(
             id: true,
             genero: true,
             categoria: true,
+            dni: true,
+            birthDate: true,
             deletedAt: true,
             isActive: true,
             platformRole: true,
@@ -844,6 +873,16 @@ export async function registerPublicTorneoPair(
         return {
           success: false,
           error: "Tu cuenta no esta habilitada para inscripciones",
+        };
+      }
+
+      // Solo para el que se anota: exigirselo tambien a la pareja dejaria
+      // afuera a los usuarios viejos, que no tienen fecha de nacimiento.
+      if (!perfilCompleto(player1)) {
+        return {
+          success: false,
+          error:
+            "Completa tu perfil antes de inscribirte: falta DNI, fecha de nacimiento, categoria o genero",
         };
       }
 
@@ -1522,6 +1561,8 @@ export async function updatePublicTorneoPair(
             id: true,
             genero: true,
             categoria: true,
+            dni: true,
+            birthDate: true,
             deletedAt: true,
             isActive: true,
             platformRole: true,
@@ -1552,6 +1593,16 @@ export async function updatePublicTorneoPair(
         return {
           success: false,
           error: "Tu cuenta no esta habilitada para inscripciones",
+        };
+      }
+
+      // Solo para el que se anota: exigirselo tambien a la pareja dejaria
+      // afuera a los usuarios viejos, que no tienen fecha de nacimiento.
+      if (!perfilCompleto(player1)) {
+        return {
+          success: false,
+          error:
+            "Completa tu perfil antes de inscribirte: falta DNI, fecha de nacimiento, categoria o genero",
         };
       }
 

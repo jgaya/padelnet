@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import TitleBar from "@/components/TitleBar";
+import Tooltip from "@/components/Tooltip";
 import { useSnackbar } from "@/context/SnackbarContext";
 import {
   generateTorneoPartidosPreview,
@@ -125,6 +126,38 @@ export default function PartidosPageClient() {
       };
     });
     invalidatePreview();
+  };
+
+  /**
+   * Copia los horarios de la primera cancha seleccionada al resto. En la mayoria
+   * de los torneos todas las canchas abren y cierran a la misma hora, y cargar
+   * dia por dia en cada una es donde se cuelan los errores.
+   */
+  const copiarHorariosAlResto = () => {
+    const [primeraId, ...resto] = selectedCanchaIds;
+    if (primeraId === undefined || resto.length === 0) return;
+
+    setCanchaWindows((prev) => {
+      const origen =
+        prev[primeraId] ?? days.map(() => ({ start: "09:00", end: "18:00" }));
+
+      const next = { ...prev };
+      for (const canchaId of resto) {
+        // Se clona cada franja: si se comparte la referencia, editar una cancha
+        // despues termina cambiando las otras.
+        next[canchaId] = origen.map((window) => ({ ...window }));
+      }
+
+      return next;
+    });
+
+    invalidatePreview();
+    showSnackbar(
+      resto.length === 1
+        ? "Horarios copiados a la otra cancha"
+        : `Horarios copiados a las otras ${resto.length} canchas`,
+      "success",
+    );
   };
 
   const buildPayload = useCallback(
@@ -298,15 +331,30 @@ export default function PartidosPageClient() {
             <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card mb-3">
               <div className="p-4">
                 <h5 className="mb-3">2. Define los horarios por dia</h5>
-                {selectedCanchaIds.map((canchaId) => {
+                {selectedCanchaIds.map((canchaId, canchaIndex) => {
                   const cancha = data.canchas.find(
                     (item) => item.id === canchaId,
                   );
                   if (!cancha) return null;
 
+                  const esPrimera = canchaIndex === 0;
+
                   return (
                     <div key={cancha.id} className="padel-schedule-court">
-                      <h6 className="mb-3">{cancha.label}</h6>
+                      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                        <h6 className="mb-0">{cancha.label}</h6>
+                        {esPrimera && selectedCanchaIds.length > 1 ? (
+                          <Tooltip label="Aplica estos horarios, dia por dia, a todas las demas canchas seleccionadas.">
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary btn-sm"
+                              onClick={copiarHorariosAlResto}
+                            >
+                              Copiar horarios al resto
+                            </button>
+                          </Tooltip>
+                        ) : null}
+                      </div>
                       {days.map((day, index) => (
                         <div
                           key={day.key}
@@ -431,13 +479,15 @@ export default function PartidosPageClient() {
                   </div>
                 </div>
               </div>
-              <button
-                className="btn btn-primary"
-                onClick={() => void handleGenerate()}
-                disabled={generating || selectedCanchaIds.length === 0}
-              >
-                {generating ? "Generando..." : "Generar vista previa"}
-              </button>
+              <Tooltip label="Arma una grilla tentativa con las canchas elegidas. No guarda nada todavia.">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => void handleGenerate()}
+                  disabled={generating || selectedCanchaIds.length === 0}
+                >
+                  {generating ? "Generando..." : "Generar vista previa"}
+                </button>
+              </Tooltip>
             </div>
           </div>
 
@@ -465,14 +515,16 @@ export default function PartidosPageClient() {
                     >
                       Rehacer
                     </button>
-                    <button
-                      className="btn btn-primary"
-                      type="button"
-                      onClick={() => void handleSave()}
-                      disabled={saving || preview.unassignedZona.length > 0}
-                    >
-                      {saving ? "Guardando..." : "Guardar en DB"}
-                    </button>
+                    <Tooltip label="Confirma esta grilla y crea los partidos. Reemplaza los que ya existan.">
+                      <button
+                        className="btn btn-primary"
+                        type="button"
+                        onClick={() => void handleSave()}
+                        disabled={saving || preview.unassignedZona.length > 0}
+                      >
+                        {saving ? "Guardando..." : "Guardar en DB"}
+                      </button>
+                    </Tooltip>
                   </div>
                 </div>
 

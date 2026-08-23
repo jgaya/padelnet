@@ -7,27 +7,8 @@ import TorneoForm from "@/app/admin/complejos/[id]/eventos/[eventoId]/torneos/co
 
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { migasGestion } from "@/lib/breadcrumbs-gestion";
-
-function toDateTimeLocal(value: string | null) {
-  if (!value) {
-    return "";
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  const pad = (num: number) => String(num).padStart(2, "0");
-
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
+import { toDateTimeLocal } from "@/lib/fechas";
+import { puntajesFormDesdeGuardados } from "@/lib/ranking-puntajes";
 
 export default async function EditTorneoPage(props: {
   params: Promise<{ id: string; eventoId: string; torneoId: string }>;
@@ -103,12 +84,7 @@ export default async function EditTorneoPage(props: {
             zonaCerrada: torneo.zonaCerrada,
             inicio: toDateTimeLocal(torneo.inicio),
             fin: toDateTimeLocal(torneo.fin),
-            puntajes: Object.fromEntries(
-              puntajes.map((puntaje) => [
-                puntaje.nombre,
-                String(puntaje.valor),
-              ]),
-            ),
+            puntajes: puntajesFormDesdeGuardados(puntajes),
           }}
           isEdit={parsedTorneoId}
         />

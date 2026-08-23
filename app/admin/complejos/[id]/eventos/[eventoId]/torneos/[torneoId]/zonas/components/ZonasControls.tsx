@@ -1,4 +1,5 @@
 import styles from "../page.module.css";
+import Tooltip from "@/components/Tooltip";
 
 type ZonasControlsProps = {
   pairsPerZone: number;
@@ -58,29 +59,35 @@ export default function ZonasControls({
           <div
             className={`flex flex-wrap gap-2 md:col-span-6 ${styles.zonaControlsActions}`}
           >
-            <button
-              className={`btn btn-secondary ${`${styles.zonaBtn} ${styles.zonaBtnPrimary}`}`}
-              type="button"
-              onClick={onCreateZones}
-            >
-              Crear zonas
-            </button>
-            <button
-              className={`btn btn-outline-secondary ${`${styles.zonaBtn} ${styles.zonaBtnOutline}`}`}
-              type="button"
-              onClick={onAutoAssign}
-              disabled={!tablaResumen}
-            >
-              Armar zonas por tabla
-            </button>
-            <button
-              className={`btn ${`${styles.zonaBtn} ${styles.zonaBtnSave}`}`}
-              type="button"
-              onClick={onSave}
-              disabled={saving}
-            >
-              {saving ? "Guardando..." : "Guardar zonas"}
-            </button>
+            <Tooltip label="Crea las zonas vacias con la cantidad elegida arriba.">
+              <button
+                className={`btn btn-secondary ${`${styles.zonaBtn} ${styles.zonaBtnPrimary}`}`}
+                type="button"
+                onClick={onCreateZones}
+              >
+                Crear zonas
+              </button>
+            </Tooltip>
+            <Tooltip label="Reparte las parejas por orden de siembra y reemplaza las zonas actuales.">
+              <button
+                className={`btn btn-outline-secondary ${`${styles.zonaBtn} ${styles.zonaBtnOutline}`}`}
+                type="button"
+                onClick={onAutoAssign}
+                disabled={!tablaResumen}
+              >
+                Armar zonas por tabla
+              </button>
+            </Tooltip>
+            <Tooltip label="Persiste el reparto actual de parejas por zona.">
+              <button
+                className={`btn ${`${styles.zonaBtn} ${styles.zonaBtnSave}`}`}
+                type="button"
+                onClick={onSave}
+                disabled={saving}
+              >
+                {saving ? "Guardando..." : "Guardar zonas"}
+              </button>
+            </Tooltip>
           </div>
         </div>
 

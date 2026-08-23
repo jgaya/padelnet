@@ -68,6 +68,75 @@ export function getPosicion(nombre: string): RankingPosicion | null {
 }
 
 /**
+ * Clave con la que viaja cada puntaje dentro del formulario de torneo.
+ *
+ * No se usa `nombre` como clave porque react-hook-form trata el punto como
+ * separador de path: al registrar "puntajes.Perdedor Zona por W.O." arma
+ * puntajes["Perdedor Zona por W"].O[""] en vez de una clave plana. Eso hacia
+ * fallar la validacion con un error colgado de una clave que el form nunca
+ * dibuja, asi que el submit no llamaba a onSubmit y no aparecia ningun
+ * mensaje. El orden es estable y no tiene puntos.
+ */
+export function clavePuntajeForm(orden: number): string {
+  return `p${orden}`;
+}
+
+/** Puntajes por defecto, con las claves que espera el form. */
+export function puntajesFormPorDefecto(): Record<string, string> {
+  return Object.fromEntries(
+    RANKING_POSICIONES.map((posicion) => [
+      clavePuntajeForm(posicion.orden),
+      String(posicion.defaultValor),
+    ]),
+  );
+}
+
+/**
+ * Pasa los puntajes guardados (por nombre de posicion) al formato del form.
+ * Las posiciones que no esten guardadas caen al valor por defecto.
+ */
+export function puntajesFormDesdeGuardados(
+  guardados: ReadonlyArray<{ nombre: string; valor: number }>,
+): Record<string, string> {
+  const porNombre = new Map(guardados.map((item) => [item.nombre, item.valor]));
+
+  return Object.fromEntries(
+    RANKING_POSICIONES.map((posicion) => [
+      clavePuntajeForm(posicion.orden),
+      String(porNombre.get(posicion.nombre) ?? posicion.defaultValor),
+    ]),
+  );
+}
+
+/**
+ * Vuelve del formato del form al record por nombre que espera la action.
+ *
+ * Una posicion que no vino en el form cae al valor por defecto; una que vino
+ * vacia vale 0, que es lo que el admin quiso decir al borrar el campo (el form
+ * los precarga con el default, borrarlo es deliberado).
+ */
+export function puntajesDesdeForm(
+  valores: Record<string, string | undefined> | undefined,
+): PuntajesPorPosicion {
+  return Object.fromEntries(
+    RANKING_POSICIONES.map((posicion) => {
+      const crudo = valores?.[clavePuntajeForm(posicion.orden)];
+
+      if (crudo === undefined) {
+        return [posicion.nombre, posicion.defaultValor];
+      }
+
+      const numero = Number(crudo.trim());
+
+      return [
+        posicion.nombre,
+        Number.isFinite(numero) ? numero : posicion.defaultValor,
+      ];
+    }),
+  );
+}
+
+/**
  * Resuelve el nombre de la ronda del perdedor de un partido segun su llave.
  * "Semifinal 2" -> "Semifinalista". Devuelve null si la llave no corresponde a
  * una fase conocida (o es null, como en los partidos de zona).

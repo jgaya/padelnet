@@ -10,6 +10,43 @@ import { prisma } from "@/lib/prisma";
 
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { migasGestion } from "@/lib/breadcrumbs-gestion";
+import {
+  categoriaPuedeIntegrarPareja,
+  generosElegibles,
+  parseCategoriaNumber,
+} from "@/lib/torneo-elegibilidad";
+
+/**
+ * La regla de categoria no se puede filtrar en SQL: `categoria` es texto libre
+ * ("7", "7ma", "Septima 7") y hay que parsearlo. Se traen de mas y se recorta
+ * despues de filtrar, para no quedarse corto por culpa del tope.
+ */
+const CANDIDATOS_A_EVALUAR = 600;
+
+/**
+ * URL de esta misma pantalla, con el mensaje flash y la busqueda vigente.
+ *
+ * Vive en el modulo y no adentro del componente a proposito: las actions
+ * inline con "use server" serializan todo lo que capturan de su closure, y una
+ * funcion no es serializable ("Functions cannot be passed directly to Client
+ * Components"). Referenciada desde el scope del modulo no se captura.
+ */
+function urlInscripciones(
+  complejoId: number,
+  eventoId: number,
+  torneoId: number,
+  mensaje: { q?: string; ok?: string; error?: string } = {},
+) {
+  const nextParams = new URLSearchParams();
+  if (mensaje.q) nextParams.set("q", mensaje.q);
+  if (mensaje.ok) nextParams.set("ok", mensaje.ok);
+  if (mensaje.error) nextParams.set("error", mensaje.error);
+
+  const query = nextParams.toString();
+  const base = `/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneoId}/inscripciones`;
+
+  return query ? `${base}?${query}` : base;
+}
 
 function categoriaRuleLabel(
   regla: "LIBRE" | "MAYOR_IGUAL" | "MENOR_IGUAL" | "IGUAL" | "SUMA",
@@ -94,7 +131,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
     notFound();
   }
 
-  const [inscriptosCount, suplentesCount, candidates, inscripciones] =
+  const [inscriptosCount, suplentesCount, posibles, inscripciones] =
     await Promise.all([
       prisma.pareja.count({
         where: { torneoId: torneoIdNum, deletedAt: null, suplente: false },
@@ -107,6 +144,19 @@ export default async function AdminTorneoInscripcionesPage(props: {
           deletedAt: null,
           isActive: true,
           platformRole: "USER",
+          // Regla de sexo del torneo, que si se puede resolver en SQL.
+          genero: { in: generosElegibles(torneo.sexo) },
+          // Bloqueado en este complejo: la action lo rechaza igual.
+          perfilesComplejo: { none: { complejoId, isBlocked: true } },
+          // Ya inscripto en este torneo, como titular o suplente. Las parejas
+          // dadas de baja tienen deletedAt, y esos jugadores si se pueden
+          // volver a inscribir, asi que no se filtran.
+          parejasComoJugador1: {
+            none: { torneoId: torneoIdNum, deletedAt: null },
+          },
+          parejasComoJugador2: {
+            none: { torneoId: torneoIdNum, deletedAt: null },
+          },
           ...(search
             ? {
                 OR: [
@@ -123,12 +173,53 @@ export default async function AdminTorneoInscripcionesPage(props: {
           lastname: true,
           genero: true,
           categoria: true,
+          // La categoria del jugador en este complejo pisa a la global, igual
+          // que en registerManagedTorneoPair.
+          perfilesComplejo: {
+            where: { complejoId },
+            select: { categoria: true },
+            take: 1,
+          },
         },
         orderBy: [{ name: "asc" }, { lastname: "asc" }],
-        take: search ? 80 : 200,
+        take: CANDIDATOS_A_EVALUAR,
       }),
       listManagedTorneoInscripciones(torneoIdNum),
     ]);
+
+  // Misma precedencia que la action: si la categoria del perfil del complejo
+  // parsea se usa esa, si no cae a la categoria global del usuario.
+  const elegibles = posibles
+    .map((posible) => {
+      const delComplejo = posible.perfilesComplejo[0]?.categoria ?? null;
+      const categoria =
+        parseCategoriaNumber(delComplejo) !== null
+          ? delComplejo
+          : posible.categoria;
+
+      return {
+        id: posible.id,
+        name: posible.name,
+        lastname: posible.lastname,
+        genero: posible.genero,
+        categoria,
+      };
+    })
+    .filter((posible) =>
+      categoriaPuedeIntegrarPareja(
+        torneo.categoriaRegla,
+        torneo.categoriaN,
+        parseCategoriaNumber(posible.categoria),
+      ),
+    );
+
+  const limiteCandidatos = search ? 80 : 200;
+  const candidates = elegibles.slice(0, limiteCandidatos);
+  // Dos recortes posibles: el tope del combo y el de la query, que puede haber
+  // dejado gente afuera antes de evaluar la categoria.
+  const hayMasCandidatos =
+    elegibles.length > candidates.length ||
+    posibles.length === CANDIDATOS_A_EVALUAR;
 
   const activas = inscripciones.filter((row) => !row.dadaDeBaja);
   const bajas = inscripciones.filter((row) => row.dadaDeBaja);
@@ -147,11 +238,6 @@ export default async function AdminTorneoInscripcionesPage(props: {
     const rawEndHour = String(formData.get("restriccionFin") ?? "").trim();
     const rawSearch = String(formData.get("q") ?? "").trim();
 
-    const nextParams = new URLSearchParams();
-    if (rawSearch) {
-      nextParams.set("q", rawSearch);
-    }
-
     const restriccion =
       rawDay && rawStartHour && rawEndHour
         ? `${rawDay},${rawStartHour},${rawEndHour}`
@@ -164,50 +250,38 @@ export default async function AdminTorneoInscripcionesPage(props: {
       restriccion,
     });
 
-    if (!result.success) {
-      nextParams.set(
-        "error",
-        result.error || "No se pudo registrar la inscripcion",
-      );
-      redirect(
-        `/admin/complejos/${complejoId}/eventos/${eventoIdNum}/torneos/${rawTorneoId}/inscripciones?${nextParams.toString()}`,
-      );
-    }
-
-    nextParams.set(
-      "ok",
-      result.message || "Inscripcion registrada correctamente",
-    );
     redirect(
-      `/admin/complejos/${complejoId}/eventos/${eventoIdNum}/torneos/${rawTorneoId}/inscripciones?${nextParams.toString()}`,
+      urlInscripciones(complejoId, eventoIdNum, rawTorneoId, {
+        q: rawSearch,
+        ...(result.success
+          ? { ok: result.message || "Inscripcion registrada correctamente" }
+          : { error: result.error || "No se pudo registrar la inscripcion" }),
+      }),
     );
   }
-
-  const volverAlListado = (mensaje: { ok?: string; error?: string }) => {
-    const nextParams = new URLSearchParams();
-    if (search) nextParams.set("q", search);
-    if (mensaje.ok) nextParams.set("ok", mensaje.ok);
-    if (mensaje.error) nextParams.set("error", mensaje.error);
-
-    return `/admin/complejos/${complejoId}/eventos/${eventoIdNum}/torneos/${torneoIdNum}/inscripciones?${nextParams.toString()}`;
-  };
 
   async function submitBaja(formData: FormData) {
     "use server";
 
     const rawParejaId = Number(formData.get("parejaId"));
     if (!Number.isInteger(rawParejaId) || rawParejaId <= 0) {
-      redirect(volverAlListado({ error: "Inscripcion invalida" }));
+      redirect(
+        urlInscripciones(complejoId, eventoIdNum, torneoIdNum, {
+          q: search,
+          error: "Inscripcion invalida",
+        }),
+      );
     }
 
     const result = await cancelManagedTorneoPair(torneoIdNum, rawParejaId);
 
     redirect(
-      volverAlListado(
-        result.success
+      urlInscripciones(complejoId, eventoIdNum, torneoIdNum, {
+        q: search,
+        ...(result.success
           ? { ok: result.message || "Inscripcion dada de baja" }
-          : { error: result.error || "No se pudo dar de baja la inscripcion" },
-      ),
+          : { error: result.error || "No se pudo dar de baja la inscripcion" }),
+      }),
     );
   }
 
@@ -216,17 +290,23 @@ export default async function AdminTorneoInscripcionesPage(props: {
 
     const rawParejaId = Number(formData.get("parejaId"));
     if (!Number.isInteger(rawParejaId) || rawParejaId <= 0) {
-      redirect(volverAlListado({ error: "Inscripcion invalida" }));
+      redirect(
+        urlInscripciones(complejoId, eventoIdNum, torneoIdNum, {
+          q: search,
+          error: "Inscripcion invalida",
+        }),
+      );
     }
 
     const result = await reactivateManagedTorneoPair(torneoIdNum, rawParejaId);
 
     redirect(
-      volverAlListado(
-        result.success
+      urlInscripciones(complejoId, eventoIdNum, torneoIdNum, {
+        q: search,
+        ...(result.success
           ? { ok: result.message || "Inscripcion reactivada" }
-          : { error: result.error || "No se pudo reactivar la inscripcion" },
-      ),
+          : { error: result.error || "No se pudo reactivar la inscripcion" }),
+      }),
     );
   }
 
@@ -441,6 +521,26 @@ export default async function AdminTorneoInscripcionesPage(props: {
           <form action={submitRegistration} className="space-y-4">
             <input type="hidden" name="torneoId" value={torneoIdNum} />
             <input type="hidden" name="q" value={search} />
+
+            <p className="text-sm text-deep-black/70">
+              Los combos muestran solo jugadores que cumplen la regla de sexo (
+              {torneo.sexo}) y de categoria (
+              {categoriaRuleLabel(torneo.categoriaRegla, torneo.categoriaN)}) del
+              torneo. Quedan afuera los bloqueados en el complejo y los que ya
+              estan inscriptos o en la lista de suplentes; una pareja dada de
+              baja libera a sus dos jugadores.
+              {hayMasCandidatos
+                ? " La lista esta recortada: usa el buscador para encontrar a alguien que no aparezca."
+                : ""}
+            </p>
+
+            {candidates.length === 0 ? (
+              <p className="rounded-xl border border-energy-orange/25 bg-energy-orange/10 px-4 py-2 text-sm text-energy-orange">
+                {search
+                  ? "Ningun jugador de la busqueda queda disponible para este torneo."
+                  : "No queda ningun jugador disponible para inscribir en este torneo."}
+              </p>
+            ) : null}
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4">

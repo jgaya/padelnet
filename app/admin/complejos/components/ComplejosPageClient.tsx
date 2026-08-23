@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import ConfirmationModal from "@/components/ConfirmationModal";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
@@ -20,7 +19,10 @@ import {
   AdjustmentsHorizontalIcon,
   CalendarDaysIcon,
   DocumentTextIcon,
+  TrashIcon,
 } from "@heroicons/react/24/solid";
+
+import RowActions from "@/components/RowActions";
 
 /**
  * La gestion de un complejo (eventos, canchas, turnos) vive en un solo arbol,
@@ -219,65 +221,60 @@ export default function ComplejosPageClient({
                 <td>{complejo.ciudad}</td>
                 <td>{complejo.provincia}</td>
                 <td>{complejo.telefono || "-"}</td>
-                <td className="flex gap-2 padel-table-actions">
-                  {canEdit ? (
-                    <Link
-                      href={`${basePath}/${complejo.id}`}
-                      className="btn btn-primary btn-sm padel-action-btn"
-                    >
-                      <PencilSquareIcon className="w-4 h-4" />
-                    </Link>
-                  ) : null}
-                  {showEventActions ? (
-                    <Link
-                      href={`${GESTION_BASE}/${complejo.id}/eventos`}
-                      className="btn btn-primary btn-sm padel-action-btn"
-                    >
-                      <TrophyIcon className="h-4 w-4" />
-                    </Link>
-                  ) : null}
-                  {showCanchaActions ? (
-                    <Link
-                      href={`${GESTION_BASE}/${complejo.id}/canchas`}
-                      className="btn btn-secondary btn-sm padel-action-btn"
-                    >
-                      <Squares2X2Icon className="h-4 w-4" />
-                    </Link>
-                  ) : null}
-                  <Link
-                    href={`${GESTION_BASE}/${complejo.id}/reglamento`}
-                    title="Reglamento"
-                    className="btn btn-secondary btn-sm padel-action-btn"
-                  >
-                    <DocumentTextIcon className="h-4 w-4" />
-                  </Link>
-                  {/* Solo si el superadmin le prendio la funcionalidad. */}
-                  {complejo.turnosHabilitado ? (
-                    <Link
-                      href={`${GESTION_BASE}/${complejo.id}/turnos`}
-                      title="Turnos de cancha"
-                      className="btn btn-secondary btn-sm padel-action-btn"
-                    >
-                      <CalendarDaysIcon className="h-4 w-4" />
-                    </Link>
-                  ) : null}
-                  {showFeatureActions ? (
-                    <Link
-                      href={`${basePath}/${complejo.id}/funcionalidades`}
-                      title="Funcionalidades"
-                      className="btn btn-secondary btn-sm padel-action-btn"
-                    >
-                      <AdjustmentsHorizontalIcon className="h-4 w-4" />
-                    </Link>
-                  ) : null}
-                  {canDelete ? (
-                    <ConfirmationModal
-                      onConfirm={() => handleDelete(complejo.id)}
-                      title={`Borrar Complejo ${complejo.id}`}
-                      message="Estas seguro de que quieres eliminar este complejo?"
-                      tooltip="Eliminar complejo"
-                    />
-                  ) : null}
+                <td className="padel-table-actions">
+                  <RowActions
+                    actions={[
+                      canEdit && {
+                        key: "editar",
+                        label: "Editar complejo",
+                        icon: <PencilSquareIcon className="h-4 w-4" />,
+                        href: `${basePath}/${complejo.id}`,
+                      },
+                      showEventActions && {
+                        key: "eventos",
+                        label: "Eventos del complejo",
+                        icon: <TrophyIcon className="h-4 w-4" />,
+                        href: `${GESTION_BASE}/${complejo.id}/eventos`,
+                      },
+                      showCanchaActions && {
+                        key: "canchas",
+                        label: "Canchas del complejo",
+                        icon: <Squares2X2Icon className="h-4 w-4" />,
+                        href: `${GESTION_BASE}/${complejo.id}/canchas`,
+                      },
+                      {
+                        key: "reglamento",
+                        label: "Reglamento",
+                        icon: <DocumentTextIcon className="h-4 w-4" />,
+                        href: `${GESTION_BASE}/${complejo.id}/reglamento`,
+                      },
+                      // Solo si el superadmin le prendio la funcionalidad.
+                      complejo.turnosHabilitado && {
+                        key: "turnos",
+                        label: "Turnos de cancha",
+                        icon: <CalendarDaysIcon className="h-4 w-4" />,
+                        href: `${GESTION_BASE}/${complejo.id}/turnos`,
+                      },
+                      showFeatureActions && {
+                        key: "funcionalidades",
+                        label: "Funcionalidades",
+                        icon: <AdjustmentsHorizontalIcon className="h-4 w-4" />,
+                        href: `${basePath}/${complejo.id}/funcionalidades`,
+                      },
+                      canDelete && {
+                        key: "eliminar",
+                        label: "Eliminar complejo",
+                        icon: <TrashIcon className="h-4 w-4" />,
+                        variant: "danger" as const,
+                        onClick: () => handleDelete(complejo.id),
+                        confirm: {
+                          title: `Borrar Complejo ${complejo.id}`,
+                          message:
+                            "Estas seguro de que quieres eliminar este complejo?",
+                        },
+                      },
+                    ]}
+                  />
                 </td>
               </tr>
             )}

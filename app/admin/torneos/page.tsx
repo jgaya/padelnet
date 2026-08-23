@@ -1,14 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   PencilSquareIcon,
   Squares2X2Icon,
+  TrashIcon,
   UserPlusIcon,
 } from "@heroicons/react/24/solid";
-import ConfirmationModal from "@/components/ConfirmationModal";
+import RowActions from "@/components/RowActions";
 import SearchBar from "@/components/SearchBar";
 import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
@@ -244,36 +244,45 @@ export default function AdminTorneosPage() {
                 <td>{torneo.status}</td>
                 <td>{torneo.publicado ? "Si" : "No"}</td>
                 <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
-                <td className="flex gap-2 padel-table-actions">
-                  <Link
-                    href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`}
-                    className="btn btn-primary btn-sm padel-action-btn"
-                  >
-                    <PencilSquareIcon className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/inscripciones`}
-                    className="btn btn-primary btn-sm padel-action-btn"
-                  >
-                    <UserPlusIcon className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href={`/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos`}
-                    className="btn btn-secondary btn-sm padel-action-btn"
-                  >
-                    <Squares2X2Icon className="h-4 w-4" />
-                  </Link>
-                  <ConfirmationModal
-                    onConfirm={() =>
-                      handleDelete(
-                        torneo.id,
-                        torneo.complejoId,
-                        torneo.eventoId,
-                      )
-                    }
-                    title={`Borrar Torneo ${torneo.id}`}
-                    message="Estas seguro de que quieres eliminar este torneo?"
-                    tooltip="Eliminar torneo"
+                <td className="padel-table-actions">
+                  <RowActions
+                    actions={[
+                      {
+                        key: "editar",
+                        label: "Editar torneo",
+                        icon: <PencilSquareIcon className="h-4 w-4" />,
+                        href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}`,
+                      },
+                      {
+                        key: "inscripciones",
+                        label: "Inscribir parejas",
+                        icon: <UserPlusIcon className="h-4 w-4" />,
+                        href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/inscripciones`,
+                      },
+                      {
+                        key: "hermanos",
+                        label: "Ver todos los torneos del evento",
+                        icon: <Squares2X2Icon className="h-4 w-4" />,
+                        href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos`,
+                      },
+                      {
+                        key: "eliminar",
+                        label: "Eliminar torneo",
+                        icon: <TrashIcon className="h-4 w-4" />,
+                        variant: "danger",
+                        onClick: () =>
+                          handleDelete(
+                            torneo.id,
+                            torneo.complejoId,
+                            torneo.eventoId,
+                          ),
+                        confirm: {
+                          title: `Borrar Torneo ${torneo.id}`,
+                          message:
+                            "Estas seguro de que quieres eliminar este torneo?",
+                        },
+                      },
+                    ]}
                   />
                 </td>
               </tr>
