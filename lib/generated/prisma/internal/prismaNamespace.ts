@@ -2502,6 +2502,7 @@ export type GrupoParejaScalarFieldEnum = (typeof GrupoParejaScalarFieldEnum)[key
 
 export const PartidoScalarFieldEnum = {
   id: 'id',
+  idLegible: 'idLegible',
   torneoId: 'torneoId',
   grupoId: 'grupoId',
   canchaId: 'canchaId',
@@ -2853,6 +2854,7 @@ export type GrupoOrderByRelevanceFieldEnum = (typeof GrupoOrderByRelevanceFieldE
 
 
 export const PartidoOrderByRelevanceFieldEnum = {
+  idLegible: 'idLegible',
   llave: 'llave',
   pareja1Letra: 'pareja1Letra',
   pareja2Letra: 'pareja2Letra',

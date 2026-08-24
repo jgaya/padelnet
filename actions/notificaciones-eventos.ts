@@ -454,6 +454,7 @@ export async function notifyResultadoCargado(
         id: true,
         torneoId: true,
         ganadorId: true,
+        walkover: true,
         pareja1: { select: { id: true, player1Id: true, player2Id: true } },
         pareja2: { select: { id: true, player1Id: true, player2Id: true } },
         sets: {
@@ -480,8 +481,9 @@ export async function notifyResultadoCargado(
       NotificationType.RESULT_UPDATE,
     );
 
-    const marcador =
-      partido.sets.length > 0
+    const marcador = partido.walkover
+      ? "walkover"
+      : partido.sets.length > 0
         ? partido.sets
             .map((set) => `${set.gamesPareja1}-${set.gamesPareja2}`)
             .join(" / ")

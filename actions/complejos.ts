@@ -10,6 +10,7 @@ import {
 } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
+import { SLUGS_RESERVADOS, slugify } from "@/lib/slug";
 import type { Cancha, Complejo } from "@/types/db";
 import type { ListOpts } from "@/types/ui";
 
@@ -75,17 +76,11 @@ function normalizeNullable(value?: string | null): string | null {
   return trimmed ? trimmed : null;
 }
 
-function slugify(value: string): string {
-  const normalized = value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-
-  return normalized || "complejo";
-}
-
+/**
+ * Slug libre para el complejo. Ademas de los que ya estan en uso se saltean los
+ * segmentos reservados: /complejos/new es una ruta estatica y le ganaria al
+ * complejo que tomara ese slug.
+ */
 async function generateUniqueSlug(
   name: string,
   excludeId?: number,
@@ -95,13 +90,15 @@ async function generateUniqueSlug(
   let index = 2;
 
   while (true) {
-    const found = await prisma.complejo.findFirst({
-      where: {
-        slug: candidate,
-        ...(excludeId ? { id: { not: excludeId } } : {}),
-      },
-      select: { id: true },
-    });
+    const found = SLUGS_RESERVADOS.has(candidate)
+      ? true
+      : await prisma.complejo.findFirst({
+          where: {
+            slug: candidate,
+            ...(excludeId ? { id: { not: excludeId } } : {}),
+          },
+          select: { id: true },
+        });
 
     if (!found) {
       return candidate;

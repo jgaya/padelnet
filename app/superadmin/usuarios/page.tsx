@@ -24,6 +24,7 @@ import {
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
 import type { ListOpts } from "@/types/ui";
+import LinkJugador from "@/components/jugador/LinkJugador";
 
 const ALLOWED_SORT_FIELDS = new Set([
   "id",
@@ -255,8 +256,12 @@ export default function UsuariosPage() {
             renderRow={(user) => (
               <tr key={user.id}>
                 <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.lastname}</td>
+                <td>
+                  <LinkJugador jugadorId={user.id}>{user.name}</LinkJugador>
+                </td>
+                <td>
+                  <LinkJugador jugadorId={user.id}>{user.lastname}</LinkJugador>
+                </td>
                 <td>{user.email}</td>
                 <td>{user.platformRole}</td>
                 <td>{user.isActive ? "Si" : "No"}</td>

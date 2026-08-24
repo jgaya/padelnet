@@ -9,6 +9,7 @@ import {
 import { prisma } from "@/lib/prisma";
 
 import Breadcrumbs from "@/components/Breadcrumbs";
+import LinkJugador from "@/components/jugador/LinkJugador";
 import { migasGestion } from "@/lib/breadcrumbs-gestion";
 import {
   categoriaPuedeIntegrarPareja,
@@ -409,7 +410,13 @@ export default async function AdminTorneoInscripcionesPage(props: {
                         }
                       >
                         <td className="px-3 py-2 font-medium text-deep-black">
-                          {row.jugador1} / {row.jugador2}
+                          <LinkJugador jugadorId={row.player1Id}>
+                            {row.jugador1}
+                          </LinkJugador>
+                          {" / "}
+                          <LinkJugador jugadorId={row.player2Id}>
+                            {row.jugador2}
+                          </LinkJugador>
                         </td>
                         <td className="px-3 py-2">
                           <span
@@ -469,7 +476,13 @@ export default async function AdminTorneoInscripcionesPage(props: {
                       className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-surface-soft px-3 py-1.5"
                     >
                       <span className="text-sm text-deep-black/70">
-                        {row.jugador1} / {row.jugador2}
+                        <LinkJugador jugadorId={row.player1Id}>
+                          {row.jugador1}
+                        </LinkJugador>
+                        {" / "}
+                        <LinkJugador jugadorId={row.player2Id}>
+                          {row.jugador2}
+                        </LinkJugador>
                       </span>
                       <form action={submitReactivar}>
                         <input
@@ -525,9 +538,9 @@ export default async function AdminTorneoInscripcionesPage(props: {
             <p className="text-sm text-deep-black/70">
               Los combos muestran solo jugadores que cumplen la regla de sexo (
               {torneo.sexo}) y de categoria (
-              {categoriaRuleLabel(torneo.categoriaRegla, torneo.categoriaN)}) del
-              torneo. Quedan afuera los bloqueados en el complejo y los que ya
-              estan inscriptos o en la lista de suplentes; una pareja dada de
+              {categoriaRuleLabel(torneo.categoriaRegla, torneo.categoriaN)})
+              del torneo. Quedan afuera los bloqueados en el complejo y los que
+              ya estan inscriptos o en la lista de suplentes; una pareja dada de
               baja libera a sus dos jugadores.
               {hayMasCandidatos
                 ? " La lista esta recortada: usa el buscador para encontrar a alguien que no aparezca."

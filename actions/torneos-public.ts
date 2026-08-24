@@ -121,7 +121,9 @@ export type PublicTorneoDetail = {
 export type PublicTorneoInscripcionPareja = {
   id: number;
   parejaNombre: string;
+  player1Id: number;
   player1Nombre: string;
+  player2Id: number;
   player2Nombre: string;
   createdAt: string;
 };
@@ -143,7 +145,6 @@ export type PublicTorneoInscripcionesResult = {
   suplentes: PublicTorneoInscripcionPareja[];
   currentUserParejaId: number | null;
 };
-
 
 export async function listPublicTorneos(): Promise<PublicTorneosResult> {
   const session = await getSession();
@@ -526,7 +527,9 @@ export async function getPublicTorneoInscripciones(
     torneo.parejas.map((pair) => ({
       id: pair.id,
       parejaNombre: `${pair.jugador1.name} ${pair.jugador1.lastname} / ${pair.jugador2.name} ${pair.jugador2.lastname}`,
+      player1Id: pair.player1Id,
       player1Nombre: `${pair.jugador1.name} ${pair.jugador1.lastname}`,
+      player2Id: pair.player2Id,
       player2Nombre: `${pair.jugador2.name} ${pair.jugador2.lastname}`,
       createdAt: pair.createdAt.toISOString(),
       suplente: pair.suplente,
@@ -537,7 +540,9 @@ export async function getPublicTorneoInscripciones(
     .map((pair) => ({
       id: pair.id,
       parejaNombre: pair.parejaNombre,
+      player1Id: pair.player1Id,
       player1Nombre: pair.player1Nombre,
+      player2Id: pair.player2Id,
       player2Nombre: pair.player2Nombre,
       createdAt: pair.createdAt,
     }));
@@ -546,7 +551,9 @@ export async function getPublicTorneoInscripciones(
     .map((pair) => ({
       id: pair.id,
       parejaNombre: pair.parejaNombre,
+      player1Id: pair.player1Id,
       player1Nombre: pair.player1Nombre,
+      player2Id: pair.player2Id,
       player2Nombre: pair.player2Nombre,
       createdAt: pair.createdAt,
     }));

@@ -13,6 +13,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev && prisma generate",
     "prisma:seed": "prisma db seed",
+    "backfill:id-legible": "tsx scripts/backfill-partido-id-legible.ts",
+    "backfill:slug": "tsx scripts/backfill-complejo-slug.ts",
     "prepare": "husky",
     "prisma:check": "tsx scripts/check-prisma-tablas.ts",
     "check:llave": "tsx scripts/check-torneo-llave.ts",

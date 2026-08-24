@@ -477,6 +477,10 @@ model GrupoPareja {
 
 model Partido {
   id            Int         @id @default(autoincrement())
+  /// Identificador que el admin puede leer y recordar ("Verano-C4-Zona_A-1").
+  /// Lo arma lib/partido-id-legible.ts al generar la grilla y sirve para buscar
+  /// el partido en la pantalla de resultados sin conocer el id numerico.
+  idLegible     String?
   torneoId      Int
   grupoId       Int?
   canchaId      Int?
@@ -513,6 +517,9 @@ model Partido {
   @@index([torneoId, scheduledAt])
   @@index([canchaId, scheduledAt])
   @@index([grupoId, scheduledAt])
+  /// El buscador de la pantalla de resultados filtra por `idLegible` dentro de
+  /// un torneo.
+  @@index([torneoId, idLegible])
   /// El avance de la llave y la vista publica del cuadro filtran siempre por
   /// `torneoId` + `llave is not null`; sin este indice recorren todos los
   /// partidos del torneo, incluidos los de zona, que son la mayoria.
@@ -573,7 +580,9 @@ model Recategorizacion {
   jugadorId   Int
   createdById Int?
   fecha       DateTime @db.Date
-  nivelPrevio String
+  /// Null cuando el jugador no tenia categoria ni en el club ni en su perfil
+  /// global: la primera recategorizacion es la que se la asigna.
+  nivelPrevio String?
   nivelNuevo  String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

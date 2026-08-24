@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import TitleBar from "@/components/TitleBar";
 import Modal from "@/components/Modal";
@@ -26,6 +26,14 @@ function formatDateTime(value: string | null) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+/**
+ * El admin tipea el id de la planilla de memoria: "zona a 3" tiene que
+ * encontrar "Verano-C4-Zona_A-3". Se ignoran mayusculas y los separadores.
+ */
+function normalizeSearch(value: string) {
+  return value.toLowerCase().replace(/[\s_-]+/g, "");
 }
 
 const SETS_POR_PARTIDO = 3;
@@ -114,6 +122,17 @@ export default function ResultadosPageClient() {
   const [saving, setSaving] = useState(false);
   const [winnerId, setWinnerId] = useState<number | null>(null);
   const [setScores, setSetScores] = useState<string[]>(EMPTY_SET_SCORES);
+  const [walkover, setWalkover] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filteredMatches = useMemo(() => {
+    const term = normalizeSearch(search);
+    if (!term) return matches;
+
+    return matches.filter((match) =>
+      normalizeSearch(match.idLegible ?? "").includes(term),
+    );
+  }, [matches, search]);
 
   const paramsAreValid =
     Number.isInteger(complejoId) &&
@@ -157,6 +176,7 @@ export default function ResultadosPageClient() {
     setSelectedMatch(match);
     setWinnerId(match.ganadorId ?? match.pareja1Id ?? match.pareja2Id ?? null);
     setSetScores(setsToScores(match.sets));
+    setWalkover(match.walkover);
     setShowResultModal(true);
   };
 
@@ -182,8 +202,9 @@ export default function ResultadosPageClient() {
       return;
     }
 
-    const sets = scoresToSets(setScores);
-    if (sets.length === 0) {
+    // El walkover no se jugo: se guarda solo el ganador, sin sets.
+    const sets = walkover ? [] : scoresToSets(setScores);
+    if (!walkover && sets.length === 0) {
       showSnackbar("Debe cargar el resultado de al menos un set", "error");
       return;
     }
@@ -199,9 +220,14 @@ export default function ResultadosPageClient() {
         winnerId,
         loserId,
         sets,
-        false,
+        walkover,
       );
-      showSnackbar("Resultado guardado correctamente", "success");
+      showSnackbar(
+        walkover
+          ? "Walkover guardado correctamente"
+          : "Resultado guardado correctamente",
+        "success",
+      );
       setShowResultModal(false);
       void loadMatches();
     } catch (error) {
@@ -258,19 +284,53 @@ export default function ResultadosPageClient() {
             </p>
           </div>
           <span className="inline-flex items-center rounded-full bg-deep-black/60 px-2.5 py-1 text-xs font-semibold text-white">
-            {matches.length} partidos
+            {search
+              ? `${filteredMatches.length} de ${matches.length}`
+              : matches.length}{" "}
+            partidos
           </span>
         </div>
         <div className="p-4">
+          <div className="mb-4 max-w-md">
+            <label
+              className="mb-1.5 block text-sm font-semibold text-deep-black"
+              htmlFor="buscador-id-partido"
+            >
+              Buscar por ID de partido
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                id="buscador-id-partido"
+                type="search"
+                className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                placeholder="Ej: Zona A 3 u Octavos 2"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+              />
+              {search ? (
+                <button
+                  type="button"
+                  className="whitespace-nowrap rounded-full border border-deep-black/20 bg-white px-3 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+                  onClick={() => setSearch("")}
+                >
+                  Limpiar
+                </button>
+              ) : null}
+            </div>
+          </div>
+
           {loading ? (
             <p>Cargando partidos...</p>
           ) : matches.length === 0 ? (
             <p>No hay partidos disponibles para este torneo.</p>
+          ) : filteredMatches.length === 0 ? (
+            <p>Ningun partido coincide con &quot;{search}&quot;.</p>
           ) : (
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
               <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-slate-800">
                 <thead className="bg-slate-900 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
                   <tr>
+                    <th className="px-4 py-3">ID</th>
                     <th className="px-4 py-3">Fecha</th>
                     <th className="px-4 py-3">Hora</th>
                     <th className="px-4 py-3">Cancha</th>
@@ -282,13 +342,16 @@ export default function ResultadosPageClient() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
-                  {matches.map((match) => {
+                  {filteredMatches.map((match) => {
                     const status = statusBadge(match.status);
                     return (
                       <tr
                         key={match.id}
                         className="odd:bg-white even:bg-slate-50 hover:bg-emerald-50"
                       >
+                        <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-deep-black/80">
+                          {match.idLegible ?? "-"}
+                        </td>
                         <td className="whitespace-nowrap px-4 py-3 font-medium text-sm">
                           {formatDateTime(match.scheduledAt)}
                         </td>
@@ -349,6 +412,7 @@ export default function ResultadosPageClient() {
             setSelectedMatch(null);
             setWinnerId(null);
             setSetScores(EMPTY_SET_SCORES);
+            setWalkover(false);
           }
           setShowResultModal(open);
         }}
@@ -370,7 +434,11 @@ export default function ResultadosPageClient() {
                 onClick={() => void handleSaveResult()}
                 disabled={saving || winnerId === null}
               >
-                {saving ? "Guardando..." : "Guardar resultado"}
+                {saving
+                  ? "Guardando..."
+                  : walkover
+                    ? "Guardar walkover"
+                    : "Guardar resultado"}
               </button>
             </>
           ) : undefined
@@ -382,6 +450,11 @@ export default function ResultadosPageClient() {
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
                 Partido
               </p>
+              {selectedMatch.idLegible ? (
+                <p className="mt-1 font-mono text-xs text-deep-black/70">
+                  {selectedMatch.idLegible}
+                </p>
+              ) : null}
               <p className="mt-1 text-base font-semibold text-deep-black">
                 {selectedMatch.pareja1Nombre} vs {selectedMatch.pareja2Nombre}
               </p>
@@ -406,9 +479,28 @@ export default function ResultadosPageClient() {
             </div>
 
             <p className="text-sm text-deep-black/70">
-              Selecciona el ganador y el resultado de cada set jugado. Los sets
-              sin resultado no se guardan.
+              {walkover
+                ? "El partido no se jugo: elegi la pareja que gana por walkover. No se cargan sets."
+                : "Selecciona el ganador y el resultado de cada set jugado. Los sets sin resultado no se guardan."}
             </p>
+
+            <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-energy-orange/30 bg-energy-orange/10 p-4">
+              <input
+                type="checkbox"
+                className="mt-0.5 h-4 w-4 accent-energy-orange"
+                checked={walkover}
+                onChange={(event) => setWalkover(event.target.checked)}
+              />
+              <span>
+                <span className="block text-sm font-semibold text-deep-black">
+                  Ganado por walkover (W.O.)
+                </span>
+                <span className="block text-xs text-deep-black/70">
+                  La pareja rival no se presento. El partido cuenta como ganado
+                  y perdido, pero sin sets ni games.
+                </span>
+              </span>
+            </label>
 
             <div className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4">
               <label
@@ -439,7 +531,7 @@ export default function ResultadosPageClient() {
               </select>
             </div>
 
-            <div className="space-y-3">
+            <div className={`space-y-3 ${walkover ? "hidden" : ""}`}>
               <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-deep-black/60">
                 Sets
               </h3>

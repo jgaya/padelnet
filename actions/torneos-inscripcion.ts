@@ -128,7 +128,9 @@ export type UpdateTorneoPairResult = {
 
 export type AdminInscripcionRow = {
   parejaId: number;
+  player1Id: number;
   jugador1: string;
+  player2Id: number;
   jugador2: string;
   suplente: boolean;
   restriccion: string | null;
@@ -601,10 +603,11 @@ async function getRegistrationCandidates(
 
   return users
     .map((candidate) => {
+      // El perfil del complejo puede existir con la categoria en null (por
+      // ejemplo si se borro la ultima recategorizacion): ahi vuelve a valer la
+      // global, no queda sin categoria.
       const categoriaSource =
-        candidate.perfilesComplejo.length > 0
-          ? candidate.perfilesComplejo[0].categoria
-          : candidate.categoria;
+        candidate.perfilesComplejo[0]?.categoria ?? candidate.categoria;
 
       return {
         id: candidate.id,
@@ -1293,7 +1296,10 @@ export async function registerManagedTorneoPair(
     });
 
     if (duplicatePair) {
-      return { success: false, error: "Esta pareja ya esta cargada en el torneo" };
+      return {
+        success: false,
+        error: "Esta pareja ya esta cargada en el torneo",
+      };
     }
 
     const mainCount = await prisma.pareja.count({
@@ -1412,16 +1418,18 @@ export async function getPublicTorneoEditRegistrationData(
     };
   }
 
-  const partnerRaw = pareja.player1Id === userId ? pareja.jugador2 : pareja.jugador1;
+  const partnerRaw =
+    pareja.player1Id === userId ? pareja.jugador2 : pareja.jugador1;
   const currentPartner = {
     id: partnerRaw.id,
     name: partnerRaw.name,
     lastname: partnerRaw.lastname,
     genero: normalizeGenero(partnerRaw.genero),
+    // Igual que en getRegistrationCandidates: un perfil de complejo sin
+    // categoria no anula la global.
     categoria:
-      partnerRaw.perfilesComplejo.length > 0
-        ? parseCategoriaNumber(partnerRaw.perfilesComplejo[0]?.categoria)
-        : parseCategoriaNumber(partnerRaw.categoria),
+      parseCategoriaNumber(partnerRaw.perfilesComplejo[0]?.categoria) ??
+      parseCategoriaNumber(partnerRaw.categoria),
   };
 
   const takenPairs = await prisma.pareja.findMany({
@@ -1537,7 +1545,10 @@ export async function updatePublicTorneoPair(
         return { success: false, error: "Inscripcion no encontrada" };
       }
 
-      if (pareja.player1Id !== session.userId && pareja.player2Id !== session.userId) {
+      if (
+        pareja.player1Id !== session.userId &&
+        pareja.player2Id !== session.userId
+      ) {
         return {
           success: false,
           error: "No tienes permisos para editar esta inscripcion",
@@ -1545,7 +1556,9 @@ export async function updatePublicTorneoPair(
       }
 
       const currentPartnerId =
-        pareja.player1Id === session.userId ? pareja.player2Id : pareja.player1Id;
+        pareja.player1Id === session.userId
+          ? pareja.player2Id
+          : pareja.player1Id;
 
       if (currentPartnerId === partnerId) {
         return {
@@ -1842,8 +1855,11 @@ export async function cancelPublicTorneoPair(
       });
 
       // Si se libero un lugar de titular, sube el suplente mas antiguo.
-      let promovida: { id: number; player1Id: number; player2Id: number } | null =
-        null;
+      let promovida: {
+        id: number;
+        player1Id: number;
+        player2Id: number;
+      } | null = null;
 
       if (!pareja.suplente) {
         promovida = await tx.pareja.findFirst({
@@ -1933,6 +1949,8 @@ export async function listManagedTorneoInscripciones(
       restriccion: true,
       createdAt: true,
       deletedAt: true,
+      player1Id: true,
+      player2Id: true,
       jugador1: { select: { name: true, lastname: true } },
       jugador2: { select: { name: true, lastname: true } },
     },
@@ -1963,7 +1981,9 @@ export async function listManagedTorneoInscripciones(
 
   return parejas.map((pareja) => ({
     parejaId: pareja.id,
+    player1Id: pareja.player1Id,
     jugador1: nombreJugador(pareja.jugador1),
+    player2Id: pareja.player2Id,
     jugador2: nombreJugador(pareja.jugador2),
     suplente: pareja.suplente,
     restriccion: pareja.restriccion,
@@ -2163,7 +2183,11 @@ export async function reactivateManagedTorneoPair(
 
   const torneo = await prisma.torneo.findFirst({
     where: { id: torneoIdNum, deletedAt: null },
-    select: { id: true, capacidad: true, evento: { select: { complejoId: true } } },
+    select: {
+      id: true,
+      capacidad: true,
+      evento: { select: { complejoId: true } },
+    },
   });
 
   if (!torneo) {
@@ -2175,7 +2199,11 @@ export async function reactivateManagedTorneoPair(
   try {
     return await prisma.$transaction(async (tx) => {
       const pareja = await tx.pareja.findFirst({
-        where: { id: parejaIdNum, torneoId: torneoIdNum, deletedAt: { not: null } },
+        where: {
+          id: parejaIdNum,
+          torneoId: torneoIdNum,
+          deletedAt: { not: null },
+        },
         select: { id: true },
       });
 

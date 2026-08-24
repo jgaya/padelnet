@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublicTorneoInscripciones } from "@/actions/torneos-public";
+import LinkJugador from "@/components/jugador/LinkJugador";
 
 function formatDateTime(value: string) {
   const date = new Date(value);
@@ -27,7 +28,10 @@ function TableSection({
   title: string;
   rows: Array<{
     id: number;
-    parejaNombre: string;
+    player1Id: number;
+    player1Nombre: string;
+    player2Id: number;
+    player2Nombre: string;
     createdAt: string;
   }>;
   emptyText: string;
@@ -74,7 +78,13 @@ function TableSection({
                     {index + 1}
                   </td>
                   <td className="px-3 py-2 text-deep-black">
-                    {row.parejaNombre}
+                    <LinkJugador jugadorId={row.player1Id}>
+                      {row.player1Nombre}
+                    </LinkJugador>
+                    {" / "}
+                    <LinkJugador jugadorId={row.player2Id}>
+                      {row.player2Nombre}
+                    </LinkJugador>
                   </td>
                   <td className="px-3 py-2 text-deep-black/80">
                     {formatDateTime(row.createdAt)}

@@ -221,7 +221,7 @@ export type RecategorizacionGroupByOutputType = {
   jugadorId: number
   createdById: number | null
   fecha: Date
-  nivelPrevio: string
+  nivelPrevio: string | null
   nivelNuevo: string
   createdAt: Date
   updatedAt: Date
@@ -256,7 +256,7 @@ export type RecategorizacionWhereInput = {
   jugadorId?: Prisma.IntFilter<"Recategorizacion"> | number
   createdById?: Prisma.IntNullableFilter<"Recategorizacion"> | number | null
   fecha?: Prisma.DateTimeFilter<"Recategorizacion"> | Date | string
-  nivelPrevio?: Prisma.StringFilter<"Recategorizacion"> | string
+  nivelPrevio?: Prisma.StringNullableFilter<"Recategorizacion"> | string | null
   nivelNuevo?: Prisma.StringFilter<"Recategorizacion"> | string
   createdAt?: Prisma.DateTimeFilter<"Recategorizacion"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Recategorizacion"> | Date | string
@@ -271,7 +271,7 @@ export type RecategorizacionOrderByWithRelationInput = {
   jugadorId?: Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
   fecha?: Prisma.SortOrder
-  nivelPrevio?: Prisma.SortOrder
+  nivelPrevio?: Prisma.SortOrderInput | Prisma.SortOrder
   nivelNuevo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -290,7 +290,7 @@ export type RecategorizacionWhereUniqueInput = Prisma.AtLeast<{
   jugadorId?: Prisma.IntFilter<"Recategorizacion"> | number
   createdById?: Prisma.IntNullableFilter<"Recategorizacion"> | number | null
   fecha?: Prisma.DateTimeFilter<"Recategorizacion"> | Date | string
-  nivelPrevio?: Prisma.StringFilter<"Recategorizacion"> | string
+  nivelPrevio?: Prisma.StringNullableFilter<"Recategorizacion"> | string | null
   nivelNuevo?: Prisma.StringFilter<"Recategorizacion"> | string
   createdAt?: Prisma.DateTimeFilter<"Recategorizacion"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Recategorizacion"> | Date | string
@@ -305,7 +305,7 @@ export type RecategorizacionOrderByWithAggregationInput = {
   jugadorId?: Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
   fecha?: Prisma.SortOrder
-  nivelPrevio?: Prisma.SortOrder
+  nivelPrevio?: Prisma.SortOrderInput | Prisma.SortOrder
   nivelNuevo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -325,7 +325,7 @@ export type RecategorizacionScalarWhereWithAggregatesInput = {
   jugadorId?: Prisma.IntWithAggregatesFilter<"Recategorizacion"> | number
   createdById?: Prisma.IntNullableWithAggregatesFilter<"Recategorizacion"> | number | null
   fecha?: Prisma.DateTimeWithAggregatesFilter<"Recategorizacion"> | Date | string
-  nivelPrevio?: Prisma.StringWithAggregatesFilter<"Recategorizacion"> | string
+  nivelPrevio?: Prisma.StringNullableWithAggregatesFilter<"Recategorizacion"> | string | null
   nivelNuevo?: Prisma.StringWithAggregatesFilter<"Recategorizacion"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Recategorizacion"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Recategorizacion"> | Date | string
@@ -333,7 +333,7 @@ export type RecategorizacionScalarWhereWithAggregatesInput = {
 
 export type RecategorizacionCreateInput = {
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -348,7 +348,7 @@ export type RecategorizacionUncheckedCreateInput = {
   jugadorId: number
   createdById?: number | null
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -356,7 +356,7 @@ export type RecategorizacionUncheckedCreateInput = {
 
 export type RecategorizacionUpdateInput = {
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -371,7 +371,7 @@ export type RecategorizacionUncheckedUpdateInput = {
   jugadorId?: Prisma.IntFieldUpdateOperationsInput | number
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -383,7 +383,7 @@ export type RecategorizacionCreateManyInput = {
   jugadorId: number
   createdById?: number | null
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -391,7 +391,7 @@ export type RecategorizacionCreateManyInput = {
 
 export type RecategorizacionUpdateManyMutationInput = {
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -403,7 +403,7 @@ export type RecategorizacionUncheckedUpdateManyInput = {
   jugadorId?: Prisma.IntFieldUpdateOperationsInput | number
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -603,7 +603,7 @@ export type RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput = {
 
 export type RecategorizacionCreateWithoutJugadorInput = {
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -616,7 +616,7 @@ export type RecategorizacionUncheckedCreateWithoutJugadorInput = {
   complejoId: number
   createdById?: number | null
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -634,7 +634,7 @@ export type RecategorizacionCreateManyJugadorInputEnvelope = {
 
 export type RecategorizacionCreateWithoutCreatedByInput = {
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -647,7 +647,7 @@ export type RecategorizacionUncheckedCreateWithoutCreatedByInput = {
   complejoId: number
   jugadorId: number
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -688,7 +688,7 @@ export type RecategorizacionScalarWhereInput = {
   jugadorId?: Prisma.IntFilter<"Recategorizacion"> | number
   createdById?: Prisma.IntNullableFilter<"Recategorizacion"> | number | null
   fecha?: Prisma.DateTimeFilter<"Recategorizacion"> | Date | string
-  nivelPrevio?: Prisma.StringFilter<"Recategorizacion"> | string
+  nivelPrevio?: Prisma.StringNullableFilter<"Recategorizacion"> | string | null
   nivelNuevo?: Prisma.StringFilter<"Recategorizacion"> | string
   createdAt?: Prisma.DateTimeFilter<"Recategorizacion"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Recategorizacion"> | Date | string
@@ -712,7 +712,7 @@ export type RecategorizacionUpdateManyWithWhereWithoutCreatedByInput = {
 
 export type RecategorizacionCreateWithoutComplejoInput = {
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -725,7 +725,7 @@ export type RecategorizacionUncheckedCreateWithoutComplejoInput = {
   jugadorId: number
   createdById?: number | null
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -762,7 +762,7 @@ export type RecategorizacionCreateManyJugadorInput = {
   complejoId: number
   createdById?: number | null
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -773,7 +773,7 @@ export type RecategorizacionCreateManyCreatedByInput = {
   complejoId: number
   jugadorId: number
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -781,7 +781,7 @@ export type RecategorizacionCreateManyCreatedByInput = {
 
 export type RecategorizacionUpdateWithoutJugadorInput = {
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -794,7 +794,7 @@ export type RecategorizacionUncheckedUpdateWithoutJugadorInput = {
   complejoId?: Prisma.IntFieldUpdateOperationsInput | number
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -805,7 +805,7 @@ export type RecategorizacionUncheckedUpdateManyWithoutJugadorInput = {
   complejoId?: Prisma.IntFieldUpdateOperationsInput | number
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -813,7 +813,7 @@ export type RecategorizacionUncheckedUpdateManyWithoutJugadorInput = {
 
 export type RecategorizacionUpdateWithoutCreatedByInput = {
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -826,7 +826,7 @@ export type RecategorizacionUncheckedUpdateWithoutCreatedByInput = {
   complejoId?: Prisma.IntFieldUpdateOperationsInput | number
   jugadorId?: Prisma.IntFieldUpdateOperationsInput | number
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -837,7 +837,7 @@ export type RecategorizacionUncheckedUpdateManyWithoutCreatedByInput = {
   complejoId?: Prisma.IntFieldUpdateOperationsInput | number
   jugadorId?: Prisma.IntFieldUpdateOperationsInput | number
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -848,7 +848,7 @@ export type RecategorizacionCreateManyComplejoInput = {
   jugadorId: number
   createdById?: number | null
   fecha: Date | string
-  nivelPrevio: string
+  nivelPrevio?: string | null
   nivelNuevo: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -856,7 +856,7 @@ export type RecategorizacionCreateManyComplejoInput = {
 
 export type RecategorizacionUpdateWithoutComplejoInput = {
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -869,7 +869,7 @@ export type RecategorizacionUncheckedUpdateWithoutComplejoInput = {
   jugadorId?: Prisma.IntFieldUpdateOperationsInput | number
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -880,7 +880,7 @@ export type RecategorizacionUncheckedUpdateManyWithoutComplejoInput = {
   jugadorId?: Prisma.IntFieldUpdateOperationsInput | number
   createdById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fecha?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  nivelPrevio?: Prisma.StringFieldUpdateOperationsInput | string
+  nivelPrevio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nivelNuevo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -937,7 +937,11 @@ export type $RecategorizacionPayload<ExtArgs extends runtime.Types.Extensions.In
     jugadorId: number
     createdById: number | null
     fecha: Date
-    nivelPrevio: string
+    /**
+     * Null cuando el jugador no tenia categoria ni en el club ni en su perfil
+     * global: la primera recategorizacion es la que se la asigna.
+     */
+    nivelPrevio: string | null
     nivelNuevo: string
     createdAt: Date
     updatedAt: Date

@@ -2,7 +2,13 @@
 
 import type { Prisma } from "@/lib/generated/prisma/client";
 
+import {
+  CATEGORIA_VALUES,
+  esSexoRanking,
+  type SexoRanking,
+} from "@/lib/categorias";
 import { prisma } from "@/lib/prisma";
+import { parseCategoriaNumber } from "@/lib/torneo-elegibilidad";
 
 export type PublicComplejoDetail = {
   id: number;
@@ -72,23 +78,40 @@ export type PublicComplejoCalendario = {
 export type PublicComplejoRankingRow = {
   jugadorId: number;
   nombre: string;
-  categoria: string | null;
+  categoria: string;
   puntos: number;
   torneos: number;
+};
+
+export type PublicComplejoRankingData = {
+  /** Ranking efectivamente mostrado, ya resuelto contra los datos. */
+  sexo: SexoRanking;
+  categoria: string;
+  filas: PublicComplejoRankingRow[];
+  /**
+   * Cuantos jugadores con puntos tiene cada combinacion, con clave
+   * `${sexo}-${categoria}`. El selector lo usa para mostrar de antemano cuales
+   * tienen algo que ver.
+   */
+  conteos: Record<string, number>;
 };
 
 export type PublicComplejoRecategorizacion = {
   id: number;
   fecha: string;
+  jugadorId: number;
   jugadorNombre: string;
-  nivelPrevio: string;
+  /** Null en el alta: el jugador no tenia categoria en el club. */
+  nivelPrevio: string | null;
   nivelNuevo: string;
 };
 
 const PROXIMOS_LIMIT = 30;
 const ULTIMOS_LIMIT = 20;
 const RANKING_LIMIT = 50;
-const RECATEGORIZACIONES_LIMIT = 50;
+// La tabla publica filtra por fecha en el cliente, asi que el tope tiene que
+// dar para varias jornadas de recategorizacion y no solo para la ultima.
+const RECATEGORIZACIONES_LIMIT = 300;
 
 // Mismo criterio de visibilidad publica que listPublicTorneos: el complejo debe
 // estar activo, el evento visible y el torneo publicado.
@@ -135,15 +158,25 @@ function buildResultado(
     .join(" / ");
 }
 
+/**
+ * Acepta el slug (la URL canonica) o el id numerico, que es como se navegaban
+ * estas paginas antes. La traduccion de un formato al otro esta en
+ * lib/complejo-publico.ts.
+ */
 export async function getPublicComplejo(
-  complejoId: number,
+  param: string,
 ): Promise<PublicComplejoDetail | null> {
-  if (!Number.isInteger(complejoId) || complejoId <= 0) {
+  const valor = param?.trim();
+  if (!valor) {
     return null;
   }
 
+  const identidad = /^\d+$/.test(valor)
+    ? { id: Number(valor) }
+    : { slug: valor };
+
   const complejo = await prisma.complejo.findFirst({
-    where: { ...COMPLEJO_PUBLICO_WHERE, id: complejoId },
+    where: { ...COMPLEJO_PUBLICO_WHERE, ...identidad },
     select: {
       id: true,
       name: true,
@@ -381,12 +414,33 @@ export async function getPublicComplejoCalendario(
   };
 }
 
+/**
+ * Ranking del club para una categoria y un genero: "Caballeros 4ta".
+ *
+ * La categoria del jugador es la del club, o sea la que dejo su ultima
+ * recategorizacion (`PerfilJugadorComplejo.categoria`); si nunca lo
+ * recategorizaron vale la de su perfil global. Se normaliza con
+ * `parseCategoriaNumber` porque los datos cargados mezclan formatos ("7", "7ma",
+ * "Septima 7").
+ *
+ * Quien no tiene categoria en ningun lado, o tiene el genero sin especificar,
+ * queda fuera: no hay ranking al que pertenezca.
+ */
 export async function getPublicComplejoRanking(
   complejoId: number,
-): Promise<PublicComplejoRankingRow[]> {
+  filtro?: { sexo?: string | null; categoria?: string | null },
+): Promise<PublicComplejoRankingData> {
+  const sexoPedido = esSexoRanking(filtro?.sexo) ? filtro.sexo : null;
+  const categoriaPedida =
+    filtro?.categoria && CATEGORIA_VALUES.includes(filtro.categoria)
+      ? filtro.categoria
+      : null;
+
   const rankings = await prisma.ranking.findMany({
     where: {
       deletedAt: null,
+      // Sin genero no hay ni Caballeros ni Damas: se descarta en la consulta.
+      jugador: { genero: { in: ["M", "F"] } },
       torneo: {
         ...TORNEO_PUBLICO_WHERE,
         // Los puntos se cargan recien al pasar el torneo a FINISHED, que es
@@ -404,12 +458,26 @@ export async function getPublicComplejoRanking(
       jugadorId: true,
       torneoId: true,
       valor: true,
-      jugador: { select: { name: true, lastname: true } },
+      jugador: {
+        select: {
+          name: true,
+          lastname: true,
+          genero: true,
+          categoria: true,
+        },
+      },
     },
   });
 
+  const vacio: PublicComplejoRankingData = {
+    sexo: sexoPedido ?? "M",
+    categoria: categoriaPedida ?? CATEGORIA_VALUES[0],
+    filas: [],
+    conteos: {},
+  };
+
   if (rankings.length === 0) {
-    return [];
+    return vacio;
   }
 
   const perfiles = await prisma.perfilJugadorComplejo.findMany({
@@ -419,37 +487,79 @@ export async function getPublicComplejoRanking(
     },
     select: { userId: true, categoria: true },
   });
-  const categoriaByUser = new Map(
+  const categoriaDelClub = new Map(
     perfiles.map((perfil) => [perfil.userId, perfil.categoria]),
   );
 
-  const acumulado = new Map<
-    number,
-    { nombre: string; puntos: number; torneos: Set<number> }
-  >();
+  type Acumulado = {
+    nombre: string;
+    sexo: SexoRanking;
+    categoria: string;
+    puntos: number;
+    torneos: Set<number>;
+  };
+
+  const acumulado = new Map<number, Acumulado>();
 
   for (const ranking of rankings) {
-    const current = acumulado.get(ranking.jugadorId) ?? {
-      nombre: `${ranking.jugador.name} ${ranking.jugador.lastname}`,
-      puntos: 0,
-      torneos: new Set<number>(),
-    };
+    let actual = acumulado.get(ranking.jugadorId);
 
-    current.puntos += Number(ranking.valor);
-    current.torneos.add(ranking.torneoId);
-    acumulado.set(ranking.jugadorId, current);
+    if (!actual) {
+      const categoria = parseCategoriaNumber(
+        categoriaDelClub.get(ranking.jugadorId) ?? ranking.jugador.categoria,
+      );
+
+      // Sin categoria conocida no entra en ningun ranking.
+      if (categoria === null || !CATEGORIA_VALUES.includes(String(categoria))) {
+        continue;
+      }
+
+      actual = {
+        nombre: `${ranking.jugador.name} ${ranking.jugador.lastname}`,
+        sexo: ranking.jugador.genero === "F" ? "F" : "M",
+        categoria: String(categoria),
+        puntos: 0,
+        torneos: new Set<number>(),
+      };
+      acumulado.set(ranking.jugadorId, actual);
+    }
+
+    actual.puntos += Number(ranking.valor);
+    actual.torneos.add(ranking.torneoId);
   }
 
-  return Array.from(acumulado.entries())
+  const jugadores = Array.from(acumulado.entries());
+
+  const conteos: Record<string, number> = {};
+  for (const [, data] of jugadores) {
+    const clave = `${data.sexo}-${data.categoria}`;
+    conteos[clave] = (conteos[clave] ?? 0) + 1;
+  }
+
+  // Sin eleccion explicita se abre el ranking con mas jugadores, para no
+  // aterrizar en una tabla vacia. Los empates los desempata el orden fijo del
+  // selector: Caballeros antes que Damas, y de la 1ra a la 8va.
+  const porDefecto = Object.entries(conteos).sort(
+    (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+  )[0]?.[0];
+
+  const [sexoDefault, categoriaDefault] = porDefecto?.split("-") ?? [];
+  const sexo = sexoPedido ?? (esSexoRanking(sexoDefault) ? sexoDefault : "M");
+  const categoria = categoriaPedida ?? categoriaDefault ?? CATEGORIA_VALUES[0];
+
+  const filas = jugadores
+    .filter(([, data]) => data.sexo === sexo && data.categoria === categoria)
     .map(([jugadorId, data]) => ({
       jugadorId,
       nombre: data.nombre,
-      categoria: categoriaByUser.get(jugadorId) ?? null,
+      categoria: data.categoria,
       puntos: Math.round(data.puntos * 100) / 100,
       torneos: data.torneos.size,
     }))
     .sort((a, b) => b.puntos - a.puntos || a.nombre.localeCompare(b.nombre))
     .slice(0, RANKING_LIMIT);
+
+  return { sexo, categoria, filas, conteos };
 }
 
 export async function listPublicComplejoRecategorizaciones(
@@ -462,6 +572,7 @@ export async function listPublicComplejoRecategorizaciones(
     select: {
       id: true,
       fecha: true,
+      jugadorId: true,
       nivelPrevio: true,
       nivelNuevo: true,
       jugador: { select: { name: true, lastname: true } },
@@ -471,6 +582,7 @@ export async function listPublicComplejoRecategorizaciones(
   return items.map((item) => ({
     id: item.id,
     fecha: item.fecha.toISOString(),
+    jugadorId: item.jugadorId,
     jugadorNombre: `${item.jugador.name} ${item.jugador.lastname}`,
     nivelPrevio: item.nivelPrevio,
     nivelNuevo: item.nivelNuevo,

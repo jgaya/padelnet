@@ -25,6 +25,7 @@ import {
   type GrillaPareja,
   type GrillaZona,
 } from "@/lib/torneo-grilla";
+import { buildPartidoIdLegible } from "@/lib/partido-id-legible";
 
 export type TorneoPartidosDayConfig = {
   label: string;
@@ -147,6 +148,9 @@ export type TorneoPartidosPreview = {
 
 export type TorneoPartidoListItem = {
   id: number;
+  /** Id que el admin usa para buscar el partido. Null en los partidos creados
+   *  antes de que existiera el campo. */
+  idLegible: string | null;
   torneoId: number;
   grupoId: number | null;
   llave: string | null;
@@ -181,6 +185,7 @@ export async function listTorneoPartidosByTorneo(
     orderBy: [{ scheduledAt: "asc" }, { id: "asc" }],
     select: {
       id: true,
+      idLegible: true,
       torneoId: true,
       grupoId: true,
       llave: true,
@@ -246,6 +251,7 @@ export async function listTorneoPartidosByTorneo(
 
   return partidos.map((partido) => ({
     id: partido.id,
+    idLegible: partido.idLegible,
     torneoId: partido.torneoId,
     grupoId: partido.grupoId,
     llave: partido.llave,
@@ -323,16 +329,31 @@ export async function saveTorneoPartidoResultado(
     throw new Error("El ganador o perdedor no pertenece a este partido");
   }
 
+  if (ganadorId === perdedorId) {
+    throw new Error("El ganador y el perdedor no pueden ser la misma pareja");
+  }
+
+  // Un walkover no se jugo: no lleva sets, y si el partido tenia un resultado
+  // cargado antes hay que borrarlos.
+  const setsAGuardar = walkover ? [] : sets;
+
+  if (setsAGuardar.length === 0 && !walkover) {
+    throw new Error("Carga el resultado de al menos un set");
+  }
+
   await prisma.partido.update({
     where: { id: partidoId },
     data: {
       ganadorId,
       perdedorId,
-      status: "FINISHED",
+      // El resto de la app trata WALKOVER y FINISHED por igual (ranking,
+      // posiciones, avance de la llave), pero distinguirlos deja ver de un
+      // vistazo que el partido no se jugo.
+      status: walkover ? "WALKOVER" : "FINISHED",
       walkover,
       sets: {
         deleteMany: {},
-        create: sets.map((set) => ({
+        create: setsAGuardar.map((set) => ({
           numero: set.numero,
           gamesPareja1: set.gamesPareja1,
           gamesPareja2: set.gamesPareja2,
@@ -441,6 +462,7 @@ async function ensureTorneoAccess(
     select: {
       id: true,
       nombre: true,
+      categoriaCode: true,
       inicio: true,
       fin: true,
       partidosGenerados: true,
@@ -731,6 +753,26 @@ export async function saveTorneoPartidosSetup(
       ]),
   );
 
+  // Contador por zona para numerar los idLegible en el orden en que se juegan.
+  // Los de llave no lo usan: el numero de cruce ya viene en `llave`.
+  const numeroPorZona = new Map<string, number>();
+  const nextIdLegible = (match: {
+    grupoNombre: string | null;
+    llave: string | null;
+  }) => {
+    const clave = match.grupoNombre ?? "SIN_ZONA";
+    const numero = (numeroPorZona.get(clave) ?? 0) + 1;
+    numeroPorZona.set(clave, numero);
+
+    return buildPartidoIdLegible({
+      eventoNombre: torneo.evento.nombre,
+      categoria: torneo.categoriaCode,
+      grupoNombre: match.grupoNombre,
+      llave: match.llave,
+      numero,
+    });
+  };
+
   await prisma.$transaction(async (tx) => {
     await tx.partido.deleteMany({
       where: {
@@ -743,6 +785,7 @@ export async function saveTorneoPartidosSetup(
       await tx.partido.create({
         data: {
           torneoId,
+          idLegible: nextIdLegible(match),
           grupoId: match.grupoId,
           canchaId: match.canchaId,
           scheduledAt: new Date(match.scheduledAt),
@@ -769,6 +812,7 @@ export async function saveTorneoPartidosSetup(
       await tx.partido.create({
         data: {
           torneoId,
+          idLegible: nextIdLegible(match),
           grupoId: match.grupoId,
           canchaId: null,
           scheduledAt: null,

@@ -54,6 +54,7 @@ export type PartidoSumAggregateOutputType = {
 
 export type PartidoMinAggregateOutputType = {
   id: number | null
+  idLegible: string | null
   torneoId: number | null
   grupoId: number | null
   canchaId: number | null
@@ -77,6 +78,7 @@ export type PartidoMinAggregateOutputType = {
 
 export type PartidoMaxAggregateOutputType = {
   id: number | null
+  idLegible: string | null
   torneoId: number | null
   grupoId: number | null
   canchaId: number | null
@@ -100,6 +102,7 @@ export type PartidoMaxAggregateOutputType = {
 
 export type PartidoCountAggregateOutputType = {
   id: number
+  idLegible: number
   torneoId: number
   grupoId: number
   canchaId: number
@@ -151,6 +154,7 @@ export type PartidoSumAggregateInputType = {
 
 export type PartidoMinAggregateInputType = {
   id?: true
+  idLegible?: true
   torneoId?: true
   grupoId?: true
   canchaId?: true
@@ -174,6 +178,7 @@ export type PartidoMinAggregateInputType = {
 
 export type PartidoMaxAggregateInputType = {
   id?: true
+  idLegible?: true
   torneoId?: true
   grupoId?: true
   canchaId?: true
@@ -197,6 +202,7 @@ export type PartidoMaxAggregateInputType = {
 
 export type PartidoCountAggregateInputType = {
   id?: true
+  idLegible?: true
   torneoId?: true
   grupoId?: true
   canchaId?: true
@@ -307,6 +313,7 @@ export type PartidoGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type PartidoGroupByOutputType = {
   id: number
+  idLegible: string | null
   torneoId: number
   grupoId: number | null
   canchaId: number | null
@@ -353,6 +360,7 @@ export type PartidoWhereInput = {
   OR?: Prisma.PartidoWhereInput[]
   NOT?: Prisma.PartidoWhereInput | Prisma.PartidoWhereInput[]
   id?: Prisma.IntFilter<"Partido"> | number
+  idLegible?: Prisma.StringNullableFilter<"Partido"> | string | null
   torneoId?: Prisma.IntFilter<"Partido"> | number
   grupoId?: Prisma.IntNullableFilter<"Partido"> | number | null
   canchaId?: Prisma.IntNullableFilter<"Partido"> | number | null
@@ -384,6 +392,7 @@ export type PartidoWhereInput = {
 
 export type PartidoOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  idLegible?: Prisma.SortOrderInput | Prisma.SortOrder
   torneoId?: Prisma.SortOrder
   grupoId?: Prisma.SortOrderInput | Prisma.SortOrder
   canchaId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -419,6 +428,7 @@ export type PartidoWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PartidoWhereInput | Prisma.PartidoWhereInput[]
   OR?: Prisma.PartidoWhereInput[]
   NOT?: Prisma.PartidoWhereInput | Prisma.PartidoWhereInput[]
+  idLegible?: Prisma.StringNullableFilter<"Partido"> | string | null
   torneoId?: Prisma.IntFilter<"Partido"> | number
   grupoId?: Prisma.IntNullableFilter<"Partido"> | number | null
   canchaId?: Prisma.IntNullableFilter<"Partido"> | number | null
@@ -450,6 +460,7 @@ export type PartidoWhereUniqueInput = Prisma.AtLeast<{
 
 export type PartidoOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  idLegible?: Prisma.SortOrderInput | Prisma.SortOrder
   torneoId?: Prisma.SortOrder
   grupoId?: Prisma.SortOrderInput | Prisma.SortOrder
   canchaId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -481,6 +492,7 @@ export type PartidoScalarWhereWithAggregatesInput = {
   OR?: Prisma.PartidoScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PartidoScalarWhereWithAggregatesInput | Prisma.PartidoScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Partido"> | number
+  idLegible?: Prisma.StringNullableWithAggregatesFilter<"Partido"> | string | null
   torneoId?: Prisma.IntWithAggregatesFilter<"Partido"> | number
   grupoId?: Prisma.IntNullableWithAggregatesFilter<"Partido"> | number | null
   canchaId?: Prisma.IntNullableWithAggregatesFilter<"Partido"> | number | null
@@ -503,6 +515,7 @@ export type PartidoScalarWhereWithAggregatesInput = {
 }
 
 export type PartidoCreateInput = {
+  idLegible?: string | null
   scheduledAt?: Date | string | null
   duracionMin?: number | null
   status?: $Enums.MatchStatus
@@ -527,6 +540,7 @@ export type PartidoCreateInput = {
 
 export type PartidoUncheckedCreateInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -550,6 +564,7 @@ export type PartidoUncheckedCreateInput = {
 }
 
 export type PartidoUpdateInput = {
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   duracionMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
@@ -574,6 +589,7 @@ export type PartidoUpdateInput = {
 
 export type PartidoUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -598,6 +614,7 @@ export type PartidoUncheckedUpdateInput = {
 
 export type PartidoCreateManyInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -620,6 +637,7 @@ export type PartidoCreateManyInput = {
 }
 
 export type PartidoUpdateManyMutationInput = {
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   duracionMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
@@ -636,6 +654,7 @@ export type PartidoUpdateManyMutationInput = {
 
 export type PartidoUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -675,6 +694,7 @@ export type PartidoOrderByRelevanceInput = {
 
 export type PartidoCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  idLegible?: Prisma.SortOrder
   torneoId?: Prisma.SortOrder
   grupoId?: Prisma.SortOrder
   canchaId?: Prisma.SortOrder
@@ -711,6 +731,7 @@ export type PartidoAvgOrderByAggregateInput = {
 
 export type PartidoMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  idLegible?: Prisma.SortOrder
   torneoId?: Prisma.SortOrder
   grupoId?: Prisma.SortOrder
   canchaId?: Prisma.SortOrder
@@ -734,6 +755,7 @@ export type PartidoMaxOrderByAggregateInput = {
 
 export type PartidoMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  idLegible?: Prisma.SortOrder
   torneoId?: Prisma.SortOrder
   grupoId?: Prisma.SortOrder
   canchaId?: Prisma.SortOrder
@@ -1086,6 +1108,7 @@ export type PartidoUpdateOneRequiredWithoutSetsNestedInput = {
 }
 
 export type PartidoCreateWithoutCanchaInput = {
+  idLegible?: string | null
   scheduledAt?: Date | string | null
   duracionMin?: number | null
   status?: $Enums.MatchStatus
@@ -1109,6 +1132,7 @@ export type PartidoCreateWithoutCanchaInput = {
 
 export type PartidoUncheckedCreateWithoutCanchaInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   scheduledAt?: Date | string | null
@@ -1161,6 +1185,7 @@ export type PartidoScalarWhereInput = {
   OR?: Prisma.PartidoScalarWhereInput[]
   NOT?: Prisma.PartidoScalarWhereInput | Prisma.PartidoScalarWhereInput[]
   id?: Prisma.IntFilter<"Partido"> | number
+  idLegible?: Prisma.StringNullableFilter<"Partido"> | string | null
   torneoId?: Prisma.IntFilter<"Partido"> | number
   grupoId?: Prisma.IntNullableFilter<"Partido"> | number | null
   canchaId?: Prisma.IntNullableFilter<"Partido"> | number | null
@@ -1183,6 +1208,7 @@ export type PartidoScalarWhereInput = {
 }
 
 export type PartidoCreateWithoutTorneoInput = {
+  idLegible?: string | null
   scheduledAt?: Date | string | null
   duracionMin?: number | null
   status?: $Enums.MatchStatus
@@ -1206,6 +1232,7 @@ export type PartidoCreateWithoutTorneoInput = {
 
 export type PartidoUncheckedCreateWithoutTorneoInput = {
   id?: number
+  idLegible?: string | null
   grupoId?: number | null
   canchaId?: number | null
   scheduledAt?: Date | string | null
@@ -1254,6 +1281,7 @@ export type PartidoUpdateManyWithWhereWithoutTorneoInput = {
 }
 
 export type PartidoCreateWithoutPareja1Input = {
+  idLegible?: string | null
   scheduledAt?: Date | string | null
   duracionMin?: number | null
   status?: $Enums.MatchStatus
@@ -1277,6 +1305,7 @@ export type PartidoCreateWithoutPareja1Input = {
 
 export type PartidoUncheckedCreateWithoutPareja1Input = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -1309,6 +1338,7 @@ export type PartidoCreateManyPareja1InputEnvelope = {
 }
 
 export type PartidoCreateWithoutPareja2Input = {
+  idLegible?: string | null
   scheduledAt?: Date | string | null
   duracionMin?: number | null
   status?: $Enums.MatchStatus
@@ -1332,6 +1362,7 @@ export type PartidoCreateWithoutPareja2Input = {
 
 export type PartidoUncheckedCreateWithoutPareja2Input = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -1364,6 +1395,7 @@ export type PartidoCreateManyPareja2InputEnvelope = {
 }
 
 export type PartidoCreateWithoutGanadorInput = {
+  idLegible?: string | null
   scheduledAt?: Date | string | null
   duracionMin?: number | null
   status?: $Enums.MatchStatus
@@ -1387,6 +1419,7 @@ export type PartidoCreateWithoutGanadorInput = {
 
 export type PartidoUncheckedCreateWithoutGanadorInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -1419,6 +1452,7 @@ export type PartidoCreateManyGanadorInputEnvelope = {
 }
 
 export type PartidoCreateWithoutPerdedorInput = {
+  idLegible?: string | null
   scheduledAt?: Date | string | null
   duracionMin?: number | null
   status?: $Enums.MatchStatus
@@ -1442,6 +1476,7 @@ export type PartidoCreateWithoutPerdedorInput = {
 
 export type PartidoUncheckedCreateWithoutPerdedorInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -1538,6 +1573,7 @@ export type PartidoUpdateManyWithWhereWithoutPerdedorInput = {
 }
 
 export type PartidoCreateWithoutGrupoInput = {
+  idLegible?: string | null
   scheduledAt?: Date | string | null
   duracionMin?: number | null
   status?: $Enums.MatchStatus
@@ -1561,6 +1597,7 @@ export type PartidoCreateWithoutGrupoInput = {
 
 export type PartidoUncheckedCreateWithoutGrupoInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   canchaId?: number | null
   scheduledAt?: Date | string | null
@@ -1609,6 +1646,7 @@ export type PartidoUpdateManyWithWhereWithoutGrupoInput = {
 }
 
 export type PartidoCreateWithoutSetsInput = {
+  idLegible?: string | null
   scheduledAt?: Date | string | null
   duracionMin?: number | null
   status?: $Enums.MatchStatus
@@ -1632,6 +1670,7 @@ export type PartidoCreateWithoutSetsInput = {
 
 export type PartidoUncheckedCreateWithoutSetsInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -1670,6 +1709,7 @@ export type PartidoUpdateToOneWithWhereWithoutSetsInput = {
 }
 
 export type PartidoUpdateWithoutSetsInput = {
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   duracionMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
@@ -1693,6 +1733,7 @@ export type PartidoUpdateWithoutSetsInput = {
 
 export type PartidoUncheckedUpdateWithoutSetsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1716,6 +1757,7 @@ export type PartidoUncheckedUpdateWithoutSetsInput = {
 
 export type PartidoCreateManyCanchaInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   scheduledAt?: Date | string | null
@@ -1737,6 +1779,7 @@ export type PartidoCreateManyCanchaInput = {
 }
 
 export type PartidoUpdateWithoutCanchaInput = {
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   duracionMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
@@ -1760,6 +1803,7 @@ export type PartidoUpdateWithoutCanchaInput = {
 
 export type PartidoUncheckedUpdateWithoutCanchaInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1783,6 +1827,7 @@ export type PartidoUncheckedUpdateWithoutCanchaInput = {
 
 export type PartidoUncheckedUpdateManyWithoutCanchaInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1805,6 +1850,7 @@ export type PartidoUncheckedUpdateManyWithoutCanchaInput = {
 
 export type PartidoCreateManyTorneoInput = {
   id?: number
+  idLegible?: string | null
   grupoId?: number | null
   canchaId?: number | null
   scheduledAt?: Date | string | null
@@ -1826,6 +1872,7 @@ export type PartidoCreateManyTorneoInput = {
 }
 
 export type PartidoUpdateWithoutTorneoInput = {
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   duracionMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
@@ -1849,6 +1896,7 @@ export type PartidoUpdateWithoutTorneoInput = {
 
 export type PartidoUncheckedUpdateWithoutTorneoInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1872,6 +1920,7 @@ export type PartidoUncheckedUpdateWithoutTorneoInput = {
 
 export type PartidoUncheckedUpdateManyWithoutTorneoInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1894,6 +1943,7 @@ export type PartidoUncheckedUpdateManyWithoutTorneoInput = {
 
 export type PartidoCreateManyPareja1Input = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -1916,6 +1966,7 @@ export type PartidoCreateManyPareja1Input = {
 
 export type PartidoCreateManyPareja2Input = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -1938,6 +1989,7 @@ export type PartidoCreateManyPareja2Input = {
 
 export type PartidoCreateManyGanadorInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -1960,6 +2012,7 @@ export type PartidoCreateManyGanadorInput = {
 
 export type PartidoCreateManyPerdedorInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   grupoId?: number | null
   canchaId?: number | null
@@ -1981,6 +2034,7 @@ export type PartidoCreateManyPerdedorInput = {
 }
 
 export type PartidoUpdateWithoutPareja1Input = {
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   duracionMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
@@ -2004,6 +2058,7 @@ export type PartidoUpdateWithoutPareja1Input = {
 
 export type PartidoUncheckedUpdateWithoutPareja1Input = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2027,6 +2082,7 @@ export type PartidoUncheckedUpdateWithoutPareja1Input = {
 
 export type PartidoUncheckedUpdateManyWithoutPareja1Input = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2048,6 +2104,7 @@ export type PartidoUncheckedUpdateManyWithoutPareja1Input = {
 }
 
 export type PartidoUpdateWithoutPareja2Input = {
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   duracionMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
@@ -2071,6 +2128,7 @@ export type PartidoUpdateWithoutPareja2Input = {
 
 export type PartidoUncheckedUpdateWithoutPareja2Input = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2094,6 +2152,7 @@ export type PartidoUncheckedUpdateWithoutPareja2Input = {
 
 export type PartidoUncheckedUpdateManyWithoutPareja2Input = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2115,6 +2174,7 @@ export type PartidoUncheckedUpdateManyWithoutPareja2Input = {
 }
 
 export type PartidoUpdateWithoutGanadorInput = {
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   duracionMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
@@ -2138,6 +2198,7 @@ export type PartidoUpdateWithoutGanadorInput = {
 
 export type PartidoUncheckedUpdateWithoutGanadorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2161,6 +2222,7 @@ export type PartidoUncheckedUpdateWithoutGanadorInput = {
 
 export type PartidoUncheckedUpdateManyWithoutGanadorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2182,6 +2244,7 @@ export type PartidoUncheckedUpdateManyWithoutGanadorInput = {
 }
 
 export type PartidoUpdateWithoutPerdedorInput = {
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   duracionMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
@@ -2205,6 +2268,7 @@ export type PartidoUpdateWithoutPerdedorInput = {
 
 export type PartidoUncheckedUpdateWithoutPerdedorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2228,6 +2292,7 @@ export type PartidoUncheckedUpdateWithoutPerdedorInput = {
 
 export type PartidoUncheckedUpdateManyWithoutPerdedorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   grupoId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2250,6 +2315,7 @@ export type PartidoUncheckedUpdateManyWithoutPerdedorInput = {
 
 export type PartidoCreateManyGrupoInput = {
   id?: number
+  idLegible?: string | null
   torneoId: number
   canchaId?: number | null
   scheduledAt?: Date | string | null
@@ -2271,6 +2337,7 @@ export type PartidoCreateManyGrupoInput = {
 }
 
 export type PartidoUpdateWithoutGrupoInput = {
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   duracionMin?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumMatchStatusFieldUpdateOperationsInput | $Enums.MatchStatus
@@ -2294,6 +2361,7 @@ export type PartidoUpdateWithoutGrupoInput = {
 
 export type PartidoUncheckedUpdateWithoutGrupoInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2317,6 +2385,7 @@ export type PartidoUncheckedUpdateWithoutGrupoInput = {
 
 export type PartidoUncheckedUpdateManyWithoutGrupoInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  idLegible?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   torneoId?: Prisma.IntFieldUpdateOperationsInput | number
   canchaId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2370,6 +2439,7 @@ export type PartidoCountOutputTypeCountSetsArgs<ExtArgs extends runtime.Types.Ex
 
 export type PartidoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  idLegible?: boolean
   torneoId?: boolean
   grupoId?: boolean
   canchaId?: boolean
@@ -2404,6 +2474,7 @@ export type PartidoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 
 export type PartidoSelectScalar = {
   id?: boolean
+  idLegible?: boolean
   torneoId?: boolean
   grupoId?: boolean
   canchaId?: boolean
@@ -2425,7 +2496,7 @@ export type PartidoSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PartidoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "torneoId" | "grupoId" | "canchaId" | "scheduledAt" | "duracionMin" | "status" | "pareja1Id" | "pareja2Id" | "ganadorId" | "perdedorId" | "walkover" | "fiscalizadoBy" | "llave" | "pareja1Letra" | "pareja2Letra" | "notas" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["partido"]>
+export type PartidoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "idLegible" | "torneoId" | "grupoId" | "canchaId" | "scheduledAt" | "duracionMin" | "status" | "pareja1Id" | "pareja2Id" | "ganadorId" | "perdedorId" | "walkover" | "fiscalizadoBy" | "llave" | "pareja1Letra" | "pareja2Letra" | "notas" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["partido"]>
 export type PartidoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   torneo?: boolean | Prisma.TorneoDefaultArgs<ExtArgs>
   grupo?: boolean | Prisma.Partido$grupoArgs<ExtArgs>
@@ -2452,6 +2523,12 @@ export type $PartidoPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
+    /**
+     * Identificador que el admin puede leer y recordar ("Verano-C4-Zona_A-1").
+     * Lo arma lib/partido-id-legible.ts al generar la grilla y sirve para buscar
+     * el partido en la pantalla de resultados sin conocer el id numerico.
+     */
+    idLegible: string | null
     torneoId: number
     grupoId: number | null
     canchaId: number | null
@@ -2853,6 +2930,7 @@ export interface Prisma__PartidoClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface PartidoFieldRefs {
   readonly id: Prisma.FieldRef<"Partido", 'Int'>
+  readonly idLegible: Prisma.FieldRef<"Partido", 'String'>
   readonly torneoId: Prisma.FieldRef<"Partido", 'Int'>
   readonly grupoId: Prisma.FieldRef<"Partido", 'Int'>
   readonly canchaId: Prisma.FieldRef<"Partido", 'Int'>

@@ -15,6 +15,7 @@ import {
   aplicarRankingTorneo,
   writeTorneoPuntajes,
 } from "@/actions/torneos-ranking";
+import { actualizarEstadisticasParejas } from "@/lib/torneo-estadisticas";
 import type { PuntajesPorPosicion } from "@/lib/ranking-puntajes";
 import type { ListOpts } from "@/types/ui";
 
@@ -858,11 +859,13 @@ export async function updateTorneo(
       await notifyTorneoIniciado(torneoId);
     }
 
-    // Al finalizar el torneo se cargan los puntos de ranking. Se recalcula cada
-    // vez que pasa a FINISHED, asi corregir un resultado y volver a finalizar
-    // deja los puntos correctos.
+    // Al finalizar el torneo se cargan los puntos de ranking y se recalculan las
+    // estadisticas de las parejas. Las dos cosas se rehacen cada vez que pasa a
+    // FINISHED, asi corregir un resultado y volver a finalizar deja los numeros
+    // correctos.
     if (statusNuevo === "FINISHED") {
       await aplicarRankingTorneo(torneoId);
+      await actualizarEstadisticasParejas(torneoId);
     }
 
     return actualizado;
@@ -921,7 +924,9 @@ export async function publicarTorneo(
     return {
       success: false,
       error:
-        error instanceof Error ? error.message : "No se pudo publicar el torneo",
+        error instanceof Error
+          ? error.message
+          : "No se pudo publicar el torneo",
     };
   }
 }
@@ -982,17 +987,30 @@ export async function finalizarTorneo(
       };
     }
 
+    // Las estadisticas no vuelven atras el cierre del torneo: si fallan se avisa
+    // y se arreglan volviendo a finalizar, igual que el ranking.
+    const estadisticas = await actualizarEstadisticasParejas(torneoId);
+    const detalleEstadisticas = estadisticas.success
+      ? ` Estadisticas actualizadas en ${estadisticas.parejasActualizadas} parejas.`
+      : ` No se pudieron actualizar las estadisticas de las parejas: ${
+          estadisticas.message ?? "error desconocido"
+        }.`;
+
     return {
       success: true,
-      message: yaEstaba
-        ? `Ranking recalculado: ${ranking.rankingsCreados} puntajes.`
-        : `Torneo terminado. Se cargaron ${ranking.rankingsCreados} puntajes de ranking.`,
+      message:
+        (yaEstaba
+          ? `Ranking recalculado: ${ranking.rankingsCreados} puntajes.`
+          : `Torneo terminado. Se cargaron ${ranking.rankingsCreados} puntajes de ranking.`) +
+        detalleEstadisticas,
     };
   } catch (error) {
     return {
       success: false,
       error:
-        error instanceof Error ? error.message : "No se pudo terminar el torneo",
+        error instanceof Error
+          ? error.message
+          : "No se pudo terminar el torneo",
     };
   }
 }

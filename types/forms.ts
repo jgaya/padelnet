@@ -211,6 +211,28 @@ export const CanchaFormSchema = z.object({
 
 export type CanchaFormData = z.infer<typeof CanchaFormSchema>;
 
+export const RecategorizacionFormSchema = z.object({
+  jugadorId: z
+    .string()
+    .trim()
+    .min(1, "Selecciona un jugador")
+    .refine(
+      (value) => Number.isInteger(Number(value)) && Number(value) > 0,
+      "Selecciona un jugador",
+    ),
+  // La columna es `@db.Date`, asi que el formulario maneja la fecha como
+  // "YYYY-MM-DD" y no como un ISO con hora.
+  fecha: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "La fecha es obligatoria"),
+  nivelNuevo: z.string().trim().min(1, "La categoria nueva es obligatoria"),
+});
+
+export type RecategorizacionFormData = z.infer<
+  typeof RecategorizacionFormSchema
+>;
+
 export const EventoFormSchema = z
   .object({
     nombre: z

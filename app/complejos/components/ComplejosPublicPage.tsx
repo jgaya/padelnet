@@ -52,7 +52,7 @@ export default function ComplejosPublicPage({
                         <div>
                           <h2 className="text-2xl font-semibold leading-tight text-deep-black">
                             <Link
-                              href={`/complejos/${complejo.id}`}
+                              href={`/complejos/${complejo.slug}`}
                               className="transition hover:text-padel-green"
                             >
                               {complejo.name}
@@ -157,7 +157,7 @@ export default function ComplejosPublicPage({
 
                       <div className="flex flex-wrap gap-2">
                         <Link
-                          href={`/complejos/${complejo.id}`}
+                          href={`/complejos/${complejo.slug}`}
                           className="inline-flex rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-deep-black transition hover:brightness-95"
                         >
                           Ver complejo

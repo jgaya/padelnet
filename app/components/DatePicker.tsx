@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useEffect, useState } from "react";
+import React, { ChangeEventHandler, useState } from "react";
 import { setHours, setMinutes, format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -33,24 +33,48 @@ function CalendarIcon() {
   );
 }
 
+const HORA_POR_DEFECTO = "00:00";
+
+/** Fecha del valor que viene de afuera, o undefined si esta vacio o es basura. */
+function parseInitialValue(value: string): Date | undefined {
+  if (!value) return undefined;
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
+
+function horaDe(date: Date | undefined) {
+  return date ? format(date, "HH:mm") : HORA_POR_DEFECTO;
+}
+
 export default function DatePicker({
   label = "",
   initialValue = "",
   onChange,
   className = "",
 }: DatePickerProps) {
-  const [selected, setSelected] = useState<Date | undefined>();
-  const [timeValue, setTimeValue] = useState("00:00");
+  const [selected, setSelected] = useState<Date | undefined>(() =>
+    parseInitialValue(initialValue),
+  );
+  const [timeValue, setTimeValue] = useState(() =>
+    horaDe(parseInitialValue(initialValue)),
+  );
+  const [valorSincronizado, setValorSincronizado] = useState(initialValue);
   const [showModal, setShowModal] = useState(false);
   const isInvalid = className.includes("is-invalid");
 
-  useEffect(() => {
-    if (initialValue) {
-      const date = new Date(initialValue);
-      setSelected(date);
-      setTimeValue(format(date, "HH:mm"));
-    }
-  }, [initialValue]);
+  // El estado se sincroniza con la prop durante el render y no con un efecto:
+  // hacerlo en un efecto significa pintar una vez con el valor viejo y volver a
+  // pintar, que es lo que marca la regla set-state-in-effect. React soporta este
+  // patron explicitamente: el setState en render se descarta y se vuelve a
+  // renderizar antes de tocar el DOM.
+  if (initialValue !== valorSincronizado) {
+    const date = parseInitialValue(initialValue);
+
+    setValorSincronizado(initialValue);
+    setSelected(date);
+    setTimeValue(horaDe(date));
+  }
 
   const handleTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value;

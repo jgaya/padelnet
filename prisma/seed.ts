@@ -5,6 +5,7 @@ import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "../lib/generated/prisma/client";
 import type { Genero, PlatformRole } from "../lib/generated/prisma/enums";
+import { slugify } from "../lib/slug";
 
 const url = process.env.DATABASE_URL;
 
@@ -188,7 +189,6 @@ async function upsertUser({
  */
 const COMPLEJOS_DEMO = [
   {
-    slug: "padel-norte",
     name: "Padel Norte",
     ciudad: "San Isidro",
     provincia: "Buenos Aires",
@@ -198,7 +198,6 @@ const COMPLEJOS_DEMO = [
     baseDni: 10200000,
   },
   {
-    slug: "club-del-rio",
     name: "Club del Rio",
     ciudad: "Zarate",
     provincia: "Buenos Aires",
@@ -208,7 +207,6 @@ const COMPLEJOS_DEMO = [
     baseDni: 10300000,
   },
   {
-    slug: "la-cantera-padel",
     name: "La Cantera Padel",
     ciudad: "Cordoba",
     provincia: "Cordoba",
@@ -218,7 +216,6 @@ const COMPLEJOS_DEMO = [
     baseDni: 10400000,
   },
   {
-    slug: "sur-padel-club",
     name: "Sur Padel Club",
     ciudad: "Bahia Blanca",
     provincia: "Buenos Aires",
@@ -236,8 +233,12 @@ async function sembrarComplejo(
   definicion: ComplejoDemo,
   passwordHash: string,
 ) {
-  const { slug, name, ciudad, provincia, admin, canchas, jugadores, baseDni } =
+  const { name, ciudad, provincia, admin, canchas, jugadores, baseDni } =
     definicion;
+
+  // El slug sale del nombre, igual que en el alta real (actions/complejos.ts):
+  // es lo que se ve en la URL publica del club.
+  const slug = slugify(name);
 
   const datosComplejo = {
     name,
@@ -404,10 +405,22 @@ async function main() {
     usuarios40.push(usuario);
   }
 
+  const nombreComplejoDemo = "Complejo Demo PadelNet";
+  const slugComplejoDemo = slugify(nombreComplejoDemo);
+
+  // Este seed escribia el slug a mano ("complejo-demo"), que no coincide con el
+  // nombre. Ahora sale del nombre, asi que en una base ya sembrada hay que
+  // corregir el slug viejo antes del upsert: si no, la clave no encuentra la
+  // fila y se crearia un segundo complejo con el mismo nombre.
+  await prisma.complejo.updateMany({
+    where: { name: nombreComplejoDemo, slug: { not: slugComplejoDemo } },
+    data: { slug: slugComplejoDemo },
+  });
+
   const complejo = await prisma.complejo.upsert({
-    where: { slug: "complejo-demo" },
+    where: { slug: slugComplejoDemo },
     update: {
-      name: "Complejo Demo PadelNet",
+      name: nombreComplejoDemo,
       ciudad: "Buenos Aires",
       provincia: "Buenos Aires",
       direccion: "Av. Demo 1234",
@@ -417,8 +430,8 @@ async function main() {
       deletedAt: null,
     },
     create: {
-      name: "Complejo Demo PadelNet",
-      slug: "complejo-demo",
+      name: nombreComplejoDemo,
+      slug: slugComplejoDemo,
       ciudad: "Buenos Aires",
       provincia: "Buenos Aires",
       direccion: "Av. Demo 1234",

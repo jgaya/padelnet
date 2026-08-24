@@ -17,6 +17,7 @@ import {
   TrophyIcon,
   Squares2X2Icon,
   AdjustmentsHorizontalIcon,
+  ArrowsUpDownIcon,
   CalendarDaysIcon,
   DocumentTextIcon,
   TrashIcon,
@@ -247,6 +248,12 @@ export default function ComplejosPageClient({
                         label: "Reglamento",
                         icon: <DocumentTextIcon className="h-4 w-4" />,
                         href: `${GESTION_BASE}/${complejo.id}/reglamento`,
+                      },
+                      {
+                        key: "recategorizaciones",
+                        label: "Recategorizaciones",
+                        icon: <ArrowsUpDownIcon className="h-4 w-4" />,
+                        href: `${GESTION_BASE}/${complejo.id}/recategorizaciones`,
                       },
                       // Solo si el superadmin le prendio la funcionalidad.
                       complejo.turnosHabilitado && {
