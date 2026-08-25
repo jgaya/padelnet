@@ -24,14 +24,14 @@ export default function PanelSeccion({
   children,
 }: PanelSeccionProps) {
   return (
-    <section className="rounded-2xl border border-deep-black/10 bg-white">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-deep-black/10 px-4 py-3">
-        <h2 className="text-base font-semibold text-deep-black">{titulo}</h2>
+    <section className="rounded-2xl border border-content/10 bg-surface">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-content/10 px-4 py-3">
+        <h2 className="text-base font-semibold text-content">{titulo}</h2>
         {extra}
       </div>
       <div className="px-4 py-4">
         {vacio ? (
-          <p className="py-6 text-center text-sm text-deep-black/60">
+          <p className="py-6 text-center text-sm text-content/60">
             {textoVacio}
           </p>
         ) : (

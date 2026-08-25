@@ -552,6 +552,23 @@ export type EnumNotificationStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
 }
 
+export type EnumImagenPerfilEstadoFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImagenPerfilEstado | Prisma.EnumImagenPerfilEstadoFieldRefInput<$PrismaModel>
+  in?: $Enums.ImagenPerfilEstado[]
+  notIn?: $Enums.ImagenPerfilEstado[]
+  not?: Prisma.NestedEnumImagenPerfilEstadoFilter<$PrismaModel> | $Enums.ImagenPerfilEstado
+}
+
+export type EnumImagenPerfilEstadoWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImagenPerfilEstado | Prisma.EnumImagenPerfilEstadoFieldRefInput<$PrismaModel>
+  in?: $Enums.ImagenPerfilEstado[]
+  notIn?: $Enums.ImagenPerfilEstado[]
+  not?: Prisma.NestedEnumImagenPerfilEstadoWithAggregatesFilter<$PrismaModel> | $Enums.ImagenPerfilEstado
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumImagenPerfilEstadoFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumImagenPerfilEstadoFilter<$PrismaModel>
+}
+
 export type NestedIntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[]
@@ -1078,6 +1095,23 @@ export type NestedEnumNotificationStatusWithAggregatesFilter<$PrismaModel = neve
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumNotificationStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumImagenPerfilEstadoFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImagenPerfilEstado | Prisma.EnumImagenPerfilEstadoFieldRefInput<$PrismaModel>
+  in?: $Enums.ImagenPerfilEstado[]
+  notIn?: $Enums.ImagenPerfilEstado[]
+  not?: Prisma.NestedEnumImagenPerfilEstadoFilter<$PrismaModel> | $Enums.ImagenPerfilEstado
+}
+
+export type NestedEnumImagenPerfilEstadoWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImagenPerfilEstado | Prisma.EnumImagenPerfilEstadoFieldRefInput<$PrismaModel>
+  in?: $Enums.ImagenPerfilEstado[]
+  notIn?: $Enums.ImagenPerfilEstado[]
+  not?: Prisma.NestedEnumImagenPerfilEstadoWithAggregatesFilter<$PrismaModel> | $Enums.ImagenPerfilEstado
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumImagenPerfilEstadoFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumImagenPerfilEstadoFilter<$PrismaModel>
 }
 
 

@@ -36,12 +36,12 @@ export default function RecuperarPage() {
 
   return (
     <section className="mx-auto w-full max-w-lg px-4 py-8 sm:px-6">
-      <div className="overflow-hidden rounded-3xl border border-deep-black/10 bg-white shadow-sm">
-        <div className="border-b border-deep-black/10 bg-gradient-to-r from-padel-green/15 via-white to-energy-orange/15 px-6 py-6">
-          <h1 className="text-2xl font-semibold text-deep-black">
+      <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
+        <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-6 py-6">
+          <h1 className="text-2xl font-semibold text-content">
             Recuperar contrasena
           </h1>
-          <p className="mt-2 text-sm text-deep-black/70">
+          <p className="mt-2 text-sm text-content/70">
             Ingresa tu email y te mandamos un link para elegir una nueva.
           </p>
         </div>
@@ -57,8 +57,8 @@ export default function RecuperarPage() {
               </p>
 
               {urlDev ? (
-                <div className="mt-4 rounded-xl border border-deep-black/15 bg-surface-soft px-4 py-3">
-                  <p className="text-xs font-semibold text-deep-black/70">
+                <div className="mt-4 rounded-xl border border-content/15 bg-surface-soft px-4 py-3">
+                  <p className="text-xs font-semibold text-content/70">
                     El envio de mails no esta configurado en este entorno. Link
                     de recuperacion:
                   </p>
@@ -73,7 +73,7 @@ export default function RecuperarPage() {
             </>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3">
-              <label className="block text-sm font-medium text-deep-black/80">
+              <label className="block text-sm font-medium text-content/80">
                 Email
                 <input
                   type="email"
@@ -81,7 +81,7 @@ export default function RecuperarPage() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="vos@ejemplo.com"
-                  className="mt-1 w-full rounded-xl border border-deep-black/15 px-3 py-2 text-sm"
+                  className="mt-1 w-full rounded-xl border border-content/15 px-3 py-2 text-sm"
                 />
               </label>
 
@@ -94,7 +94,7 @@ export default function RecuperarPage() {
               <button
                 type="submit"
                 disabled={enviando}
-                className="w-full rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {enviando ? "Enviando..." : "Enviarme el link"}
               </button>
@@ -104,7 +104,7 @@ export default function RecuperarPage() {
           <div className="mt-4 text-sm">
             <Link
               href="/login"
-              className="font-semibold text-deep-black/70 transition hover:text-padel-green"
+              className="font-semibold text-content/70 transition hover:text-padel-green"
             >
               Volver a iniciar sesion
             </Link>

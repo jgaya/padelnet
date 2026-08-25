@@ -81,15 +81,15 @@ export default function FeatureMatrixClient({
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
-      <div className="overflow-hidden rounded-3xl border border-deep-black/10 bg-white shadow-sm">
-        <div className="border-b border-deep-black/10 bg-gradient-to-r from-padel-green/15 via-white to-energy-orange/15 px-5 py-6 sm:px-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
+      <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
+        <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-5 py-6 sm:px-7">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-content/60">
             Superadmin
           </p>
-          <h1 className="mt-2 text-2xl font-semibold text-deep-black sm:text-3xl">
+          <h1 className="mt-2 text-2xl font-semibold text-content sm:text-3xl">
             Funcionalidades por complejo
           </h1>
-          <p className="mt-2 max-w-3xl text-sm text-deep-black/75">
+          <p className="mt-2 max-w-3xl text-sm text-content/75">
             Habilita o quita funcionalidades a cada club. Sin excepcion
             definida, rige el valor por defecto de cada funcionalidad.
           </p>
@@ -97,7 +97,7 @@ export default function FeatureMatrixClient({
 
         <div className="px-5 py-5 sm:px-7">
           {rows.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-deep-black/20 bg-surface-soft px-5 py-8 text-center text-sm text-deep-black/70">
+            <div className="rounded-2xl border border-dashed border-content/20 bg-surface-soft px-5 py-8 text-center text-sm text-content/70">
               No hay complejos cargados.
             </div>
           ) : (
@@ -120,10 +120,10 @@ export default function FeatureMatrixClient({
               renderRow={(row) => (
                 <tr>
                   <td>
-                    <span className="block font-semibold text-deep-black">
+                    <span className="block font-semibold text-content">
                       {row.complejoNombre}
                     </span>
-                    <span className="text-xs text-deep-black/60">
+                    <span className="text-xs text-content/60">
                       {row.ciudad}, {row.provincia}
                     </span>
                   </td>
@@ -166,7 +166,7 @@ export default function FeatureMatrixClient({
                   <td>
                     <Link
                       href={`/superadmin/complejos/${row.complejoId}/funcionalidades`}
-                      className="inline-flex rounded-full border border-deep-black/20 bg-white px-3 py-1.5 text-xs font-semibold text-deep-black transition hover:bg-surface-soft"
+                      className="inline-flex rounded-full border border-content/20 bg-surface px-3 py-1.5 text-xs font-semibold text-content transition hover:bg-surface-soft"
                     >
                       Ver
                     </Link>

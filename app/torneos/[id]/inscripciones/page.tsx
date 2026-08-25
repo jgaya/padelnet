@@ -39,14 +39,14 @@ function TableSection({
   currentUserParejaId: number | null;
 }) {
   return (
-    <article className="overflow-hidden rounded-2xl border border-deep-black/10 bg-white">
-      <div className="border-b border-deep-black/10 bg-surface-soft px-4 py-3">
-        <h2 className="text-lg font-semibold text-deep-black">{title}</h2>
+    <article className="overflow-hidden rounded-2xl border border-content/10 bg-surface">
+      <div className="border-b border-content/10 bg-surface-soft px-4 py-3">
+        <h2 className="text-lg font-semibold text-content">{title}</h2>
       </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
-          <thead className="bg-white text-deep-black/70">
+          <thead className="bg-surface text-content/70">
             <tr>
               <th className="px-3 py-2 text-left font-semibold">#</th>
               <th className="px-3 py-2 text-left font-semibold">Pareja</th>
@@ -61,7 +61,7 @@ function TableSection({
               <tr>
                 <td
                   colSpan={4}
-                  className="px-3 py-4 text-center text-deep-black/65"
+                  className="px-3 py-4 text-center text-content/65"
                 >
                   {emptyText}
                 </td>
@@ -71,13 +71,13 @@ function TableSection({
                 <tr
                   key={row.id}
                   className={`transition hover:bg-padel-green/10 ${
-                    index % 2 === 0 ? "bg-white" : "bg-surface-soft/50"
+                    index % 2 === 0 ? "bg-surface" : "bg-surface-soft/50"
                   }`}
                 >
-                  <td className="px-3 py-2 font-semibold text-deep-black">
+                  <td className="px-3 py-2 font-semibold text-content">
                     {index + 1}
                   </td>
-                  <td className="px-3 py-2 text-deep-black">
+                  <td className="px-3 py-2 text-content">
                     <LinkJugador jugadorId={row.player1Id}>
                       {row.player1Nombre}
                     </LinkJugador>
@@ -86,14 +86,14 @@ function TableSection({
                       {row.player2Nombre}
                     </LinkJugador>
                   </td>
-                  <td className="px-3 py-2 text-deep-black/80">
+                  <td className="px-3 py-2 text-content/80">
                     {formatDateTime(row.createdAt)}
                   </td>
                   <td className="px-3 py-2">
                     {row.id === currentUserParejaId ? (
                       <Link
                         href={`/torneos/${torneoId}/inscripciones/${row.id}/editar`}
-                        className="inline-flex rounded-full bg-padel-green px-3 py-1 text-xs font-semibold text-deep-black transition hover:brightness-95"
+                        className="inline-flex rounded-full bg-padel-green px-3 py-1 text-xs font-semibold text-on-brand transition hover:brightness-95"
                       >
                         Editar
                       </Link>
@@ -130,15 +130,15 @@ export default async function TorneoPublicInscripcionesPage(props: {
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
-      <div className="overflow-hidden rounded-3xl border border-deep-black/10 bg-white shadow-sm">
-        <div className="border-b border-deep-black/10 bg-gradient-to-r from-padel-green/15 via-white to-energy-orange/15 px-5 py-6 sm:px-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
+      <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
+        <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-5 py-6 sm:px-7">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-content/60">
             Inscripciones
           </p>
-          <h1 className="mt-2 text-3xl font-semibold text-deep-black sm:text-4xl">
+          <h1 className="mt-2 text-3xl font-semibold text-content sm:text-4xl">
             {data.torneo.nombre}
           </h1>
-          <p className="mt-1 text-sm text-deep-black/70">
+          <p className="mt-1 text-sm text-content/70">
             {data.torneo.eventoNombre} - {data.torneo.complejoNombre} (
             {data.torneo.complejoCiudad}, {data.torneo.complejoProvincia})
           </p>
@@ -150,10 +150,10 @@ export default async function TorneoPublicInscripcionesPage(props: {
           ) : null}
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
-            <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
               Cupo: {data.torneo.inscriptosCount}/{data.torneo.capacidad}
             </span>
-            <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
               Suplentes: {data.torneo.suplentesCount}
             </span>
           </div>
@@ -161,19 +161,19 @@ export default async function TorneoPublicInscripcionesPage(props: {
           <div className="mt-4 flex flex-wrap gap-2">
             <Link
               href="/torneos"
-              className="inline-flex rounded-full border border-deep-black/20 bg-white px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+              className="inline-flex rounded-full border border-content/20 bg-surface px-4 py-2 text-sm font-semibold text-content transition hover:bg-surface-soft"
             >
               Volver a torneos
             </Link>
             <Link
               href={`/torneos/${torneoId}`}
-              className="inline-flex rounded-full bg-deep-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-deep-black/90"
+              className="inline-flex rounded-full bg-content px-4 py-2 text-sm font-semibold text-surface transition hover:bg-content/90"
             >
               Ver detalle del torneo
             </Link>
             <Link
               href={`/torneos/${torneoId}/registrarse`}
-              className="inline-flex rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-deep-black transition hover:brightness-95"
+              className="inline-flex rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-on-brand transition hover:brightness-95"
             >
               Agregar pareja
             </Link>

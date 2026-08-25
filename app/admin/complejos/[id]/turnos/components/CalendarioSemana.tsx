@@ -50,7 +50,7 @@ export default function CalendarioSemana({
               <span className={styles.diaNumero}>
                 {DIAS_SEMANA[fecha.getDay()].slice(0, 3)} {fecha.getDate()}
               </span>
-              <span className="block text-xs text-slate-500">
+              <span className="block text-xs text-content/55">
                 {horario?.cerrado
                   ? "Cerrado"
                   : horario
@@ -61,18 +61,18 @@ export default function CalendarioSemana({
 
             <div className="flex flex-col gap-1 overflow-y-auto">
               {items.length === 0 ? (
-                <span className="text-xs text-slate-400">Sin turnos</span>
+                <span className="text-xs text-content/55">Sin turnos</span>
               ) : null}
 
               {items.map((item) => {
                 const esPartido = item.tipo === "PARTIDO";
                 const color = esPartido
-                  ? "bg-blue-100 text-blue-900"
+                  ? "bg-info/12 text-info"
                   : item.status === "BLOQUEADO"
-                    ? "bg-slate-200 text-slate-700"
+                    ? "bg-content/10 text-content/70"
                     : item.pagado
-                      ? "bg-emerald-100 text-emerald-900"
-                      : "bg-amber-100 text-amber-900";
+                      ? "bg-success/12 text-success"
+                      : "bg-warning/12 text-warning";
 
                 return (
                   <button

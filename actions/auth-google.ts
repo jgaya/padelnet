@@ -104,7 +104,10 @@ export async function loginConGoogle(
               firebaseUid: claims.uid,
               name,
               lastname,
-              imageUrl: claims.foto ?? null,
+              // La foto de la cuenta de Google (claims.foto) NO se guarda: no
+              // paso por moderacion y `imageUrl` significa "foto aprobada".
+              // Quien entra con Google ve sus iniciales hasta que suba una en
+              // /perfil y el superadmin la apruebe. Ver model ImagenPerfil.
               // Google ya probo el mail: no hace falta el circuito de
               // confirmacion.
               emailVerified: true,
@@ -118,8 +121,8 @@ export async function loginConGoogle(
             data: {
               firebaseUid: claims.uid,
               emailVerified: true,
-              // Solo se pisa la foto si la cuenta no tenia ninguna.
-              imageUrl: existente!.imageUrl ?? claims.foto ?? null,
+              // Idem el alta: la foto de Google no se copia. Vincular una
+              // cuenta no le cambia el avatar a nadie.
               // Ver decidirVinculacion: la cuenta que nunca verifico el mail
               // pudo haberla creado otro con este mail.
               ...(decision.anularPassword ? { passwordHash: null } : {}),

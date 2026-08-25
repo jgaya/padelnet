@@ -156,6 +156,15 @@ export const PushPlatform = {
 export type PushPlatform = (typeof PushPlatform)[keyof typeof PushPlatform]
 
 
+export const ImagenPerfilEstado = {
+  PENDIENTE: 'PENDIENTE',
+  APROBADA: 'APROBADA',
+  RECHAZADA: 'RECHAZADA'
+} as const
+
+export type ImagenPerfilEstado = (typeof ImagenPerfilEstado)[keyof typeof ImagenPerfilEstado]
+
+
 export const TokenEmailPurpose = {
   VERIFICACION: 'VERIFICACION',
   RESET_PASSWORD: 'RESET_PASSWORD'

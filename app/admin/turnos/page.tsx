@@ -22,15 +22,15 @@ export default async function AdminTurnosPage() {
         migas={[{ label: "Panel", href: "/admin" }, { label: "Turnos" }]}
       />
 
-      <h1 className="text-2xl font-semibold text-deep-black sm:text-3xl">
+      <h1 className="text-2xl font-semibold text-content sm:text-3xl">
         Turnos
       </h1>
-      <p className="mt-1 text-sm text-deep-black/70">
+      <p className="mt-1 text-sm text-content/70">
         Elegi el complejo cuya agenda queres ver.
       </p>
 
       {complejos.length === 0 ? (
-        <div className="mt-5 rounded-2xl border border-dashed border-deep-black/20 bg-surface-soft px-5 py-8 text-center text-sm text-deep-black/70">
+        <div className="mt-5 rounded-2xl border border-dashed border-content/20 bg-surface-soft px-5 py-8 text-center text-sm text-content/70">
           Ninguno de tus complejos tiene la funcionalidad de turnos habilitada.
           La prende el superadmin desde Funcionalidades.
         </div>
@@ -40,7 +40,7 @@ export default async function AdminTurnosPage() {
             <li key={complejo.id}>
               <Link
                 href={`/admin/complejos/${complejo.id}/turnos`}
-                className="flex items-center gap-3 rounded-2xl border border-deep-black/10 bg-white px-4 py-4 text-sm font-semibold text-deep-black shadow-sm transition hover:border-padel-green hover:bg-padel-green/5"
+                className="flex items-center gap-3 rounded-2xl border border-content/10 bg-surface px-4 py-4 text-sm font-semibold text-content shadow-sm transition hover:border-padel-green hover:bg-padel-green/5"
               >
                 <CalendarDaysIcon className="h-5 w-5 shrink-0 text-padel-green" />
                 {complejo.name}

@@ -61,12 +61,12 @@ export default function ReenviarConfirmacion({ motivo }: { motivo: Motivo }) {
 
   return (
     <section className="mx-auto w-full max-w-lg px-4 py-8 sm:px-6">
-      <div className="overflow-hidden rounded-3xl border border-deep-black/10 bg-white shadow-sm">
-        <div className="border-b border-deep-black/10 bg-gradient-to-r from-energy-orange/15 via-white to-padel-green/15 px-6 py-6">
-          <h1 className="text-2xl font-semibold text-deep-black">
+      <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
+        <div className="border-b border-content/10 bg-gradient-to-r from-energy-orange/15 via-surface to-padel-green/15 px-6 py-6">
+          <h1 className="text-2xl font-semibold text-content">
             {mensaje.titulo}
           </h1>
-          <p className="mt-2 text-sm text-deep-black/70">{mensaje.detalle}</p>
+          <p className="mt-2 text-sm text-content/70">{mensaje.detalle}</p>
         </div>
 
         <div className="px-6 py-6">
@@ -78,8 +78,8 @@ export default function ReenviarConfirmacion({ motivo }: { motivo: Motivo }) {
               </p>
 
               {urlDev ? (
-                <div className="mt-4 rounded-xl border border-deep-black/15 bg-surface-soft px-4 py-3">
-                  <p className="text-xs font-semibold text-deep-black/70">
+                <div className="mt-4 rounded-xl border border-content/15 bg-surface-soft px-4 py-3">
+                  <p className="text-xs font-semibold text-content/70">
                     El envio de mails no esta configurado en este entorno. Link
                     de confirmacion:
                   </p>
@@ -94,7 +94,7 @@ export default function ReenviarConfirmacion({ motivo }: { motivo: Motivo }) {
             </>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3">
-              <label className="block text-sm font-medium text-deep-black/80">
+              <label className="block text-sm font-medium text-content/80">
                 Tu email
                 <input
                   type="email"
@@ -102,7 +102,7 @@ export default function ReenviarConfirmacion({ motivo }: { motivo: Motivo }) {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="vos@ejemplo.com"
-                  className="mt-1 w-full rounded-xl border border-deep-black/15 px-3 py-2 text-sm"
+                  className="mt-1 w-full rounded-xl border border-content/15 px-3 py-2 text-sm"
                 />
               </label>
 
@@ -115,7 +115,7 @@ export default function ReenviarConfirmacion({ motivo }: { motivo: Motivo }) {
               <button
                 type="submit"
                 disabled={enviando}
-                className="w-full rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {enviando ? "Enviando..." : "Enviarme un link nuevo"}
               </button>

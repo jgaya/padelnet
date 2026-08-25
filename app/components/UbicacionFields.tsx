@@ -175,7 +175,7 @@ export default function UbicacionFields({
         )}
 
         {ayuda && (
-          <p className="mt-1 mb-0 text-xs text-deep-black/60">{ayuda}</p>
+          <p className="mt-1 mb-0 text-xs text-content/60">{ayuda}</p>
         )}
         {errorLocalidad && (
           <div className="padel-invalid-feedback block">

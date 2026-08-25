@@ -26,14 +26,14 @@ export default async function ConfirmarEmailPage(props: {
 
   return (
     <section className="mx-auto w-full max-w-lg px-4 py-8 sm:px-6">
-      <div className="overflow-hidden rounded-3xl border border-deep-black/10 bg-white shadow-sm">
-        <div className="border-b border-deep-black/10 bg-gradient-to-r from-padel-green/15 via-white to-energy-orange/15 px-6 py-6">
-          <h1 className="text-2xl font-semibold text-deep-black">
+      <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
+        <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-6 py-6">
+          <h1 className="text-2xl font-semibold text-content">
             {resultado.yaEstaba
               ? "Tu email ya estaba confirmado"
               : "Listo, email confirmado"}
           </h1>
-          <p className="mt-2 text-sm text-deep-black/70">
+          <p className="mt-2 text-sm text-content/70">
             {resultado.yaEstaba
               ? "No hace falta que hagas nada mas: ya podes inscribirte a los torneos."
               : "Ya podes inscribirte a los torneos y vas a recibir los avisos de tus partidos."}
@@ -43,13 +43,13 @@ export default async function ConfirmarEmailPage(props: {
         <div className="flex flex-wrap gap-2 px-6 py-6">
           <Link
             href="/login"
-            className="rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95"
+            className="rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95"
           >
             Ingresar
           </Link>
           <Link
             href="/torneos"
-            className="rounded-full border border-deep-black/20 bg-white px-5 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+            className="rounded-full border border-content/20 bg-surface px-5 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
           >
             Ver torneos
           </Link>

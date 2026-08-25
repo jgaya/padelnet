@@ -25,14 +25,14 @@ export default async function CompletarPerfilPage() {
 
   return (
     <section className="mx-auto w-full max-w-lg px-4 py-5 sm:px-6 sm:py-8">
-      <div className="rounded-3xl border border-deep-black/10 bg-white p-5 shadow-sm sm:p-7">
+      <div className="rounded-3xl border border-content/10 bg-surface p-5 shadow-sm sm:p-7">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-padel-green">
           Ultimo paso
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-deep-black sm:text-3xl">
+        <h1 className="mt-2 text-2xl font-semibold text-content sm:text-3xl">
           Completa tu perfil
         </h1>
-        <p className="mt-2 text-sm text-deep-black/70">
+        <p className="mt-2 text-sm text-content/70">
           Tu cuenta ya quedo creada. Estos datos los pide el club para poder
           inscribirte a los torneos.
         </p>

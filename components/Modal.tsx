@@ -34,18 +34,18 @@ export default function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div
-        className={`flex max-h-[90vh] w-full flex-col ${SIZE_CLASSES[size]} overflow-hidden rounded-[2rem] bg-white shadow-[0_30px_90px_rgba(0,0,0,0.12)] ring-1 ring-slate-200`}
+        className={`flex max-h-[90vh] w-full flex-col ${SIZE_CLASSES[size]} overflow-hidden rounded-[2rem] bg-surface shadow-[var(--shadow-lg)] ring-1 ring-content/10`}
         role="dialog"
         aria-modal="true"
       >
         {title ? (
-          <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-6 py-4">
-            <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+          <div className="flex shrink-0 items-center justify-between border-b border-content/10 px-6 py-4">
+            <h2 className="text-lg font-semibold text-content">{title}</h2>
             <button
               type="button"
               aria-label="Cerrar"
               onClick={() => setShowModal(false)}
-              className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+              className="rounded-full p-2 text-content/55 transition hover:bg-surface-soft hover:text-content"
             >
               ×
             </button>
@@ -56,7 +56,7 @@ export default function Modal({
           {children ?? body}
         </div>
 
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-3 border-t border-slate-200 px-6 py-4">
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-3 border-t border-content/10 px-6 py-4">
           {footer ?? (
             <button
               type="button"

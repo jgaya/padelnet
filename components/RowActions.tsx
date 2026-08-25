@@ -147,7 +147,7 @@ export default function RowActions({
                   <span>
                     {action.label}
                     {action.disabled && action.disabledReason ? (
-                      <span className="block text-xs font-normal text-deep-black/60">
+                      <span className="block text-xs font-normal text-content/60">
                         {action.disabledReason}
                       </span>
                     ) : null}
@@ -158,7 +158,7 @@ export default function RowActions({
               const clases = `flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold transition ${
                 action.variant === "danger"
                   ? "text-energy-orange hover:bg-energy-orange/10"
-                  : "text-deep-black hover:bg-surface-soft"
+                  : "text-content hover:bg-surface-soft"
               } ${action.disabled ? "pointer-events-none opacity-50" : ""}`;
 
               return (

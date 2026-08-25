@@ -24,7 +24,7 @@ export default function ComplejoTabs({ complejoSlug }: ComplejoTabsProps) {
   return (
     <nav
       aria-label="Secciones del complejo"
-      className="sticky top-[57px] z-40 border-b border-deep-black/10 bg-white/95 backdrop-blur"
+      className="sticky top-[57px] z-40 border-b border-content/10 bg-surface/95 backdrop-blur"
     >
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
         <ul className="flex gap-2 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -41,8 +41,8 @@ export default function ComplejoTabs({ complejoSlug }: ComplejoTabsProps) {
                   aria-current={isActive ? "page" : undefined}
                   className={`inline-flex whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
                     isActive
-                      ? "bg-padel-green text-deep-black"
-                      : "bg-surface-soft text-deep-black/70 hover:bg-padel-green/10 hover:text-deep-black"
+                      ? "bg-padel-green text-on-brand"
+                      : "bg-surface-soft text-content/70 hover:bg-padel-green/10 hover:text-content"
                   }`}
                 >
                   {tab.label}

@@ -260,7 +260,7 @@ export default function PartidosPageClient() {
     return (
       <div className="container padel-complejos-list padel-partidos-page">
         <TitleBar title="Crear partidos" />
-        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
           <div className="p-4">Parametros invalidos.</div>
         </div>
       </div>
@@ -291,20 +291,20 @@ export default function PartidosPageClient() {
       </div>
 
       {loading ? (
-        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
           <div className="p-4">Cargando configuracion...</div>
         </div>
       ) : null}
 
       {!loading && error ? (
-        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
           <div className="p-4">{error}</div>
         </div>
       ) : null}
 
       {!loading && data ? (
         <>
-          <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card mb-3">
+          <div className="rounded-2xl border border-content/10 bg-surface padel-data-card mb-3">
             <div className="p-4">
               <h5 className="mb-3">1. Selecciona las canchas</h5>
               <div className="flex flex-wrap gap-2">
@@ -328,7 +328,7 @@ export default function PartidosPageClient() {
           </div>
 
           {selectedCanchaIds.length > 0 ? (
-            <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card mb-3">
+            <div className="rounded-2xl border border-content/10 bg-surface padel-data-card mb-3">
               <div className="p-4">
                 <h5 className="mb-3">2. Define los horarios por dia</h5>
                 {selectedCanchaIds.map((canchaId, canchaIndex) => {
@@ -412,7 +412,7 @@ export default function PartidosPageClient() {
             </div>
           ) : null}
 
-          <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+          <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
             <div className="p-4">
               <h5 className="mb-3">3. Configura la generacion</h5>
               <div className="mb-3 grid items-stretch gap-3 padel-config-grid md:grid-cols-12">
@@ -492,7 +492,7 @@ export default function PartidosPageClient() {
           </div>
 
           {preview ? (
-            <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card mt-3">
+            <div className="rounded-2xl border border-content/10 bg-surface padel-data-card mt-3">
               <div className="p-4">
                 <div className="flex flex-wrap justify-between gap-2 mb-3">
                   <div>
@@ -548,7 +548,7 @@ export default function PartidosPageClient() {
                 ) : null}
 
                 {preview.unassignedLlave.length > 0 ? (
-                  <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                  <div className="rounded-xl border border-warning/35 bg-warning/12 px-4 py-3 text-sm text-warning">
                     <strong>Partidos de llave sin horario:</strong>
                     <p className="mb-0 mt-1">
                       Se guardan igual, sin horario ni cancha, para poder
@@ -566,9 +566,9 @@ export default function PartidosPageClient() {
                   </div>
                 ) : null}
 
-                <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-                  <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-slate-800">
-                    <thead className="bg-slate-900 text-xs font-semibold uppercase tracking-wide text-white">
+                <div className="overflow-x-auto rounded-xl border border-content/10 bg-surface shadow-sm">
+                  <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-content">
+                    <thead className="bg-ink text-xs font-semibold uppercase tracking-wide text-on-ink">
                       <tr>
                         <th className="px-4 py-3">Dia</th>
                         <th className="px-4 py-3">Hora</th>
@@ -577,11 +577,11 @@ export default function PartidosPageClient() {
                         <th className="px-4 py-3">Partido</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200">
+                    <tbody className="divide-y divide-content/10">
                       {preview.matches.map((match) => (
                         <tr
                           key={match.key}
-                          className="odd:bg-white even:bg-slate-50 hover:bg-emerald-50"
+                          className="odd:bg-surface even:bg-surface-soft hover:bg-success/12"
                         >
                           <td className="whitespace-nowrap px-4 py-3 font-medium">
                             {match.dayLabel}
@@ -596,10 +596,10 @@ export default function PartidosPageClient() {
                             {match.llave ?? match.grupoNombre ?? "-"}
                           </td>
                           <td className="px-4 py-3">
-                            <span className="text-slate-500">{match.key}</span>{" "}
+                            <span className="text-content/55">{match.key}</span>{" "}
                             {match.pareja1Nombre} vs {match.pareja2Nombre}
                             {match.restricted ? (
-                              <span className="ml-2 inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800">
+                              <span className="ml-2 inline-flex rounded-full bg-warning/12 px-2 py-1 text-xs font-semibold text-warning">
                                 Restriccion
                               </span>
                             ) : null}

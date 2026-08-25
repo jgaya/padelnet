@@ -1,32 +1,140 @@
 @import "tailwindcss";
 
+/**
+ * Modo oscuro por atributo. `data-theme` lo escribe el script inline de
+ * `app/layout.tsx` antes del primer paint, y despues lo mantiene
+ * `context/ThemeContext.tsx`.
+ */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
 
+/* ========================================
+   TOKENS DE TEMA
+   ========================================
+
+   Hay tres familias de color y la diferencia entre ellas es si se dan vuelta
+   al cambiar de tema:
+
+   1. Superficie (SE DA VUELTA): `background`, `surface`, `surface-soft`,
+      `surface-raised` y `content`. Es el 95% de la UI. Como `content` se
+      invierte, los modificadores de opacidad siguen siendo correctos solos:
+      `text-content/70` es 70% oscuro sobre claro en el tema claro y 70% claro
+      sobre oscuro en el oscuro. Lo mismo `border-content/10`.
+
+   2. Panel oscuro / `ink` (NO SE DA VUELTA): los heroes de la home, el login y
+      el registro, el tooltip y los `thead` de las tablas. Son bloques oscuros a
+      proposito; si se dieran vuelta, en tema oscuro quedaria una losa blanca en
+      medio de la pagina. Igual el valor cambia un poco entre temas para que no
+      parezcan pegoteados.
+
+   3. Tinta sobre marca / `on-brand` (NO SE DA VUELTA): el texto que va encima
+      de un relleno verde o naranja. Los colores de marca son identicos en los
+      dos temas, asi que su tinta tambien.
+
+   El tema claro son exactamente los valores que tenia el sitio antes de que
+   existieran los temas: cambiar a claro no debe cambiar ni un pixel.
+*/
+
 :root {
+  color-scheme: light;
+
+  /* Superficies (se dan vuelta) */
   --background: #f5f7f7;
-  --foreground: #1c2526;
+  --surface: #ffffff;
+  --surface-soft: #eef2f1;
+  --surface-raised: #ffffff; /* modales, dropdowns */
+  --content: #1c2526;
+
+  /* Panel oscuro y tinta sobre marca (no se dan vuelta) */
+  --ink: #1c2526;
+  --on-ink: #ffffff;
+  --on-brand: #1c2526;
+
+  /* Marca: iguales en los dos temas */
   --padel-green: #00c853;
   --energy-orange: #ff4f00;
-  --deep-black: #1c2526;
-  --surface-white: #ffffff;
-  --surface-soft: #eef2f1;
+
+  /* Estado */
+  --success: #047857;
+  --warning: #b45309;
+  --danger: #b91c1c;
+  --info: #1d4ed8;
+
+  /* Rellenos solidos de estado. Llevan texto blanco encima, asi que a
+     diferencia de los de arriba no se aclaran en el tema oscuro. */
+  --success-solid: #047857;
+  --danger-solid: #b91c1c;
+
+  /* Efectos */
+  --scrim: rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 2px 6px rgba(28, 37, 38, 0.08);
+  --shadow-md: 0 10px 24px rgba(28, 37, 38, 0.1);
+  --shadow-lg: 0 18px 34px rgba(28, 37, 38, 0.12);
+  --glow-green: rgba(0, 200, 83, 0.18);
+  --glow-orange: rgba(255, 79, 0, 0.14);
+  /* Sombra de los botones naranjas. No se atenua en oscuro: el relleno naranja
+     tampoco cambia y es lo que la sombra tiene que acompaniar. */
+  --glow-orange-strong: rgba(255, 79, 0, 0.3);
+
+  /* El snackbar tiene texto blanco fijo, asi que sus colores no cambian. */
   --snackbar-success: #4caf50;
   --snackbar-error: #f44336;
   --snackbar-warning: #ff9800;
   --snackbar-info: #2196f3;
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #0e1514;
+  --surface: #16201f;
+  --surface-soft: #1e2b2a;
+  --surface-raised: #232f2e;
+  --content: #e3ebe9; /* 13.7:1 sobre --surface */
+
+  /* Mas oscuro que --surface para que el panel se siga leyendo como un bloque
+     aparte y no se funda con las tarjetas. */
+  --ink: #0a1312;
+  --on-ink: #f0f5f4;
+  --on-brand: #1c2526;
+
+  --padel-green: #00c853; /* 7.4:1 sobre --surface */
+  --energy-orange: #ff4f00; /* 5.0:1 sobre --surface */
+
+  --success: #4ade80;
+  --warning: #ffb84d;
+  --danger: #ff6b6b;
+  --info: #6cb6ff;
+
+  --scrim: rgba(0, 0, 0, 0.65);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 18px 34px rgba(0, 0, 0, 0.6);
+  --glow-green: rgba(0, 200, 83, 0.1);
+  --glow-orange: rgba(255, 79, 0, 0.08);
+}
+
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-surface-raised: var(--surface-raised);
+  --color-content: var(--content);
+  --color-ink: var(--ink);
+  --color-on-ink: var(--on-ink);
+  --color-on-brand: var(--on-brand);
   --color-padel-green: var(--padel-green);
   --color-energy-orange: var(--energy-orange);
-  --color-deep-black: var(--deep-black);
-  --color-surface-white: var(--surface-white);
-  --color-surface-soft: var(--surface-soft);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-success-solid: var(--success-solid);
+  --color-danger-solid: var(--danger-solid);
   --font-sans: var(--font-inter);
   --font-logo: var(--font-montserrat);
 }
@@ -42,16 +150,30 @@ body {
 
 body {
   margin: 0;
-  background: var(--background);
-  color: var(--foreground);
+  color: var(--content);
   background:
-    radial-gradient(
-      circle at 10% -10%,
-      rgba(0, 200, 83, 0.18),
-      transparent 45%
-    ),
-    radial-gradient(circle at 100% 0%, rgba(255, 79, 0, 0.14), transparent 40%),
-    linear-gradient(180deg, var(--surface-white) 0%, var(--surface-soft) 100%);
+    radial-gradient(circle at 10% -10%, var(--glow-green), transparent 45%),
+    radial-gradient(circle at 100% 0%, var(--glow-orange), transparent 40%),
+    linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+}
+
+/* ========================================
+   SELECTOR DE TEMA
+   ========================================
+
+   El estado "seleccionado" se pinta con CSS y no con estado de React: el
+   dropdown del avatar esta siempre montado (se muestra con opacity), asi que un
+   check dibujado desde React parpadearia en el primer paint y ademas daria
+   mismatch de hidratacion. `data-theme-mode` ya lo dejo puesto el script inline
+   antes de que pinte nada.
+*/
+
+[data-theme-mode="light"] [data-mode="light"],
+[data-theme-mode="dark"] [data-mode="dark"],
+[data-theme-mode="system"] [data-mode="system"] {
+  background: var(--surface-soft);
+  color: var(--padel-green);
+  font-weight: 700;
 }
 
 .auth-login-form .form-label,
@@ -61,18 +183,18 @@ body {
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: var(--deep-black);
+  color: var(--content);
 }
 
 .auth-login-form .form-control,
 .padel-form-input,
 .padel-form-select {
   width: 100%;
-  border: 1px solid color-mix(in oklab, var(--deep-black) 18%, transparent);
+  border: 1px solid color-mix(in oklab, var(--content) 18%, transparent);
   border-radius: 0.85rem;
   padding: 0.7rem 0.95rem;
   background: var(--surface-soft);
-  color: var(--deep-black);
+  color: var(--content);
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
@@ -82,8 +204,8 @@ body {
 .padel-form-select {
   appearance: none;
   background-image:
-    linear-gradient(45deg, transparent 50%, var(--deep-black) 50%),
-    linear-gradient(135deg, var(--deep-black) 50%, transparent 50%);
+    linear-gradient(45deg, transparent 50%, var(--content) 50%),
+    linear-gradient(135deg, var(--content) 50%, transparent 50%);
   background-position:
     calc(100% - 1.05rem) calc(50% - 0.12rem),
     calc(100% - 0.75rem) calc(50% - 0.12rem);
@@ -96,15 +218,15 @@ body {
 
 .auth-login-form .form-control::placeholder,
 .padel-form-input::placeholder {
-  color: color-mix(in oklab, var(--deep-black) 42%, transparent);
+  color: color-mix(in oklab, var(--content) 42%, transparent);
 }
 
 .auth-login-form .form-control:focus,
 .padel-form-input:focus,
 .padel-form-select:focus {
   border-color: var(--padel-green);
-  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.2);
-  background: var(--surface-white);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--padel-green) 20%, transparent);
+  background: var(--surface);
   outline: none;
 }
 
@@ -125,7 +247,7 @@ body {
 .auth-login-form .form-check-label,
 .padel-form-check-label {
   font-size: 0.86rem;
-  color: color-mix(in oklab, var(--deep-black) 78%, transparent);
+  color: color-mix(in oklab, var(--content) 78%, transparent);
 }
 
 .auth-login-form .is-invalid,
@@ -151,7 +273,7 @@ body {
 }
 
 .padel-password-toggle {
-  border: 1px solid color-mix(in oklab, var(--deep-black) 18%, transparent);
+  border: 1px solid color-mix(in oklab, var(--content) 18%, transparent);
   border-radius: 999px;
   width: 2rem;
   height: 2rem;
@@ -159,8 +281,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-white);
-  color: color-mix(in oklab, var(--deep-black) 68%, transparent);
+  background: var(--surface);
+  color: color-mix(in oklab, var(--content) 68%, transparent);
   cursor: pointer;
   transition:
     border-color 160ms ease,
@@ -175,7 +297,7 @@ body {
 
 .padel-password-toggle:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.2);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--padel-green) 20%, transparent);
 }
 
 .padel-form-container {
@@ -183,10 +305,10 @@ body {
 }
 
 .padel-form-card {
-  border: 1px solid rgba(28, 37, 38, 0.12);
+  border: 1px solid color-mix(in oklab, var(--content) 12%, transparent);
   border-radius: 1.1rem;
-  background: #f9fcfa;
-  box-shadow: 0 18px 34px rgba(28, 37, 38, 0.12);
+  background: color-mix(in oklab, var(--padel-green) 3%, var(--surface));
+  box-shadow: var(--shadow-lg);
 }
 
 .padel-form-card-body {
@@ -201,7 +323,7 @@ body {
   border: 1px solid transparent;
   border-radius: 999px;
   background: var(--padel-green);
-  color: var(--deep-black);
+  color: var(--on-brand);
   font-weight: 700;
 }
 
@@ -210,15 +332,15 @@ body {
 }
 
 .padel-form-card .btn-secondary {
-  border: 1px solid rgba(28, 37, 38, 0.25);
+  border: 1px solid color-mix(in oklab, var(--content) 25%, transparent);
   border-radius: 999px;
-  background: var(--surface-white);
-  color: var(--deep-black);
+  background: var(--surface);
+  color: var(--content);
   font-weight: 600;
 }
 
 .padel-form-card .btn-secondary:hover {
-  background: #daf5e6;
+  background: color-mix(in oklab, var(--padel-green) 18%, var(--surface));
 }
 
 .padel-complejos-list .searchBar,
@@ -228,11 +350,11 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  border: 1px solid rgba(28, 37, 38, 0.12);
+  border: 1px solid color-mix(in oklab, var(--content) 12%, transparent);
   border-radius: 0.95rem;
-  background: var(--surface-white);
+  background: var(--surface);
   padding: 0.75rem 0.9rem;
-  box-shadow: 0 8px 16px rgba(28, 37, 38, 0.08);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 0.9rem;
 }
 
@@ -264,7 +386,7 @@ body {
 .padel-complejos-list .searchBar .form-select,
 .padel-search-input,
 .padel-search-select {
-  border: 1px solid rgba(28, 37, 38, 0.2);
+  border: 1px solid color-mix(in oklab, var(--content) 20%, transparent);
   border-radius: 0.8rem;
   background: var(--surface-soft);
   padding: 0.55rem 0.8rem;
@@ -275,27 +397,27 @@ body {
 .padel-search-input:focus,
 .padel-search-select:focus {
   border-color: var(--padel-green);
-  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.2);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--padel-green) 20%, transparent);
   outline: none;
 }
 
 .padel-complejos-list .searchBar .btn-info {
   border-radius: 999px;
-  border: 1px solid rgba(255, 79, 0, 0.4);
-  background: #ffe7dc;
-  color: var(--deep-black);
+  border: 1px solid color-mix(in oklab, var(--energy-orange) 40%, transparent);
+  background: color-mix(in oklab, var(--energy-orange) 14%, var(--surface));
+  color: var(--content);
   font-weight: 700;
 }
 
 .padel-complejos-list .searchBar .btn-info:hover {
-  background: #ffd5c2;
+  background: color-mix(in oklab, var(--energy-orange) 24%, var(--surface));
 }
 
 .padel-data-card {
-  border: 1px solid rgba(28, 37, 38, 0.12);
+  border: 1px solid color-mix(in oklab, var(--content) 12%, transparent);
   border-radius: 1.05rem;
-  background: var(--surface-white);
-  box-shadow: 0 18px 34px rgba(28, 37, 38, 0.1);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
   padding: 10px;
   margin-bottom: 0.9rem;
 }
@@ -314,7 +436,7 @@ body {
   margin-bottom: 0;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid rgba(28, 37, 38, 0.12);
+  border: 1px solid color-mix(in oklab, var(--content) 12%, transparent);
   border-radius: 0.9rem;
   overflow: hidden;
   font-size: 12px;
@@ -323,8 +445,12 @@ body {
 
 .padel-data-table thead th {
   border: none;
-  background: linear-gradient(90deg, #1c2526 0%, #223234 100%);
-  color: white;
+  background: linear-gradient(
+    90deg,
+    var(--ink) 0%,
+    color-mix(in oklab, var(--ink) 88%, var(--on-ink)) 100%
+  );
+  color: var(--on-ink);
   font-size: 0.78rem;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -336,19 +462,19 @@ body {
 }
 
 .padel-data-table tbody tr:nth-child(odd) {
-  background: #f6fff9;
+  background: color-mix(in oklab, var(--padel-green) 4%, var(--surface));
 }
 
 .padel-data-table tbody tr:nth-child(even) {
-  background: #fff9f5;
+  background: color-mix(in oklab, var(--energy-orange) 4%, var(--surface));
 }
 
 .padel-data-table tbody tr:hover {
-  background: #e8f8ee;
+  background: color-mix(in oklab, var(--padel-green) 10%, var(--surface));
 }
 
 .padel-data-table tbody td {
-  border-top: 1px solid rgba(28, 37, 38, 0.08);
+  border-top: 1px solid color-mix(in oklab, var(--content) 8%, transparent);
   vertical-align: middle;
   padding: 6px;
 }
@@ -362,15 +488,15 @@ body {
 
 .padel-action-btn {
   border-radius: 999px;
-  border: 1px solid rgba(28, 37, 38, 0.28);
-  background: #314042;
-  color: white;
+  border: 1px solid color-mix(in oklab, var(--content) 28%, transparent);
+  background: color-mix(in oklab, var(--ink) 88%, var(--on-ink));
+  color: var(--on-ink);
   font-weight: 700;
 }
 
 .padel-action-btn:hover {
-  background: #263335;
-  color: white;
+  background: color-mix(in oklab, var(--ink) 94%, var(--on-ink));
+  color: var(--on-ink);
 }
 
 .padel-pagination-cnt {
@@ -404,10 +530,10 @@ body {
 .padel-complejos-list .pagination .page-link,
 .padel-pagination-list .page-link {
   appearance: none;
-  border: 1px solid rgba(28, 37, 38, 0.2);
+  border: 1px solid color-mix(in oklab, var(--content) 20%, transparent);
   border-radius: 0.65rem;
-  background: #fff;
-  color: var(--deep-black);
+  background: var(--surface);
+  color: var(--content);
   margin: 0;
   padding: 0.4rem 0.7rem;
   min-width: 2rem;
@@ -419,7 +545,7 @@ body {
 .padel-pagination-list .page-item.active .page-link {
   border-color: var(--padel-green);
   background: var(--padel-green);
-  color: var(--deep-black);
+  color: var(--on-brand);
   font-weight: 700;
 }
 
@@ -431,7 +557,7 @@ body {
 
 .padel-complejos-list .pagination .page-link:hover,
 .padel-pagination-list .page-link:hover {
-  background: #dcf8e9;
+  background: color-mix(in oklab, var(--padel-green) 15%, var(--surface));
 }
 
 @media (max-width: 768px) {
@@ -478,22 +604,6 @@ body {
   gap: 0.5rem;
   transition: transform 0.2s;
   z-index: 2000;
-}
-
-.bg-successBg {
-  background-color: var(--success-bg);
-}
-
-.bg-errorBg {
-  background-color: var(--error-bg);
-}
-
-.bg-warningBg {
-  background-color: var(--warning-bg);
-}
-
-.bg-infoBg {
-  background-color: var(--info-bg);
 }
 
 .container,
@@ -564,45 +674,35 @@ body {
 :root {
   /* Button Color Variants */
   --btn-primary-bg: var(--padel-green);
-  --btn-primary-text: var(--surface-white);
+  /* El texto de los botones de marca es blanco fijo en los dos temas: el
+     relleno verde/naranja tampoco cambia. */
+  --btn-primary-text: #ffffff;
   --btn-primary-border: var(--padel-green);
-  --btn-primary-hover-bg: #00b84a;
-  --btn-primary-active-bg: #009e41;
+  --btn-primary-hover-bg: color-mix(in oklab, var(--padel-green) 92%, #000);
+  --btn-primary-active-bg: color-mix(in oklab, var(--padel-green) 82%, #000);
 
   --btn-secondary-bg: var(--energy-orange);
-  --btn-secondary-text: var(--surface-white);
+  --btn-secondary-text: #ffffff;
   --btn-secondary-border: var(--energy-orange);
-  --btn-secondary-hover-bg: #e64500;
-  --btn-secondary-active-bg: #cc3e00;
-
-  --btn-outline-border: var(--deep-black);
-  --btn-outline-text: var(--deep-black);
-  --btn-outline-hover-bg: color-mix(
+  --btn-secondary-hover-bg: color-mix(in oklab, var(--energy-orange) 90%, #000);
+  --btn-secondary-active-bg: color-mix(
     in oklab,
-    var(--deep-black) 8%,
-    transparent
-  );
-  --btn-outline-active-bg: color-mix(
-    in oklab,
-    var(--deep-black) 12%,
-    transparent
+    var(--energy-orange) 80%,
+    #000
   );
 
-  --btn-ghost-text: var(--deep-black);
-  --btn-ghost-hover-bg: color-mix(in oklab, var(--foreground) 5%, transparent);
-  --btn-ghost-active-bg: color-mix(
-    in oklab,
-    var(--foreground) 10%,
-    transparent
-  );
+  --btn-outline-border: var(--content);
+  --btn-outline-text: var(--content);
+  --btn-outline-hover-bg: color-mix(in oklab, var(--content) 8%, transparent);
+  --btn-outline-active-bg: color-mix(in oklab, var(--content) 12%, transparent);
 
-  --btn-disabled-bg: color-mix(in oklab, var(--deep-black) 15%, transparent);
-  --btn-disabled-text: color-mix(in oklab, var(--deep-black) 42%, transparent);
-  --btn-disabled-border: color-mix(
-    in oklab,
-    var(--deep-black) 12%,
-    transparent
-  );
+  --btn-ghost-text: var(--content);
+  --btn-ghost-hover-bg: color-mix(in oklab, var(--content) 5%, transparent);
+  --btn-ghost-active-bg: color-mix(in oklab, var(--content) 10%, transparent);
+
+  --btn-disabled-bg: color-mix(in oklab, var(--content) 15%, transparent);
+  --btn-disabled-text: color-mix(in oklab, var(--content) 42%, transparent);
+  --btn-disabled-border: color-mix(in oklab, var(--content) 12%, transparent);
 }
 
 /* Base Button Styles */
@@ -650,12 +750,12 @@ body {
 
 .btn-primary:hover:not(:disabled) {
   background-color: var(--btn-primary-hover-bg);
-  box-shadow: 0 4px 12px rgba(0, 200, 83, 0.25);
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--padel-green) 25%, transparent);
 }
 
 .btn-primary:active:not(:disabled) {
   background-color: var(--btn-primary-active-bg);
-  box-shadow: 0 2px 6px rgba(0, 200, 83, 0.15);
+  box-shadow: 0 2px 6px color-mix(in oklab, var(--padel-green) 15%, transparent);
 }
 
 .btn-primary:disabled {
@@ -677,12 +777,14 @@ body {
 
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--btn-secondary-hover-bg);
-  box-shadow: 0 4px 12px rgba(255, 79, 0, 0.25);
+  box-shadow: 0 4px 12px
+    color-mix(in oklab, var(--energy-orange) 25%, transparent);
 }
 
 .btn-secondary:active:not(:disabled) {
   background-color: var(--btn-secondary-active-bg);
-  box-shadow: 0 2px 6px rgba(255, 79, 0, 0.15);
+  box-shadow: 0 2px 6px
+    color-mix(in oklab, var(--energy-orange) 15%, transparent);
 }
 
 .btn-secondary:disabled {
@@ -706,13 +808,13 @@ body {
 .btn-outline:hover:not(:disabled) {
   background-color: var(--btn-outline-hover-bg);
   border-color: var(--btn-outline-text);
-  box-shadow: 0 2px 8px rgba(28, 37, 38, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-outline:active:not(:disabled) {
   background-color: var(--btn-outline-active-bg);
   border-color: var(--btn-outline-text);
-  box-shadow: 0 1px 4px rgba(28, 37, 38, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-outline:disabled {
@@ -728,23 +830,23 @@ body {
 
 .btn-outline-secondary {
   background-color: transparent;
-  color: var(--deep-black);
+  color: var(--content);
   border-color: var(--btn-secondary-border);
   border-width: 1.5px;
 }
 
 .btn-outline-secondary:hover:not(:disabled) {
-  background-color: #ffe7dc;
-  color: var(--deep-black);
+  background-color: color-mix(in oklab, var(--energy-orange) 14%, var(--surface));
+  color: var(--content);
   border-color: var(--btn-secondary-border);
-  box-shadow: 0 2px 8px rgba(28, 37, 38, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-outline-secondary:active:not(:disabled) {
-  background-color: #ffd5c2;
-  color: var(--deep-black);
+  background-color: color-mix(in oklab, var(--energy-orange) 24%, var(--surface));
+  color: var(--content);
   border-color: var(--btn-secondary-border);
-  box-shadow: 0 1px 4px rgba(28, 37, 38, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-outline-secondary:disabled {
@@ -806,40 +908,40 @@ body {
    ======================================== */
 
 .padel-partidos-page .btn-outline-secondary {
-  background: #ffffff;
-  color: var(--deep-black);
-  border-color: rgba(255, 79, 0, 0.55);
+  background: var(--surface);
+  color: var(--content);
+  border-color: color-mix(in oklab, var(--energy-orange) 55%, transparent);
 }
 
 .padel-partidos-page .btn-outline-secondary:hover:not(:disabled) {
-  background: #ffe7dc;
-  color: var(--deep-black);
+  background: color-mix(in oklab, var(--energy-orange) 14%, var(--surface));
+  color: var(--content);
   border-color: var(--energy-orange);
 }
 
 .padel-partidos-page .padel-court-option {
   min-height: 2.65rem;
   gap: 0.35rem;
-  box-shadow: 0 6px 14px rgba(28, 37, 38, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 .padel-partidos-page .padel-court-option:has(input:checked) {
-  background: #daf5e6;
+  background: color-mix(in oklab, var(--padel-green) 18%, var(--surface));
   border-color: var(--padel-green);
-  color: var(--deep-black);
-  box-shadow: 0 8px 18px rgba(0, 200, 83, 0.14);
+  color: var(--content);
+  box-shadow: var(--shadow-md);
 }
 
 .padel-schedule-court {
-  border: 1px solid rgba(28, 37, 38, 0.14);
+  border: 1px solid color-mix(in oklab, var(--content) 14%, transparent);
   border-radius: 0.85rem;
-  background: #f8faf9;
+  background: color-mix(in oklab, var(--padel-green) 3%, var(--surface));
   padding: 1rem;
   margin-bottom: 1rem;
 }
 
 .padel-time-row {
-  border-top: 1px solid rgba(28, 37, 38, 0.08);
+  border-top: 1px solid color-mix(in oklab, var(--content) 8%, transparent);
   padding-top: 0.8rem;
   margin-bottom: 0.8rem;
 }
@@ -853,24 +955,24 @@ body {
   margin-bottom: 0.4rem;
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--deep-black);
+  color: var(--content);
 }
 
 .padel-partidos-page .form-control,
 .padel-partidos-page .form-select {
   min-height: 2.75rem;
-  border: 1px solid rgba(28, 37, 38, 0.22);
+  border: 1px solid color-mix(in oklab, var(--content) 22%, transparent);
   border-radius: 0.75rem;
-  background-color: #ffffff;
-  color: var(--deep-black);
+  background-color: var(--surface);
+  color: var(--content);
   padding: 0.58rem 0.8rem;
-  box-shadow: inset 0 1px 0 rgba(28, 37, 38, 0.04);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--content) 4%, transparent);
 }
 
 .padel-partidos-page .form-control:focus,
 .padel-partidos-page .form-select:focus {
   border-color: var(--padel-green);
-  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.18);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--padel-green) 18%, transparent);
   outline: none;
 }
 
@@ -881,9 +983,9 @@ body {
 .padel-config-field,
 .padel-config-check {
   width: 100%;
-  border: 1px solid rgba(28, 37, 38, 0.12);
+  border: 1px solid color-mix(in oklab, var(--content) 12%, transparent);
   border-radius: 0.85rem;
-  background: #f8faf9;
+  background: color-mix(in oklab, var(--padel-green) 3%, var(--surface));
   padding: 0.9rem;
 }
 
@@ -896,12 +998,12 @@ body {
 .padel-partidos-page .form-check-input {
   width: 1.05rem;
   height: 1.05rem;
-  border: 1px solid rgba(28, 37, 38, 0.35);
+  border: 1px solid color-mix(in oklab, var(--content) 35%, transparent);
   accent-color: var(--padel-green);
 }
 
 .padel-partidos-page .form-check-label {
-  color: var(--deep-black);
+  color: var(--content);
   font-weight: 600;
 }
 

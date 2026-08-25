@@ -29,12 +29,12 @@ export default function SelectorEventoLocalidad({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-deep-black/80">
+      <label className="block text-sm font-medium text-content/80">
         Evento
         <select
           value={eventoId ?? ""}
           onChange={(event) => setEventoId(Number(event.target.value))}
-          className="mt-1 w-full rounded-xl border border-deep-black/15 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-xl border border-content/15 px-3 py-2 text-sm"
         >
           {eventos.map((evento) => (
             <option key={evento.id} value={evento.id}>
@@ -45,7 +45,7 @@ export default function SelectorEventoLocalidad({
       </label>
 
       {datos.length === 0 ? (
-        <p className="py-6 text-center text-sm text-deep-black/60">
+        <p className="py-6 text-center text-sm text-content/60">
           Nadie anotado en este evento cargo su localidad todavia.
         </p>
       ) : (

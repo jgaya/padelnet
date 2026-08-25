@@ -102,42 +102,42 @@ export default async function TorneoPublicRegisterPage(props: {
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
-      <div className="overflow-hidden rounded-3xl border border-deep-black/10 bg-white shadow-sm">
-        <div className="border-b border-deep-black/10 bg-gradient-to-r from-padel-green/15 via-white to-energy-orange/15 px-5 py-6 sm:px-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
+      <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
+        <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-5 py-6 sm:px-7">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-content/60">
             Registro de pareja
           </p>
-          <h1 className="mt-2 text-3xl font-semibold text-deep-black sm:text-4xl">
+          <h1 className="mt-2 text-3xl font-semibold text-content sm:text-4xl">
             {data.torneo.nombre}
           </h1>
-          <p className="mt-1 text-sm text-deep-black/70">
+          <p className="mt-1 text-sm text-content/70">
             {data.torneo.eventoNombre} - {data.torneo.complejoNombre} (
             {data.torneo.complejoCiudad}, {data.torneo.complejoProvincia})
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
-            <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
               Sexo: {data.torneo.sexo}
             </span>
-            <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
               {categoriaRuleLabel(
                 data.torneo.categoriaRegla,
                 data.torneo.categoriaN,
               )}
             </span>
-            <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
               Cupo: {data.torneo.inscriptosCount}/{data.torneo.capacidad}
             </span>
-            <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
               Suplentes: {data.torneo.suplentesCount}
             </span>
           </div>
         </div>
 
         <div className="space-y-4 px-5 py-5 sm:px-7 sm:py-7">
-          <div className="rounded-2xl border border-deep-black/10 bg-surface-soft px-4 py-3 text-sm text-deep-black/80">
+          <div className="rounded-2xl border border-content/10 bg-surface-soft px-4 py-3 text-sm text-content/80">
             Jugador 1:{" "}
-            <span className="font-semibold text-deep-black">
+            <span className="font-semibold text-content">
               {data.currentUser.name} {data.currentUser.lastname}
             </span>{" "}
             ({generoLabel(data.currentUser.genero)} - Categoria{" "}
@@ -163,13 +163,13 @@ export default async function TorneoPublicRegisterPage(props: {
               <div className="flex flex-wrap gap-2">
                 <Link
                   href={`/torneos/${torneoId}`}
-                  className="inline-flex rounded-full border border-deep-black/20 bg-white px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+                  className="inline-flex rounded-full border border-content/20 bg-surface px-4 py-2 text-sm font-semibold text-content transition hover:bg-surface-soft"
                 >
                   Volver al torneo
                 </Link>
                 <Link
                   href="/torneos"
-                  className="inline-flex rounded-full bg-deep-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-deep-black/90"
+                  className="inline-flex rounded-full bg-content px-4 py-2 text-sm font-semibold text-surface transition hover:bg-content/90"
                 >
                   Ver torneos
                 </Link>
@@ -186,18 +186,18 @@ export default async function TorneoPublicRegisterPage(props: {
                   type="text"
                   defaultValue={data.search}
                   placeholder="Buscar pareja por nombre, apellido o email..."
-                  className="w-full rounded-xl border border-deep-black/20 bg-white px-4 py-2.5 text-sm text-deep-black placeholder:text-deep-black/50 focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                  className="w-full rounded-xl border border-content/20 bg-surface px-4 py-2.5 text-sm text-content placeholder:text-content/50 focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
                 />
                 <button
                   type="submit"
-                  className="rounded-full bg-deep-black px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-black/90"
+                  className="rounded-full bg-content px-4 py-2.5 text-sm font-semibold text-surface transition hover:bg-content/90"
                 >
                   Buscar
                 </button>
                 {data.search ? (
                   <Link
                     href={`/torneos/${torneoId}/registrarse`}
-                    className="inline-flex items-center rounded-full border border-deep-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+                    className="inline-flex items-center rounded-full border border-content/20 bg-surface px-4 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
                   >
                     Limpiar
                   </Link>
@@ -215,10 +215,10 @@ export default async function TorneoPublicRegisterPage(props: {
                 <input type="hidden" name="torneoId" value={torneoId} />
                 <input type="hidden" name="q" value={data.search} />
 
-                <div className="overflow-hidden rounded-2xl border border-deep-black/10">
+                <div className="overflow-hidden rounded-2xl border border-content/10">
                   <div className="max-h-[420px] overflow-auto">
                     <table className="min-w-full text-sm">
-                      <thead className="sticky top-0 bg-surface-soft text-deep-black/80">
+                      <thead className="sticky top-0 bg-surface-soft text-content/80">
                         <tr>
                           <th className="px-3 py-2 text-left font-semibold">
                             Elegir
@@ -239,7 +239,7 @@ export default async function TorneoPublicRegisterPage(props: {
                           <tr>
                             <td
                               colSpan={4}
-                              className="px-3 py-5 text-center text-deep-black/65"
+                              className="px-3 py-5 text-center text-content/65"
                             >
                               No hay jugadores disponibles que cumplan las
                               reglas del torneo.
@@ -251,7 +251,7 @@ export default async function TorneoPublicRegisterPage(props: {
                               key={candidate.id}
                               className={`transition hover:bg-padel-green/10 ${
                                 index % 2 === 0
-                                  ? "bg-white"
+                                  ? "bg-surface"
                                   : "bg-surface-soft/50"
                               }`}
                             >
@@ -264,13 +264,13 @@ export default async function TorneoPublicRegisterPage(props: {
                                   className="h-4 w-4 accent-padel-green"
                                 />
                               </td>
-                              <td className="px-3 py-2 font-medium text-deep-black">
+                              <td className="px-3 py-2 font-medium text-content">
                                 {candidate.name} {candidate.lastname}
                               </td>
-                              <td className="px-3 py-2 text-deep-black/80">
+                              <td className="px-3 py-2 text-content/80">
                                 {generoLabel(candidate.genero)}
                               </td>
-                              <td className="px-3 py-2 text-deep-black/80">
+                              <td className="px-3 py-2 text-content/80">
                                 {candidate.categoria ?? "N/D"}
                               </td>
                             </tr>
@@ -282,16 +282,16 @@ export default async function TorneoPublicRegisterPage(props: {
                 </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-sm text-deep-black/70">
+                  <p className="text-sm text-content/70">
                     Candidatos disponibles:{" "}
-                    <span className="font-semibold text-deep-black">
+                    <span className="font-semibold text-content">
                       {data.candidates.length}
                     </span>
                   </p>
                   <button
                     type="submit"
                     disabled={data.candidates.length === 0}
-                    className="rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Confirmar inscripcion
                   </button>

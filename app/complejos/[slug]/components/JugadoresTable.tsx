@@ -34,11 +34,11 @@ export default function JugadoresTable({
           </td>
           <td>
             {jugador.categoria ? (
-              <span className="inline-flex rounded-full bg-padel-green/15 px-3 py-1 text-xs font-semibold text-deep-black">
+              <span className="inline-flex rounded-full bg-padel-green/15 px-3 py-1 text-xs font-semibold text-content">
                 {jugador.categoria}
               </span>
             ) : (
-              <span className="text-deep-black/45">Sin categoria</span>
+              <span className="text-content/45">Sin categoria</span>
             )}
           </td>
         </tr>

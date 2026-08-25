@@ -37,14 +37,14 @@ export default async function ComplejoEventosPage(props: {
           {eventos.map((evento) => (
             <article
               key={evento.id}
-              className="rounded-2xl border border-deep-black/10 bg-white px-4 py-4"
+              className="rounded-2xl border border-content/10 bg-surface px-4 py-4"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <h3 className="text-base font-semibold text-deep-black">
+                  <h3 className="text-base font-semibold text-content">
                     {evento.nombre}
                   </h3>
-                  <p className="mt-1 text-sm text-deep-black/70">
+                  <p className="mt-1 text-sm text-content/70">
                     {formatDate(evento.inicio)} - {formatDate(evento.fin)}
                   </p>
                 </div>
@@ -69,14 +69,14 @@ export default async function ComplejoEventosPage(props: {
               </div>
 
               {evento.descripcion ? (
-                <p className="mt-2 text-sm text-deep-black/75">
+                <p className="mt-2 text-sm text-content/75">
                   {evento.descripcion}
                 </p>
               ) : null}
 
               <div className="mt-4">
                 {evento.torneos.length === 0 ? (
-                  <p className="rounded-xl bg-surface-soft px-4 py-3 text-sm text-deep-black/70">
+                  <p className="rounded-xl bg-surface-soft px-4 py-3 text-sm text-content/70">
                     Este evento todavia no tiene torneos publicados.
                   </p>
                 ) : (
@@ -88,21 +88,21 @@ export default async function ComplejoEventosPage(props: {
                         className="flex flex-col gap-2 rounded-xl bg-surface-soft px-4 py-3 transition hover:bg-padel-green/10 sm:flex-row sm:items-center sm:justify-between"
                       >
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-deep-black">
+                          <p className="truncate text-sm font-semibold text-content">
                             {torneo.nombre}
                           </p>
-                          <p className="text-xs text-deep-black/70">
+                          <p className="text-xs text-content/70">
                             {formatDate(torneo.inicio)}
                           </p>
                         </div>
                         <div className="flex shrink-0 flex-wrap gap-2 text-xs font-semibold">
-                          <span className="rounded-full bg-white px-3 py-1 text-deep-black/80">
+                          <span className="rounded-full bg-surface px-3 py-1 text-content/80">
                             {sexoLabel(torneo.sexo)}
                           </span>
-                          <span className="rounded-full bg-white px-3 py-1 text-deep-black/80">
+                          <span className="rounded-full bg-surface px-3 py-1 text-content/80">
                             {categoriaLabel(torneo)}
                           </span>
-                          <span className="rounded-full bg-white px-3 py-1 text-energy-orange">
+                          <span className="rounded-full bg-surface px-3 py-1 text-energy-orange">
                             {torneo.inscriptos}/{torneo.capacidad} parejas
                           </span>
                         </div>

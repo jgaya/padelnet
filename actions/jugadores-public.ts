@@ -66,6 +66,39 @@ export type JugadorPublicoPerfil = {
   torneos: JugadorPublicoTorneo[];
 };
 
+export type ComparativaPorTipo = {
+  torneos: number;
+  titulos: number;
+};
+
+export type ComparativaJugador = {
+  jugador: JugadorPublico;
+  resumen: JugadorPublicoResumen;
+  /** Torneos y titulos separados por tipo de evento. */
+  porTipo: Record<"FINDE" | "SEMANAL", ComparativaPorTipo>;
+  /** Partidos ganados sobre jugados, 0-100. null si todavia no jugo ninguno. */
+  porcentajeVictorias: number | null;
+};
+
+export type CruceEntreJugadores = {
+  partidoId: number;
+  torneoId: number;
+  torneoNombre: string;
+  /** Nombre de la fase ("Cuartos 3") o de la zona ("Zona A"). */
+  instancia: string;
+  fecha: string | null;
+  /** Sets vistos desde el lado del jugador A, por ejemplo ["6-4", "7-5"]. */
+  sets: string[];
+  ganoA: boolean;
+  walkover: boolean;
+};
+
+export type HeadToHeadJugadores = {
+  ganadosA: number;
+  ganadosB: number;
+  cruces: CruceEntreJugadores[];
+};
+
 /**
  * Mismo criterio de visibilidad que usa actions/torneos-public.ts: el torneo tiene
  * que estar publicado, dentro de un evento visible de un complejo activo. A
@@ -383,4 +416,201 @@ export async function getPerfilPublicoJugador(
   );
 
   return { jugador, resumen, torneos };
+}
+
+// ---------------------------------------------------------------------------
+// Comparativa entre dos jugadores
+// ---------------------------------------------------------------------------
+
+/**
+ * Busca jugadores por nombre o apellido, para el selector de la comparativa.
+ *
+ * Solo campos publicos, igual que el perfil: el buscador es abierto y no puede
+ * ser una via para listar mails o documentos.
+ */
+export async function buscarJugadoresPublicos(
+  termino: string,
+): Promise<JugadorPublico[]> {
+  const texto = termino.trim();
+
+  const users = await prisma.user.findMany({
+    where: {
+      deletedAt: null,
+      isActive: true,
+      ...(texto
+        ? {
+            OR: [
+              { name: { contains: texto } },
+              { lastname: { contains: texto } },
+            ],
+          }
+        : {}),
+    },
+    orderBy: [{ lastname: "asc" }, { name: "asc" }],
+    take: 25,
+    select: {
+      id: true,
+      name: true,
+      lastname: true,
+      categoria: true,
+      genero: true,
+      provincia: true,
+      localidad: true,
+      avatarUrl: true,
+      imageUrl: true,
+    },
+  });
+
+  return users.map((user) => ({
+    id: user.id,
+    nombre: user.name,
+    apellido: user.lastname,
+    categoria: user.categoria,
+    genero: user.genero,
+    provincia: user.provincia,
+    localidad: user.localidad,
+    avatarUrl: user.avatarUrl || user.imageUrl || null,
+  }));
+}
+
+/**
+ * Un lado de la comparativa.
+ *
+ * Se apoya en `getPerfilPublicoJugador` en vez de armar queries propias: asi los
+ * numeros del versus son, por construccion, los mismos que muestra la pantalla
+ * de estadisticas. Si divergieran, el jugador veria un total en su perfil y otro
+ * al compararse.
+ */
+export async function getComparativaJugador(
+  jugadorId: number,
+): Promise<ComparativaJugador | null> {
+  const perfil = await getPerfilPublicoJugador(jugadorId);
+  if (!perfil) return null;
+
+  const porTipo: Record<"FINDE" | "SEMANAL", ComparativaPorTipo> = {
+    FINDE: { torneos: 0, titulos: 0 },
+    SEMANAL: { torneos: 0, titulos: 0 },
+  };
+
+  for (const torneo of perfil.torneos) {
+    const fila = porTipo[torneo.eventoTipo];
+    fila.torneos += 1;
+    if (torneo.esCampeon) fila.titulos += 1;
+  }
+
+  const { partidosJugados, partidosGanados } = perfil.resumen;
+
+  return {
+    jugador: perfil.jugador,
+    resumen: perfil.resumen,
+    porTipo,
+    porcentajeVictorias:
+      partidosJugados > 0
+        ? Math.round((partidosGanados / partidosJugados) * 100)
+        : null,
+  };
+}
+
+/** Filtro de "esta pareja incluye a este jugador". */
+function parejaConJugador(jugadorId: number): Prisma.ParejaWhereInput {
+  return {
+    deletedAt: null,
+    OR: [{ player1Id: jugadorId }, { player2Id: jugadorId }],
+  };
+}
+
+/**
+ * Los partidos en los que estos dos jugadores se enfrentaron.
+ *
+ * Enfrentaron, no compartieron: el filtro pide uno en cada pareja, asi que los
+ * torneos donde jugaron juntos no cuentan como cruce.
+ */
+export async function getHeadToHeadJugadores(
+  jugadorAId: number,
+  jugadorBId: number,
+): Promise<HeadToHeadJugadores> {
+  const vacio: HeadToHeadJugadores = { ganadosA: 0, ganadosB: 0, cruces: [] };
+
+  if (
+    !Number.isInteger(jugadorAId) ||
+    !Number.isInteger(jugadorBId) ||
+    jugadorAId <= 0 ||
+    jugadorBId <= 0 ||
+    jugadorAId === jugadorBId
+  ) {
+    return vacio;
+  }
+
+  const partidos = await prisma.partido.findMany({
+    where: {
+      deletedAt: null,
+      status: { in: ["FINISHED", "WALKOVER"] },
+      torneo: TORNEO_VISIBLE_WHERE,
+      OR: [
+        {
+          pareja1: parejaConJugador(jugadorAId),
+          pareja2: parejaConJugador(jugadorBId),
+        },
+        {
+          pareja1: parejaConJugador(jugadorBId),
+          pareja2: parejaConJugador(jugadorAId),
+        },
+      ],
+    },
+    orderBy: [{ scheduledAt: "desc" }, { id: "desc" }],
+    select: {
+      id: true,
+      llave: true,
+      scheduledAt: true,
+      walkover: true,
+      ganadorId: true,
+      pareja1Id: true,
+      pareja2Id: true,
+      grupo: { select: { nombre: true } },
+      torneo: { select: { id: true, nombre: true } },
+      pareja1: { select: { player1Id: true, player2Id: true } },
+      sets: {
+        orderBy: { numero: "asc" },
+        select: { gamesPareja1: true, gamesPareja2: true },
+      },
+    },
+  });
+
+  let ganadosA = 0;
+  let ganadosB = 0;
+
+  const cruces = partidos.map((partido) => {
+    const aEsPareja1 =
+      partido.pareja1?.player1Id === jugadorAId ||
+      partido.pareja1?.player2Id === jugadorAId;
+
+    const parejaDeA = aEsPareja1 ? partido.pareja1Id : partido.pareja2Id;
+    const ganoA = partido.ganadorId !== null && partido.ganadorId === parejaDeA;
+
+    if (partido.ganadorId !== null) {
+      if (ganoA) ganadosA += 1;
+      else ganadosB += 1;
+    }
+
+    return {
+      partidoId: partido.id,
+      torneoId: partido.torneo.id,
+      torneoNombre: partido.torneo.nombre,
+      instancia: partido.llave ?? partido.grupo?.nombre ?? "Zona",
+      fecha: partido.scheduledAt?.toISOString() ?? null,
+      sets: partido.sets
+        // El form viejo guardaba siempre tres sets, con el tercero en 0-0
+        // cuando no se jugaba. Mismo filtro que usa el perfil.
+        .filter((set) => set.gamesPareja1 > 0 || set.gamesPareja2 > 0)
+        .map((set) =>
+          aEsPareja1
+            ? `${set.gamesPareja1}-${set.gamesPareja2}`
+            : `${set.gamesPareja2}-${set.gamesPareja1}`,
+        ),
+      ganoA,
+      walkover: partido.walkover,
+    };
+  });
+
+  return { ganadosA, ganadosB, cruces };
 }

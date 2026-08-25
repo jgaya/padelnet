@@ -52,13 +52,13 @@ export default function NuevaPasswordForm({ token }: { token: string }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-      <label className="block text-sm font-medium text-deep-black/80">
+      <label className="block text-sm font-medium text-content/80">
         Nueva contrasena
         <input
           type="password"
           autoComplete="new-password"
           {...register("password")}
-          className="mt-1 w-full rounded-xl border border-deep-black/15 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-xl border border-content/15 px-3 py-2 text-sm"
         />
         {errors.password ? (
           <span className="mt-1 block text-xs text-energy-orange">
@@ -67,13 +67,13 @@ export default function NuevaPasswordForm({ token }: { token: string }) {
         ) : null}
       </label>
 
-      <label className="block text-sm font-medium text-deep-black/80">
+      <label className="block text-sm font-medium text-content/80">
         Repetir la contrasena
         <input
           type="password"
           autoComplete="new-password"
           {...register("password2")}
-          className="mt-1 w-full rounded-xl border border-deep-black/15 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-xl border border-content/15 px-3 py-2 text-sm"
         />
         {errors.password2 ? (
           <span className="mt-1 block text-xs text-energy-orange">
@@ -91,7 +91,7 @@ export default function NuevaPasswordForm({ token }: { token: string }) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? "Cambiando..." : "Cambiar contrasena"}
       </button>

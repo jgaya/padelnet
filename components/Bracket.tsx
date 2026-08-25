@@ -64,6 +64,9 @@ type BracketLayout = {
   connectorPaths: Array<{
     d: string;
     fromColumn: number;
+    /** Indices dentro de su columna, para saber que partidos une cada linea. */
+    fromIndex: number;
+    toIndex: number;
   }>;
   getColumnLeft: (columnIndex: number) => number;
   getMatchCenterY: (columnMatches: number, matchIndex: number) => number;
@@ -115,12 +118,12 @@ function matchStatusBadgeClass(status: BracketMatchStatus) {
       return "bg-padel-green/20 text-padel-green";
     case "WALKOVER":
     case "CANCELLED":
-      return "bg-red-100 text-red-700";
+      return "bg-danger/12 text-danger";
     case "SCHEDULED":
-      return "bg-blue-100 text-blue-700";
+      return "bg-info/12 text-info";
     case "PENDING":
     default:
-      return "bg-surface-soft text-deep-black/70";
+      return "bg-surface-soft text-content/70";
   }
 }
 
@@ -176,6 +179,26 @@ function phaseShortLabel(round: BracketRound) {
     default:
       return "F";
   }
+}
+
+/**
+ * Si el slot tiene una pareja de verdad y no un placeholder.
+ *
+ * Los nombres de pareja vienen armados como "Nombre Apellido / Nombre Apellido"
+ * (lib/torneo-vista-publica.ts), mientras que los slots sin resolver traen el
+ * token de la planilla ("1A", "Bye") o "A definir". Sin este filtro, hacer clic
+ * en un slot vacio "resaltaria el camino" de todos los slots vacios del cuadro.
+ */
+function esParejaSeleccionable(label: string) {
+  return label.includes("/");
+}
+
+function matchTienePareja(
+  match: BracketMatch | undefined,
+  pareja: string | null,
+) {
+  if (!match || !pareja) return false;
+  return match.pareja1 === pareja || match.pareja2 === pareja;
 }
 
 function buildBracketLayout(
@@ -238,7 +261,7 @@ function buildBracketLayout(
     );
   };
 
-  const connectorPaths: Array<{ d: string; fromColumn: number }> = [];
+  const connectorPaths: BracketLayout["connectorPaths"] = [];
 
   for (
     let columnIndex = 0;
@@ -263,6 +286,8 @@ function buildBracketLayout(
       connectorPaths.push({
         d: `M ${x1} ${y1} L ${middleX} ${y1} L ${middleX} ${y2} L ${x2} ${y2}`,
         fromColumn: columnIndex,
+        fromIndex,
+        toIndex,
       });
     }
   }
@@ -292,31 +317,113 @@ function getVisibleBoardWidth(layout: BracketLayout, columnCount: number) {
   );
 }
 
+/**
+ * Una de las dos parejas de un partido, con sus games.
+ *
+ * Es un boton cuando la pareja esta definida: al tocarla se resalta el camino
+ * que hizo en el cuadro.
+ */
+function BracketPairRow({
+  label,
+  games,
+  esGanador,
+  seleccionada,
+  onSelect,
+}: {
+  label: string;
+  games: number[];
+  esGanador: boolean;
+  seleccionada: boolean;
+  onSelect: ((pareja: string) => void) | undefined;
+}) {
+  const seleccionable = esParejaSeleccionable(label) && Boolean(onSelect);
+
+  const nombreClassName = `truncate text-left text-sm ${
+    seleccionada
+      ? "font-bold text-padel-green"
+      : `text-content ${esGanador ? "font-bold" : "font-medium"}`
+  }`;
+
+  return (
+    <div className="flex items-center justify-between gap-2">
+      {seleccionable ? (
+        <button
+          type="button"
+          aria-pressed={seleccionada}
+          title={
+            seleccionada
+              ? "Quitar el resaltado de esta pareja"
+              : "Ver el camino de esta pareja en el cuadro"
+          }
+          onClick={() => onSelect?.(label)}
+          className={`${nombreClassName} rounded transition hover:text-padel-green focus:outline-none focus-visible:ring-2 focus-visible:ring-padel-green/40`}
+        >
+          {label}
+        </button>
+      ) : (
+        <p className={nombreClassName}>{label}</p>
+      )}
+
+      <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-content/80">
+        {games.length > 0 ? (
+          games.map((valor, index) => (
+            <span key={index} className="w-4 text-right">
+              {valor}
+            </span>
+          ))
+        ) : (
+          <span className="w-4 text-right">-</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function BracketMatchCard({
   match,
   roundLabel,
   matchNumber,
   className,
   style,
+  selectedPareja,
+  onSelectPareja,
 }: {
   match: BracketMatch;
   roundLabel: string;
   matchNumber: number;
   className?: string;
   style?: CSSProperties;
+  selectedPareja?: string | null;
+  onSelectPareja?: (pareja: string) => void;
 }) {
   const sets = parseScoreSets(match.score);
   const winner = resolveWinner(sets);
   const showFallbackScore =
     sets.length === 0 && match.score && match.score !== "-";
 
+  const seleccion = selectedPareja ?? null;
+  const enCamino = matchTienePareja(match, seleccion);
+  // Con una pareja elegida, los partidos ajenos a su camino se apagan para que
+  // el recorrido se lea de un vistazo.
+  //
+  // El contorno de los que si jugo va con el mismo verde que las lineas, y el
+  // grosor lo pone el ring y no el borde: el ring es un box-shadow, asi que no
+  // corre el contenido dentro de la card, que tiene alto fijo. En mobile, donde
+  // se ve una fase por vez y los conectores son apenas dos guiones, este
+  // contorno es la senal principal.
+  const resaltado = seleccion
+    ? enCamino
+      ? "border-padel-green ring-2 ring-padel-green"
+      : "opacity-60"
+    : "";
+
   const cardClassName =
-    `overflow-hidden rounded-xl border border-deep-black/10 bg-white p-3 shadow-sm ${className ?? ""}`.trim();
+    `overflow-hidden rounded-xl border border-content/10 bg-surface p-3 shadow-sm ${resaltado} ${className ?? ""}`.trim();
 
   return (
     <article className={cardClassName} style={style}>
       <div className="flex items-start justify-between gap-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-deep-black/50">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-content/50">
           {roundLabel} #{matchNumber}
         </p>
         <span
@@ -327,61 +434,32 @@ function BracketMatchCard({
       </div>
 
       <div className="mt-2 space-y-1.5">
-        <div className="flex items-center justify-between gap-2">
-          <p
-            className={`truncate text-sm text-deep-black ${winner === 1 ? "font-bold" : "font-medium"}`}
-          >
-            {match.pareja1}
-          </p>
-          <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-deep-black/80">
-            {sets.length > 0 ? (
-              sets.map((set, index) => (
-                <span
-                  key={`p1-${match.id}-${index}`}
-                  className="w-4 text-right"
-                >
-                  {set.pareja1}
-                </span>
-              ))
-            ) : (
-              <span className="w-4 text-right">-</span>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between gap-2">
-          <p
-            className={`truncate text-sm text-deep-black ${winner === 2 ? "font-bold" : "font-medium"}`}
-          >
-            {match.pareja2}
-          </p>
-          <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-deep-black/80">
-            {sets.length > 0 ? (
-              sets.map((set, index) => (
-                <span
-                  key={`p2-${match.id}-${index}`}
-                  className="w-4 text-right"
-                >
-                  {set.pareja2}
-                </span>
-              ))
-            ) : (
-              <span className="w-4 text-right">-</span>
-            )}
-          </div>
-        </div>
+        <BracketPairRow
+          label={match.pareja1}
+          games={sets.map((set) => set.pareja1)}
+          esGanador={winner === 1}
+          seleccionada={seleccion === match.pareja1}
+          onSelect={onSelectPareja}
+        />
+        <BracketPairRow
+          label={match.pareja2}
+          games={sets.map((set) => set.pareja2)}
+          esGanador={winner === 2}
+          seleccionada={seleccion === match.pareja2}
+          onSelect={onSelectPareja}
+        />
       </div>
 
       {showFallbackScore ? (
-        <p className="mt-2 text-xs text-deep-black/70">
+        <p className="mt-2 text-xs text-content/70">
           Resultado: {match.score}
         </p>
       ) : null}
 
-      <p className="mt-2 text-xs text-deep-black/70">
+      <p className="mt-2 text-xs text-content/70">
         Cancha: {match.cancha ?? "-"}
       </p>
-      <p className="text-xs text-deep-black/70">
+      <p className="text-xs text-content/70">
         {formatDateTime(match.scheduledAt)}
       </p>
     </article>
@@ -393,12 +471,40 @@ function DesktopBracketLayer({
   layout,
   className,
   style,
+  selectedPareja,
+  onSelectPareja,
 }: {
   columns: BracketColumn[];
   layout: BracketLayout;
   className?: string;
   style?: CSSProperties;
+  selectedPareja?: string | null;
+  onSelectPareja?: (pareja: string) => void;
 }) {
+  const seleccion = selectedPareja ?? null;
+
+  // Una linea es parte del camino si la pareja elegida esta en los dos partidos
+  // que une. Asi el recorrido se corta solo donde la pareja perdio: el cruce
+  // siguiente ya no la tiene.
+  const conectores = layout.connectorPaths.map((connector) => ({
+    ...connector,
+    enCamino:
+      matchTienePareja(
+        columns[connector.fromColumn]?.matches[connector.fromIndex],
+        seleccion,
+      ) &&
+      matchTienePareja(
+        columns[connector.fromColumn + 1]?.matches[connector.toIndex],
+        seleccion,
+      ),
+  }));
+
+  // Las resaltadas van despues para que queden por encima de las apagadas.
+  const conectoresOrdenados = [
+    ...conectores.filter((connector) => !connector.enCamino),
+    ...conectores.filter((connector) => connector.enCamino),
+  ];
+
   return (
     <div className={className} style={style}>
       <div
@@ -408,13 +514,13 @@ function DesktopBracketLayer({
         {columns.map((column, columnIndex) => (
           <div
             key={`${column.round}-label`}
-            className="absolute border-b border-deep-black/12 text-center transition-all duration-500 ease-in-out"
+            className="absolute border-b border-content/12 text-center transition-all duration-500 ease-in-out"
             style={{
               left: `${layout.getColumnLeft(columnIndex)}px`,
               width: `${layout.columnWidth}px`,
             }}
           >
-            <h2 className="pb-1 text-xs font-semibold uppercase tracking-[0.1em] text-deep-black/70">
+            <h2 className="pb-1 text-xs font-semibold uppercase tracking-[0.1em] text-content/70">
               {column.label}
             </h2>
           </div>
@@ -437,13 +543,20 @@ function DesktopBracketLayer({
         />
 
         <svg className="pointer-events-none absolute inset-0 z-10 h-full w-full">
-          {layout.connectorPaths.map((connector, index) => (
+          {conectoresOrdenados.map((connector, index) => (
             <path
               key={`${connector.d}-${index}`}
               d={connector.d}
               fill="none"
-              stroke="rgba(28,37,38,0.2)"
-              strokeWidth="2"
+              stroke={
+                connector.enCamino
+                  ? "var(--padel-green)"
+                  : seleccion
+                    ? "rgba(28,37,38,0.1)"
+                    : "rgba(28,37,38,0.2)"
+              }
+              strokeWidth={connector.enCamino ? 3.5 : 2}
+              className="transition-all duration-300"
             />
           ))}
         </svg>
@@ -460,6 +573,8 @@ function DesktopBracketLayer({
                 match={match}
                 roundLabel={column.label}
                 matchNumber={matchIndex + 1}
+                selectedPareja={seleccion}
+                onSelectPareja={onSelectPareja}
                 className="absolute z-20 h-[136px] transition-all duration-500 ease-in-out"
                 style={{
                   left: `${layout.getColumnLeft(columnIndex)}px`,
@@ -488,6 +603,9 @@ export function Bracket({
     useState<BracketRound | null>(initialSelectedPhase ?? null);
   const [phaseTransition, setPhaseTransition] =
     useState<PhaseTransitionState | null>(null);
+  // Pareja resaltada. Queda elegida al cambiar de fase; se suelta tocandola de
+  // nuevo o eligiendo otra.
+  const [selectedPareja, setSelectedPareja] = useState<string | null>(null);
   const transitionTimerRef = useRef<number | null>(null);
   const transitionCounterRef = useRef(0);
 
@@ -514,6 +632,10 @@ export function Bracket({
       (column) => column.round === effectiveSelectedPhase,
     ),
   );
+
+  const handleParejaSelection = (pareja: string) => {
+    setSelectedPareja((actual) => (actual === pareja ? null : pareja));
+  };
 
   const handlePhaseSelection = (nextRound: BracketRound) => {
     if (nextRound === effectiveSelectedPhase) {
@@ -556,6 +678,18 @@ export function Bracket({
     }
     onPhaseChange?.(nextRound);
   };
+
+  // Si los datos se recargan y la pareja elegida ya no esta en el cuadro, la
+  // seleccion se ignora en vez de resaltar la nada.
+  const parejaResaltada = useMemo(() => {
+    if (!selectedPareja) return null;
+
+    const sigueEnElCuadro = renderedColumns.some((column) =>
+      column.matches.some((match) => matchTienePareja(match, selectedPareja)),
+    );
+
+    return sigueEnElCuadro ? selectedPareja : null;
+  }, [renderedColumns, selectedPareja]);
 
   const desktopVisibleColumns = useMemo(
     () => renderedColumns.slice(selectedPhaseIndex),
@@ -660,7 +794,7 @@ export function Bracket({
     const xLeft = mobileLayout.getColumnLeft(0);
     const xRight = xLeft + mobileLayout.columnWidth;
     const stubLength = 22;
-    const paths: string[] = [];
+    const paths: Array<{ d: string; matchIndex: number }> = [];
 
     for (
       let index = 0;
@@ -672,10 +806,16 @@ export function Bracket({
         index,
       );
       if (hasPrev) {
-        paths.push(`M ${xLeft} ${y} L ${xLeft - stubLength} ${y}`);
+        paths.push({
+          d: `M ${xLeft} ${y} L ${xLeft - stubLength} ${y}`,
+          matchIndex: index,
+        });
       }
       if (hasNext) {
-        paths.push(`M ${xRight} ${y} L ${xRight + stubLength} ${y}`);
+        paths.push({
+          d: `M ${xRight} ${y} L ${xRight + stubLength} ${y}`,
+          matchIndex: index,
+        });
       }
     }
 
@@ -716,8 +856,8 @@ export function Bracket({
               onClick={() => handlePhaseSelection(column.round)}
               className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                 isSelected
-                  ? "border-padel-green bg-padel-green text-deep-black"
-                  : "border-deep-black/15 bg-white text-deep-black/70 hover:bg-surface-soft"
+                  ? "border-padel-green bg-padel-green text-on-brand"
+                  : "border-content/15 bg-surface text-content/70 hover:bg-surface-soft"
               }`}
             >
               {phaseShortLabel(column.round)}
@@ -740,6 +880,7 @@ export function Bracket({
                 key={`desktop-leaving-${phaseTransition.id}`}
                 columns={leavingDesktopColumns}
                 layout={leavingDesktopLayout}
+                selectedPareja={parejaResaltada}
                 className="absolute left-0 top-0"
                 style={{
                   animation: desktopLeaveAnimation,
@@ -751,6 +892,8 @@ export function Bracket({
               key={`desktop-current-${effectiveSelectedPhase ?? "default"}`}
               columns={desktopVisibleColumns}
               layout={desktopLayout}
+              selectedPareja={parejaResaltada}
+              onSelectPareja={handleParejaSelection}
               className="absolute left-0 top-0"
               style={
                 desktopEnterAnimation
@@ -782,13 +925,13 @@ export function Bracket({
               style={{ width: `${mobileLayout.boardWidth}px`, height: "28px" }}
             >
               <div
-                className="absolute border-b border-deep-black/12 text-center"
+                className="absolute border-b border-content/12 text-center"
                 style={{
                   left: `${mobileLayout.getColumnLeft(0)}px`,
                   width: `${mobileLayout.columnWidth}px`,
                 }}
               >
-                <h2 className="pb-1 text-xs font-semibold uppercase tracking-[0.1em] text-deep-black/70">
+                <h2 className="pb-1 text-xs font-semibold uppercase tracking-[0.1em] text-content/70">
                   {mobileSelectedColumn.label}
                 </h2>
               </div>
@@ -810,15 +953,29 @@ export function Bracket({
               />
 
               <svg className="pointer-events-none absolute inset-0 z-10 h-full w-full">
-                {mobileStubPaths.map((path, index) => (
-                  <path
-                    key={`${path}-${index}`}
-                    d={path}
-                    fill="none"
-                    stroke="rgba(28,37,38,0.2)"
-                    strokeWidth="2"
-                  />
-                ))}
+                {mobileStubPaths.map((stub, index) => {
+                  const enCamino = matchTienePareja(
+                    mobileSelectedColumn.matches[stub.matchIndex],
+                    parejaResaltada,
+                  );
+
+                  return (
+                    <path
+                      key={`${stub.d}-${index}`}
+                      d={stub.d}
+                      fill="none"
+                      stroke={
+                        enCamino
+                          ? "var(--padel-green)"
+                          : parejaResaltada
+                            ? "rgba(28,37,38,0.1)"
+                            : "rgba(28,37,38,0.2)"
+                      }
+                      strokeWidth={enCamino ? 3.5 : 2}
+                      className="transition-all duration-300"
+                    />
+                  );
+                })}
               </svg>
 
               {mobileSelectedColumn.matches.map((match, matchIndex) => {
@@ -835,6 +992,8 @@ export function Bracket({
                     match={match}
                     roundLabel={mobileSelectedColumn.label}
                     matchNumber={matchIndex + 1}
+                    selectedPareja={parejaResaltada}
+                    onSelectPareja={handleParejaSelection}
                     className="absolute z-20 h-[136px] transition-all duration-500 ease-in-out"
                     style={{
                       left: `${mobileLayout.getColumnLeft(0)}px`,

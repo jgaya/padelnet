@@ -57,7 +57,7 @@ function partidoStatusLabel(status: HomePartidoItem["status"]) {
 
 function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-dashed border-deep-black/20 bg-surface-soft px-5 py-8 text-center text-sm text-deep-black/70">
+    <div className="rounded-2xl border border-dashed border-content/20 bg-surface-soft px-5 py-8 text-center text-sm text-content/70">
       {children}
     </div>
   );
@@ -78,14 +78,15 @@ export default async function Home() {
       id="inicio"
       className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8"
     >
-      <div className="overflow-hidden rounded-3xl bg-deep-black p-5 text-white shadow-[0_18px_32px_rgba(28,37,38,0.2)] sm:p-8">
+      {/* Panel `ink`: es oscuro a proposito y no se da vuelta con el tema. */}
+      <div className="overflow-hidden rounded-3xl bg-ink p-5 text-on-ink shadow-[var(--shadow-lg)] sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-padel-green">
           Comunidad oficial
         </p>
         <h1 className="mt-3 max-w-xl text-3xl font-semibold leading-tight sm:text-4xl">
           Tu red de padel en un solo lugar.
         </h1>
-        <p className="mt-3 max-w-2xl text-sm text-white/80 sm:text-base">
+        <p className="mt-3 max-w-2xl text-sm text-on-ink/80 sm:text-base">
           Organiza partidos, encuentra jugadores por nivel y segui el ranking de
           tu club.
         </p>
@@ -93,13 +94,13 @@ export default async function Home() {
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/torneos"
-            className="rounded-full bg-padel-green px-5 py-3 text-sm font-semibold text-deep-black transition hover:brightness-95"
+            className="rounded-full bg-padel-green px-5 py-3 text-sm font-semibold text-on-brand transition hover:brightness-95"
           >
             Ver torneos publicos
           </Link>
           <Link
             href="/complejos"
-            className="rounded-full border border-white/30 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+            className="rounded-full border border-on-ink/30 px-5 py-3 text-sm font-semibold text-on-ink transition hover:bg-on-ink/10"
           >
             Ver clubes
           </Link>
@@ -110,12 +111,12 @@ export default async function Home() {
         {statCards.map((item) => (
           <article
             key={item.label}
-            className="rounded-2xl border border-deep-black/10 bg-white p-4 shadow-sm"
+            className="rounded-2xl border border-content/10 bg-surface p-4 shadow-sm"
           >
-            <p className="text-xs uppercase tracking-[0.16em] text-deep-black/60">
+            <p className="text-xs uppercase tracking-[0.16em] text-content/60">
               {item.label}
             </p>
-            <p className="mt-2 text-3xl font-bold text-deep-black">
+            <p className="mt-2 text-3xl font-bold text-content">
               {item.value}
             </p>
           </article>
@@ -124,9 +125,9 @@ export default async function Home() {
 
       <div
         id="partidos"
-        className="mt-6 rounded-2xl border border-deep-black/10 bg-white p-4 sm:p-6"
+        className="mt-6 rounded-2xl border border-content/10 bg-surface p-4 sm:p-6"
       >
-        <h2 className="text-lg font-semibold text-deep-black">
+        <h2 className="text-lg font-semibold text-content">
           Proximos partidos
         </h2>
         <div className="mt-4 space-y-3">
@@ -142,19 +143,19 @@ export default async function Home() {
                 className="flex flex-col gap-2 rounded-xl bg-surface-soft px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-deep-black">
+                  <p className="truncate text-sm font-semibold text-content">
                     {partido.pareja1Nombre} vs {partido.pareja2Nombre}
                   </p>
-                  <p className="truncate text-xs text-deep-black/70">
+                  <p className="truncate text-xs text-content/70">
                     {partido.torneoNombre} - {partido.complejoNombre} -{" "}
                     {partido.canchaLabel}
                   </p>
-                  <p className="text-xs text-deep-black/60">
+                  <p className="text-xs text-content/60">
                     {formatDateTime(partido.scheduledAt)} -{" "}
                     {partidoStatusLabel(partido.status)}
                   </p>
                 </div>
-                <span className="shrink-0 self-start rounded-full bg-white px-3 py-1 text-sm font-semibold text-energy-orange sm:self-auto">
+                <span className="shrink-0 self-start rounded-full bg-surface px-3 py-1 text-sm font-semibold text-energy-orange sm:self-auto">
                   {formatTime(partido.scheduledAt)}
                 </span>
               </article>
@@ -165,12 +166,12 @@ export default async function Home() {
 
       <div
         id="torneos"
-        className="mt-6 rounded-2xl border border-deep-black/10 bg-white p-4 sm:p-6"
+        className="mt-6 rounded-2xl border border-content/10 bg-surface p-4 sm:p-6"
       >
-        <h2 className="text-lg font-semibold text-deep-black">
+        <h2 className="text-lg font-semibold text-content">
           Torneos para todos los jugadores
         </h2>
-        <p className="mt-2 text-sm text-deep-black/70">
+        <p className="mt-2 text-sm text-content/70">
           Explora los torneos publicados, revisa reglas de inscripción por sexo
           y categoría, y anotate si cumplís condiciones.
         </p>
@@ -189,22 +190,22 @@ export default async function Home() {
                 className="flex flex-col gap-2 rounded-xl bg-surface-soft px-4 py-3 transition hover:bg-padel-green/10 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-deep-black">
+                  <p className="truncate text-sm font-semibold text-content">
                     {torneo.nombre}
                   </p>
-                  <p className="truncate text-xs text-deep-black/70">
+                  <p className="truncate text-xs text-content/70">
                     {torneo.complejoNombre} - {torneo.complejoCiudad},{" "}
                     {torneo.complejoProvincia}
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-2 text-xs font-semibold">
-                  <span className="rounded-full bg-white px-3 py-1 text-deep-black/80">
+                  <span className="rounded-full bg-surface px-3 py-1 text-content/80">
                     {torneo.sexo}
                   </span>
-                  <span className="rounded-full bg-white px-3 py-1 text-deep-black/80">
+                  <span className="rounded-full bg-surface px-3 py-1 text-content/80">
                     {categoriaLabel(torneo)}
                   </span>
-                  <span className="rounded-full bg-white px-3 py-1 text-energy-orange">
+                  <span className="rounded-full bg-surface px-3 py-1 text-energy-orange">
                     {torneo.inicio
                       ? formatDateTime(torneo.inicio)
                       : "Sin fecha"}

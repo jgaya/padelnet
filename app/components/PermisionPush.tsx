@@ -52,7 +52,7 @@ export default function EnableNotifications({
 
   if (status === "granted") {
     return showState ? (
-      <span className="inline-flex rounded-full bg-padel-green/15 px-3 py-1 text-xs font-semibold text-deep-black">
+      <span className="inline-flex rounded-full bg-padel-green/15 px-3 py-1 text-xs font-semibold text-content">
         Notificaciones activadas
       </span>
     ) : null;
@@ -74,7 +74,7 @@ export default function EnableNotifications({
       type="button"
       onClick={requestPermission}
       disabled={saving}
-      className="inline-flex rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
     >
       {saving ? "Activando..." : "Activar notificaciones"}
     </button>

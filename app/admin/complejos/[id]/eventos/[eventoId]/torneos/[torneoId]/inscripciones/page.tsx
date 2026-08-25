@@ -321,30 +321,30 @@ export default async function AdminTorneoInscripcionesPage(props: {
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
       <Breadcrumbs migas={migas} />
-      <div className="overflow-hidden rounded-3xl border border-deep-black/10 bg-white shadow-sm">
-        <div className="border-b border-deep-black/10 bg-gradient-to-r from-padel-green/15 via-white to-energy-orange/15 px-5 py-6 sm:px-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
+      <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
+        <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-5 py-6 sm:px-7">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-content/60">
             Inscribir pareja
           </p>
-          <h1 className="mt-2 text-3xl font-semibold text-deep-black sm:text-4xl">
+          <h1 className="mt-2 text-3xl font-semibold text-content sm:text-4xl">
             {torneo.nombre}
           </h1>
-          <p className="mt-1 text-sm text-deep-black/70">
+          <p className="mt-1 text-sm text-content/70">
             {torneo.evento.nombre} - {torneo.evento.complejo.name} (
             {torneo.evento.complejo.ciudad}, {torneo.evento.complejo.provincia})
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
-            <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
               Sexo: {torneo.sexo}
             </span>
-            <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
               {categoriaRuleLabel(torneo.categoriaRegla, torneo.categoriaN)}
             </span>
-            <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
               Cupo: {inscriptosCount}/{torneo.capacidad}
             </span>
-            <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
               Suplentes: {suplentesCount}
             </span>
           </div>
@@ -362,12 +362,12 @@ export default async function AdminTorneoInscripcionesPage(props: {
             </p>
           ) : null}
 
-          <section className="rounded-2xl border border-deep-black/10 bg-white">
-            <div className="border-b border-deep-black/10 bg-surface-soft px-4 py-3">
-              <h2 className="text-lg font-semibold text-deep-black">
+          <section className="rounded-2xl border border-content/10 bg-surface">
+            <div className="border-b border-content/10 bg-surface-soft px-4 py-3">
+              <h2 className="text-lg font-semibold text-content">
                 Inscripciones ({activas.length})
               </h2>
-              <p className="mt-0.5 text-sm text-deep-black/70">
+              <p className="mt-0.5 text-sm text-content/70">
                 No se puede dar de baja una pareja que ya tenga partidos con
                 resultado cargado. Al dar de baja se la quita de su zona y se
                 cancelan sus partidos pendientes, asi que conviene regenerar la
@@ -377,7 +377,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
 
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
-                <thead className="bg-white text-deep-black/70">
+                <thead className="bg-surface text-content/70">
                   <tr>
                     <th className="px-3 py-2 text-left font-semibold">
                       Pareja
@@ -396,7 +396,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
                     <tr>
                       <td
                         colSpan={4}
-                        className="px-3 py-4 text-center text-deep-black/65"
+                        className="px-3 py-4 text-center text-content/65"
                       >
                         Todavia no hay parejas inscriptas.
                       </td>
@@ -406,10 +406,10 @@ export default async function AdminTorneoInscripcionesPage(props: {
                       <tr
                         key={row.parejaId}
                         className={
-                          index % 2 === 0 ? "bg-white" : "bg-surface-soft/50"
+                          index % 2 === 0 ? "bg-surface" : "bg-surface-soft/50"
                         }
                       >
-                        <td className="px-3 py-2 font-medium text-deep-black">
+                        <td className="px-3 py-2 font-medium text-content">
                           <LinkJugador jugadorId={row.player1Id}>
                             {row.jugador1}
                           </LinkJugador>
@@ -429,12 +429,12 @@ export default async function AdminTorneoInscripcionesPage(props: {
                             {row.suplente ? "Suplente" : "Titular"}
                           </span>
                         </td>
-                        <td className="px-3 py-2 text-deep-black/70">
+                        <td className="px-3 py-2 text-content/70">
                           {row.restriccion ?? "-"}
                         </td>
                         <td className="px-3 py-2 text-right">
                           {row.tieneResultados ? (
-                            <span className="text-xs text-deep-black/55">
+                            <span className="text-xs text-content/55">
                               Ya jugo: no se puede dar de baja
                             </span>
                           ) : (
@@ -446,7 +446,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
                               />
                               <button
                                 type="submit"
-                                className="rounded-full border border-energy-orange bg-white px-3 py-1.5 text-xs font-semibold text-energy-orange transition hover:bg-energy-orange hover:text-white"
+                                className="rounded-full border border-energy-orange bg-surface px-3 py-1.5 text-xs font-semibold text-energy-orange transition hover:bg-energy-orange hover:text-white"
                               >
                                 Dar de baja
                               </button>
@@ -461,11 +461,11 @@ export default async function AdminTorneoInscripcionesPage(props: {
             </div>
 
             {bajas.length > 0 ? (
-              <div className="border-t border-deep-black/10 px-4 py-3">
-                <h3 className="text-sm font-semibold text-deep-black">
+              <div className="border-t border-content/10 px-4 py-3">
+                <h3 className="text-sm font-semibold text-content">
                   Dadas de baja ({bajas.length})
                 </h3>
-                <p className="mt-0.5 mb-2 text-xs text-deep-black/65">
+                <p className="mt-0.5 mb-2 text-xs text-content/65">
                   Reactivar solo repone la inscripcion. La zona y los partidos
                   hay que volver a armarlos.
                 </p>
@@ -475,7 +475,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
                       key={row.parejaId}
                       className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-surface-soft px-3 py-1.5"
                     >
-                      <span className="text-sm text-deep-black/70">
+                      <span className="text-sm text-content/70">
                         <LinkJugador jugadorId={row.player1Id}>
                           {row.jugador1}
                         </LinkJugador>
@@ -492,7 +492,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
                         />
                         <button
                           type="submit"
-                          className="rounded-full border border-deep-black/20 bg-white px-3 py-1.5 text-xs font-semibold text-deep-black transition hover:bg-white/60"
+                          className="rounded-full border border-content/20 bg-surface px-3 py-1.5 text-xs font-semibold text-content transition hover:bg-surface/60"
                         >
                           Reactivar
                         </button>
@@ -513,18 +513,18 @@ export default async function AdminTorneoInscripcionesPage(props: {
               type="text"
               defaultValue={search}
               placeholder="Buscar jugadores por nombre, apellido o email..."
-              className="w-full rounded-xl border border-deep-black/20 bg-white px-4 py-2.5 text-sm text-deep-black placeholder:text-deep-black/50 focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+              className="w-full rounded-xl border border-content/20 bg-surface px-4 py-2.5 text-sm text-content placeholder:text-content/50 focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
             />
             <button
               type="submit"
-              className="rounded-full bg-deep-black px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-deep-black/90"
+              className="rounded-full bg-content px-4 py-2.5 text-sm font-semibold text-surface transition hover:bg-content/90"
             >
               Buscar
             </button>
             {search ? (
               <Link
                 href={`/admin/complejos/${complejoId}/eventos/${eventoIdNum}/torneos/${torneoIdNum}/inscripciones`}
-                className="inline-flex items-center rounded-full border border-deep-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+                className="inline-flex items-center rounded-full border border-content/20 bg-surface px-4 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
               >
                 Limpiar
               </Link>
@@ -535,7 +535,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
             <input type="hidden" name="torneoId" value={torneoIdNum} />
             <input type="hidden" name="q" value={search} />
 
-            <p className="text-sm text-deep-black/70">
+            <p className="text-sm text-content/70">
               Los combos muestran solo jugadores que cumplen la regla de sexo (
               {torneo.sexo}) y de categoria (
               {categoriaRuleLabel(torneo.categoriaRegla, torneo.categoriaN)})
@@ -556,13 +556,13 @@ export default async function AdminTorneoInscripcionesPage(props: {
             ) : null}
 
             <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4">
-                <label className="mb-2 block text-sm font-semibold text-deep-black">
+              <div className="rounded-2xl border border-content/10 bg-surface-soft p-4">
+                <label className="mb-2 block text-sm font-semibold text-content">
                   Jugador 1
                 </label>
                 <select
                   name="player1Id"
-                  className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                  className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
                   defaultValue=""
                 >
                   <option value="">Seleccionar jugador 1</option>
@@ -576,13 +576,13 @@ export default async function AdminTorneoInscripcionesPage(props: {
                 </select>
               </div>
 
-              <div className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4">
-                <label className="mb-2 block text-sm font-semibold text-deep-black">
+              <div className="rounded-2xl border border-content/10 bg-surface-soft p-4">
+                <label className="mb-2 block text-sm font-semibold text-content">
                   Jugador 2
                 </label>
                 <select
                   name="player2Id"
-                  className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                  className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
                   defaultValue=""
                 >
                   <option value="">Seleccionar jugador 2</option>
@@ -597,18 +597,18 @@ export default async function AdminTorneoInscripcionesPage(props: {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4">
-              <label className="mb-2 block text-sm font-semibold text-deep-black">
+            <div className="rounded-2xl border border-content/10 bg-surface-soft p-4">
+              <label className="mb-2 block text-sm font-semibold text-content">
                 Restriccion de disponibilidad (opcional)
               </label>
-              <p className="mb-3 text-sm text-deep-black/70">
+              <p className="mb-3 text-sm text-content/70">
                 Si no se completa, el campo queda en blanco. Formato:
                 Día,HH:mm,HH:mm
               </p>
               <div className="grid gap-3 md:grid-cols-3">
                 <select
                   name="restriccionDia"
-                  className="rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                  className="rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
                   defaultValue=""
                 >
                   <option value="">Seleccionar día</option>
@@ -622,7 +622,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
                 </select>
                 <select
                   name="restriccionInicio"
-                  className="rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                  className="rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
                   defaultValue=""
                 >
                   <option value="">Hora inicio</option>
@@ -637,7 +637,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
                 </select>
                 <select
                   name="restriccionFin"
-                  className="rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                  className="rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
                   defaultValue=""
                 >
                   <option value="">Hora fin</option>
@@ -656,13 +656,13 @@ export default async function AdminTorneoInscripcionesPage(props: {
             <div className="flex flex-wrap gap-2">
               <button
                 type="submit"
-                className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95"
+                className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95"
               >
                 Inscribir pareja
               </button>
               <Link
                 href={`/admin/complejos/${complejoId}/eventos/${eventoIdNum}/torneos/${torneoIdNum}`}
-                className="inline-flex items-center rounded-full border border-deep-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+                className="inline-flex items-center rounded-full border border-content/20 bg-surface px-4 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
               >
                 Volver al torneo
               </Link>

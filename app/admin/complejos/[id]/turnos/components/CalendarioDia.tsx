@@ -91,7 +91,7 @@ export default function CalendarioDia({
 
   if (canchas.length === 0) {
     return (
-      <p className="rounded-xl border border-slate-200 bg-white p-4 text-slate-600">
+      <p className="rounded-xl border border-content/10 bg-surface p-4 text-content/70">
         Este complejo no tiene canchas activas.
       </p>
     );
@@ -100,7 +100,7 @@ export default function CalendarioDia({
   return (
     <>
       {horario?.cerrado ? (
-        <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
+        <p className="mb-3 rounded-lg bg-warning/12 px-3 py-2 text-sm text-warning">
           El complejo esta cerrado este dia
           {horario.motivo ? `: ${horario.motivo}` : ""}.
         </p>

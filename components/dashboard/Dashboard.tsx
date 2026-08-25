@@ -1,7 +1,6 @@
 import type { DatosDashboard } from "@/lib/dashboard";
 import { tieneDatoReal } from "@/lib/dashboard-calculos";
 import Breadcrumbs, { type Miga } from "@/components/Breadcrumbs";
-import { PADEL_GREEN } from "./paleta";
 
 import BotonRefrescar from "./BotonRefrescar";
 import KpiCard from "./KpiCard";
@@ -51,10 +50,10 @@ export default function Dashboard({
 
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-deep-black sm:text-3xl">
+          <h1 className="text-2xl font-semibold text-content sm:text-3xl">
             {titulo}
           </h1>
-          <p className="mt-1 text-sm text-deep-black/70">{subtitulo}</p>
+          <p className="mt-1 text-sm text-content/70">{subtitulo}</p>
         </div>
         <BotonRefrescar />
       </div>
@@ -86,7 +85,7 @@ export default function Dashboard({
         <PanelSeccion
           titulo="Tipos de usuario"
           extra={
-            <span className="text-sm text-deep-black/60">
+            <span className="text-sm text-content/60">
               Total: {kpis.usuarios}
             </span>
           }
@@ -115,15 +114,13 @@ export default function Dashboard({
           titulo="Usuarios por categoria"
           vacio={datos.usuariosPorCategoria.length === 0}
         >
-          <GraficoBarras
-            datos={datos.usuariosPorCategoria}
-            color={PADEL_GREEN}
-          />
+          {/* Sin `color`: el verde por defecto lo toma del tema. */}
+          <GraficoBarras datos={datos.usuariosPorCategoria} />
         </PanelSeccion>
 
         <PanelSeccion
           titulo="Usuarios por localidad"
-          extra={<span className="text-sm text-deep-black/60">Top 12</span>}
+          extra={<span className="text-sm text-content/60">Top 12</span>}
           vacio={!tieneDatoReal(datos.usuariosPorLocalidad)}
           textoVacio="Nadie cargo su localidad todavia. Es un campo del perfil."
         >
@@ -164,19 +161,19 @@ export default function Dashboard({
                 key={torneo.id}
                 className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm"
               >
-                <span className="w-5 shrink-0 text-right text-xs text-deep-black/50">
+                <span className="w-5 shrink-0 text-right text-xs text-content/50">
                   {indice + 1}.
                 </span>
-                <span className="font-medium text-deep-black">
+                <span className="font-medium text-content">
                   {torneo.nombre}
                 </span>
-                <span className="text-xs text-deep-black/60">
+                <span className="text-xs text-content/60">
                   {torneo.eventoNombre}
                 </span>
-                <span className="ml-auto shrink-0 font-semibold text-deep-black">
+                <span className="ml-auto shrink-0 font-semibold text-content">
                   {torneo.inscriptos}
                 </span>
-                <span className="w-16 shrink-0 text-right text-xs text-deep-black/60">
+                <span className="w-16 shrink-0 text-right text-xs text-content/60">
                   de {torneo.capacidad}
                 </span>
               </li>

@@ -117,25 +117,25 @@ export default function NuevoEnComplejoModal({
       <button
         type="button"
         onClick={() => setAbierto(true)}
-        className="rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-deep-black transition hover:brightness-95"
+        className="rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-on-brand transition hover:brightness-95"
       >
         {etiqueta}
       </button>
 
       {abierto ? (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-deep-black/50 p-4">
-          <div className="mt-16 w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
-            <h2 className="text-lg font-semibold text-deep-black">
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4">
+          <div className="mt-16 w-full max-w-md rounded-2xl bg-surface p-5 shadow-xl">
+            <h2 className="text-lg font-semibold text-content">
               {etiqueta}
             </h2>
-            <p className="mt-1 text-sm text-deep-black/70">
+            <p className="mt-1 text-sm text-content/70">
               {modo === "EVENTO"
                 ? "Elegi en que complejo se crea el evento."
                 : "Elegi el complejo y el evento al que pertenece el torneo."}
             </p>
 
             <div className="mt-4 space-y-3">
-              <label className="block text-sm font-medium text-deep-black/80">
+              <label className="block text-sm font-medium text-content/80">
                 Complejo
                 <select
                   value={complejoId ?? ""}
@@ -145,7 +145,7 @@ export default function NuevoEnComplejoModal({
                       event.target.value ? Number(event.target.value) : null,
                     )
                   }
-                  className="mt-1 w-full rounded-xl border border-deep-black/15 px-3 py-2 text-sm"
+                  className="mt-1 w-full rounded-xl border border-content/15 px-3 py-2 text-sm"
                 >
                   <option value="">
                     {cargandoComplejos ? "Cargando..." : "Elegi un complejo"}
@@ -159,7 +159,7 @@ export default function NuevoEnComplejoModal({
               </label>
 
               {modo === "TORNEO" && complejoId !== null ? (
-                <label className="block text-sm font-medium text-deep-black/80">
+                <label className="block text-sm font-medium text-content/80">
                   Evento
                   <select
                     value={eventoValido ? eventoId : ""}
@@ -169,7 +169,7 @@ export default function NuevoEnComplejoModal({
                         event.target.value ? Number(event.target.value) : null,
                       )
                     }
-                    className="mt-1 w-full rounded-xl border border-deep-black/15 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-xl border border-content/15 px-3 py-2 text-sm"
                   >
                     <option value="">
                       {cargandoEventos ? "Cargando..." : "Elegi un evento"}
@@ -193,7 +193,7 @@ export default function NuevoEnComplejoModal({
               <button
                 type="button"
                 onClick={() => setAbierto(false)}
-                className="rounded-full border border-deep-black/20 bg-white px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+                className="rounded-full border border-content/20 bg-surface px-4 py-2 text-sm font-semibold text-content transition hover:bg-surface-soft"
               >
                 Cancelar
               </button>
@@ -201,7 +201,7 @@ export default function NuevoEnComplejoModal({
                 type="button"
                 onClick={handleContinuar}
                 disabled={!puedeSeguir}
-                className="rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Continuar
               </button>

@@ -17,10 +17,10 @@ export default async function JugadorPublicoPage(props: {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-content/60">
         Jugador
       </p>
-      <h1 className="mt-1 mb-5 text-3xl font-semibold text-deep-black sm:text-4xl">
+      <h1 className="mt-1 mb-5 text-3xl font-semibold text-content sm:text-4xl">
         Estadisticas
       </h1>
 

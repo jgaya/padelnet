@@ -139,7 +139,7 @@ export default function CompletarPerfilForm() {
       <button
         type="submit"
         disabled={cargando}
-        className="mt-4 w-full rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-4 w-full rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {cargando ? "Guardando..." : "Guardar y continuar"}
       </button>

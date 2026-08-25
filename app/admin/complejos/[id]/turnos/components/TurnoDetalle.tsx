@@ -27,47 +27,47 @@ export default function TurnoDetalle({
   const esBloqueo = turno.status === "BLOQUEADO";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4">
-      <div className="mt-10 w-full max-w-md rounded-xl bg-white p-5 shadow-xl">
-        <h2 className="text-lg font-semibold text-slate-900">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4">
+      <div className="mt-10 w-full max-w-md rounded-xl bg-surface p-5 shadow-xl">
+        <h2 className="text-lg font-semibold text-content">
           {esBloqueo ? "Cancha bloqueada" : turno.titulo}
         </h2>
 
-        <dl className="mt-3 space-y-1 text-sm text-slate-700">
+        <dl className="mt-3 space-y-1 text-sm text-content/70">
           <div className="flex justify-between gap-4">
-            <dt className="text-slate-500">Cancha</dt>
+            <dt className="text-content/55">Cancha</dt>
             <dd>{canchaLabel}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-slate-500">Fecha</dt>
+            <dt className="text-content/55">Fecha</dt>
             <dd>{turno.dayKey}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-slate-500">Horario</dt>
+            <dt className="text-content/55">Horario</dt>
             <dd>
               {minutesToTime(turno.inicioMin)} - {minutesToTime(turno.finMin)}
             </dd>
           </div>
           {turno.detalle ? (
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-500">Telefono</dt>
+              <dt className="text-content/55">Telefono</dt>
               <dd>{turno.detalle}</dd>
             </div>
           ) : null}
           {turno.frecuencia ? (
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-500">Turno fijo</dt>
+              <dt className="text-content/55">Turno fijo</dt>
               <dd>{FRECUENCIA_LABEL[turno.frecuencia]}</dd>
             </div>
           ) : null}
           {!esBloqueo ? (
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-500">Pago</dt>
+              <dt className="text-content/55">Pago</dt>
               <dd
                 className={
                   turno.pagado
-                    ? "font-semibold text-emerald-700"
-                    : "font-semibold text-amber-700"
+                    ? "font-semibold text-success"
+                    : "font-semibold text-warning"
                 }
               >
                 {turno.pagado ? "Pagado" : "Impago"}
@@ -76,15 +76,15 @@ export default function TurnoDetalle({
           ) : null}
           {turno.notas ? (
             <div className="pt-1">
-              <dt className="text-slate-500">Notas</dt>
+              <dt className="text-content/55">Notas</dt>
               <dd>{turno.notas}</dd>
             </div>
           ) : null}
         </dl>
 
         {confirmando ? (
-          <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3">
-            <p className="mb-2 text-sm text-red-900">
+          <div className="mt-4 rounded-lg border border-danger/25 bg-danger/12 p-3">
+            <p className="mb-2 text-sm text-danger">
               {turno.serieId
                 ? "Este turno es parte de una serie. Que queres cancelar?"
                 : "Seguro que queres cancelar este turno?"}
@@ -92,7 +92,7 @@ export default function TurnoDetalle({
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                className="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+                className="rounded-lg bg-danger-solid px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
                 onClick={() => onCancelar("SOLO")}
                 disabled={trabajando}
               >
@@ -101,7 +101,7 @@ export default function TurnoDetalle({
               {turno.serieId ? (
                 <button
                   type="button"
-                  className="rounded-lg bg-red-700 px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+                  className="rounded-lg bg-danger-solid px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
                   onClick={() => onCancelar("SIGUIENTES")}
                   disabled={trabajando}
                 >
@@ -110,7 +110,7 @@ export default function TurnoDetalle({
               ) : null}
               <button
                 type="button"
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+                className="rounded-lg border border-content/20 px-3 py-1.5 text-sm"
                 onClick={() => setConfirmando(false)}
                 disabled={trabajando}
               >
@@ -123,7 +123,7 @@ export default function TurnoDetalle({
             {!esBloqueo ? (
               <button
                 type="button"
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm disabled:opacity-50"
+                className="rounded-lg border border-content/20 px-3 py-1.5 text-sm disabled:opacity-50"
                 onClick={() => onPago(!turno.pagado)}
                 disabled={trabajando}
               >
@@ -132,7 +132,7 @@ export default function TurnoDetalle({
             ) : null}
             <button
               type="button"
-              className="rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-700 disabled:opacity-50"
+              className="rounded-lg border border-danger/25 px-3 py-1.5 text-sm text-danger disabled:opacity-50"
               onClick={() => setConfirmando(true)}
               disabled={trabajando}
             >
@@ -140,7 +140,7 @@ export default function TurnoDetalle({
             </button>
             <button
               type="button"
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white"
+              className="rounded-lg bg-ink px-3 py-1.5 text-sm font-semibold text-on-ink"
               onClick={onCerrar}
             >
               Cerrar

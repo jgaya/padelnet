@@ -33,13 +33,13 @@ export default function RankingFiltros({
   };
 
   const selectClass =
-    "w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20";
+    "w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20";
 
   return (
     <div className="mb-4 flex flex-col gap-3 sm:flex-row">
       <div className="sm:w-48">
         <label
-          className="mb-1.5 block text-sm font-semibold text-deep-black"
+          className="mb-1.5 block text-sm font-semibold text-content"
           htmlFor="ranking-sexo"
         >
           Rama
@@ -60,7 +60,7 @@ export default function RankingFiltros({
 
       <div className="sm:w-56">
         <label
-          className="mb-1.5 block text-sm font-semibold text-deep-black"
+          className="mb-1.5 block text-sm font-semibold text-content"
           htmlFor="ranking-categoria"
         >
           Categoria

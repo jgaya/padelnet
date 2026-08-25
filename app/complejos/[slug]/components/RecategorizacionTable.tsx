@@ -33,7 +33,7 @@ function Movimiento({ item }: { item: PublicComplejoRecategorizacion }) {
   if (item.nivelPrevio === item.nivelNuevo) {
     return (
       <span className="inline-flex items-center gap-2">
-        <span className="font-semibold text-deep-black">{item.nivelNuevo}</span>
+        <span className="font-semibold text-content">{item.nivelNuevo}</span>
         <Badge text="Observado" variant="warning" size="sm" />
       </span>
     );
@@ -41,13 +41,13 @@ function Movimiento({ item }: { item: PublicComplejoRecategorizacion }) {
 
   return (
     <span className="inline-flex items-center gap-2">
-      <span className="text-deep-black/60">
+      <span className="text-content/60">
         {item.nivelPrevio ?? "Sin categoria"}
       </span>
       <span aria-hidden="true" className="text-padel-green">
         &rarr;
       </span>
-      <span className="inline-flex rounded-full bg-padel-green/15 px-3 py-1 text-xs font-semibold text-deep-black">
+      <span className="inline-flex rounded-full bg-padel-green/15 px-3 py-1 text-xs font-semibold text-content">
         {item.nivelNuevo}
       </span>
     </span>
@@ -111,14 +111,14 @@ export default function RecategorizacionTable({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
         <div className="sm:w-56">
           <label
-            className="mb-1.5 block text-sm font-semibold text-deep-black"
+            className="mb-1.5 block text-sm font-semibold text-content"
             htmlFor="recategorizacion-fecha"
           >
             Fecha
           </label>
           <select
             id="recategorizacion-fecha"
-            className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+            className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
             value={fechaSeleccionada}
             onChange={(event) => {
               setPage(1);
@@ -138,7 +138,7 @@ export default function RecategorizacionTable({
 
         <div className="flex-1">
           <label
-            className="mb-1.5 block text-sm font-semibold text-deep-black"
+            className="mb-1.5 block text-sm font-semibold text-content"
             htmlFor="recategorizacion-jugador"
           >
             Buscar jugador
@@ -147,7 +147,7 @@ export default function RecategorizacionTable({
             <input
               id="recategorizacion-jugador"
               type="search"
-              className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+              className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
               placeholder="Nombre o apellido"
               value={texto}
               onChange={(event) => setTexto(event.target.value)}
@@ -160,7 +160,7 @@ export default function RecategorizacionTable({
             />
             <button
               type="button"
-              className="whitespace-nowrap rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-deep-black transition hover:brightness-95"
+              className="whitespace-nowrap rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-on-brand transition hover:brightness-95"
               onClick={handleBuscar}
             >
               Buscar
@@ -168,7 +168,7 @@ export default function RecategorizacionTable({
             {busqueda.trim() ? (
               <button
                 type="button"
-                className="whitespace-nowrap rounded-full border border-deep-black/20 bg-white px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+                className="whitespace-nowrap rounded-full border border-content/20 bg-surface px-4 py-2 text-sm font-semibold text-content transition hover:bg-surface-soft"
                 onClick={handleLimpiar}
               >
                 Limpiar
@@ -176,7 +176,7 @@ export default function RecategorizacionTable({
             ) : null}
           </div>
           {busqueda.trim() ? (
-            <p className="mt-1.5 mb-0 text-xs text-deep-black/60">
+            <p className="mt-1.5 mb-0 text-xs text-content/60">
               Resultados de todas las fechas.
             </p>
           ) : null}
@@ -184,7 +184,7 @@ export default function RecategorizacionTable({
       </div>
 
       {filtrados.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-deep-black/20 bg-surface-soft px-5 py-8 text-center text-sm text-deep-black/70">
+        <p className="rounded-2xl border border-dashed border-content/20 bg-surface-soft px-5 py-8 text-center text-sm text-content/70">
           No hay recategorizaciones para este filtro.
         </p>
       ) : (

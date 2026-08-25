@@ -14,12 +14,21 @@ import {
 import UbicacionFields, {
   type UbicacionValue,
 } from "@/app/components/UbicacionFields";
-import { updateMyProfile, type PerfilPayload } from "@/actions/perfil";
+import {
+  updateMyProfile,
+  type PerfilData,
+  type PerfilPayload,
+} from "@/actions/perfil";
 import { PerfilFormSchema, type PerfilFormData } from "@/types/forms";
 import AvatarCropper from "./AvatarCropper";
 
 type PerfilFormProps = {
-  initialData: PerfilFormData;
+  /**
+   * Es PerfilData y no PerfilFormData: trae ademas la foto aprobada y el
+   * estado de moderacion de la ultima, que se le pasan a AvatarCropper pero no
+   * son campos del formulario.
+   */
+  initialData: PerfilData;
 };
 
 const generoOptions = [
@@ -44,9 +53,6 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
     defaultValues: initialData,
   });
 
-  const currentImageUrl = watch("imageUrl");
-  const currentAvatarUrl = watch("avatarUrl");
-
   const handleUbicacionChange = ({ provincia, localidad }: UbicacionValue) => {
     setValue("provincia", provincia);
     setValue("localidad", localidad);
@@ -66,8 +72,6 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
         provincia: data.provincia || null,
         localidad: data.localidad || null,
         birthDate: data.birthDate || null,
-        imageUrl: data.imageUrl || null,
-        avatarUrl: data.avatarUrl || null,
       };
 
       await updateMyProfile(payload);
@@ -158,33 +162,14 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
           />
         </div>
 
+        {/* La foto se guarda sola al subirla y queda esperando aprobacion: no
+            viaja con el submit del formulario ni depende de el. */}
         <AvatarCropper
-          imageUrl={currentImageUrl || null}
-          avatarUrl={currentAvatarUrl || null}
+          imageUrl={initialData.imageUrl || null}
+          avatarUrl={initialData.avatarUrl || null}
+          imagen={initialData.imagen}
           disabled={isLoading}
-          onChange={({ imageUrl, avatarUrl }) => {
-            setValue("imageUrl", imageUrl, {
-              shouldDirty: true,
-              shouldValidate: true,
-            });
-            setValue("avatarUrl", avatarUrl, {
-              shouldDirty: true,
-              shouldValidate: true,
-            });
-          }}
         />
-        <input type="hidden" {...register("imageUrl")} />
-        <input type="hidden" {...register("avatarUrl")} />
-        {errors.imageUrl && (
-          <div className="padel-invalid-feedback block">
-            {errors.imageUrl.message}
-          </div>
-        )}
-        {errors.avatarUrl && (
-          <div className="padel-invalid-feedback block">
-            {errors.avatarUrl.message}
-          </div>
-        )}
 
         <FormActions
           submitText="Guardar cambios"

@@ -115,27 +115,27 @@ export default function LoginPage() {
 
       <section className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
         <div className="grid gap-5 md:grid-cols-2">
-          <article className="overflow-hidden rounded-3xl bg-deep-black p-5 text-white shadow-[0_18px_32px_rgba(28,37,38,0.2)] sm:p-8">
+          <article className="overflow-hidden rounded-3xl bg-ink p-5 text-on-ink shadow-[var(--shadow-lg)] sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-padel-green">
               Acceso PadelNet
             </p>
             <h1 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
               Inicia sesion y activa tu juego.
             </h1>
-            <p className="mt-3 text-sm text-white/80 sm:text-base">
+            <p className="mt-3 text-sm text-on-ink/80 sm:text-base">
               Gestiona partidos, ranking y torneos desde una sola cuenta.
             </p>
 
-            <ul className="mt-6 space-y-2 text-sm text-white/80">
+            <ul className="mt-6 space-y-2 text-sm text-on-ink/80">
               <li>Emparejamiento por nivel y disponibilidad</li>
               <li>Alertas de nuevos partidos cercanos</li>
               <li>Historial de resultados y estadisticas</li>
             </ul>
           </article>
 
-          <article className="rounded-3xl border border-deep-black/10 bg-white p-5 shadow-sm sm:p-8">
-            <h2 className="text-2xl font-semibold text-deep-black">Login</h2>
-            <p className="mt-2 text-sm text-deep-black/70">
+          <article className="rounded-3xl border border-content/10 bg-surface p-5 shadow-sm sm:p-8">
+            <h2 className="text-2xl font-semibold text-content">Login</h2>
+            <p className="mt-2 text-sm text-content/70">
               Ingresa tus credenciales para continuar.
             </p>
 
@@ -176,18 +176,18 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="mt-3 w-full rounded-full bg-padel-green px-4 py-3 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-3 w-full rounded-full bg-padel-green px-4 py-3 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoading ? "Ingresando..." : "Iniciar sesion"}
               </button>
             </form>
 
             <div className="my-4 flex items-center gap-3">
-              <span className="h-px flex-1 bg-deep-black/10" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-deep-black/50">
+              <span className="h-px flex-1 bg-content/10" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-content/50">
                 o
               </span>
-              <span className="h-px flex-1 bg-deep-black/10" />
+              <span className="h-px flex-1 bg-content/10" />
             </div>
 
             <GoogleButton />
@@ -195,7 +195,7 @@ export default function LoginPage() {
             <div className="mt-3 text-sm">
               <Link
                 href="/recuperar"
-                className="font-semibold text-deep-black/70 transition hover:text-padel-green"
+                className="font-semibold text-content/70 transition hover:text-padel-green"
               >
                 Olvidaste tu contrasena?
               </Link>
@@ -204,7 +204,7 @@ export default function LoginPage() {
             <div className="mt-3 flex items-center justify-between text-sm">
               <Link
                 href="/"
-                className="font-semibold text-deep-black/70 transition hover:text-padel-green"
+                className="font-semibold text-content/70 transition hover:text-padel-green"
               >
                 Volver al inicio
               </Link>

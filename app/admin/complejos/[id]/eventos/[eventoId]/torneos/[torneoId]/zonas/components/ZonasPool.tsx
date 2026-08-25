@@ -31,7 +31,7 @@ export default function ZonasPool({
   onDragStart,
 }: ZonasPoolProps) {
   return (
-    <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+    <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
       <div className="p-4">
         <div className={styles.zonaSummary}>
           <div>
@@ -45,11 +45,11 @@ export default function ZonasPool({
           </div>
         </div>
 
-        <details className="mt-3 rounded-xl border border-slate-200 bg-white p-3">
-          <summary className="cursor-pointer font-semibold text-slate-800">
+        <details className="mt-3 rounded-xl border border-content/10 bg-surface p-3">
+          <summary className="cursor-pointer font-semibold text-content">
             Orden de siembra ({seededPairs.length})
           </summary>
-          <p className="mt-2 mb-3 text-sm text-slate-600">
+          <p className="mt-2 mb-3 text-sm text-content/70">
             La siembra 1 es la pareja mas fuerte. La tabla usa este orden para
             repartir las zonas y sembrar la llave.
           </p>
@@ -73,9 +73,9 @@ export default function ZonasPool({
             {seededPairs.map((pair, index) => (
               <li
                 key={pair.id}
-                className="flex items-center gap-2 rounded-lg bg-slate-50 px-2 py-1 text-sm"
+                className="flex items-center gap-2 rounded-lg bg-surface-soft px-2 py-1 text-sm"
               >
-                <span className="w-8 shrink-0 text-right font-semibold text-slate-500">
+                <span className="w-8 shrink-0 text-right font-semibold text-content/55">
                   {index + 1}
                 </span>
                 <span className="grow">{pair.parejaNombre}</span>

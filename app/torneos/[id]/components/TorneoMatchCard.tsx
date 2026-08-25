@@ -62,12 +62,12 @@ function matchStatusBadgeClass(
       return "bg-padel-green/20 text-padel-green";
     case "WALKOVER":
     case "CANCELLED":
-      return "bg-red-100 text-red-700";
+      return "bg-danger/12 text-danger";
     case "SCHEDULED":
-      return "bg-blue-100 text-blue-700";
+      return "bg-info/12 text-info";
     case "PENDING":
     default:
-      return "bg-surface-soft text-deep-black/70";
+      return "bg-surface-soft text-content/70";
   }
 }
 
@@ -133,12 +133,12 @@ export default function TorneoMatchCard({
     sets.length === 0 && match.score && match.score !== "-";
 
   const cardClassName =
-    `overflow-hidden rounded-xl border border-deep-black/10 bg-white p-3 shadow-sm ${className ?? ""}`.trim();
+    `overflow-hidden rounded-xl border border-content/10 bg-surface p-3 shadow-sm ${className ?? ""}`.trim();
 
   return (
     <article className={cardClassName} style={style}>
       <div className="flex items-start justify-between gap-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-deep-black/50">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-content/50">
           {roundLabel} #{matchNumber}
         </p>
         <span
@@ -151,11 +151,11 @@ export default function TorneoMatchCard({
       <div className="mt-2 space-y-1.5">
         <div className="flex items-center justify-between gap-2">
           <p
-            className={`truncate text-sm text-deep-black ${winner === 1 ? "font-bold" : "font-medium"}`}
+            className={`truncate text-sm text-content ${winner === 1 ? "font-bold" : "font-medium"}`}
           >
             {match.pareja1}
           </p>
-          <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-deep-black/80">
+          <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-content/80">
             {sets.length > 0 ? (
               sets.map((set, index) => (
                 <span
@@ -173,11 +173,11 @@ export default function TorneoMatchCard({
 
         <div className="flex items-center justify-between gap-2">
           <p
-            className={`truncate text-sm text-deep-black ${winner === 2 ? "font-bold" : "font-medium"}`}
+            className={`truncate text-sm text-content ${winner === 2 ? "font-bold" : "font-medium"}`}
           >
             {match.pareja2}
           </p>
-          <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-deep-black/80">
+          <div className="flex items-center gap-1 text-xs font-semibold tabular-nums text-content/80">
             {sets.length > 0 ? (
               sets.map((set, index) => (
                 <span
@@ -195,15 +195,15 @@ export default function TorneoMatchCard({
       </div>
 
       {showFallbackScore ? (
-        <p className="mt-2 text-xs text-deep-black/70">
+        <p className="mt-2 text-xs text-content/70">
           Resultado: {match.score}
         </p>
       ) : null}
 
-      <p className="mt-2 text-xs text-deep-black/70">
+      <p className="mt-2 text-xs text-content/70">
         Cancha: {match.cancha ?? "-"}
       </p>
-      <p className="text-xs text-deep-black/70">
+      <p className="text-xs text-content/70">
         {formatDateTime(match.scheduledAt)}
       </p>
     </article>

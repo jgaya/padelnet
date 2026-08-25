@@ -37,17 +37,17 @@ export default function SearchBar({
   }
 
   return (
-    <div className="searchBar padel-searchbar flex w-full flex-col gap-3 rounded-2xl border border-deep-black/10 bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="searchBar padel-searchbar flex w-full flex-col gap-3 rounded-2xl border border-content/10 bg-surface p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="padel-searchbar-left flex items-center gap-2">
         <label
           htmlFor="pageSizeSelect"
-          className="text-sm font-medium text-deep-black/80"
+          className="text-sm font-medium text-content/80"
         >
           Items por pagina:
         </label>
         <select
           id="pageSizeSelect"
-          className="padel-search-select w-24 rounded-lg border border-deep-black/20 bg-surface-soft px-3 py-2 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+          className="padel-search-select w-24 rounded-lg border border-content/20 bg-surface-soft px-3 py-2 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
           value={String(pageSize)}
           onChange={handlePageSizeChange}
           aria-label="Tamano de pagina"
@@ -63,7 +63,7 @@ export default function SearchBar({
         <input
           type="text"
           name="search"
-          className="padel-search-input w-full rounded-lg border border-deep-black/20 bg-surface-soft px-3 py-2 text-sm text-deep-black placeholder:text-deep-black/50 focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20 sm:w-80"
+          className="padel-search-input w-full rounded-lg border border-content/20 bg-surface-soft px-3 py-2 text-sm text-content placeholder:text-content/50 focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20 sm:w-80"
           value={search}
           onChange={handleChange}
           onKeyDown={handleEnterPress}
@@ -72,7 +72,7 @@ export default function SearchBar({
 
         <button
           type="button"
-          className="rounded-full border border-energy-orange/35 bg-energy-orange/15 px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-energy-orange/25"
+          className="rounded-full border border-energy-orange/35 bg-energy-orange/15 px-4 py-2 text-sm font-semibold text-content transition hover:bg-energy-orange/25"
           onClick={handleClear}
         >
           Limpiar

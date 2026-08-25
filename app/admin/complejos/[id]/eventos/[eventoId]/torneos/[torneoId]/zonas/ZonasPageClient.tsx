@@ -612,7 +612,7 @@ export default function ZonasPageClient() {
     return (
       <div className="container padel-complejos-list">
         <TitleBar title="Zonas" />
-        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
           <div className="p-4">Parametros invalidos.</div>
         </div>
       </div>
@@ -624,13 +624,13 @@ export default function ZonasPageClient() {
       <TitleBar title={`Zonas - ${data?.torneo.nombre ?? ""}`} />
 
       {loading ? (
-        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
           <div className="p-4">Cargando zonas...</div>
         </div>
       ) : null}
 
       {!loading && error ? (
-        <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+        <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
           <div className="p-4">{error}</div>
         </div>
       ) : null}
@@ -672,7 +672,7 @@ export default function ZonasPageClient() {
           />
 
           {groups.length === 0 ? (
-            <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+            <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
               <div className="p-4">
                 Crea las zonas para empezar a asignar parejas.
               </div>

@@ -285,14 +285,14 @@ export default function TurnosPageClient({ basePath }: { basePath: string }) {
           <>
             <button
               type="button"
-              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+              className="rounded-lg border border-content/20 px-3 py-1.5 text-sm"
               onClick={() => setVerHorarios(true)}
             >
               Horarios
             </button>
             <Link
               href={`${basePath}/${complejoId}/canchas`}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+              className="rounded-lg border border-content/20 px-3 py-1.5 text-sm"
             >
               Canchas
             </Link>
@@ -301,15 +301,15 @@ export default function TurnosPageClient({ basePath }: { basePath: string }) {
       />
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <div className="inline-flex overflow-hidden rounded-lg border border-slate-300">
+        <div className="inline-flex overflow-hidden rounded-lg border border-content/20">
           {(["DIA", "SEMANA", "MES"] as const).map((opcion) => (
             <button
               key={opcion}
               type="button"
               className={`px-3 py-1.5 text-sm ${
                 vista === opcion
-                  ? "bg-slate-900 font-semibold text-white"
-                  : "bg-white text-slate-700"
+                  ? "bg-ink font-semibold text-on-ink"
+                  : "bg-surface text-content/70"
               }`}
               onClick={() => setVista(opcion)}
             >
@@ -325,7 +325,7 @@ export default function TurnosPageClient({ basePath }: { basePath: string }) {
         <div className="inline-flex items-center gap-1">
           <button
             type="button"
-            className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
+            className="rounded-lg border border-content/20 px-2.5 py-1.5 text-sm"
             onClick={() => mover(-1)}
             aria-label="Anterior"
           >
@@ -333,14 +333,14 @@ export default function TurnosPageClient({ basePath }: { basePath: string }) {
           </button>
           <button
             type="button"
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+            className="rounded-lg border border-content/20 px-3 py-1.5 text-sm"
             onClick={irHoy}
           >
             Hoy
           </button>
           <button
             type="button"
-            className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
+            className="rounded-lg border border-content/20 px-2.5 py-1.5 text-sm"
             onClick={() => mover(1)}
             aria-label="Siguiente"
           >
@@ -348,13 +348,13 @@ export default function TurnosPageClient({ basePath }: { basePath: string }) {
           </button>
         </div>
 
-        <span className="text-base font-semibold capitalize text-slate-900">
+        <span className="text-base font-semibold capitalize text-content">
           {titulo}
         </span>
 
         {data && data.canchas.length > 1 ? (
           <select
-            className="ml-auto rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+            className="ml-auto rounded-lg border border-content/20 px-2 py-1.5 text-sm"
             value={canchaFiltro}
             onChange={(event) =>
               setCanchaFiltro(
@@ -374,29 +374,29 @@ export default function TurnosPageClient({ basePath }: { basePath: string }) {
         ) : null}
       </div>
 
-      <div className="mb-3 flex flex-wrap items-center gap-3 text-xs text-slate-600">
+      <div className="mb-3 flex flex-wrap items-center gap-3 text-xs text-content/70">
         <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded border border-emerald-600 bg-emerald-100" />
+          <span className="inline-block h-3 w-3 rounded border border-success bg-success/12" />
           Pagado
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded border border-amber-600 bg-amber-100" />
+          <span className="inline-block h-3 w-3 rounded border border-warning bg-warning/12" />
           Impago
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded border border-blue-600 bg-blue-100" />
+          <span className="inline-block h-3 w-3 rounded border border-info bg-info/12" />
           Partido de torneo
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded border border-slate-400 bg-slate-200" />
+          <span className="inline-block h-3 w-3 rounded border border-content/25 bg-content/10" />
           Bloqueado
         </span>
       </div>
 
       {cargando ? (
-        <p className="text-slate-600">Cargando calendario...</p>
+        <p className="text-content/70">Cargando calendario...</p>
       ) : null}
-      {!cargando && error ? <p className="text-red-700">{error}</p> : null}
+      {!cargando && error ? <p className="text-danger">{error}</p> : null}
 
       {!cargando && data ? (
         <>
@@ -442,7 +442,7 @@ export default function TurnosPageClient({ basePath }: { basePath: string }) {
           {data.canchas.length > 0 ? (
             <button
               type="button"
-              className="mt-3 rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white"
+              className="mt-3 rounded-lg bg-success-solid px-3 py-1.5 text-sm font-semibold text-white"
               onClick={() =>
                 setNuevoTurno({
                   fecha: vista === "DIA" ? desdeKey : fechaKey(ancla),

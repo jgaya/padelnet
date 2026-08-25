@@ -19,7 +19,7 @@ export default function BotonRefrescar() {
       type="button"
       onClick={() => startTransition(() => router.refresh())}
       disabled={refrescando}
-      className="rounded-full border border-deep-black/20 bg-white px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft disabled:cursor-not-allowed disabled:opacity-60"
+      className="rounded-full border border-content/20 bg-surface px-4 py-2 text-sm font-semibold text-content transition hover:bg-surface-soft disabled:cursor-not-allowed disabled:opacity-60"
     >
       {refrescando ? "Actualizando..." : "Actualizar"}
     </button>

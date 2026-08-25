@@ -104,17 +104,17 @@ export default function TurnoForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4">
-      <div className="mt-6 w-full max-w-lg rounded-xl bg-white p-5 shadow-xl">
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4">
+      <div className="mt-6 w-full max-w-lg rounded-xl bg-surface p-5 shadow-xl">
+        <h2 className="mb-4 text-lg font-semibold text-content">
           Nuevo turno
         </h2>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Cancha</span>
+            <span className="font-medium text-content/70">Cancha</span>
             <select
-              className="rounded-lg border border-slate-300 px-2 py-1.5"
+              className="rounded-lg border border-content/20 px-2 py-1.5"
               value={canchaId}
               onChange={(event) => setCanchaId(Number(event.target.value))}
             >
@@ -127,29 +127,29 @@ export default function TurnoForm({
           </label>
 
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Fecha</span>
+            <span className="font-medium text-content/70">Fecha</span>
             <input
               type="date"
-              className="rounded-lg border border-slate-300 px-2 py-1.5"
+              className="rounded-lg border border-content/20 px-2 py-1.5"
               value={fecha}
               onChange={(event) => setFecha(event.target.value)}
             />
           </label>
 
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Hora de inicio</span>
+            <span className="font-medium text-content/70">Hora de inicio</span>
             <input
               type="time"
-              className="rounded-lg border border-slate-300 px-2 py-1.5"
+              className="rounded-lg border border-content/20 px-2 py-1.5"
               value={hora}
               onChange={(event) => setHora(event.target.value)}
             />
           </label>
 
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Duracion</span>
+            <span className="font-medium text-content/70">Duracion</span>
             <select
-              className="rounded-lg border border-slate-300 px-2 py-1.5"
+              className="rounded-lg border border-content/20 px-2 py-1.5"
               value={duracionMin}
               onChange={(event) => setDuracionMin(Number(event.target.value))}
             >
@@ -173,15 +173,15 @@ export default function TurnoForm({
         </label>
 
         {!bloqueo ? (
-          <div className="mt-3 rounded-lg border border-slate-200 p-3">
-            <p className="mb-2 text-sm font-medium text-slate-700">Titular</p>
+          <div className="mt-3 rounded-lg border border-content/10 p-3">
+            <p className="mb-2 text-sm font-medium text-content/70">Titular</p>
 
             {jugador ? (
-              <div className="flex items-center justify-between rounded bg-emerald-50 px-2 py-1.5 text-sm">
+              <div className="flex items-center justify-between rounded bg-success/12 px-2 py-1.5 text-sm">
                 <span>{jugador.nombre}</span>
                 <button
                   type="button"
-                  className="text-xs text-slate-600 underline"
+                  className="text-xs text-content/70 underline"
                   onClick={() => {
                     setJugador(null);
                     setBusqueda("");
@@ -194,18 +194,18 @@ export default function TurnoForm({
               <>
                 <input
                   type="text"
-                  className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+                  className="w-full rounded-lg border border-content/20 px-2 py-1.5 text-sm"
                   placeholder="Buscar un jugador registrado (nombre, email o DNI)"
                   value={busqueda}
                   onChange={(event) => setBusqueda(event.target.value)}
                 />
                 {terminoValido && resultados.length > 0 ? (
-                  <ul className="mt-1 max-h-40 overflow-y-auto rounded-lg border border-slate-200">
+                  <ul className="mt-1 max-h-40 overflow-y-auto rounded-lg border border-content/10">
                     {resultados.map((item) => (
                       <li key={item.id}>
                         <button
                           type="button"
-                          className="w-full px-2 py-1.5 text-left text-sm hover:bg-slate-50"
+                          className="w-full px-2 py-1.5 text-left text-sm hover:bg-surface-soft"
                           onClick={() => {
                             setJugador(item);
                             setTelefonoContacto(item.telefono ?? "");
@@ -219,12 +219,12 @@ export default function TurnoForm({
                   </ul>
                 ) : null}
 
-                <p className="mt-2 mb-1 text-xs text-slate-500">
+                <p className="mt-2 mb-1 text-xs text-content/55">
                   O cargalo a mano si no esta registrado:
                 </p>
                 <input
                   type="text"
-                  className="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+                  className="w-full rounded-lg border border-content/20 px-2 py-1.5 text-sm"
                   placeholder="Nombre y apellido"
                   value={nombreContacto}
                   onChange={(event) => setNombreContacto(event.target.value)}
@@ -234,7 +234,7 @@ export default function TurnoForm({
 
             <input
               type="tel"
-              className="mt-2 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+              className="mt-2 w-full rounded-lg border border-content/20 px-2 py-1.5 text-sm"
               placeholder="Telefono"
               value={telefonoContacto}
               onChange={(event) => setTelefonoContacto(event.target.value)}
@@ -252,9 +252,9 @@ export default function TurnoForm({
         ) : null}
 
         <label className="mt-3 flex flex-col gap-1 text-sm">
-          <span className="font-medium text-slate-700">Turno fijo</span>
+          <span className="font-medium text-content/70">Turno fijo</span>
           <select
-            className="rounded-lg border border-slate-300 px-2 py-1.5"
+            className="rounded-lg border border-content/20 px-2 py-1.5"
             value={frecuencia}
             onChange={(event) =>
               setFrecuencia(event.target.value as typeof frecuencia)
@@ -268,7 +268,7 @@ export default function TurnoForm({
             ))}
           </select>
           {frecuencia ? (
-            <span className="text-xs text-slate-500">
+            <span className="text-xs text-content/55">
               El turno fijo no tiene fecha de fin: se van creando las fechas con
               90 dias de anticipacion. Se corta cancelando con &quot;este y los
               siguientes&quot;.
@@ -277,9 +277,9 @@ export default function TurnoForm({
         </label>
 
         <label className="mt-3 flex flex-col gap-1 text-sm">
-          <span className="font-medium text-slate-700">Notas</span>
+          <span className="font-medium text-content/70">Notas</span>
           <textarea
-            className="rounded-lg border border-slate-300 px-2 py-1.5"
+            className="rounded-lg border border-content/20 px-2 py-1.5"
             rows={2}
             value={notas}
             onChange={(event) => setNotas(event.target.value)}
@@ -289,7 +289,7 @@ export default function TurnoForm({
         <div className="mt-4 flex justify-end gap-2">
           <button
             type="button"
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+            className="rounded-lg border border-content/20 px-3 py-1.5 text-sm"
             onClick={onCancel}
             disabled={guardando}
           >
@@ -297,7 +297,7 @@ export default function TurnoForm({
           </button>
           <button
             type="button"
-            className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
+            className="rounded-lg bg-success-solid px-3 py-1.5 text-sm font-semibold text-white disabled:opacity-50"
             onClick={handleSubmit}
             disabled={guardando || !puedeGuardar}
           >

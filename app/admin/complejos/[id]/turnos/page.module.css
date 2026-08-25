@@ -5,15 +5,20 @@
  * cancha. Los bloques se posicionan en absoluto dentro de la columna, con top y
  * height calculados a partir de los minutos, que es lo unico que permite
  * dibujar turnos de duracion arbitraria sin alinearlos a una celda.
+ *
+ * Los colores salen de los tokens del tema (ver `app/globals.css`). Los rellenos
+ * de estado se arman como `color-mix()` de su token sobre `--surface`: asi el
+ * tinte se aclara u oscurece solo con el tema, y el texto puede seguir siendo
+ * `--content` en los dos casos.
  */
 
 .calendario {
   --hora-alto: 56px;
   --col-horas: 64px;
   overflow-x: auto;
-  border: 1px solid #e2e8f0;
+  border: 1px solid color-mix(in oklab, var(--content) 12%, transparent);
   border-radius: 0.75rem;
-  background: #fff;
+  background: var(--surface);
 }
 
 .grilla {
@@ -26,15 +31,15 @@
   position: sticky;
   top: 0;
   z-index: 3;
-  background: #0f172a;
-  color: #fff;
+  background: var(--ink);
+  color: var(--on-ink);
   padding: 0.6rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   text-align: center;
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 1px solid color-mix(in oklab, var(--on-ink) 12%, transparent);
 }
 
 .encabezadoHoras {
@@ -42,13 +47,13 @@
   top: 0;
   left: 0;
   z-index: 4;
-  background: #0f172a;
+  background: var(--ink);
 }
 
 .columnaHoras {
   position: relative;
-  border-right: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border-right: 1px solid color-mix(in oklab, var(--content) 12%, transparent);
+  background: var(--surface-soft);
 }
 
 .marcaHora {
@@ -57,21 +62,21 @@
   right: 0;
   padding-right: 0.4rem;
   font-size: 0.7rem;
-  color: #64748b;
+  color: color-mix(in oklab, var(--content) 55%, transparent);
   text-align: right;
   transform: translateY(-0.5em);
 }
 
 .columna {
   position: relative;
-  border-left: 1px solid #e2e8f0;
+  border-left: 1px solid color-mix(in oklab, var(--content) 12%, transparent);
 }
 
 .lineaHora {
   position: absolute;
   left: 0;
   right: 0;
-  border-top: 1px solid #eef2f7;
+  border-top: 1px solid color-mix(in oklab, var(--content) 8%, transparent);
 }
 
 .fueraDeHorario {
@@ -80,10 +85,10 @@
   right: 0;
   background: repeating-linear-gradient(
     45deg,
-    #f1f5f9,
-    #f1f5f9 6px,
-    #e8eef5 6px,
-    #e8eef5 12px
+    color-mix(in oklab, var(--content) 4%, var(--surface)),
+    color-mix(in oklab, var(--content) 4%, var(--surface)) 6px,
+    color-mix(in oklab, var(--content) 8%, var(--surface)) 6px,
+    color-mix(in oklab, var(--content) 8%, var(--surface)) 12px
   );
 }
 
@@ -101,38 +106,38 @@
 }
 
 .bloqueTurno {
-  background: #dcfce7;
-  border-color: #16a34a;
-  color: #14532d;
+  background: color-mix(in oklab, var(--success) 18%, var(--surface));
+  border-color: var(--success);
+  color: var(--content);
   cursor: pointer;
 }
 
 .bloqueTurno:hover {
-  background: #bbf7d0;
+  background: color-mix(in oklab, var(--success) 30%, var(--surface));
 }
 
 .bloqueImpago {
-  background: #fef3c7;
-  border-color: #d97706;
-  color: #78350f;
+  background: color-mix(in oklab, var(--warning) 18%, var(--surface));
+  border-color: var(--warning);
+  color: var(--content);
 }
 
 .bloqueImpago:hover {
-  background: #fde68a;
+  background: color-mix(in oklab, var(--warning) 30%, var(--surface));
 }
 
 .bloqueBloqueado {
-  background: #e2e8f0;
-  border-color: #94a3b8;
-  color: #334155;
+  background: color-mix(in oklab, var(--content) 12%, var(--surface));
+  border-color: color-mix(in oklab, var(--content) 35%, transparent);
+  color: var(--content);
   cursor: pointer;
 }
 
 /* Los partidos de torneo son informativos: no se clickean. */
 .bloquePartido {
-  background: #dbeafe;
-  border-color: #2563eb;
-  color: #1e3a8a;
+  background: color-mix(in oklab, var(--info) 18%, var(--surface));
+  border-color: var(--info);
+  color: var(--content);
   cursor: not-allowed;
 }
 
@@ -149,18 +154,18 @@
   position: absolute;
   left: 3px;
   right: 3px;
-  border: 1px dashed #cbd5e1;
+  border: 1px dashed color-mix(in oklab, var(--content) 25%, transparent);
   border-radius: 0.5rem;
   background: transparent;
-  color: #94a3b8;
+  color: color-mix(in oklab, var(--content) 45%, transparent);
   font-size: 0.7rem;
   cursor: pointer;
 }
 
 .libre:hover {
-  border-color: var(--padel-green, #00c853);
-  background: #f0fdf4;
-  color: #15803d;
+  border-color: var(--padel-green);
+  background: color-mix(in oklab, var(--padel-green) 10%, var(--surface));
+  color: var(--content);
 }
 
 /* --- Vista semanal y mensual --- */
@@ -178,9 +183,9 @@
 }
 
 .diaCelda {
-  border: 1px solid #e2e8f0;
+  border: 1px solid color-mix(in oklab, var(--content) 12%, transparent);
   border-radius: 0.6rem;
-  background: #fff;
+  background: var(--surface);
   padding: 0.45rem;
   min-height: 96px;
   display: flex;
@@ -191,16 +196,16 @@
 }
 
 .diaCelda:hover {
-  border-color: var(--padel-green, #00c853);
+  border-color: var(--padel-green);
 }
 
 .diaCeldaOtroMes {
-  background: #f8fafc;
-  color: #94a3b8;
+  background: var(--surface-soft);
+  color: color-mix(in oklab, var(--content) 45%, transparent);
 }
 
 .diaCeldaCerrado {
-  background: #f1f5f9;
+  background: color-mix(in oklab, var(--content) 6%, var(--surface));
 }
 
 .diaNumero {

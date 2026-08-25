@@ -88,30 +88,30 @@ export default function RegistrarsePage() {
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
       <div className="grid gap-5 md:grid-cols-2">
-        <article className="overflow-hidden rounded-3xl bg-deep-black p-5 text-white shadow-[0_18px_32px_rgba(28,37,38,0.2)] sm:p-8">
+        <article className="overflow-hidden rounded-3xl bg-ink p-5 text-on-ink shadow-[var(--shadow-lg)] sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-padel-green">
             Registro PadelNet
           </p>
           <h1 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
             Crea tu cuenta y empeza a competir.
           </h1>
-          <p className="mt-3 text-sm text-white/80 sm:text-base">
+          <p className="mt-3 text-sm text-on-ink/80 sm:text-base">
             Registra tu perfil para ver torneos, anotarte y gestionar tu
             actividad.
           </p>
 
-          <ul className="mt-6 space-y-2 text-sm text-white/80">
+          <ul className="mt-6 space-y-2 text-sm text-on-ink/80">
             <li>Inscripcion a torneos y eventos</li>
             <li>Seguimiento de resultados</li>
             <li>Perfil personal editable</li>
           </ul>
         </article>
 
-        <article className="rounded-3xl border border-deep-black/10 bg-white p-5 shadow-sm sm:p-8">
-          <h2 className="text-2xl font-semibold text-deep-black">
+        <article className="rounded-3xl border border-content/10 bg-surface p-5 shadow-sm sm:p-8">
+          <h2 className="text-2xl font-semibold text-content">
             Crear cuenta
           </h2>
-          <p className="mt-2 text-sm text-deep-black/70">
+          <p className="mt-2 text-sm text-content/70">
             Completa los datos para registrarte.
           </p>
 
@@ -212,22 +212,22 @@ export default function RegistrarsePage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="mt-3 w-full rounded-full bg-padel-green px-4 py-3 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-3 w-full rounded-full bg-padel-green px-4 py-3 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? "Creando cuenta..." : "Crear cuenta"}
             </button>
           </form>
 
           <div className="my-4 flex items-center gap-3">
-            <span className="h-px flex-1 bg-deep-black/10" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-deep-black/50">
+            <span className="h-px flex-1 bg-content/10" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-content/50">
               o
             </span>
-            <span className="h-px flex-1 bg-deep-black/10" />
+            <span className="h-px flex-1 bg-content/10" />
           </div>
 
           <GoogleButton texto="Crear cuenta con Google" />
-          <p className="mt-2 text-center text-xs text-deep-black/60">
+          <p className="mt-2 text-center text-xs text-content/60">
             Con Google no hace falta confirmar el mail. Despues te pedimos DNI,
             fecha de nacimiento y categoria.
           </p>
@@ -235,7 +235,7 @@ export default function RegistrarsePage() {
           <div className="mt-4 flex items-center justify-between text-sm">
             <Link
               href="/"
-              className="font-semibold text-deep-black/70 transition hover:text-padel-green"
+              className="font-semibold text-content/70 transition hover:text-padel-green"
             >
               Volver al inicio
             </Link>

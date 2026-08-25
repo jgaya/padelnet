@@ -492,8 +492,10 @@ export const PerfilFormSchema = z.object({
   provincia: z.string().trim().max(80).optional(),
   localidad: z.string().trim().max(80).optional(),
   birthDate: z.string().optional(),
-  imageUrl: urlOrPathSchema.optional(),
-  avatarUrl: urlOrPathSchema.optional(),
+  // La foto NO es un campo del formulario. La sube AvatarCropper contra
+  // /api/perfil/avatar, queda PENDIENTE y solo la publica el superadmin al
+  // aprobarla. Cuando viajaba aca, el usuario podia mandar el avatarUrl que
+  // quisiera en el submit y saltearse la moderacion entera.
 });
 
 export type PerfilFormData = z.infer<typeof PerfilFormSchema>;

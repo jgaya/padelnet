@@ -64,7 +64,7 @@ export default function CalendarioTable({
           <td>{partidoEstado(partido)}</td>
           <td>
             {partido.resultado ?? (
-              <span className="text-deep-black/45">Sin resultado</span>
+              <span className="text-content/45">Sin resultado</span>
             )}
           </td>
         </tr>

@@ -25,8 +25,8 @@ export default function PerfilTabs() {
                 aria-current={isActive ? "page" : undefined}
                 className={`inline-flex whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
                   isActive
-                    ? "bg-padel-green text-deep-black"
-                    : "bg-surface-soft text-deep-black/70 hover:bg-padel-green/10 hover:text-deep-black"
+                    ? "bg-padel-green text-on-brand"
+                    : "bg-surface-soft text-content/70 hover:bg-padel-green/10 hover:text-content"
                 }`}
               >
                 {tab.label}

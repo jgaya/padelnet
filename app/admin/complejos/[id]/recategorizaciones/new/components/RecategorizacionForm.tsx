@@ -214,7 +214,7 @@ export default function RecategorizacionForm({
                         )}
                       </span>
                     ) : (
-                      <span className="text-deep-black/45">Sin categoria</span>
+                      <span className="text-content/45">Sin categoria</span>
                     )}
                   </td>
                   <td>
@@ -233,11 +233,11 @@ export default function RecategorizacionForm({
         </div>
 
         {buscando ? (
-          <p className="mt-3 text-center text-sm text-deep-black/60">
+          <p className="mt-3 text-center text-sm text-content/60">
             Buscando...
           </p>
         ) : candidatos.length === 0 ? (
-          <p className="mt-3 text-center text-sm text-deep-black/60">
+          <p className="mt-3 text-center text-sm text-content/60">
             {termino.trim().length < 2
               ? "Escribi al menos dos letras para buscar."
               : "No hay jugadores que coincidan."}
@@ -286,12 +286,12 @@ export default function RecategorizacionForm({
 
         <div className="mb-3">
           <label className="padel-form-label">Categoria previa:</label>
-          <p className="mb-0 text-sm text-deep-black/70">
+          <p className="mb-0 text-sm text-content/70">
             {jugador
               ? (jugador.categoriaActual ?? "Sin categoria")
               : "Selecciona un jugador"}
             {jugador?.categoriaActual && !jugador.categoriaDelClub ? (
-              <span className="ms-2 text-deep-black/50">
+              <span className="ms-2 text-content/50">
                 (viene de su perfil global; todavia no tiene categoria propia en
                 este club)
               </span>
@@ -311,14 +311,14 @@ export default function RecategorizacionForm({
           <div className="mb-3">
             <Badge text={movimiento.label} variant={movimiento.variant} />
             {movimiento.label === "Observado" ? (
-              <span className="ms-2 text-sm text-deep-black/70">
+              <span className="ms-2 text-sm text-content/70">
                 Queda en la misma categoria y se marca como observado.
               </span>
             ) : null}
           </div>
         ) : null}
 
-        <p className="text-sm text-deep-black/60">
+        <p className="text-sm text-content/60">
           La categoria nueva rige solo dentro de este complejo. El perfil del
           jugador en el resto de la plataforma no se modifica.
         </p>

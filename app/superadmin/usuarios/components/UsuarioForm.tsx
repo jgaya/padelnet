@@ -296,11 +296,11 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
           />
         </div>
 
-        <fieldset className="mb-3 rounded-xl border border-slate-200 p-3">
-          <legend className="px-1 text-sm font-semibold text-slate-700">
+        <fieldset className="mb-3 rounded-xl border border-content/10 p-3">
+          <legend className="px-1 text-sm font-semibold text-content/70">
             Acceso a un complejo
           </legend>
-          <p className="mb-3 text-sm text-slate-600">
+          <p className="mb-3 text-sm text-content/70">
             Opcional, e independiente del rol de plataforma: un jugador puede
             administrar un complejo y seguir siendo jugador en los demas.
           </p>
@@ -338,7 +338,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
           {tieneRolEnComplejo &&
           !isLoadingComplejos &&
           complejos.length === 0 ? (
-            <p className="mb-0 text-sm text-amber-700">
+            <p className="mb-0 text-sm text-warning">
               No hay complejos activos para asociar. Cree o active un complejo
               primero.
             </p>

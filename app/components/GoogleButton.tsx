@@ -97,7 +97,7 @@ export default function GoogleButton({
         type="button"
         onClick={() => void entrar()}
         disabled={cargando}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-deep-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-content/20 bg-surface px-4 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft disabled:cursor-not-allowed disabled:opacity-60"
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
           <path

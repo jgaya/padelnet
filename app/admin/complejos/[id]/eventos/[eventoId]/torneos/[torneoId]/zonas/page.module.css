@@ -1,5 +1,5 @@
 .zonaControlsCard {
-  background: #f7faf9;
+  background: color-mix(in oklab, var(--padel-green) 3%, var(--surface));
 }
 
 .zonaGrid {
@@ -50,13 +50,15 @@
   font-weight: 700;
   padding: 0.45rem 0.9rem;
   font-size: 0.85rem;
-  box-shadow: 0 6px 14px rgba(28, 37, 38, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .zonaBtnPrimary {
   background: var(--padel-green);
-  color: var(--deep-black);
-  border: 1px solid rgba(0, 200, 83, 0.6);
+  /* El verde no cambia entre temas, asi que su tinta tampoco: `--content` aca
+     daria texto claro sobre verde en el tema oscuro. */
+  color: var(--on-brand);
+  border: 1px solid color-mix(in oklab, var(--padel-green) 60%, transparent);
 }
 
 .zonaBtnPrimary:hover {
@@ -64,19 +66,19 @@
 }
 
 .zonaBtnOutline {
-  background: #ffffff;
-  color: var(--deep-black);
-  border: 1px solid rgba(28, 37, 38, 0.25);
+  background: var(--surface);
+  color: var(--content);
+  border: 1px solid color-mix(in oklab, var(--content) 25%, transparent);
 }
 
 .zonaBtnOutline:hover {
-  background: #eef2f1;
+  background: var(--surface-soft);
 }
 
 .zonaBtnSave {
   background: var(--energy-orange);
   color: #ffffff;
-  border: 1px solid rgba(255, 79, 0, 0.6);
+  border: 1px solid color-mix(in oklab, var(--energy-orange) 60%, transparent);
 }
 
 .zonaBtnSave:hover {
@@ -88,15 +90,15 @@
   flex-wrap: wrap;
   gap: 1rem;
   font-size: 0.85rem;
-  color: var(--deep-black);
+  color: var(--content);
   font-weight: 600;
 }
 
 .zonaPoolSection {
-  border: 1px dashed rgba(28, 37, 38, 0.2);
+  border: 1px dashed color-mix(in oklab, var(--content) 20%, transparent);
   border-radius: 0.95rem;
   padding: 1rem;
-  background: #f9fbfb;
+  background: color-mix(in oklab, var(--padel-green) 2%, var(--surface));
 }
 
 .zonaPoolHeader {
@@ -104,7 +106,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(28, 37, 38, 0.65);
+  color: color-mix(in oklab, var(--content) 65%, transparent);
   margin-bottom: 0.6rem;
 }
 
@@ -121,20 +123,20 @@
   gap: 0.35rem;
   padding: 0.35rem 0.6rem;
   border-radius: 0.65rem;
-  border: 1px solid rgba(0, 200, 83, 0.35);
-  background: rgba(0, 200, 83, 0.12);
+  border: 1px solid color-mix(in oklab, var(--padel-green) 35%, transparent);
+  background: color-mix(in oklab, var(--padel-green) 12%, transparent);
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--deep-black);
+  color: var(--content);
   cursor: grab;
   user-select: none;
   min-width: 0;
 }
 
 .zonaChipSuplente {
-  border-color: rgba(255, 79, 0, 0.3);
-  background: rgba(255, 79, 0, 0.12);
-  color: #9a3600;
+  border-color: color-mix(in oklab, var(--energy-orange) 30%, transparent);
+  background: color-mix(in oklab, var(--energy-orange) 12%, transparent);
+  color: var(--warning);
 }
 
 .zonaChipIndex {
@@ -144,7 +146,7 @@
   min-width: 1.3rem;
   padding: 0.1rem 0.35rem;
   border-radius: 0.4rem;
-  background: rgba(28, 37, 38, 0.08);
+  background: color-mix(in oklab, var(--content) 8%, transparent);
   font-size: 0.7rem;
   font-weight: 700;
 }
@@ -165,9 +167,9 @@
 }
 
 .zonaChipAction {
-  border: 1px solid rgba(28, 37, 38, 0.2);
-  background: #ffffff;
-  color: rgba(28, 37, 38, 0.8);
+  border: 1px solid color-mix(in oklab, var(--content) 20%, transparent);
+  background: var(--surface);
+  color: color-mix(in oklab, var(--content) 80%, transparent);
   font-size: 0.65rem;
   font-weight: 700;
   line-height: 1;
@@ -182,10 +184,10 @@
 }
 
 .zonaCard {
-  border: 1px solid rgba(28, 37, 38, 0.12);
+  border: 1px solid color-mix(in oklab, var(--content) 12%, transparent);
   border-radius: 1rem;
-  background: #ffffff;
-  box-shadow: 0 12px 24px rgba(28, 37, 38, 0.08);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
   padding: 0.9rem;
   display: flex;
   flex-direction: column;
@@ -202,12 +204,12 @@
 
 .zonaCardInput {
   flex: 1;
-  border: 1px solid rgba(28, 37, 38, 0.15);
+  border: 1px solid color-mix(in oklab, var(--content) 15%, transparent);
   border-radius: 0.7rem;
   padding: 0.35rem 0.6rem;
   font-size: 0.85rem;
   font-weight: 600;
-  background: #f3f6f5;
+  background: var(--surface-soft);
 }
 
 .zonaCardActions {
@@ -221,8 +223,8 @@
   font-weight: 700;
   padding: 0.25rem 0.5rem;
   border-radius: 0.6rem;
-  background: #eef2f1;
-  color: rgba(28, 37, 38, 0.8);
+  background: var(--surface-soft);
+  color: color-mix(in oklab, var(--content) 80%, transparent);
 }
 
 .zonaCardBody {
@@ -232,8 +234,8 @@
   gap: 0.5rem;
   padding: 0.5rem;
   border-radius: 0.85rem;
-  border: 1px dashed rgba(28, 37, 38, 0.18);
-  background: #f8faf9;
+  border: 1px dashed color-mix(in oklab, var(--content) 18%, transparent);
+  background: color-mix(in oklab, var(--padel-green) 3%, var(--surface));
   min-height: 90px;
   min-width: 0;
 }
@@ -244,5 +246,5 @@
 
 .zonaEmpty {
   font-size: 0.78rem;
-  color: rgba(28, 37, 38, 0.5);
+  color: color-mix(in oklab, var(--content) 50%, transparent);
 }

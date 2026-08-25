@@ -423,7 +423,8 @@ export const ModelName = {
   Generacion: 'Generacion',
   EmailVerification: 'EmailVerification',
   PushToken: 'PushToken',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  ImagenPerfil: 'ImagenPerfil'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -439,7 +440,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "complejo" | "complejoHorario" | "complejoHorarioExcepcion" | "complejoFeature" | "complejoMembership" | "perfilJugadorComplejo" | "cancha" | "evento" | "torneo" | "pareja" | "grupo" | "grupoPareja" | "partido" | "partidoSet" | "ronda" | "ranking" | "recategorizacion" | "turnoSerie" | "turnoSlot" | "turnoReserva" | "sponsor" | "complejoSponsor" | "generacion" | "emailVerification" | "pushToken" | "notification"
+    modelProps: "user" | "complejo" | "complejoHorario" | "complejoHorarioExcepcion" | "complejoFeature" | "complejoMembership" | "perfilJugadorComplejo" | "cancha" | "evento" | "torneo" | "pareja" | "grupo" | "grupoPareja" | "partido" | "partidoSet" | "ronda" | "ranking" | "recategorizacion" | "turnoSerie" | "turnoSlot" | "turnoReserva" | "sponsor" | "complejoSponsor" | "generacion" | "emailVerification" | "pushToken" | "notification" | "imagenPerfil"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2225,6 +2226,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ImagenPerfil: {
+      payload: Prisma.$ImagenPerfilPayload<ExtArgs>
+      fields: Prisma.ImagenPerfilFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ImagenPerfilFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImagenPerfilPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ImagenPerfilFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImagenPerfilPayload>
+        }
+        findFirst: {
+          args: Prisma.ImagenPerfilFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImagenPerfilPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ImagenPerfilFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImagenPerfilPayload>
+        }
+        findMany: {
+          args: Prisma.ImagenPerfilFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImagenPerfilPayload>[]
+        }
+        create: {
+          args: Prisma.ImagenPerfilCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImagenPerfilPayload>
+        }
+        createMany: {
+          args: Prisma.ImagenPerfilCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ImagenPerfilDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImagenPerfilPayload>
+        }
+        update: {
+          args: Prisma.ImagenPerfilUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImagenPerfilPayload>
+        }
+        deleteMany: {
+          args: Prisma.ImagenPerfilDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ImagenPerfilUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ImagenPerfilUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImagenPerfilPayload>
+        }
+        aggregate: {
+          args: Prisma.ImagenPerfilAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateImagenPerfil>
+        }
+        groupBy: {
+          args: Prisma.ImagenPerfilGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImagenPerfilGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ImagenPerfilCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImagenPerfilCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2721,6 +2788,21 @@ export const NotificationScalarFieldEnum = {
 export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
+export const ImagenPerfilScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  archivoImagen: 'archivoImagen',
+  archivoAvatar: 'archivoAvatar',
+  estado: 'estado',
+  moderadaPorId: 'moderadaPorId',
+  moderadaAt: 'moderadaAt',
+  motivoRechazo: 'motivoRechazo',
+  createdAt: 'createdAt'
+} as const
+
+export type ImagenPerfilScalarFieldEnum = (typeof ImagenPerfilScalarFieldEnum)[keyof typeof ImagenPerfilScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2938,6 +3020,15 @@ export const NotificationOrderByRelevanceFieldEnum = {
 export type NotificationOrderByRelevanceFieldEnum = (typeof NotificationOrderByRelevanceFieldEnum)[keyof typeof NotificationOrderByRelevanceFieldEnum]
 
 
+export const ImagenPerfilOrderByRelevanceFieldEnum = {
+  archivoImagen: 'archivoImagen',
+  archivoAvatar: 'archivoAvatar',
+  motivoRechazo: 'motivoRechazo'
+} as const
+
+export type ImagenPerfilOrderByRelevanceFieldEnum = (typeof ImagenPerfilOrderByRelevanceFieldEnum)[keyof typeof ImagenPerfilOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -3102,6 +3193,13 @@ export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
  * Reference to a field of type 'NotificationStatus'
  */
 export type EnumNotificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ImagenPerfilEstado'
+ */
+export type EnumImagenPerfilEstadoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImagenPerfilEstado'>
     
 
 
@@ -3289,6 +3387,7 @@ export type GlobalOmitConfig = {
   emailVerification?: Prisma.EmailVerificationOmit
   pushToken?: Prisma.PushTokenOmit
   notification?: Prisma.NotificationOmit
+  imagenPerfil?: Prisma.ImagenPerfilOmit
 }
 
 /* Types for Logging */

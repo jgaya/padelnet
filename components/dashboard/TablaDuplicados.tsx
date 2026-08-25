@@ -16,7 +16,7 @@ export default function TablaDuplicados({
 }) {
   return (
     <div className="space-y-3">
-      <p className="text-sm text-deep-black/70">
+      <p className="text-sm text-content/70">
         {grupos.length} nombre{grupos.length === 1 ? "" : "s"} repetido
         {grupos.length === 1 ? "" : "s"}. Puede tratarse de la misma persona
         anotada dos veces, o de un homonimo.
@@ -26,10 +26,10 @@ export default function TablaDuplicados({
         {grupos.map((grupo) => (
           <li
             key={grupo.nombreApellido}
-            className="rounded-xl border border-deep-black/10 px-3 py-2.5"
+            className="rounded-xl border border-content/10 px-3 py-2.5"
           >
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-semibold text-deep-black">
+              <span className="font-semibold text-content">
                 {grupo.nombreApellido}
               </span>
               <span className="rounded-full bg-energy-orange/15 px-2 py-0.5 text-xs font-semibold text-energy-orange">
@@ -45,14 +45,14 @@ export default function TablaDuplicados({
                 >
                   <Link
                     href={`/superadmin/usuarios/${usuario.id}`}
-                    className="text-deep-black/80 underline-offset-2 hover:text-padel-green hover:underline"
+                    className="text-content/80 underline-offset-2 hover:text-padel-green hover:underline"
                   >
                     {usuario.email}
                   </Link>
                   {usuario.emailVerified ? (
                     <span className="text-xs text-padel-green">verificado</span>
                   ) : (
-                    <span className="text-xs text-deep-black/50">
+                    <span className="text-xs text-content/50">
                       sin verificar
                     </span>
                   )}

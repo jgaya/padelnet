@@ -3,7 +3,7 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import type { Bucket } from "@/lib/dashboard-calculos";
-import { colorDeSerie, DEEP_BLACK } from "../paleta";
+import { colorDeSerie, usePaletaGraficos } from "../paleta";
 
 type GraficoDonaProps = {
   datos: Bucket[];
@@ -18,6 +18,7 @@ type GraficoDonaProps = {
  * porque en pantallas chicas se apila debajo en vez de comerse el grafico.
  */
 export default function GraficoDona({ datos, alto = 220 }: GraficoDonaProps) {
+  const paleta = usePaletaGraficos();
   const total = datos.reduce((acc, d) => acc + d.value, 0);
 
   return (
@@ -35,13 +36,15 @@ export default function GraficoDona({ datos, alto = 220 }: GraficoDonaProps) {
               stroke="none"
             >
               {datos.map((dato, indice) => (
-                <Cell key={dato.label} fill={colorDeSerie(indice)} />
+                <Cell key={dato.label} fill={colorDeSerie(paleta, indice)} />
               ))}
             </Pie>
             <Tooltip
               contentStyle={{
                 borderRadius: 12,
-                border: `1px solid ${DEEP_BLACK}22`,
+                border: `1px solid ${paleta.texto}22`,
+                background: paleta.superficie,
+                color: paleta.texto,
                 fontSize: 12,
               }}
             />
@@ -55,13 +58,13 @@ export default function GraficoDona({ datos, alto = 220 }: GraficoDonaProps) {
             <span
               aria-hidden="true"
               className="h-3 w-3 shrink-0 rounded-full"
-              style={{ backgroundColor: colorDeSerie(indice) }}
+              style={{ backgroundColor: colorDeSerie(paleta, indice) }}
             />
-            <span className="truncate text-deep-black/80">{dato.label}</span>
-            <span className="ml-auto shrink-0 font-semibold text-deep-black">
+            <span className="truncate text-content/80">{dato.label}</span>
+            <span className="ml-auto shrink-0 font-semibold text-content">
               {dato.value}
             </span>
-            <span className="w-10 shrink-0 text-right text-xs text-deep-black/60">
+            <span className="w-10 shrink-0 text-right text-xs text-content/60">
               {total > 0 ? Math.round((dato.value / total) * 100) : 0}%
             </span>
           </li>

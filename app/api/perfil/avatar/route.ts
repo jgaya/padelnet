@@ -1,38 +1,28 @@
 import { NextResponse } from "next/server";
-import path from "path";
-import { mkdir, writeFile } from "fs/promises";
-import { randomUUID } from "crypto";
+
+import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
+import {
+  borrarArchivos,
+  guardarArchivos,
+  parsearDataUrl,
+} from "@/lib/imagenes-perfil";
+import { urlDeImagen } from "@/lib/imagenes-perfil-rutas";
 
 export const runtime = "nodejs";
 
-const MAX_BYTES = 5 * 1024 * 1024;
-
-type ParsedImage = {
-  buffer: Buffer;
-  ext: "png" | "jpg";
-};
-
-function parseImageDataUrl(dataUrl: string, label: string): ParsedImage {
-  const match = /^data:(image\/(?:png|jpeg|jpg));base64,(.+)$/i.exec(dataUrl);
-  if (!match) {
-    throw new Error(`Formato de ${label} invalido`);
-  }
-
-  const mime = match[1].toLowerCase();
-  const base64 = match[2];
-  const buffer = Buffer.from(base64, "base64");
-
-  if (buffer.length > MAX_BYTES) {
-    throw new Error(`${label} supera el maximo permitido`);
-  }
-
-  return {
-    buffer,
-    ext: mime === "image/png" ? "png" : "jpg",
-  };
-}
-
+/**
+ * Subida de la foto de perfil.
+ *
+ * Deja la imagen en estado PENDIENTE y **no toca `User.avatarUrl`**: hasta que
+ * el superadmin la apruebe desde /superadmin/imagenes, la foto no se ve en
+ * ningun lado salvo para su dueño. Si el usuario ya tenia una aprobada, esa se
+ * sigue viendo mientras tanto.
+ *
+ * Las URLs que devuelve son de la ruta privada
+ * (/api/imagenes/perfil/<id>/<variante>), que a quien no es el dueño ni
+ * superadmin le responde 404.
+ */
 export async function POST(request: Request) {
   const session = await getSession();
   if (!session) {
@@ -59,11 +49,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
   }
 
-  let image: ParsedImage;
-  let avatar: ParsedImage;
+  let imagen;
+  let avatar;
   try {
-    image = parseImageDataUrl(imageDataUrl, "imagen");
-    avatar = parseImageDataUrl(avatarDataUrl, "avatar");
+    imagen = parsearDataUrl(imageDataUrl, "imagen");
+    avatar = parsearDataUrl(avatarDataUrl, "avatar");
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Datos invalidos" },
@@ -72,25 +62,40 @@ export async function POST(request: Request) {
   }
 
   const userId = session.userId;
-  const baseDir = path.join(
-    process.cwd(),
-    "public",
-    "uploads",
-    "users",
-    String(userId),
-  );
-  await mkdir(baseDir, { recursive: true });
 
-  const stamp = Date.now();
-  const token = randomUUID();
-  const imageName = `image-${stamp}-${token}.${image.ext}`;
-  const avatarName = `avatar-${stamp}-${token}.${avatar.ext}`;
+  // Una sola pendiente por usuario. Si no, diez intentos seguidos de encontrar
+  // el recorte que le gusta son diez filas en la cola de moderacion.
+  const anterior = await prisma.imagenPerfil.findFirst({
+    where: { userId, estado: "PENDIENTE" },
+    select: { id: true, archivoImagen: true, archivoAvatar: true },
+  });
 
-  await writeFile(path.join(baseDir, imageName), image.buffer);
-  await writeFile(path.join(baseDir, avatarName), avatar.buffer);
+  const archivos = await guardarArchivos(userId, { imagen, avatar });
+
+  const creada = await prisma.$transaction(async (tx) => {
+    if (anterior) {
+      await tx.imagenPerfil.delete({ where: { id: anterior.id } });
+    }
+
+    return tx.imagenPerfil.create({
+      data: { userId, ...archivos },
+      select: { id: true, estado: true },
+    });
+  });
+
+  if (anterior) {
+    // Despues de la transaccion: si falla, lo unico que queda es un archivo
+    // suelto que ya no referencia nadie.
+    await borrarArchivos(userId, [
+      anterior.archivoImagen,
+      anterior.archivoAvatar,
+    ]);
+  }
 
   return NextResponse.json({
-    imageUrl: `/uploads/users/${userId}/${imageName}`,
-    avatarUrl: `/uploads/users/${userId}/${avatarName}`,
+    imagenId: creada.id,
+    estado: creada.estado,
+    imageUrl: urlDeImagen(creada.id, "imagen"),
+    avatarUrl: urlDeImagen(creada.id, "avatar"),
   });
 }

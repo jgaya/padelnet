@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
-import { cerrarZonasYArmarLlave } from "@/actions/torneos-partidos";
+import { cerrarZona, cerrarZonasYArmarLlave } from "@/actions/torneos-partidos";
 import { finalizarTorneo, publicarTorneo } from "@/actions/torneos";
 import Tooltip from "@/components/Tooltip";
 // Solo el tipo: se borra al compilar, asi que no arrastra el modulo server-only.
@@ -38,6 +38,9 @@ export default function AvanceTorneoPanel({
   const showSnackbar = useSnackbar();
   const [trabajando, setTrabajando] = useState(false);
   const [cerrado, setCerrado] = useState(false);
+  // Zonas cerradas en esta pasada: el panel es un server component y no se
+  // refresca hasta el reload, asi que sin esto el boton queda re-clickeable.
+  const [zonasCerradas, setZonasCerradas] = useState<number[]>([]);
 
   if (!estado) return null;
 
@@ -97,6 +100,17 @@ export default function AvanceTorneoPanel({
     }
   };
 
+  const handleCerrarZona = async (grupoId: number) => {
+    if (
+      await correr(
+        () => cerrarZona(complejoId, eventoId, torneoId, grupoId),
+        "No se pudo cerrar la zona",
+      )
+    ) {
+      setZonasCerradas((prev) => [...prev, grupoId]);
+    }
+  };
+
   const handlePublicar = () =>
     correr(
       () => publicarTorneo(complejoId, eventoId, torneoId),
@@ -110,9 +124,9 @@ export default function AvanceTorneoPanel({
     );
 
   return (
-    <section className="mb-4 overflow-hidden rounded-2xl border border-deep-black/10 bg-white">
-      <div className="border-b border-deep-black/10 bg-surface-soft px-4 py-3">
-        <h2 className="text-lg font-semibold text-deep-black">
+    <section className="mb-4 overflow-hidden rounded-2xl border border-content/10 bg-surface">
+      <div className="border-b border-content/10 bg-surface-soft px-4 py-3">
+        <h2 className="text-lg font-semibold text-content">
           Avance del torneo
         </h2>
       </div>
@@ -125,7 +139,7 @@ export default function AvanceTorneoPanel({
                 ? "bg-padel-green/15 text-padel-green"
                 : enJuego
                   ? "bg-energy-orange/15 text-energy-orange"
-                  : "bg-surface-soft text-deep-black/80"
+                  : "bg-surface-soft text-content/80"
             }`}
           >
             Estado: {ESTADO_LABEL[estado.status]}
@@ -135,7 +149,7 @@ export default function AvanceTorneoPanel({
             className={`rounded-full px-3 py-1 ${
               zonaCompleta
                 ? "bg-padel-green/15 text-padel-green"
-                : "bg-surface-soft text-deep-black/80"
+                : "bg-surface-soft text-content/80"
             }`}
           >
             Zonas: {estado.zonaPartidosCargados}/{estado.zonaPartidosTotal}{" "}
@@ -148,7 +162,7 @@ export default function AvanceTorneoPanel({
             </span>
           ) : null}
 
-          <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+          <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
             Llave: {estado.llavePrimeraRondaResuelta}/
             {estado.llavePrimeraRondaTotal} cruces definidos
           </span>
@@ -161,11 +175,90 @@ export default function AvanceTorneoPanel({
         </div>
 
         {estado.zonaPartidosSinResolver > 0 ? (
-          <p className="text-sm text-deep-black/70">
+          <p className="text-sm text-content/70">
             Los partidos &quot;a definir&quot; son los de ganadores y perdedores
             de las zonas de 4. Se completan solos a medida que cargas los
             resultados de los que los alimentan.
           </p>
+        ) : null}
+
+        {estado.zonas.length > 0 ? (
+          <div>
+            <h3 className="mb-1 text-sm font-semibold uppercase tracking-[0.12em] text-content/60">
+              Zonas
+            </h3>
+            <p className="mb-2 text-sm text-content/70">
+              Cada zona se puede cerrar apenas tiene todos sus resultados: los
+              cruces que dependen de ella quedan definidos sin esperar al resto
+              del torneo.
+            </p>
+
+            <ul className="divide-y divide-content/10 overflow-hidden rounded-xl border border-content/10">
+              {estado.zonas.map((zona) => {
+                const yaCerrada =
+                  zona.cerrada || zonasCerradas.includes(zona.grupoId);
+                const bloqueada = zona.motivoBloqueo !== null;
+
+                return (
+                  <li
+                    key={zona.grupoId}
+                    className="flex flex-wrap items-center justify-between gap-2 bg-surface px-4 py-3"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-semibold text-content">
+                          {zona.nombre}
+                        </span>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                            zona.partidosTotal > 0 &&
+                            zona.partidosCargados === zona.partidosTotal
+                              ? "bg-padel-green/15 text-padel-green"
+                              : "bg-surface-soft text-content/80"
+                          }`}
+                        >
+                          {zona.partidosCargados}/{zona.partidosTotal}{" "}
+                          resultados
+                        </span>
+                        {yaCerrada ? (
+                          <span className="rounded-full bg-padel-green/15 px-2.5 py-0.5 text-xs font-semibold text-padel-green">
+                            Cerrada
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {bloqueada ? (
+                        <p className="mt-1 mb-0 text-xs text-energy-orange">
+                          {zona.motivoBloqueo}
+                        </p>
+                      ) : (
+                        <p className="mt-1 mb-0 text-xs text-content/60">
+                          Define {zona.crucesTotal} cruce(s) de la llave.
+                        </p>
+                      )}
+                    </div>
+
+                    <Tooltip
+                      label={
+                        yaCerrada
+                          ? "Rehace los cruces de esta zona con las posiciones de ahora."
+                          : "Define los cruces de la llave que salen de esta zona."
+                      }
+                    >
+                      <button
+                        type="button"
+                        className="rounded-full border border-padel-green bg-surface px-3.5 py-2 text-sm font-semibold text-content transition hover:bg-padel-green/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        onClick={() => void handleCerrarZona(zona.grupoId)}
+                        disabled={bloqueada || trabajando}
+                      >
+                        {yaCerrada ? "Volver a cerrar" : "Cerrar zona"}
+                      </button>
+                    </Tooltip>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         ) : null}
 
         {estado.motivoBloqueo ? (
@@ -185,7 +278,7 @@ export default function AvanceTorneoPanel({
             <Tooltip label="Lo hace visible y abre las inscripciones. Avisa a los jugadores de la categoria.">
               <button
                 type="button"
-                className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
                 onClick={() => void handlePublicar()}
                 disabled={trabajando}
               >
@@ -226,7 +319,7 @@ export default function AvanceTorneoPanel({
           >
             <button
               type="button"
-              className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
               onClick={() => void handleCerrar()}
               disabled={!puedeArmar || trabajando || cerrado}
             >
@@ -240,25 +333,25 @@ export default function AvanceTorneoPanel({
 
           <Link
             href={`${raiz}/zonas`}
-            className="inline-flex items-center rounded-full border border-deep-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+            className="inline-flex items-center rounded-full border border-content/20 bg-surface px-4 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
           >
             Zonas
           </Link>
           <Link
             href={`${raiz}/partidos`}
-            className="inline-flex items-center rounded-full border border-deep-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+            className="inline-flex items-center rounded-full border border-content/20 bg-surface px-4 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
           >
             Partidos
           </Link>
           <Link
             href={`${raiz}/resultados`}
-            className="inline-flex items-center rounded-full border border-deep-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+            className="inline-flex items-center rounded-full border border-content/20 bg-surface px-4 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
           >
             Resultados
           </Link>
           <Link
             href={`${raiz}/inscripciones`}
-            className="inline-flex items-center rounded-full border border-deep-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+            className="inline-flex items-center rounded-full border border-content/20 bg-surface px-4 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
           >
             Inscripciones
           </Link>

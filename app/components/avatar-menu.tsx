@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { logout } from "@/actions/auth";
 import EnableNotifications from "@/app/components/PermisionPush";
+import ThemeToggle from "@/app/components/ThemeToggle";
 
 type AvatarMenuUser = {
   id: number;
@@ -61,7 +62,7 @@ export function AvatarMenu({ user, profileLinks }: AvatarMenuProps) {
     return (
       <Link
         href="/login"
-        className="ml-1 inline-flex items-center justify-center rounded-full bg-energy-orange px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_16px_rgba(255,79,0,0.3)] transition hover:brightness-95"
+        className="ml-1 inline-flex items-center justify-center rounded-full bg-energy-orange px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_16px_var(--glow-orange-strong)] transition hover:brightness-95"
       >
         Iniciar
       </Link>
@@ -73,7 +74,7 @@ export function AvatarMenu({ user, profileLinks }: AvatarMenuProps) {
       <button
         type="button"
         onClick={() => setIsMenuOpen((prev) => !prev)}
-        className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-energy-orange text-xs font-bold tracking-wide text-white shadow-[0_8px_16px_rgba(255,79,0,0.3)] transition hover:brightness-95"
+        className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-surface bg-energy-orange text-xs font-bold tracking-wide text-white shadow-[0_8px_16px_var(--glow-orange-strong)] transition hover:brightness-95"
         aria-label="Abrir menu personal"
         aria-expanded={isMenuOpen}
         aria-controls="personal-menu"
@@ -91,24 +92,24 @@ export function AvatarMenu({ user, profileLinks }: AvatarMenuProps) {
 
       <div
         id="personal-menu"
-        className={`absolute right-0 top-12 w-56 rounded-2xl border border-deep-black/10 bg-white p-2 shadow-[0_16px_30px_rgba(28,37,38,0.16)] transition duration-150 ${isMenuOpen ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"}`}
+        className={`absolute right-0 top-12 w-56 rounded-2xl border border-content/10 bg-surface p-2 shadow-[var(--shadow-lg)] transition duration-150 ${isMenuOpen ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"}`}
       >
-        <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/50">
+        <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-[0.16em] text-content/50">
           Cuenta
         </p>
 
         <div className="mb-1 rounded-xl bg-surface-soft px-3 py-2 text-center">
-          <p className="text-sm font-semibold text-deep-black">
+          <p className="text-sm font-semibold text-content">
             {user.name} {user.lastname}
           </p>
-          <p className="text-xs text-deep-black/70">{user.email}</p>
+          <p className="text-xs text-content/70">{user.email}</p>
         </div>
 
         {profileLinks.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="block rounded-xl px-3 py-2 text-sm text-deep-black transition hover:bg-surface-soft"
+            className="block rounded-xl px-3 py-2 text-sm text-content transition hover:bg-surface-soft"
             onClick={() => setIsMenuOpen(false)}
           >
             {item.label}
@@ -117,6 +118,8 @@ export function AvatarMenu({ user, profileLinks }: AvatarMenuProps) {
         <div className="px-3 py-2">
           <EnableNotifications userId={user.id} showState={false} />
         </div>
+
+        <ThemeToggle />
 
         <form action={logout} className="mt-1">
           <button

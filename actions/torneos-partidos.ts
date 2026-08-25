@@ -10,11 +10,13 @@ import {
 } from "@/actions/notificaciones-eventos";
 import type { FaseLlave } from "@/lib/torneo-llave";
 import {
+  cerrarZonaDeTorneo,
   cerrarZonasYArmarLlaveDeTorneo,
   getEstadoAvance,
   propagarResultado,
 } from "@/lib/torneo-avance";
 import type {
+  CerrarZonaResult,
   CerrarZonasResult,
   EstadoAvanceTorneo,
 } from "@/lib/torneo-avance";
@@ -26,6 +28,10 @@ import {
   type GrillaZona,
 } from "@/lib/torneo-grilla";
 import { buildPartidoIdLegible } from "@/lib/partido-id-legible";
+import {
+  buildVistaPublicaTorneo,
+  type PublicTorneoDetail,
+} from "@/lib/torneo-vista-publica";
 
 export type TorneoPartidosDayConfig = {
   label: string;
@@ -940,4 +946,35 @@ export async function cerrarZonasYArmarLlave(
 ): Promise<CerrarZonasResult> {
   await ensureTorneoAccess(complejoId, eventoId, torneoId);
   return cerrarZonasYArmarLlaveDeTorneo(torneoId);
+}
+
+/**
+ * Cierra una zona sola y define los cruces de la llave que dependen de ella,
+ * sin esperar a que el resto del torneo termine sus zonas.
+ */
+export async function cerrarZona(
+  complejoId: number,
+  eventoId: number,
+  torneoId: number,
+  grupoId: number,
+): Promise<CerrarZonaResult> {
+  await ensureTorneoAccess(complejoId, eventoId, torneoId);
+  return cerrarZonaDeTorneo(torneoId, grupoId);
+}
+
+/**
+ * Las zonas y la llave del torneo tal como las ve el jugador, para revisarlas
+ * al lado de la carga de resultados.
+ *
+ * No filtra por publicado ni por status, a diferencia de la version publica: el
+ * admin tiene que poder mirar el cuadro de un torneo en borrador. El permiso lo
+ * verifica `ensureTorneoAccess`.
+ */
+export async function getTorneoVistaPublica(
+  complejoId: number,
+  eventoId: number,
+  torneoId: number,
+): Promise<PublicTorneoDetail | null> {
+  await ensureTorneoAccess(complejoId, eventoId, torneoId);
+  return buildVistaPublicaTorneo({ id: torneoId, deletedAt: null });
 }

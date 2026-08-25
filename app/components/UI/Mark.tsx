@@ -13,7 +13,7 @@ export default function Mark({
 }: MarkProps) {
   return (
     <Tag
-      className={`font-logo m-0 text-3xl font-semibold leading-tight tracking-tight text-deep-black ${className}`}
+      className={`font-logo m-0 text-3xl font-semibold leading-tight tracking-tight text-content ${className}`}
     >
       {title}
     </Tag>

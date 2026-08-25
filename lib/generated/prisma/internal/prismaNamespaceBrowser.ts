@@ -77,7 +77,8 @@ export const ModelName = {
   Generacion: 'Generacion',
   EmailVerification: 'EmailVerification',
   PushToken: 'PushToken',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  ImagenPerfil: 'ImagenPerfil'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -553,6 +554,21 @@ export const NotificationScalarFieldEnum = {
 export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
+export const ImagenPerfilScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  archivoImagen: 'archivoImagen',
+  archivoAvatar: 'archivoAvatar',
+  estado: 'estado',
+  moderadaPorId: 'moderadaPorId',
+  moderadaAt: 'moderadaAt',
+  motivoRechazo: 'motivoRechazo',
+  createdAt: 'createdAt'
+} as const
+
+export type ImagenPerfilScalarFieldEnum = (typeof ImagenPerfilScalarFieldEnum)[keyof typeof ImagenPerfilScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -768,4 +784,13 @@ export const NotificationOrderByRelevanceFieldEnum = {
 } as const
 
 export type NotificationOrderByRelevanceFieldEnum = (typeof NotificationOrderByRelevanceFieldEnum)[keyof typeof NotificationOrderByRelevanceFieldEnum]
+
+
+export const ImagenPerfilOrderByRelevanceFieldEnum = {
+  archivoImagen: 'archivoImagen',
+  archivoAvatar: 'archivoAvatar',
+  motivoRechazo: 'motivoRechazo'
+} as const
+
+export type ImagenPerfilOrderByRelevanceFieldEnum = (typeof ImagenPerfilOrderByRelevanceFieldEnum)[keyof typeof ImagenPerfilOrderByRelevanceFieldEnum]
 

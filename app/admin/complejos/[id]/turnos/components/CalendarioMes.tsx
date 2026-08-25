@@ -45,7 +45,7 @@ export default function CalendarioMes({
         {DIAS_SEMANA.map((dia) => (
           <div
             key={dia}
-            className="px-1 text-center text-xs font-semibold uppercase tracking-wide text-slate-500"
+            className="px-1 text-center text-xs font-semibold uppercase tracking-wide text-content/55"
           >
             {dia.slice(0, 3)}
           </div>
@@ -73,27 +73,27 @@ export default function CalendarioMes({
               <span className={styles.diaNumero}>{fecha.getDate()}</span>
 
               {horario?.cerrado ? (
-                <span className="text-xs text-slate-500">Cerrado</span>
+                <span className="text-xs text-content/55">Cerrado</span>
               ) : null}
 
               <span className="flex flex-wrap gap-1">
                 {turnos > 0 ? (
                   <span
-                    className={`${styles.diaChip} bg-emerald-100 text-emerald-900`}
+                    className={`${styles.diaChip} bg-success/12 text-success`}
                   >
                     {turnos} turno{turnos === 1 ? "" : "s"}
                   </span>
                 ) : null}
                 {impagos > 0 ? (
                   <span
-                    className={`${styles.diaChip} bg-amber-100 text-amber-900`}
+                    className={`${styles.diaChip} bg-warning/12 text-warning`}
                   >
                     {impagos} impago{impagos === 1 ? "" : "s"}
                   </span>
                 ) : null}
                 {partidos > 0 ? (
                   <span
-                    className={`${styles.diaChip} bg-blue-100 text-blue-900`}
+                    className={`${styles.diaChip} bg-info/12 text-info`}
                   >
                     {partidos} partido{partidos === 1 ? "" : "s"}
                   </span>

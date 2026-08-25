@@ -27,7 +27,7 @@ export default function ZonasControls({
 }: ZonasControlsProps) {
   return (
     <div
-      className={`rounded-2xl border border-deep-black/10 bg-white padel-data-card ${styles.zonaControlsCard}`}
+      className={`rounded-2xl border border-content/10 bg-surface padel-data-card ${styles.zonaControlsCard}`}
     >
       <div className={`p-4 ${styles.zonaControls}`}>
         <div className="grid items-end gap-4 md:grid-cols-12">
@@ -91,7 +91,7 @@ export default function ZonasControls({
           </div>
         </div>
 
-        <p className="mt-3 mb-0 text-sm text-slate-600">
+        <p className="mt-3 mb-0 text-sm text-content/70">
           {tablaResumen
             ? `Segun la cantidad de inscriptos, la tabla arma ${tablaResumen}. "Armar zonas por tabla" usa el orden de siembra de arriba y reemplaza las zonas actuales.`
             : "La tabla de llaves cubre de 7 a 48 parejas inscriptas: fuera de ese rango hay que armar las zonas a mano."}

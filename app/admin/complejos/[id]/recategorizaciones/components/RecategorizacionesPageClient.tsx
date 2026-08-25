@@ -63,7 +63,7 @@ function MovimientoCell({ item }: { item: RecategorizacionListItem }) {
 
   return (
     <span className="inline-flex items-center gap-2">
-      <span className="text-deep-black/60">
+      <span className="text-content/60">
         {item.nivelPrevio ?? "Sin categoria"}
       </span>
       <span aria-hidden="true">-&gt;</span>
@@ -177,7 +177,7 @@ export default function RecategorizacionesPageClient() {
         total={total}
       />
 
-      <p className="mb-3 text-sm text-deep-black/70">
+      <p className="mb-3 text-sm text-content/70">
         La categoria que se carga aca vale solo dentro de este complejo: se usa
         para inscribirse a sus torneos y no modifica la categoria del jugador en
         el resto de la plataforma.
@@ -185,7 +185,7 @@ export default function RecategorizacionesPageClient() {
 
       <SearchBar placeholder="Buscar jugador por nombre o DNI..." />
 
-      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+      <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
         <div className="p-4">
           <TableWithPagination
             items={items}
@@ -240,7 +240,7 @@ export default function RecategorizacionesPageClient() {
                   {item.vigente ? (
                     <Badge text="Vigente" variant="success" size="sm" />
                   ) : (
-                    <span className="text-deep-black/45">Historica</span>
+                    <span className="text-content/45">Historica</span>
                   )}
                 </td>
                 <td>{item.creadoPor ?? "-"}</td>
@@ -266,7 +266,7 @@ export default function RecategorizacionesPageClient() {
           />
 
           {items.length === 0 ? (
-            <p className="mt-3 text-center text-sm text-deep-black/60">
+            <p className="mt-3 text-center text-sm text-content/60">
               {searchBy
                 ? "Ningun jugador coincide con la busqueda."
                 : "Todavia no hay recategorizaciones cargadas en este complejo."}

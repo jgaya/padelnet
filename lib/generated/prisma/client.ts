@@ -187,3 +187,19 @@ export type PushToken = Prisma.PushTokenModel
  * 
  */
 export type Notification = Prisma.NotificationModel
+/**
+ * Model ImagenPerfil
+ * Una foto de perfil subida por un usuario, con su estado de moderacion.
+ * 
+ * Los archivos NO viven en `public/`: los sirve
+ * app/api/imagenes/perfil/[imagenId]/[variante]/route.ts, que mira `estado`
+ * antes de entregar bytes. Una imagen que no esta APROBADA solo la ven su
+ * dueño y el superadmin. Si los archivos estuvieran en `public/`, este estado
+ * no ocultaria nada: Next los serviria como estaticos desde que se suben.
+ * 
+ * `User.avatarUrl` / `User.imageUrl` guardan la URL de la imagen APROBADA
+ * vigente y las escribe unicamente `aprobarImagen`. Por eso todo el sitio
+ * puede seguir leyendo esos dos campos sin preguntar nada: lo que hay ahi ya
+ * paso por moderacion.
+ */
+export type ImagenPerfil = Prisma.ImagenPerfilModel

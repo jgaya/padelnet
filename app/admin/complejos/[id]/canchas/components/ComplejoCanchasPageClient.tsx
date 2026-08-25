@@ -147,7 +147,7 @@ export default function ComplejoCanchasPageClient({
 
       <SearchBar placeholder="Buscar cancha, superficie..." />
 
-      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
+      <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
         <div className="p-4">
           <TableWithPagination
             items={canchas}

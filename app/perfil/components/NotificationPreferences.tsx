@@ -110,19 +110,19 @@ export default function NotificationPreferences({
   };
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-deep-black/10 bg-white shadow-sm">
-      <div className="border-b border-deep-black/10 px-5 py-4 sm:px-7">
-        <h2 className="text-lg font-semibold text-deep-black">
+    <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
+      <div className="border-b border-content/10 px-5 py-4 sm:px-7">
+        <h2 className="text-lg font-semibold text-content">
           Notificaciones
         </h2>
-        <p className="mt-1 text-sm text-deep-black/70">
+        <p className="mt-1 text-sm text-content/70">
           Elegi que avisos queres recibir en este navegador.
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="px-5 py-5 sm:px-7">
         <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-surface-soft px-4 py-3">
-          <span className="text-sm font-semibold text-deep-black">
+          <span className="text-sm font-semibold text-content">
             Permiso del navegador:
           </span>
           <EnableNotifications userId={user.id} showState />
@@ -132,7 +132,7 @@ export default function NotificationPreferences({
           {PREFERENCE_KEYS.map((key) => (
             <label
               key={key}
-              className="flex cursor-pointer items-start gap-3 rounded-2xl border border-deep-black/10 bg-white px-4 py-3 transition hover:bg-surface-soft/60"
+              className="flex cursor-pointer items-start gap-3 rounded-2xl border border-content/10 bg-surface px-4 py-3 transition hover:bg-surface-soft/60"
             >
               <input
                 type="checkbox"
@@ -140,10 +140,10 @@ export default function NotificationPreferences({
                 {...register(key)}
               />
               <span className="min-w-0">
-                <span className="block text-sm font-semibold text-deep-black">
+                <span className="block text-sm font-semibold text-content">
                   {NOTIFICATION_TYPE_LABELS[key]}
                 </span>
-                <span className="mt-0.5 block text-xs text-deep-black/70">
+                <span className="mt-0.5 block text-xs text-content/70">
                   {NOTIFICATION_TYPE_DESCRIPTIONS[key]}
                 </span>
               </span>
@@ -158,7 +158,7 @@ export default function NotificationPreferences({
               runBulkAction("enableAll", "Todas las notificaciones habilitadas")
             }
             disabled={isLoading}
-            className="inline-flex rounded-full border border-deep-black/20 bg-white px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft disabled:opacity-60"
+            className="inline-flex rounded-full border border-content/20 bg-surface px-4 py-2 text-sm font-semibold text-content transition hover:bg-surface-soft disabled:opacity-60"
           >
             Habilitar todas
           </button>
@@ -171,7 +171,7 @@ export default function NotificationPreferences({
               )
             }
             disabled={isLoading}
-            className="inline-flex rounded-full border border-deep-black/20 bg-white px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft disabled:opacity-60"
+            className="inline-flex rounded-full border border-content/20 bg-surface px-4 py-2 text-sm font-semibold text-content transition hover:bg-surface-soft disabled:opacity-60"
           >
             Deshabilitar todas
           </button>
@@ -179,14 +179,14 @@ export default function NotificationPreferences({
             type="button"
             onClick={() => runBulkAction("reset", "Preferencias restauradas")}
             disabled={isLoading}
-            className="inline-flex rounded-full border border-deep-black/20 bg-white px-4 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft disabled:opacity-60"
+            className="inline-flex rounded-full border border-content/20 bg-surface px-4 py-2 text-sm font-semibold text-content transition hover:bg-surface-soft disabled:opacity-60"
           >
             Restaurar predeterminadas
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isLoading ? "Guardando..." : "Guardar preferencias"}
           </button>

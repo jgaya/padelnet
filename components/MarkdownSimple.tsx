@@ -14,11 +14,11 @@ export default function MarkdownSimple({ texto }: { texto: string }) {
       {bloques.map((bloque, index) => {
         if (bloque.tipo === "titulo") {
           return bloque.nivel === 2 ? (
-            <h2 key={index} className="text-lg font-semibold text-deep-black">
+            <h2 key={index} className="text-lg font-semibold text-content">
               {bloque.texto}
             </h2>
           ) : (
-            <h3 key={index} className="text-base font-semibold text-deep-black">
+            <h3 key={index} className="text-base font-semibold text-content">
               {bloque.texto}
             </h3>
           );
@@ -28,7 +28,7 @@ export default function MarkdownSimple({ texto }: { texto: string }) {
           return (
             <ul key={index} className="list-disc space-y-1 pl-5">
               {bloque.items.map((item, i) => (
-                <li key={i} className="text-sm text-deep-black/80">
+                <li key={i} className="text-sm text-content/80">
                   {item}
                 </li>
               ))}
@@ -37,7 +37,7 @@ export default function MarkdownSimple({ texto }: { texto: string }) {
         }
 
         return (
-          <p key={index} className="text-sm leading-relaxed text-deep-black/80">
+          <p key={index} className="text-sm leading-relaxed text-content/80">
             {bloque.texto}
           </p>
         );

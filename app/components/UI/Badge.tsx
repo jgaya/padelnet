@@ -19,12 +19,12 @@ type BadgeProps = {
 };
 
 const variantClasses: Record<BadgeVariant, string> = {
-  default: "bg-surface-soft text-deep-black/70",
+  default: "bg-surface-soft text-content/70",
   success: "bg-padel-green/20 text-padel-green",
   warning: "bg-energy-orange/20 text-energy-orange",
-  info: "bg-blue-100 text-blue-700",
-  muted: "bg-deep-black/10 text-deep-black/70",
-  danger: "bg-red-100 text-red-700",
+  info: "bg-info/12 text-info",
+  muted: "bg-content/10 text-content/70",
+  danger: "bg-danger/12 text-danger",
 };
 
 const sizeClasses: Record<BadgeSize, string> = {

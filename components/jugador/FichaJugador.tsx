@@ -39,7 +39,7 @@ export default function FichaJugador({
     .join(", ");
 
   return (
-    <div className="flex h-full flex-col gap-4 rounded-3xl border border-deep-black/10 bg-gradient-to-br from-padel-green/15 via-white to-energy-orange/15 p-5 shadow-sm">
+    <div className="flex h-full flex-col gap-4 rounded-3xl border border-content/10 bg-gradient-to-br from-padel-green/15 via-surface to-energy-orange/15 p-5 shadow-sm">
       <div className="flex items-center gap-4">
         {jugador.avatarUrl ? (
           <Image
@@ -53,27 +53,27 @@ export default function FichaJugador({
         ) : (
           <span
             aria-hidden="true"
-            className="flex h-18 w-18 shrink-0 items-center justify-center rounded-full bg-deep-black text-xl font-semibold text-white"
+            className="flex h-18 w-18 shrink-0 items-center justify-center rounded-full bg-content text-xl font-semibold text-surface"
           >
             {iniciales}
           </span>
         )}
 
         <div className="min-w-0">
-          <h2 className="truncate text-xl font-semibold text-deep-black">
+          <h2 className="truncate text-xl font-semibold text-content">
             {nombreCompleto}
           </h2>
           {categoria ? (
-            <span className="mt-1 inline-flex rounded-full bg-padel-green/20 px-3 py-1 text-xs font-semibold text-deep-black">
+            <span className="mt-1 inline-flex rounded-full bg-padel-green/20 px-3 py-1 text-xs font-semibold text-content">
               Categoria {categoria}
             </span>
           ) : (
-            <p className="mt-1 mb-0 text-xs text-deep-black/60">
+            <p className="mt-1 mb-0 text-xs text-content/60">
               Sin categoria cargada
             </p>
           )}
           {ubicacion ? (
-            <p className="mt-1 mb-0 truncate text-sm text-deep-black/70">
+            <p className="mt-1 mb-0 truncate text-sm text-content/70">
               {ubicacion}
             </p>
           ) : null}
@@ -88,12 +88,12 @@ export default function FichaJugador({
         ].map((dato) => (
           <div
             key={dato.label}
-            className="rounded-2xl bg-white/70 px-2 py-3 shadow-sm"
+            className="rounded-2xl bg-surface/70 px-2 py-3 shadow-sm"
           >
-            <dt className="text-[11px] font-semibold uppercase tracking-[0.12em] text-deep-black/55">
+            <dt className="text-[11px] font-semibold uppercase tracking-[0.12em] text-content/55">
               {dato.label}
             </dt>
-            <dd className="mb-0 text-lg font-semibold text-deep-black">
+            <dd className="mb-0 text-lg font-semibold text-content">
               {dato.valor}
             </dd>
           </div>
@@ -102,7 +102,7 @@ export default function FichaJugador({
 
       {titulos.length > 0 ? (
         <div>
-          <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-deep-black/55">
+          <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-content/55">
             Campeon en
           </p>
           <ul className="flex flex-wrap gap-1.5">

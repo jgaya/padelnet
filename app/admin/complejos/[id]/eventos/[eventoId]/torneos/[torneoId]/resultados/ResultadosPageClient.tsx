@@ -4,14 +4,19 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import TitleBar from "@/components/TitleBar";
 import Modal from "@/components/Modal";
+import Bracket from "@/components/Bracket";
+import TorneoZonasTablas from "@/components/TorneoZonasTablas";
 import Badge from "@/app/components/UI/Badge";
 import { useSnackbar } from "@/context/SnackbarContext";
 import {
+  getTorneoVistaPublica,
   listTorneoPartidosByTorneo,
   saveTorneoPartidoResultado,
   type TorneoPartidoListItem,
   type TorneoPartidoSetItem,
 } from "@/actions/torneos-partidos";
+// Solo el tipo: se borra al compilar y no arrastra el modulo server-only.
+import type { PublicTorneoDetail } from "@/lib/torneo-vista-publica";
 
 function formatDateTime(value: string | null) {
   if (!value) return "-";
@@ -102,6 +107,14 @@ function scoresToSets(scores: string[]): TorneoPartidoSetItem[] {
   });
 }
 
+type ActiveTab = "partidos" | "zonas" | "llave";
+
+const TABS: Array<{ key: ActiveTab; label: string }> = [
+  { key: "partidos", label: "Partidos" },
+  { key: "zonas", label: "Zonas" },
+  { key: "llave", label: "Llave" },
+];
+
 export default function ResultadosPageClient() {
   const params = useParams<{
     id: string;
@@ -114,8 +127,11 @@ export default function ResultadosPageClient() {
   const eventoId = Number(params.eventoId);
   const torneoId = Number(params.torneoId);
 
+  const [activeTab, setActiveTab] = useState<ActiveTab>("partidos");
   const [loading, setLoading] = useState(true);
   const [matches, setMatches] = useState<TorneoPartidoListItem[]>([]);
+  const [vista, setVista] = useState<PublicTorneoDetail | null>(null);
+  const [loadingVista, setLoadingVista] = useState(true);
   const [selectedMatch, setSelectedMatch] =
     useState<TorneoPartidoListItem | null>(null);
   const [showResultModal, setShowResultModal] = useState(false);
@@ -133,6 +149,9 @@ export default function ResultadosPageClient() {
       normalizeSearch(match.idLegible ?? "").includes(term),
     );
   }, [matches, search]);
+
+  const hayLlave =
+    vista?.llave.some((column) => column.matches.length > 0) ?? false;
 
   const paramsAreValid =
     Number.isInteger(complejoId) &&
@@ -168,9 +187,32 @@ export default function ResultadosPageClient() {
     }
   }, [complejoId, eventoId, paramsAreValid, showSnackbar, torneoId]);
 
+  /** Las zonas y el cuadro, como los ve el jugador. */
+  const loadVista = useCallback(async () => {
+    if (!paramsAreValid) {
+      setLoadingVista(false);
+      return;
+    }
+
+    setLoadingVista(true);
+
+    try {
+      setVista(await getTorneoVistaPublica(complejoId, eventoId, torneoId));
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "No se pudo cargar la vista del torneo";
+      showSnackbar(message, "error");
+    } finally {
+      setLoadingVista(false);
+    }
+  }, [complejoId, eventoId, paramsAreValid, showSnackbar, torneoId]);
+
   useEffect(() => {
     void loadMatches();
-  }, [loadMatches]);
+    void loadVista();
+  }, [loadMatches, loadVista]);
 
   const openResultModal = (match: TorneoPartidoListItem) => {
     setSelectedMatch(match);
@@ -229,7 +271,10 @@ export default function ResultadosPageClient() {
         "success",
       );
       setShowResultModal(false);
+      // Tambien la vista: el resultado cambia la tabla de posiciones y puede
+      // haber avanzado a alguien en el cuadro.
       void loadMatches();
+      void loadVista();
     } catch (error) {
       const message =
         error instanceof Error
@@ -275,15 +320,36 @@ export default function ResultadosPageClient() {
         backURL={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos`}
       />
 
-      <div className="rounded-2xl border border-deep-black/10 bg-white padel-data-card">
-        <div className="flex flex-col items-start justify-between gap-2 border-b border-deep-black/10 px-4 py-3 md:flex-row md:items-center">
+      <div className="mb-3 flex gap-2 border-b border-content/10">
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setActiveTab(tab.key)}
+            className={`rounded-t-2xl px-4 py-2 text-sm font-semibold transition ${
+              activeTab === tab.key
+                ? "bg-padel-green/15 text-padel-green"
+                : "text-content/70 hover:bg-surface-soft"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div
+        className={`rounded-2xl border border-content/10 bg-surface padel-data-card ${
+          activeTab === "partidos" ? "" : "hidden"
+        }`}
+      >
+        <div className="flex flex-col items-start justify-between gap-2 border-b border-content/10 px-4 py-3 md:flex-row md:items-center">
           <div>
             <h2 className="text-base font-semibold mb-1">Partidos</h2>
-            <p className="text-deep-black/60 mb-0">
+            <p className="text-content/60 mb-0">
               Listado de partidos del torneo y estado de resultados.
             </p>
           </div>
-          <span className="inline-flex items-center rounded-full bg-deep-black/60 px-2.5 py-1 text-xs font-semibold text-white">
+          <span className="inline-flex items-center rounded-full bg-content/60 px-2.5 py-1 text-xs font-semibold text-surface">
             {search
               ? `${filteredMatches.length} de ${matches.length}`
               : matches.length}{" "}
@@ -293,7 +359,7 @@ export default function ResultadosPageClient() {
         <div className="p-4">
           <div className="mb-4 max-w-md">
             <label
-              className="mb-1.5 block text-sm font-semibold text-deep-black"
+              className="mb-1.5 block text-sm font-semibold text-content"
               htmlFor="buscador-id-partido"
             >
               Buscar por ID de partido
@@ -302,7 +368,7 @@ export default function ResultadosPageClient() {
               <input
                 id="buscador-id-partido"
                 type="search"
-                className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
                 placeholder="Ej: Zona A 3 u Octavos 2"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -310,7 +376,7 @@ export default function ResultadosPageClient() {
               {search ? (
                 <button
                   type="button"
-                  className="whitespace-nowrap rounded-full border border-deep-black/20 bg-white px-3 py-2 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+                  className="whitespace-nowrap rounded-full border border-content/20 bg-surface px-3 py-2 text-sm font-semibold text-content transition hover:bg-surface-soft"
                   onClick={() => setSearch("")}
                 >
                   Limpiar
@@ -326,9 +392,9 @@ export default function ResultadosPageClient() {
           ) : filteredMatches.length === 0 ? (
             <p>Ningun partido coincide con &quot;{search}&quot;.</p>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-              <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-slate-800">
-                <thead className="bg-slate-900 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+            <div className="overflow-x-auto rounded-xl border border-content/10 bg-surface shadow-sm">
+              <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-content">
+                <thead className="bg-ink text-[11px] font-semibold uppercase tracking-[0.18em] text-on-ink">
                   <tr>
                     <th className="px-4 py-3">ID</th>
                     <th className="px-4 py-3">Fecha</th>
@@ -341,15 +407,15 @@ export default function ResultadosPageClient() {
                     <th className="px-4 py-3">Acción</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-content/10">
                   {filteredMatches.map((match) => {
                     const status = statusBadge(match.status);
                     return (
                       <tr
                         key={match.id}
-                        className="odd:bg-white even:bg-slate-50 hover:bg-emerald-50"
+                        className="odd:bg-surface even:bg-surface-soft hover:bg-success/12"
                       >
-                        <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-deep-black/80">
+                        <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-content/80">
                           {match.idLegible ?? "-"}
                         </td>
                         <td className="whitespace-nowrap px-4 py-3 font-medium text-sm">
@@ -405,6 +471,50 @@ export default function ResultadosPageClient() {
         </div>
       </div>
 
+      {activeTab === "zonas" ? (
+        <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
+          <div className="border-b border-content/10 px-4 py-3">
+            <h2 className="text-base font-semibold mb-1">Zonas</h2>
+            <p className="text-content/60 mb-0">
+              Tabla de posiciones de cada zona, igual que la ve el jugador. Solo
+              suma los partidos finalizados.
+            </p>
+          </div>
+          <div className="p-4">
+            {loadingVista ? (
+              <p className="mb-0">Cargando zonas...</p>
+            ) : (
+              <TorneoZonasTablas
+                grupos={vista?.grupos ?? []}
+                emptyMessage="Este torneo todavia no tiene zonas armadas."
+              />
+            )}
+          </div>
+        </div>
+      ) : null}
+
+      {activeTab === "llave" ? (
+        <div className="rounded-2xl border border-content/10 bg-surface padel-data-card">
+          <div className="border-b border-content/10 px-4 py-3">
+            <h2 className="text-base font-semibold mb-1">Llave</h2>
+            <p className="text-content/60 mb-0">
+              El cuadro con los cruces definidos y los resultados cargados.
+            </p>
+          </div>
+          <div className="p-1 sm:p-4">
+            {loadingVista ? (
+              <p className="mb-0 p-3">Cargando llave...</p>
+            ) : vista && hayLlave ? (
+              <Bracket columns={vista.llave} />
+            ) : (
+              <p className="rounded-2xl border border-content/10 bg-surface-soft px-4 py-6 text-center text-sm text-content/70">
+                Este torneo todavia no tiene llave generada.
+              </p>
+            )}
+          </div>
+        </div>
+      ) : null}
+
       <Modal
         showModal={showResultModal}
         setShowModal={(open) => {
@@ -423,14 +533,14 @@ export default function ResultadosPageClient() {
             <>
               <button
                 type="button"
-                className="inline-flex items-center rounded-full border border-deep-black/20 bg-white px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+                className="inline-flex items-center rounded-full border border-content/20 bg-surface px-4 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
                 onClick={() => setShowResultModal(false)}
               >
                 Cancelar
               </button>
               <button
                 type="button"
-                className="inline-flex items-center rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-deep-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
                 onClick={() => void handleSaveResult()}
                 disabled={saving || winnerId === null}
               >
@@ -446,16 +556,16 @@ export default function ResultadosPageClient() {
       >
         {selectedMatch ? (
           <div className="space-y-4">
-            <div className="rounded-2xl border border-deep-black/10 bg-gradient-to-r from-padel-green/15 via-white to-energy-orange/15 px-4 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
+            <div className="rounded-2xl border border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-content/60">
                 Partido
               </p>
               {selectedMatch.idLegible ? (
-                <p className="mt-1 font-mono text-xs text-deep-black/70">
+                <p className="mt-1 font-mono text-xs text-content/70">
                   {selectedMatch.idLegible}
                 </p>
               ) : null}
-              <p className="mt-1 text-base font-semibold text-deep-black">
+              <p className="mt-1 text-base font-semibold text-content">
                 {selectedMatch.pareja1Nombre} vs {selectedMatch.pareja2Nombre}
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-semibold">
@@ -464,21 +574,21 @@ export default function ResultadosPageClient() {
                   variant={statusBadge(selectedMatch.status).variant}
                   className="uppercase"
                 />
-                <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+                <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
                   {formatDateTime(selectedMatch.scheduledAt)}
                 </span>
-                <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+                <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
                   {selectedMatch.canchaLabel}
                 </span>
                 {selectedMatch.llave ? (
-                  <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+                  <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
                     Llave: {selectedMatch.llave}
                   </span>
                 ) : null}
               </div>
             </div>
 
-            <p className="text-sm text-deep-black/70">
+            <p className="text-sm text-content/70">
               {walkover
                 ? "El partido no se jugo: elegi la pareja que gana por walkover. No se cargan sets."
                 : "Selecciona el ganador y el resultado de cada set jugado. Los sets sin resultado no se guardan."}
@@ -492,26 +602,26 @@ export default function ResultadosPageClient() {
                 onChange={(event) => setWalkover(event.target.checked)}
               />
               <span>
-                <span className="block text-sm font-semibold text-deep-black">
+                <span className="block text-sm font-semibold text-content">
                   Ganado por walkover (W.O.)
                 </span>
-                <span className="block text-xs text-deep-black/70">
+                <span className="block text-xs text-content/70">
                   La pareja rival no se presento. El partido cuenta como ganado
                   y perdido, pero sin sets ni games.
                 </span>
               </span>
             </label>
 
-            <div className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4">
+            <div className="rounded-2xl border border-content/10 bg-surface-soft p-4">
               <label
-                className="mb-2 block text-sm font-semibold text-deep-black"
+                className="mb-2 block text-sm font-semibold text-content"
                 htmlFor="resultado-ganador"
               >
                 Ganador
               </label>
               <select
                 id="resultado-ganador"
-                className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
                 value={winnerId ?? ""}
                 onChange={(event) => {
                   setWinnerId(Number(event.target.value) || null);
@@ -532,27 +642,27 @@ export default function ResultadosPageClient() {
             </div>
 
             <div className={`space-y-3 ${walkover ? "hidden" : ""}`}>
-              <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-deep-black/60">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-content/60">
                 Sets
               </h3>
               {setScores.map((score, index) => (
                 <div
                   key={index + 1}
-                  className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4"
+                  className="rounded-2xl border border-content/10 bg-surface-soft p-4"
                 >
                   <label
-                    className="mb-1.5 block text-sm font-semibold text-deep-black"
+                    className="mb-1.5 block text-sm font-semibold text-content"
                     htmlFor={`set-${index + 1}-resultado`}
                   >
                     Set {index + 1}
                   </label>
-                  <p className="mb-2 truncate text-xs font-semibold text-deep-black/60">
+                  <p className="mb-2 truncate text-xs font-semibold text-content/60">
                     {selectedMatch.pareja1Nombre} -{" "}
                     {selectedMatch.pareja2Nombre}
                   </p>
                   <select
                     id={`set-${index + 1}-resultado`}
-                    className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                    className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
                     value={score}
                     onChange={(event) =>
                       handleSetScoreChange(index, event.target.value)
@@ -570,7 +680,7 @@ export default function ResultadosPageClient() {
             </div>
           </div>
         ) : (
-          <p className="text-sm text-deep-black/70">
+          <p className="text-sm text-content/70">
             No hay partido seleccionado.
           </p>
         )}

@@ -136,7 +136,7 @@ export function FormContainer({
 }: FormContainerProps) {
   return (
     <div className="container padel-form-container">
-      <div className="rounded-2xl border border-deep-black/10 bg-white padel-form-card">
+      <div className="rounded-2xl border border-content/10 bg-surface padel-form-card">
         <div className="p-4 padel-form-card-body">
           <TitleBar title={title} backURL={backURL} />
           {children}
@@ -306,7 +306,7 @@ declare global {
 //         </div>
 //         {hint && (
 //           <div>
-//             <small className="text-deep-black/60">{hint}</small>
+//             <small className="text-content/60">{hint}</small>
 //           </div>
 //         )}
 //         {error && (

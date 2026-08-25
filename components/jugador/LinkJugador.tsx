@@ -21,7 +21,7 @@ export default function LinkJugador({ jugadorId, children }: LinkJugadorProps) {
   return (
     <Link
       href={`/jugadores/${jugadorId}`}
-      className="font-medium text-deep-black underline decoration-padel-green decoration-2 underline-offset-2 transition hover:text-padel-green"
+      className="font-medium text-content underline decoration-padel-green decoration-2 underline-offset-2 transition hover:text-padel-green"
     >
       {children}
     </Link>

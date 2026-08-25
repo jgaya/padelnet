@@ -5,6 +5,9 @@ import "react-day-picker/dist/style.css";
 import Modal from "@/components/Modal";
 import type { DatePickerProps } from "@/types/ui";
 
+/** Texto secundario del calendario, atenuado sobre cualquiera de los dos temas. */
+const TENUE = "color-mix(in oklab, var(--content) 62%, transparent)";
+
 function CalendarIcon() {
   return (
     <svg
@@ -150,16 +153,19 @@ export default function DatePicker({
               selected={selected}
               onSelect={handleDaySelect}
               className="border rounded p-2 mx-auto"
+              // react-day-picker estila con `style`, no con clases, asi que los
+              // colores van como `var()` para que sigan al tema.
               styles={{
-                caption: { color: "#666" },
-                head_cell: { color: "#666" },
-                button: { color: "#333" },
+                caption: { color: TENUE },
+                head_cell: { color: TENUE },
+                button: { color: "var(--content)" },
                 day_selected: {
-                  backgroundColor: "#00c853",
+                  backgroundColor: "var(--padel-green)",
+                  color: "var(--on-brand)",
                   fontWeight: "bold",
                 },
-                day: { color: "black", fontWeight: "normal" },
-                years_dropdown: { color: "black" },
+                day: { color: "var(--content)", fontWeight: "normal" },
+                years_dropdown: { color: "var(--content)" },
               }}
             />{" "}
           </>

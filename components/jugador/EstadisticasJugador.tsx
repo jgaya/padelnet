@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 import type {
   JugadorPublicoPerfil,
@@ -46,11 +47,11 @@ function ParDeNumeros({
 }) {
   return (
     <div className="rounded-xl bg-surface-soft px-3 py-2">
-      <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-deep-black/55">
+      <p className="mb-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-content/55">
         {label}
       </p>
-      <p className="mb-0 text-sm font-semibold text-deep-black">
-        {ganados} <span className="text-deep-black/40">-</span> {perdidos}
+      <p className="mb-0 text-sm font-semibold text-content">
+        {ganados} <span className="text-content/40">-</span> {perdidos}
       </p>
     </div>
   );
@@ -82,17 +83,17 @@ function BloqueTorneo({ torneo }: { torneo: JugadorPublicoTorneo }) {
   const fecha = formatearFecha(torneo.inicio);
 
   return (
-    <article className="rounded-2xl border border-deep-black/10 bg-white p-4 shadow-sm">
+    <article className="rounded-2xl border border-content/10 bg-surface p-4 shadow-sm">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="mb-1 text-base font-semibold text-deep-black">
+          <h3 className="mb-1 text-base font-semibold text-content">
             {torneo.torneoNombre}
           </h3>
-          <p className="mb-0 text-sm text-deep-black/70">
+          <p className="mb-0 text-sm text-content/70">
             {torneo.complejoNombre} · {torneo.eventoNombre}
             {fecha ? ` · ${fecha}` : ""}
           </p>
-          <p className="mb-0 text-sm text-deep-black/70">
+          <p className="mb-0 text-sm text-content/70">
             Pareja con{" "}
             <LinkJugador jugadorId={torneo.companeroId}>
               {torneo.companeroNombre}
@@ -101,7 +102,7 @@ function BloqueTorneo({ torneo }: { torneo: JugadorPublicoTorneo }) {
         </div>
 
         <div className="flex shrink-0 flex-wrap gap-1.5 text-xs font-semibold">
-          <span className="rounded-full bg-surface-soft px-3 py-1 text-deep-black/80">
+          <span className="rounded-full bg-surface-soft px-3 py-1 text-content/80">
             {torneo.categoriaCode}
           </span>
           {torneo.esCampeon ? (
@@ -110,7 +111,7 @@ function BloqueTorneo({ torneo }: { torneo: JugadorPublicoTorneo }) {
             </span>
           ) : null}
           {!torneo.finalizado ? (
-            <span className="rounded-full bg-padel-green/15 px-3 py-1 text-deep-black/80">
+            <span className="rounded-full bg-padel-green/15 px-3 py-1 text-content/80">
               En juego
             </span>
           ) : null}
@@ -120,13 +121,13 @@ function BloqueTorneo({ torneo }: { torneo: JugadorPublicoTorneo }) {
       <FilaDeStats stats={torneo.stats} />
 
       {torneo.partidos.length === 0 ? (
-        <p className="mt-3 mb-0 text-sm text-deep-black/60">
+        <p className="mt-3 mb-0 text-sm text-content/60">
           Todavia no tiene partidos con resultado en este torneo.
         </p>
       ) : (
-        <div className="mt-3 overflow-x-auto rounded-xl border border-slate-200">
-          <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-slate-800">
-            <thead className="bg-slate-900 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+        <div className="mt-3 overflow-x-auto rounded-xl border border-content/10">
+          <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-content">
+            <thead className="bg-ink text-[11px] font-semibold uppercase tracking-[0.18em] text-on-ink">
               <tr>
                 <th className="px-4 py-2.5">Rival</th>
                 <th className="px-4 py-2.5">Instancia</th>
@@ -134,11 +135,11 @@ function BloqueTorneo({ torneo }: { torneo: JugadorPublicoTorneo }) {
                 <th className="px-4 py-2.5">Resultado</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="divide-y divide-content/10">
               {torneo.partidos.map((partido) => (
                 <tr
                   key={partido.partidoId}
-                  className="odd:bg-white even:bg-slate-50"
+                  className="odd:bg-surface even:bg-surface-soft"
                 >
                   <td className="px-4 py-2.5">{partido.rivalNombre}</td>
                   <td className="whitespace-nowrap px-4 py-2.5">
@@ -156,7 +157,7 @@ function BloqueTorneo({ torneo }: { torneo: JugadorPublicoTorneo }) {
                       {partido.gano ? "Gano" : "Perdio"}
                     </span>
                     {partido.walkover ? (
-                      <span className="ml-2 text-xs text-deep-black/55">
+                      <span className="ml-2 text-xs text-content/55">
                         W.O.
                       </span>
                     ) : null}
@@ -210,19 +211,29 @@ export default function EstadisticasJugador({
 
   return (
     <div className="space-y-5">
+      <div className="flex justify-end">
+        {/* El jugador que se esta mirando entra ya cargado del lado izquierdo. */}
+        <Link
+          href={`/jugadores/versus?left=${jugador.id}`}
+          className="inline-flex items-center gap-2 rounded-full bg-content px-4 py-2.5 text-sm font-semibold text-surface transition hover:opacity-90"
+        >
+          Comparar con otro jugador
+        </Link>
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-2">
         <FichaJugador jugador={jugador} resumen={resumen} titulos={titulos} />
 
-        <div className="rounded-3xl border border-deep-black/10 bg-white p-5 shadow-sm">
-          <h2 className="mb-1 text-base font-semibold text-deep-black">
+        <div className="rounded-3xl border border-content/10 bg-surface p-5 shadow-sm">
+          <h2 className="mb-1 text-base font-semibold text-content">
             Partidos jugados
           </h2>
-          <p className="mb-3 text-sm text-deep-black/70">
+          <p className="mb-3 text-sm text-content/70">
             Sobre {resumen.partidosJugados} partidos con resultado cargado.
           </p>
 
           {resumen.partidosJugados === 0 ? (
-            <p className="mb-0 text-sm text-deep-black/60">
+            <p className="mb-0 text-sm text-content/60">
               Todavia no tiene partidos jugados.
             </p>
           ) : (
@@ -237,7 +248,7 @@ export default function EstadisticasJugador({
       </div>
 
       {torneos.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-deep-black/20 bg-surface-soft px-5 py-8 text-center text-sm text-deep-black/70">
+        <div className="rounded-2xl border border-dashed border-content/20 bg-surface-soft px-5 py-8 text-center text-sm text-content/70">
           Este jugador todavia no participo en ningun torneo publicado.
         </div>
       ) : (
@@ -253,8 +264,8 @@ export default function EstadisticasJugador({
                       onClick={() => setTab(tipo)}
                       className={`inline-flex whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
                         tab === tipo
-                          ? "bg-padel-green text-deep-black"
-                          : "bg-surface-soft text-deep-black/70 hover:bg-padel-green/10 hover:text-deep-black"
+                          ? "bg-padel-green text-on-brand"
+                          : "bg-surface-soft text-content/70 hover:bg-padel-green/10 hover:text-content"
                       }`}
                     >
                       {TIPO_LABEL[tipo]} ({porTipo[tipo].length})

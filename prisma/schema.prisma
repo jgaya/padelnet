@@ -128,6 +128,13 @@ enum PushPlatform {
   IOS
 }
 
+/// Estado de moderacion de una foto de perfil. Ver model ImagenPerfil.
+enum ImagenPerfilEstado {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+}
+
 model User {
   id            Int          @id @default(autoincrement())
   email         String       @unique
@@ -153,7 +160,13 @@ model User {
   /// parajes. Puede venir vacio; el dashboard lo agrupa tal cual esta escrito.
   localidad     String?
   birthDate     DateTime?    @db.Date
+  /// URL de la foto APROBADA vigente, recortada a la cara. Las escribe
+  /// unicamente `aprobarImagen` en actions/imagenes-perfil.ts: el usuario no
+  /// tiene forma de escribirlas desde el formulario de perfil. La invariante
+  /// es que lo que hay aca ya paso por moderacion, asi que quien las lee no
+  /// tiene que verificar nada. Ver model ImagenPerfil.
   avatarUrl     String?
+  /// Idem avatarUrl, pero el recorte cuadrado grande.
   imageUrl      String?
   platformRole  PlatformRole @default(USER)
   /// Si el mail fue confirmado. Un usuario sin verificar puede entrar y navegar,
@@ -191,6 +204,9 @@ model User {
   emailVerifications EmailVerification[]
   pushTokens         PushToken[]
   notifications      Notification[]
+
+  imagenesPerfil    ImagenPerfil[] @relation("ImagenPerfilDueno")
+  imagenesModeradas ImagenPerfil[] @relation("ImagenPerfilModerador")
 
   featuresActualizadas ComplejoFeature[] @relation("ComplejoFeatureEditor")
 }
@@ -780,4 +796,43 @@ model Notification {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, status, createdAt])
+}
+
+/// Una foto de perfil subida por un usuario, con su estado de moderacion.
+///
+/// Los archivos NO viven en `public/`: los sirve
+/// app/api/imagenes/perfil/[imagenId]/[variante]/route.ts, que mira `estado`
+/// antes de entregar bytes. Una imagen que no esta APROBADA solo la ven su
+/// dueño y el superadmin. Si los archivos estuvieran en `public/`, este estado
+/// no ocultaria nada: Next los serviria como estaticos desde que se suben.
+///
+/// `User.avatarUrl` / `User.imageUrl` guardan la URL de la imagen APROBADA
+/// vigente y las escribe unicamente `aprobarImagen`. Por eso todo el sitio
+/// puede seguir leyendo esos dos campos sin preguntar nada: lo que hay ahi ya
+/// paso por moderacion.
+model ImagenPerfil {
+  id     Int @id @default(autoincrement())
+  userId Int
+
+  /// Nombre de archivo, no ruta. La carpeta sale del userId, asi que nada de
+  /// lo que mande el cliente llega nunca al filesystem.
+  archivoImagen String @db.VarChar(255)
+  archivoAvatar String @db.VarChar(255)
+
+  estado ImagenPerfilEstado @default(PENDIENTE)
+
+  /// Null en las imagenes migradas desde antes de que existiera la moderacion:
+  /// se dieron por aprobadas sin que nadie las revisara.
+  moderadaPorId Int?
+  moderadaAt    DateTime?
+  motivoRechazo String?   @db.VarChar(300)
+
+  createdAt DateTime @default(now())
+
+  user        User  @relation("ImagenPerfilDueno", fields: [userId], references: [id], onDelete: Cascade)
+  moderadaPor User? @relation("ImagenPerfilModerador", fields: [moderadaPorId], references: [id], onDelete: SetNull)
+
+  /// La cola de moderacion filtra por estado y ordena por fecha.
+  @@index([estado, createdAt])
+  @@index([userId, createdAt])
 }

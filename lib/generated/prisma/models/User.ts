@@ -364,6 +364,8 @@ export type UserWhereInput = {
   emailVerifications?: Prisma.EmailVerificationListRelationFilter
   pushTokens?: Prisma.PushTokenListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
+  imagenesPerfil?: Prisma.ImagenPerfilListRelationFilter
+  imagenesModeradas?: Prisma.ImagenPerfilListRelationFilter
   featuresActualizadas?: Prisma.ComplejoFeatureListRelationFilter
 }
 
@@ -406,6 +408,8 @@ export type UserOrderByWithRelationInput = {
   emailVerifications?: Prisma.EmailVerificationOrderByRelationAggregateInput
   pushTokens?: Prisma.PushTokenOrderByRelationAggregateInput
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
+  imagenesPerfil?: Prisma.ImagenPerfilOrderByRelationAggregateInput
+  imagenesModeradas?: Prisma.ImagenPerfilOrderByRelationAggregateInput
   featuresActualizadas?: Prisma.ComplejoFeatureOrderByRelationAggregateInput
   _relevance?: Prisma.UserOrderByRelevanceInput
 }
@@ -452,6 +456,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailVerifications?: Prisma.EmailVerificationListRelationFilter
   pushTokens?: Prisma.PushTokenListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
+  imagenesPerfil?: Prisma.ImagenPerfilListRelationFilter
+  imagenesModeradas?: Prisma.ImagenPerfilListRelationFilter
   featuresActualizadas?: Prisma.ComplejoFeatureListRelationFilter
 }, "id" | "email" | "firebaseUid" | "dni">
 
@@ -551,6 +557,8 @@ export type UserCreateInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -593,6 +601,8 @@ export type UserUncheckedCreateInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -634,6 +644,8 @@ export type UserUpdateInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -676,6 +688,8 @@ export type UserUncheckedUpdateInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1142,6 +1156,36 @@ export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
 }
 
+export type UserCreateNestedOneWithoutImagenesPerfilInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImagenesPerfilInput, Prisma.UserUncheckedCreateWithoutImagenesPerfilInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImagenesPerfilInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutImagenesModeradasInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImagenesModeradasInput, Prisma.UserUncheckedCreateWithoutImagenesModeradasInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImagenesModeradasInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutImagenesPerfilNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImagenesPerfilInput, Prisma.UserUncheckedCreateWithoutImagenesPerfilInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImagenesPerfilInput
+  upsert?: Prisma.UserUpsertWithoutImagenesPerfilInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImagenesPerfilInput, Prisma.UserUpdateWithoutImagenesPerfilInput>, Prisma.UserUncheckedUpdateWithoutImagenesPerfilInput>
+}
+
+export type UserUpdateOneWithoutImagenesModeradasNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutImagenesModeradasInput, Prisma.UserUncheckedCreateWithoutImagenesModeradasInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutImagenesModeradasInput
+  upsert?: Prisma.UserUpsertWithoutImagenesModeradasInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImagenesModeradasInput, Prisma.UserUpdateWithoutImagenesModeradasInput>, Prisma.UserUncheckedUpdateWithoutImagenesModeradasInput>
+}
+
 export type UserCreateWithoutFeaturesActualizadasInput = {
   email: string
   passwordHash?: string | null
@@ -1180,6 +1224,8 @@ export type UserCreateWithoutFeaturesActualizadasInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
 }
 
 export type UserUncheckedCreateWithoutFeaturesActualizadasInput = {
@@ -1221,6 +1267,8 @@ export type UserUncheckedCreateWithoutFeaturesActualizadasInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
 }
 
 export type UserCreateOrConnectWithoutFeaturesActualizadasInput = {
@@ -1277,6 +1325,8 @@ export type UserUpdateWithoutFeaturesActualizadasInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFeaturesActualizadasInput = {
@@ -1318,6 +1368,8 @@ export type UserUncheckedUpdateWithoutFeaturesActualizadasInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
 }
 
 export type UserCreateWithoutMembershipsInput = {
@@ -1357,6 +1409,8 @@ export type UserCreateWithoutMembershipsInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1398,6 +1452,8 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1454,6 +1510,8 @@ export type UserUpdateWithoutMembershipsInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1495,6 +1553,8 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1535,6 +1595,8 @@ export type UserCreateWithoutPerfilesComplejoInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1576,6 +1638,8 @@ export type UserUncheckedCreateWithoutPerfilesComplejoInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1632,6 +1696,8 @@ export type UserUpdateWithoutPerfilesComplejoInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1673,6 +1739,8 @@ export type UserUncheckedUpdateWithoutPerfilesComplejoInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1713,6 +1781,8 @@ export type UserCreateWithoutEventosCreadosInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1754,6 +1824,8 @@ export type UserUncheckedCreateWithoutEventosCreadosInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1810,6 +1882,8 @@ export type UserUpdateWithoutEventosCreadosInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1851,6 +1925,8 @@ export type UserUncheckedUpdateWithoutEventosCreadosInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1891,6 +1967,8 @@ export type UserCreateWithoutParejasComoJugador1Input = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1932,6 +2010,8 @@ export type UserUncheckedCreateWithoutParejasComoJugador1Input = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1977,6 +2057,8 @@ export type UserCreateWithoutParejasComoJugador2Input = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2018,6 +2100,8 @@ export type UserUncheckedCreateWithoutParejasComoJugador2Input = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2074,6 +2158,8 @@ export type UserUpdateWithoutParejasComoJugador1Input = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2115,6 +2201,8 @@ export type UserUncheckedUpdateWithoutParejasComoJugador1Input = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2166,6 +2254,8 @@ export type UserUpdateWithoutParejasComoJugador2Input = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2207,6 +2297,8 @@ export type UserUncheckedUpdateWithoutParejasComoJugador2Input = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2247,6 +2339,8 @@ export type UserCreateWithoutRankingsInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2288,6 +2382,8 @@ export type UserUncheckedCreateWithoutRankingsInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2344,6 +2440,8 @@ export type UserUpdateWithoutRankingsInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2385,6 +2483,8 @@ export type UserUncheckedUpdateWithoutRankingsInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2425,6 +2525,8 @@ export type UserCreateWithoutRecategorizacionesInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2466,6 +2568,8 @@ export type UserUncheckedCreateWithoutRecategorizacionesInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2511,6 +2615,8 @@ export type UserCreateWithoutRecategorizacionesCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2552,6 +2658,8 @@ export type UserUncheckedCreateWithoutRecategorizacionesCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2608,6 +2716,8 @@ export type UserUpdateWithoutRecategorizacionesInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2649,6 +2759,8 @@ export type UserUncheckedUpdateWithoutRecategorizacionesInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2700,6 +2812,8 @@ export type UserUpdateWithoutRecategorizacionesCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2741,6 +2855,8 @@ export type UserUncheckedUpdateWithoutRecategorizacionesCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2781,6 +2897,8 @@ export type UserCreateWithoutTurnoSeriesComoJugadorInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2822,6 +2940,8 @@ export type UserUncheckedCreateWithoutTurnoSeriesComoJugadorInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2867,6 +2987,8 @@ export type UserCreateWithoutTurnoSeriesCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2908,6 +3030,8 @@ export type UserUncheckedCreateWithoutTurnoSeriesCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2964,6 +3088,8 @@ export type UserUpdateWithoutTurnoSeriesComoJugadorInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3005,6 +3131,8 @@ export type UserUncheckedUpdateWithoutTurnoSeriesComoJugadorInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3056,6 +3184,8 @@ export type UserUpdateWithoutTurnoSeriesCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3097,6 +3227,8 @@ export type UserUncheckedUpdateWithoutTurnoSeriesCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3137,6 +3269,8 @@ export type UserCreateWithoutTurnosSlotsCreadosInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3178,6 +3312,8 @@ export type UserUncheckedCreateWithoutTurnosSlotsCreadosInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3234,6 +3370,8 @@ export type UserUpdateWithoutTurnosSlotsCreadosInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3275,6 +3413,8 @@ export type UserUncheckedUpdateWithoutTurnosSlotsCreadosInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3315,6 +3455,8 @@ export type UserCreateWithoutReservasComoJugadorInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3356,6 +3498,8 @@ export type UserUncheckedCreateWithoutReservasComoJugadorInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3401,6 +3545,8 @@ export type UserCreateWithoutReservasCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3442,6 +3588,8 @@ export type UserUncheckedCreateWithoutReservasCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3498,6 +3646,8 @@ export type UserUpdateWithoutReservasComoJugadorInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3539,6 +3689,8 @@ export type UserUncheckedUpdateWithoutReservasComoJugadorInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3590,6 +3742,8 @@ export type UserUpdateWithoutReservasCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3631,6 +3785,8 @@ export type UserUncheckedUpdateWithoutReservasCreadasInput = {
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3671,6 +3827,8 @@ export type UserCreateWithoutEmailVerificationsInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieCreateNestedManyWithoutCreatedByInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3712,6 +3870,8 @@ export type UserUncheckedCreateWithoutEmailVerificationsInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutCreatedByInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3768,6 +3928,8 @@ export type UserUpdateWithoutEmailVerificationsInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieUpdateManyWithoutCreatedByNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3809,6 +3971,8 @@ export type UserUncheckedUpdateWithoutEmailVerificationsInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedUpdateManyWithoutCreatedByNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3849,6 +4013,8 @@ export type UserCreateWithoutPushTokensInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieCreateNestedManyWithoutCreatedByInput
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3890,6 +4056,8 @@ export type UserUncheckedCreateWithoutPushTokensInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutCreatedByInput
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3946,6 +4114,8 @@ export type UserUpdateWithoutPushTokensInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieUpdateManyWithoutCreatedByNestedInput
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3987,6 +4157,8 @@ export type UserUncheckedUpdateWithoutPushTokensInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedUpdateManyWithoutCreatedByNestedInput
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4027,6 +4199,8 @@ export type UserCreateWithoutNotificationsInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieCreateNestedManyWithoutCreatedByInput
   emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -4068,6 +4242,8 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutCreatedByInput
   emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -4124,6 +4300,8 @@ export type UserUpdateWithoutNotificationsInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieUpdateManyWithoutCreatedByNestedInput
   emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4165,6 +4343,380 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedUpdateManyWithoutCreatedByNestedInput
   emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutImagenesPerfilInput = {
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutImagenesPerfilInput = {
+  id?: number
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoUncheckedCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutImagenesPerfilInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutImagenesPerfilInput, Prisma.UserUncheckedCreateWithoutImagenesPerfilInput>
+}
+
+export type UserCreateWithoutImagenesModeradasInput = {
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutImagenesModeradasInput = {
+  id?: number
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoUncheckedCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutImagenesModeradasInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutImagenesModeradasInput, Prisma.UserUncheckedCreateWithoutImagenesModeradasInput>
+}
+
+export type UserUpsertWithoutImagenesPerfilInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutImagenesPerfilInput, Prisma.UserUncheckedUpdateWithoutImagenesPerfilInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutImagenesPerfilInput, Prisma.UserUncheckedCreateWithoutImagenesPerfilInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutImagenesPerfilInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutImagenesPerfilInput, Prisma.UserUncheckedUpdateWithoutImagenesPerfilInput>
+}
+
+export type UserUpdateWithoutImagenesPerfilInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutImagenesPerfilInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUncheckedUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUpsertWithoutImagenesModeradasInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutImagenesModeradasInput, Prisma.UserUncheckedUpdateWithoutImagenesModeradasInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutImagenesModeradasInput, Prisma.UserUncheckedCreateWithoutImagenesModeradasInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutImagenesModeradasInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutImagenesModeradasInput, Prisma.UserUncheckedUpdateWithoutImagenesModeradasInput>
+}
+
+export type UserUpdateWithoutImagenesModeradasInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutImagenesModeradasInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUncheckedUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4190,6 +4742,8 @@ export type UserCountOutputType = {
   emailVerifications: number
   pushTokens: number
   notifications: number
+  imagenesPerfil: number
+  imagenesModeradas: number
   featuresActualizadas: number
 }
 
@@ -4210,6 +4764,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   emailVerifications?: boolean | UserCountOutputTypeCountEmailVerificationsArgs
   pushTokens?: boolean | UserCountOutputTypeCountPushTokensArgs
   notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+  imagenesPerfil?: boolean | UserCountOutputTypeCountImagenesPerfilArgs
+  imagenesModeradas?: boolean | UserCountOutputTypeCountImagenesModeradasArgs
   featuresActualizadas?: boolean | UserCountOutputTypeCountFeaturesActualizadasArgs
 }
 
@@ -4338,6 +4894,20 @@ export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Ty
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountImagenesPerfilArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImagenPerfilWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountImagenesModeradasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImagenPerfilWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountFeaturesActualizadasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ComplejoFeatureWhereInput
 }
@@ -4382,6 +4952,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailVerifications?: boolean | Prisma.User$emailVerificationsArgs<ExtArgs>
   pushTokens?: boolean | Prisma.User$pushTokensArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
+  imagenesPerfil?: boolean | Prisma.User$imagenesPerfilArgs<ExtArgs>
+  imagenesModeradas?: boolean | Prisma.User$imagenesModeradasArgs<ExtArgs>
   featuresActualizadas?: boolean | Prisma.User$featuresActualizadasArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -4431,6 +5003,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   emailVerifications?: boolean | Prisma.User$emailVerificationsArgs<ExtArgs>
   pushTokens?: boolean | Prisma.User$pushTokensArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
+  imagenesPerfil?: boolean | Prisma.User$imagenesPerfilArgs<ExtArgs>
+  imagenesModeradas?: boolean | Prisma.User$imagenesModeradasArgs<ExtArgs>
   featuresActualizadas?: boolean | Prisma.User$featuresActualizadasArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -4454,6 +5028,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     emailVerifications: Prisma.$EmailVerificationPayload<ExtArgs>[]
     pushTokens: Prisma.$PushTokenPayload<ExtArgs>[]
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
+    imagenesPerfil: Prisma.$ImagenPerfilPayload<ExtArgs>[]
+    imagenesModeradas: Prisma.$ImagenPerfilPayload<ExtArgs>[]
     featuresActualizadas: Prisma.$ComplejoFeaturePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -4489,7 +5065,17 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
      */
     localidad: string | null
     birthDate: Date | null
+    /**
+     * URL de la foto APROBADA vigente, recortada a la cara. Las escribe
+     * unicamente `aprobarImagen` en actions/imagenes-perfil.ts: el usuario no
+     * tiene forma de escribirlas desde el formulario de perfil. La invariante
+     * es que lo que hay aca ya paso por moderacion, asi que quien las lee no
+     * tiene que verificar nada. Ver model ImagenPerfil.
+     */
     avatarUrl: string | null
+    /**
+     * Idem avatarUrl, pero el recorte cuadrado grande.
+     */
     imageUrl: string | null
     platformRole: $Enums.PlatformRole
     /**
@@ -4859,6 +5445,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   emailVerifications<T extends Prisma.User$emailVerificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$emailVerificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pushTokens<T extends Prisma.User$pushTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pushTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  imagenesPerfil<T extends Prisma.User$imagenesPerfilArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$imagenesPerfilArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImagenPerfilPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  imagenesModeradas<T extends Prisma.User$imagenesModeradasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$imagenesModeradasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImagenPerfilPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   featuresActualizadas<T extends Prisma.User$featuresActualizadasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$featuresActualizadasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComplejoFeaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5640,6 +6228,54 @@ export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
+}
+
+/**
+ * User.imagenesPerfil
+ */
+export type User$imagenesPerfilArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImagenPerfil
+   */
+  select?: Prisma.ImagenPerfilSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImagenPerfil
+   */
+  omit?: Prisma.ImagenPerfilOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImagenPerfilInclude<ExtArgs> | null
+  where?: Prisma.ImagenPerfilWhereInput
+  orderBy?: Prisma.ImagenPerfilOrderByWithRelationInput | Prisma.ImagenPerfilOrderByWithRelationInput[]
+  cursor?: Prisma.ImagenPerfilWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImagenPerfilScalarFieldEnum | Prisma.ImagenPerfilScalarFieldEnum[]
+}
+
+/**
+ * User.imagenesModeradas
+ */
+export type User$imagenesModeradasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImagenPerfil
+   */
+  select?: Prisma.ImagenPerfilSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImagenPerfil
+   */
+  omit?: Prisma.ImagenPerfilOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImagenPerfilInclude<ExtArgs> | null
+  where?: Prisma.ImagenPerfilWhereInput
+  orderBy?: Prisma.ImagenPerfilOrderByWithRelationInput | Prisma.ImagenPerfilOrderByWithRelationInput[]
+  cursor?: Prisma.ImagenPerfilWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImagenPerfilScalarFieldEnum | Prisma.ImagenPerfilScalarFieldEnum[]
 }
 
 /**

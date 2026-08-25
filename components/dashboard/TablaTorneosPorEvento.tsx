@@ -26,7 +26,7 @@ export default function TablaTorneosPorEvento({
         return (
           <div
             key={evento.id}
-            className="overflow-hidden rounded-xl border border-deep-black/10"
+            className="overflow-hidden rounded-xl border border-content/10"
           >
             <button
               type="button"
@@ -36,37 +36,37 @@ export default function TablaTorneosPorEvento({
             >
               <span
                 aria-hidden="true"
-                className={`text-xs text-deep-black/50 transition-transform ${estaAbierto ? "rotate-90" : ""}`}
+                className={`text-xs text-content/50 transition-transform ${estaAbierto ? "rotate-90" : ""}`}
               >
                 ▶
               </span>
-              <span className="font-semibold text-deep-black">
+              <span className="font-semibold text-content">
                 {evento.nombre}
               </span>
-              <span className="text-xs text-deep-black/60">
+              <span className="text-xs text-content/60">
                 {evento.complejoNombre}
               </span>
-              <span className="ml-auto text-xs font-semibold text-deep-black/70">
+              <span className="ml-auto text-xs font-semibold text-content/70">
                 {evento.totalInscriptos} inscriptos
                 {evento.totalSuplentes > 0
                   ? ` · ${evento.totalSuplentes} suplentes`
                   : ""}
               </span>
-              <span className="rounded-full bg-white px-2 py-0.5 text-xs text-deep-black/70">
+              <span className="rounded-full bg-surface px-2 py-0.5 text-xs text-content/70">
                 {evento.estado}
               </span>
             </button>
 
             {estaAbierto ? (
               evento.torneos.length === 0 ? (
-                <p className="px-3 py-3 text-sm text-deep-black/60">
+                <p className="px-3 py-3 text-sm text-content/60">
                   Este evento todavia no tiene torneos.
                 </p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[34rem] text-sm">
                     <thead>
-                      <tr className="border-b border-deep-black/10 text-left text-xs uppercase tracking-wide text-deep-black/60">
+                      <tr className="border-b border-content/10 text-left text-xs uppercase tracking-wide text-content/60">
                         <th className="px-3 py-2 font-semibold">Torneo</th>
                         <th className="px-3 py-2 font-semibold">Categoria</th>
                         <th className="px-3 py-2 font-semibold">Inscriptos</th>
@@ -84,18 +84,18 @@ export default function TablaTorneosPorEvento({
                         return (
                           <tr
                             key={torneo.id}
-                            className="border-b border-deep-black/5 last:border-0"
+                            className="border-b border-content/5 last:border-0"
                           >
-                            <td className="px-3 py-2 text-deep-black">
+                            <td className="px-3 py-2 text-content">
                               {torneo.nombre}
                             </td>
-                            <td className="px-3 py-2 text-deep-black/70">
+                            <td className="px-3 py-2 text-content/70">
                               {torneo.categoria}
                             </td>
-                            <td className="px-3 py-2 text-deep-black/70">
+                            <td className="px-3 py-2 text-content/70">
                               {torneo.inscriptos} / {torneo.capacidad}
                             </td>
-                            <td className="px-3 py-2 text-deep-black/70">
+                            <td className="px-3 py-2 text-content/70">
                               {torneo.suplentes}
                             </td>
                             <td className="px-3 py-2">
@@ -106,7 +106,7 @@ export default function TablaTorneosPorEvento({
                                     style={{ width: `${Math.min(pct, 100)}%` }}
                                   />
                                 </div>
-                                <span className="text-xs text-deep-black/70">
+                                <span className="text-xs text-content/70">
                                   {pct}%
                                 </span>
                               </div>

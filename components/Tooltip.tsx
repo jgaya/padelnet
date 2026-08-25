@@ -138,7 +138,7 @@ export default function Tooltip({
               // El ring claro no es decorativo: el globito es oscuro y varias
               // veces cae sobre el header de la tabla, que tambien es oscuro.
               // Sin borde se lee como si fuera texto del header.
-              className="pointer-events-none fixed z-[60] max-w-xs rounded-lg bg-deep-black px-2.5 py-1.5 text-xs font-semibold text-white shadow-xl ring-1 ring-white/30"
+              className="pointer-events-none fixed z-[60] max-w-xs rounded-lg bg-ink px-2.5 py-1.5 text-xs font-semibold text-on-ink shadow-xl ring-1 ring-on-ink/30"
               style={{
                 top: coords.top,
                 left: coords.left,

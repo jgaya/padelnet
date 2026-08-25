@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 import type { Bucket } from "@/lib/dashboard-calculos";
-import { DEEP_BLACK, ENERGY_ORANGE } from "../paleta";
+import { usePaletaGraficos } from "../paleta";
 
 type GraficoBarrasHProps = {
   datos: Bucket[];
@@ -27,8 +27,9 @@ type GraficoBarrasHProps = {
  */
 export default function GraficoBarrasH({
   datos,
-  color = ENERGY_ORANGE,
+  color,
 }: GraficoBarrasHProps) {
+  const paleta = usePaletaGraficos();
   const alto = Math.max(160, datos.length * 28 + 40);
 
   return (
@@ -38,23 +39,25 @@ export default function GraficoBarrasH({
         layout="vertical"
         margin={{ top: 4, right: 16, bottom: 4, left: 8 }}
       >
-        <CartesianGrid horizontal={false} stroke={`${DEEP_BLACK}18`} />
+        <CartesianGrid horizontal={false} stroke={`${paleta.texto}18`} />
         <XAxis
           type="number"
           allowDecimals={false}
-          tick={{ fontSize: 11, fill: DEEP_BLACK }}
+          tick={{ fontSize: 11, fill: paleta.texto }}
         />
         <YAxis
           type="category"
           dataKey="label"
           width={110}
-          tick={{ fontSize: 11, fill: DEEP_BLACK }}
+          tick={{ fontSize: 11, fill: paleta.texto }}
         />
         <Tooltip
-          cursor={{ fill: `${DEEP_BLACK}0d` }}
+          cursor={{ fill: `${paleta.texto}0d` }}
           contentStyle={{
             borderRadius: 12,
-            border: `1px solid ${DEEP_BLACK}22`,
+            border: `1px solid ${paleta.texto}22`,
+            background: paleta.superficie,
+            color: paleta.texto,
             fontSize: 12,
           }}
         />
@@ -62,7 +65,7 @@ export default function GraficoBarrasH({
           dataKey="value"
           name="Cantidad"
           radius={[0, 6, 6, 0]}
-          fill={color}
+          fill={color ?? paleta.energyOrange}
         />
       </BarChart>
     </ResponsiveContainer>

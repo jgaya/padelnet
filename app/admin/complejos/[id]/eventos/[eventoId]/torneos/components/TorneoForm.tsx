@@ -303,11 +303,11 @@ export default function TorneoForm({
           />
         </div>
 
-        <fieldset className="rounded-2xl border border-deep-black/10 bg-surface-soft p-4">
-          <legend className="px-2 text-sm font-semibold text-deep-black">
+        <fieldset className="rounded-2xl border border-content/10 bg-surface-soft p-4">
+          <legend className="px-2 text-sm font-semibold text-content">
             Puntajes de ranking
           </legend>
-          <p className="mb-3 text-xs text-deep-black/70">
+          <p className="mb-3 text-xs text-content/70">
             Puntos que suma cada jugador segun hasta donde llegue su pareja. Se
             cargan al ranking cuando el torneo se marca como Finalizado.
           </p>
@@ -319,7 +319,7 @@ export default function TorneoForm({
               return (
                 <div key={posicion.nombre}>
                   <label
-                    className="mb-1.5 block text-xs font-semibold text-deep-black/70"
+                    className="mb-1.5 block text-xs font-semibold text-content/70"
                     htmlFor={`puntaje-${posicion.orden}`}
                   >
                     {posicion.nombre}
@@ -329,7 +329,7 @@ export default function TorneoForm({
                     type="number"
                     min={0}
                     step={1}
-                    className="w-full rounded-xl border border-deep-black/20 bg-white px-3 py-2.5 text-sm text-deep-black focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                    className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
                     {...register(`puntajes.${clave}` as const)}
                   />
                   {errors.puntajes?.[clave] ? (

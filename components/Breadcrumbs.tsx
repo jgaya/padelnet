@@ -25,7 +25,7 @@ export default function Breadcrumbs({ migas }: { migas: Miga[] }) {
   const colapsa = migas.length > 3;
 
   const separador = (
-    <span aria-hidden="true" className="text-deep-black/30">
+    <span aria-hidden="true" className="text-content/30">
       /
     </span>
   );
@@ -51,14 +51,14 @@ export default function Breadcrumbs({ migas }: { migas: Miga[] }) {
               {miga.href && !ultima ? (
                 <Link
                   href={miga.href}
-                  className="truncate text-deep-black/70 transition hover:text-padel-green"
+                  className="truncate text-content/70 transition hover:text-padel-green"
                 >
                   {miga.label}
                 </Link>
               ) : (
                 <span
                   aria-current={ultima ? "page" : undefined}
-                  className="truncate font-semibold text-deep-black"
+                  className="truncate font-semibold text-content"
                 >
                   {miga.label}
                 </span>
@@ -68,7 +68,7 @@ export default function Breadcrumbs({ migas }: { migas: Miga[] }) {
               {colapsa && index === 0 ? (
                 <span className="flex items-center gap-1.5 sm:hidden">
                   {separador}
-                  <span aria-hidden="true" className="text-deep-black/40">
+                  <span aria-hidden="true" className="text-content/40">
                     …
                   </span>
                 </span>

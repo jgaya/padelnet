@@ -93,15 +93,15 @@ export default function ComplejoFeaturesPanel({
 
   return (
     <section className="mx-auto w-full max-w-4xl px-4 py-5 sm:px-6 sm:py-8">
-      <div className="overflow-hidden rounded-3xl border border-deep-black/10 bg-white shadow-sm">
-        <div className="border-b border-deep-black/10 bg-gradient-to-r from-padel-green/15 via-white to-energy-orange/15 px-5 py-6 sm:px-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-deep-black/60">
+      <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
+        <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-5 py-6 sm:px-7">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-content/60">
             Funcionalidades
           </p>
-          <h1 className="mt-2 text-2xl font-semibold text-deep-black sm:text-3xl">
+          <h1 className="mt-2 text-2xl font-semibold text-content sm:text-3xl">
             {complejo.name}
           </h1>
-          <p className="mt-1 text-sm text-deep-black/70">
+          <p className="mt-1 text-sm text-content/70">
             {complejo.ciudad}, {complejo.provincia}
           </p>
         </div>
@@ -114,35 +114,35 @@ export default function ComplejoFeaturesPanel({
             return (
               <article
                 key={feature.key}
-                className="flex flex-col gap-3 rounded-2xl border border-deep-black/10 bg-white px-4 py-4 sm:flex-row sm:items-start sm:justify-between"
+                className="flex flex-col gap-3 rounded-2xl border border-content/10 bg-surface px-4 py-4 sm:flex-row sm:items-start sm:justify-between"
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-base font-semibold text-deep-black">
+                    <h2 className="text-base font-semibold text-content">
                       {feature.label}
                     </h2>
                     <span
                       className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
                         feature.isOverride
                           ? "bg-energy-orange/15 text-energy-orange"
-                          : "bg-surface-soft text-deep-black/60"
+                          : "bg-surface-soft text-content/60"
                       }`}
                     >
                       {feature.isOverride ? "Personalizado" : "Por defecto"}
                     </span>
                   </div>
-                  <p className="mt-1 text-sm text-deep-black/70">
+                  <p className="mt-1 text-sm text-content/70">
                     {feature.description}
                   </p>
                   {feature.isOverride && updatedAt ? (
-                    <p className="mt-1 text-xs text-deep-black/50">
+                    <p className="mt-1 text-xs text-content/50">
                       Ultimo cambio: {updatedAt}
                       {feature.updatedByNombre
                         ? ` por ${feature.updatedByNombre}`
                         : ""}
                     </p>
                   ) : (
-                    <p className="mt-1 text-xs text-deep-black/50">
+                    <p className="mt-1 text-xs text-content/50">
                       Valor por defecto:{" "}
                       {feature.defaultEnabled ? "habilitada" : "deshabilitada"}
                     </p>
@@ -155,7 +155,7 @@ export default function ComplejoFeaturesPanel({
                       type="button"
                       onClick={() => handleReset(feature)}
                       disabled={isBusy}
-                      className="rounded-full border border-deep-black/20 bg-white px-3 py-1.5 text-xs font-semibold text-deep-black transition hover:bg-surface-soft disabled:opacity-50"
+                      className="rounded-full border border-content/20 bg-surface px-3 py-1.5 text-xs font-semibold text-content transition hover:bg-surface-soft disabled:opacity-50"
                     >
                       Volver al default
                     </button>

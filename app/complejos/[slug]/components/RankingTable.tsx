@@ -41,7 +41,7 @@ export default function RankingTable({
       )}
       renderRow={(fila) => (
         <tr>
-          <td className="font-semibold text-deep-black/70">{fila.posicion}</td>
+          <td className="font-semibold text-content/70">{fila.posicion}</td>
           <td>
             <LinkJugador jugadorId={fila.jugadorId}>{fila.nombre}</LinkJugador>
           </td>

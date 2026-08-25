@@ -58,7 +58,7 @@ export function MainNav({ links }: { links: NavLink[] }) {
           <Link
             key={link.href}
             href={link.href}
-            className="inline-flex rounded-full px-3 py-2 text-xs font-semibold text-deep-black transition hover:bg-padel-green/10 hover:text-padel-green sm:text-sm"
+            className="inline-flex rounded-full px-3 py-2 text-xs font-semibold text-content transition hover:bg-padel-green/10 hover:text-padel-green sm:text-sm"
           >
             {link.label}
           </Link>
@@ -69,7 +69,7 @@ export function MainNav({ links }: { links: NavLink[] }) {
         <button
           type="button"
           onClick={() => setAbierto((prev) => !prev)}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-deep-black/15 text-deep-black transition hover:bg-padel-green/10 hover:text-padel-green"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-content/15 text-content transition hover:bg-padel-green/10 hover:text-padel-green"
           aria-label={abierto ? "Cerrar menu" : "Abrir menu"}
           aria-expanded={abierto}
           aria-controls="menu-principal"
@@ -88,7 +88,7 @@ export function MainNav({ links }: { links: NavLink[] }) {
         <nav
           id="menu-principal"
           aria-label="Principal (mobile)"
-          className={`absolute right-0 top-12 w-56 rounded-2xl border border-deep-black/10 bg-white p-2 shadow-[0_16px_30px_rgba(28,37,38,0.16)] transition duration-150 ${
+          className={`absolute right-0 top-12 w-56 rounded-2xl border border-content/10 bg-surface p-2 shadow-[var(--shadow-lg)] transition duration-150 ${
             abierto
               ? "translate-y-0 opacity-100"
               : "pointer-events-none invisible -translate-y-1 opacity-0"
@@ -99,7 +99,7 @@ export function MainNav({ links }: { links: NavLink[] }) {
               key={link.href}
               href={link.href}
               onClick={() => setAbierto(false)}
-              className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-deep-black transition hover:bg-surface-soft"
+              className="block rounded-xl px-3 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
             >
               {link.label}
             </Link>
