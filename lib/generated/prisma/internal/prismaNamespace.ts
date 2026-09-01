@@ -424,7 +424,11 @@ export const ModelName = {
   EmailVerification: 'EmailVerification',
   PushToken: 'PushToken',
   Notification: 'Notification',
-  ImagenPerfil: 'ImagenPerfil'
+  ImagenPerfil: 'ImagenPerfil',
+  Auditoria: 'Auditoria',
+  Sancion: 'Sancion',
+  Logro: 'Logro',
+  LogroUsuario: 'LogroUsuario'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -440,7 +444,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "complejo" | "complejoHorario" | "complejoHorarioExcepcion" | "complejoFeature" | "complejoMembership" | "perfilJugadorComplejo" | "cancha" | "evento" | "torneo" | "pareja" | "grupo" | "grupoPareja" | "partido" | "partidoSet" | "ronda" | "ranking" | "recategorizacion" | "turnoSerie" | "turnoSlot" | "turnoReserva" | "sponsor" | "complejoSponsor" | "generacion" | "emailVerification" | "pushToken" | "notification" | "imagenPerfil"
+    modelProps: "user" | "complejo" | "complejoHorario" | "complejoHorarioExcepcion" | "complejoFeature" | "complejoMembership" | "perfilJugadorComplejo" | "cancha" | "evento" | "torneo" | "pareja" | "grupo" | "grupoPareja" | "partido" | "partidoSet" | "ronda" | "ranking" | "recategorizacion" | "turnoSerie" | "turnoSlot" | "turnoReserva" | "sponsor" | "complejoSponsor" | "generacion" | "emailVerification" | "pushToken" | "notification" | "imagenPerfil" | "auditoria" | "sancion" | "logro" | "logroUsuario"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2292,6 +2296,270 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Auditoria: {
+      payload: Prisma.$AuditoriaPayload<ExtArgs>
+      fields: Prisma.AuditoriaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AuditoriaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditoriaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AuditoriaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditoriaPayload>
+        }
+        findFirst: {
+          args: Prisma.AuditoriaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditoriaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AuditoriaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditoriaPayload>
+        }
+        findMany: {
+          args: Prisma.AuditoriaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditoriaPayload>[]
+        }
+        create: {
+          args: Prisma.AuditoriaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditoriaPayload>
+        }
+        createMany: {
+          args: Prisma.AuditoriaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.AuditoriaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditoriaPayload>
+        }
+        update: {
+          args: Prisma.AuditoriaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditoriaPayload>
+        }
+        deleteMany: {
+          args: Prisma.AuditoriaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AuditoriaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.AuditoriaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditoriaPayload>
+        }
+        aggregate: {
+          args: Prisma.AuditoriaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAuditoria>
+        }
+        groupBy: {
+          args: Prisma.AuditoriaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditoriaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AuditoriaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditoriaCountAggregateOutputType> | number
+        }
+      }
+    }
+    Sancion: {
+      payload: Prisma.$SancionPayload<ExtArgs>
+      fields: Prisma.SancionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SancionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SancionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SancionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SancionPayload>
+        }
+        findFirst: {
+          args: Prisma.SancionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SancionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SancionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SancionPayload>
+        }
+        findMany: {
+          args: Prisma.SancionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SancionPayload>[]
+        }
+        create: {
+          args: Prisma.SancionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SancionPayload>
+        }
+        createMany: {
+          args: Prisma.SancionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.SancionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SancionPayload>
+        }
+        update: {
+          args: Prisma.SancionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SancionPayload>
+        }
+        deleteMany: {
+          args: Prisma.SancionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SancionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.SancionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SancionPayload>
+        }
+        aggregate: {
+          args: Prisma.SancionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSancion>
+        }
+        groupBy: {
+          args: Prisma.SancionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SancionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SancionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SancionCountAggregateOutputType> | number
+        }
+      }
+    }
+    Logro: {
+      payload: Prisma.$LogroPayload<ExtArgs>
+      fields: Prisma.LogroFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LogroFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LogroFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroPayload>
+        }
+        findFirst: {
+          args: Prisma.LogroFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LogroFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroPayload>
+        }
+        findMany: {
+          args: Prisma.LogroFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroPayload>[]
+        }
+        create: {
+          args: Prisma.LogroCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroPayload>
+        }
+        createMany: {
+          args: Prisma.LogroCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.LogroDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroPayload>
+        }
+        update: {
+          args: Prisma.LogroUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroPayload>
+        }
+        deleteMany: {
+          args: Prisma.LogroDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LogroUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.LogroUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroPayload>
+        }
+        aggregate: {
+          args: Prisma.LogroAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLogro>
+        }
+        groupBy: {
+          args: Prisma.LogroGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LogroGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LogroCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LogroCountAggregateOutputType> | number
+        }
+      }
+    }
+    LogroUsuario: {
+      payload: Prisma.$LogroUsuarioPayload<ExtArgs>
+      fields: Prisma.LogroUsuarioFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LogroUsuarioFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroUsuarioPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LogroUsuarioFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroUsuarioPayload>
+        }
+        findFirst: {
+          args: Prisma.LogroUsuarioFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroUsuarioPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LogroUsuarioFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroUsuarioPayload>
+        }
+        findMany: {
+          args: Prisma.LogroUsuarioFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroUsuarioPayload>[]
+        }
+        create: {
+          args: Prisma.LogroUsuarioCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroUsuarioPayload>
+        }
+        createMany: {
+          args: Prisma.LogroUsuarioCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.LogroUsuarioDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroUsuarioPayload>
+        }
+        update: {
+          args: Prisma.LogroUsuarioUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroUsuarioPayload>
+        }
+        deleteMany: {
+          args: Prisma.LogroUsuarioDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LogroUsuarioUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.LogroUsuarioUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LogroUsuarioPayload>
+        }
+        aggregate: {
+          args: Prisma.LogroUsuarioAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLogroUsuario>
+        }
+        groupBy: {
+          args: Prisma.LogroUsuarioGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LogroUsuarioGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LogroUsuarioCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LogroUsuarioCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2504,6 +2772,8 @@ export const TorneoScalarFieldEnum = {
   status: 'status',
   publicado: 'publicado',
   zonaCerrada: 'zonaCerrada',
+  formato: 'formato',
+  siembra: 'siembra',
   zonaGenerada: 'zonaGenerada',
   partidosGenerados: 'partidosGenerados',
   actualizado: 'actualizado',
@@ -2803,6 +3073,70 @@ export const ImagenPerfilScalarFieldEnum = {
 export type ImagenPerfilScalarFieldEnum = (typeof ImagenPerfilScalarFieldEnum)[keyof typeof ImagenPerfilScalarFieldEnum]
 
 
+export const AuditoriaScalarFieldEnum = {
+  id: 'id',
+  tabla: 'tabla',
+  accion: 'accion',
+  registroId: 'registroId',
+  actorId: 'actorId',
+  actorNombre: 'actorNombre',
+  actorEmail: 'actorEmail',
+  origen: 'origen',
+  cambios: 'cambios',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditoriaScalarFieldEnum = (typeof AuditoriaScalarFieldEnum)[keyof typeof AuditoriaScalarFieldEnum]
+
+
+export const SancionScalarFieldEnum = {
+  id: 'id',
+  complejoId: 'complejoId',
+  jugadorId: 'jugadorId',
+  desde: 'desde',
+  hasta: 'hasta',
+  motivo: 'motivo',
+  estado: 'estado',
+  creadaPorId: 'creadaPorId',
+  anuladaPorId: 'anuladaPorId',
+  anuladaAt: 'anuladaAt',
+  motivoAnulacion: 'motivoAnulacion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SancionScalarFieldEnum = (typeof SancionScalarFieldEnum)[keyof typeof SancionScalarFieldEnum]
+
+
+export const LogroScalarFieldEnum = {
+  id: 'id',
+  codigo: 'codigo',
+  titulo: 'titulo',
+  descripcion: 'descripcion',
+  icono: 'icono',
+  rareza: 'rareza',
+  progresoObjetivo: 'progresoObjetivo',
+  activo: 'activo',
+  orden: 'orden',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LogroScalarFieldEnum = (typeof LogroScalarFieldEnum)[keyof typeof LogroScalarFieldEnum]
+
+
+export const LogroUsuarioScalarFieldEnum = {
+  userId: 'userId',
+  logroId: 'logroId',
+  progreso: 'progreso',
+  obtenidoAt: 'obtenidoAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LogroUsuarioScalarFieldEnum = (typeof LogroUsuarioScalarFieldEnum)[keyof typeof LogroUsuarioScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2817,6 +3151,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const JsonNullValueFilter = {
@@ -3029,6 +3370,35 @@ export const ImagenPerfilOrderByRelevanceFieldEnum = {
 export type ImagenPerfilOrderByRelevanceFieldEnum = (typeof ImagenPerfilOrderByRelevanceFieldEnum)[keyof typeof ImagenPerfilOrderByRelevanceFieldEnum]
 
 
+export const AuditoriaOrderByRelevanceFieldEnum = {
+  tabla: 'tabla',
+  registroId: 'registroId',
+  actorNombre: 'actorNombre',
+  actorEmail: 'actorEmail',
+  origen: 'origen'
+} as const
+
+export type AuditoriaOrderByRelevanceFieldEnum = (typeof AuditoriaOrderByRelevanceFieldEnum)[keyof typeof AuditoriaOrderByRelevanceFieldEnum]
+
+
+export const SancionOrderByRelevanceFieldEnum = {
+  motivo: 'motivo',
+  motivoAnulacion: 'motivoAnulacion'
+} as const
+
+export type SancionOrderByRelevanceFieldEnum = (typeof SancionOrderByRelevanceFieldEnum)[keyof typeof SancionOrderByRelevanceFieldEnum]
+
+
+export const LogroOrderByRelevanceFieldEnum = {
+  codigo: 'codigo',
+  titulo: 'titulo',
+  descripcion: 'descripcion',
+  icono: 'icono'
+} as const
+
+export type LogroOrderByRelevanceFieldEnum = (typeof LogroOrderByRelevanceFieldEnum)[keyof typeof LogroOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -3134,6 +3504,20 @@ export type EnumTournamentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'TorneoFormato'
+ */
+export type EnumTorneoFormatoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TorneoFormato'>
+    
+
+
+/**
+ * Reference to a field of type 'TorneoSiembra'
+ */
+export type EnumTorneoSiembraFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TorneoSiembra'>
+    
+
+
+/**
  * Reference to a field of type 'MatchStatus'
  */
 export type EnumMatchStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MatchStatus'>
@@ -3200,6 +3584,34 @@ export type EnumNotificationStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'ImagenPerfilEstado'
  */
 export type EnumImagenPerfilEstadoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImagenPerfilEstado'>
+    
+
+
+/**
+ * Reference to a field of type 'BigInt'
+ */
+export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+/**
+ * Reference to a field of type 'AuditoriaAccion'
+ */
+export type EnumAuditoriaAccionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditoriaAccion'>
+    
+
+
+/**
+ * Reference to a field of type 'SancionEstado'
+ */
+export type EnumSancionEstadoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SancionEstado'>
+    
+
+
+/**
+ * Reference to a field of type 'LogroRareza'
+ */
+export type EnumLogroRarezaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LogroRareza'>
     
 
 
@@ -3388,6 +3800,10 @@ export type GlobalOmitConfig = {
   pushToken?: Prisma.PushTokenOmit
   notification?: Prisma.NotificationOmit
   imagenPerfil?: Prisma.ImagenPerfilOmit
+  auditoria?: Prisma.AuditoriaOmit
+  sancion?: Prisma.SancionOmit
+  logro?: Prisma.LogroOmit
+  logroUsuario?: Prisma.LogroUsuarioOmit
 }
 
 /* Types for Logging */

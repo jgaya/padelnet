@@ -1,12 +1,18 @@
 "use server";
 
 import type { Prisma } from "@/lib/generated/prisma/client";
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma, type TxAuditado } from "@/lib/prisma";
 import { notifyInscripcionCancelada } from "@/actions/notificaciones-eventos";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
 import { getSession } from "@/lib/session";
 import { perfilCompleto } from "@/lib/google-cuenta";
 import { inscripcionesAbiertas } from "@/lib/torneo-elegibilidad";
+import {
+  mensajeSancion,
+  mensajeSancionPropia,
+  sancionVigente,
+  sancionesVigentes,
+} from "@/lib/sanciones";
 import type { TournamentStatus } from "@/types/db";
 
 type TournamentSexo = "MASCULINO" | "FEMENINO" | "MIXTO";
@@ -534,6 +540,30 @@ async function getRegistrationBaseContext(
     };
   }
 
+  // La sancion se chequea aca ademas de en el alta para que la persona vea el
+  // motivo antes de buscar pareja, y no despues de armarla.
+  const sancionPropia = await sancionVigente(
+    torneo.evento.complejo.id,
+    user.id,
+  );
+
+  if (sancionPropia) {
+    return {
+      status: "NOT_ALLOWED",
+      torneo: torneoSummary,
+      currentUser: {
+        id: user.id,
+        name: user.name,
+        lastname: user.lastname,
+        genero: normalizeGenero(user.genero),
+        categoria:
+          parseCategoriaNumber(user.categoria) ??
+          parseCategoriaNumber(session.categoria),
+      },
+      reason: mensajeSancionPropia(sancionPropia),
+    };
+  }
+
   const selfCategoria =
     parseCategoriaNumber(selfProfile?.categoria) ??
     parseCategoriaNumber(user.categoria) ??
@@ -601,6 +631,11 @@ async function getRegistrationCandidates(
     take: trimmedSearch ? 120 : 250,
   });
 
+  const sancionados = await sancionesVigentes(
+    torneo.evento.complejo.id,
+    users.map((candidate) => candidate.id),
+  );
+
   return users
     .map((candidate) => {
       // El perfil del complejo puede existir con la categoria en null (por
@@ -619,6 +654,10 @@ async function getRegistrationCandidates(
       };
     })
     .filter((candidate) => !candidate.isBlockedInComplejo)
+    // Los sancionados no aparecen como pareja posible: el alta los rechaza
+    // igual, pero es mejor no ofrecerlos que dejar armar la pareja y cortar
+    // recien al enviar.
+    .filter((candidate) => !sancionados.has(candidate.id))
     .filter((candidate) =>
       pairMeetsSexoRule(torneo.sexo, currentUser.genero, candidate.genero),
     )
@@ -746,7 +785,7 @@ export async function getPublicTorneoRegistrationData(
  * Devuelve true si revivio una fila; false si hay que crearla.
  */
 async function revivirInscripcionPrevia(
-  tx: Prisma.TransactionClient,
+  tx: TxAuditado,
   params: {
     torneoId: number;
     player1Id: number;
@@ -808,7 +847,7 @@ export async function registerPublicTorneoPair(
   }
 
   try {
-    return await prisma.$transaction(async (tx) => {
+    return await enTransaccion(async (tx) => {
       const torneo = await tx.torneo.findFirst({
         where: torneoBaseWhere(torneoId),
         select: {
@@ -856,6 +895,8 @@ export async function registerPublicTorneoPair(
           where: { id: partnerId },
           select: {
             id: true,
+            name: true,
+            lastname: true,
             genero: true,
             categoria: true,
             deletedAt: true,
@@ -936,6 +977,30 @@ export async function registerPublicTorneoPair(
         return {
           success: false,
           error: "La pareja seleccionada esta bloqueada en este complejo",
+        };
+      }
+
+      // Sanciones disciplinarias del club. Se consultan por `tx` y no por el
+      // cliente base, para leer dentro de la misma transaccion.
+      const sanciones = await sancionesVigentes(
+        torneo.evento.complejo.id,
+        [player1.id, player2.id],
+        tx,
+      );
+
+      const sancionPropia = sanciones.get(player1.id);
+      if (sancionPropia) {
+        return { success: false, error: mensajeSancionPropia(sancionPropia) };
+      }
+
+      const sancionPareja = sanciones.get(player2.id);
+      if (sancionPareja) {
+        return {
+          success: false,
+          error: mensajeSancion(
+            `${player2.name} ${player2.lastname}`.trim(),
+            sancionPareja,
+          ),
         };
       }
 
@@ -1135,6 +1200,8 @@ export async function registerManagedTorneoPair(
         where: { id: player1Id },
         select: {
           id: true,
+          name: true,
+          lastname: true,
           genero: true,
           categoria: true,
           deletedAt: true,
@@ -1146,6 +1213,8 @@ export async function registerManagedTorneoPair(
         where: { id: player2Id },
         select: {
           id: true,
+          name: true,
+          lastname: true,
           genero: true,
           categoria: true,
           deletedAt: true,
@@ -1212,6 +1281,27 @@ export async function registerManagedTorneoPair(
         success: false,
         error: "El jugador 2 esta bloqueado en este complejo",
       };
+    }
+
+    // El admin tampoco puede saltear una sancion: si quiere anotar a alguien
+    // sancionado, primero tiene que anularla, y eso queda registrado con su
+    // nombre. Una excepcion aca vaciaria la funcionalidad.
+    const sanciones = await sancionesVigentes(torneo.evento.complejo.id, [
+      player1.id,
+      player2.id,
+    ]);
+
+    for (const jugador of [player1, player2]) {
+      const sancion = sanciones.get(jugador.id);
+      if (sancion) {
+        return {
+          success: false,
+          error: mensajeSancion(
+            `${jugador.name} ${jugador.lastname}`.trim(),
+            sancion,
+          ),
+        };
+      }
     }
 
     const player1Genero = normalizeGenero(player1.genero);
@@ -1312,7 +1402,7 @@ export async function registerManagedTorneoPair(
 
     const shouldGoToWaitlist = mainCount >= torneo.capacidad;
 
-    await prisma.$transaction(async (tx) => {
+    await enTransaccion(async (tx) => {
       const revivida = await revivirInscripcionPrevia(tx, {
         torneoId,
         player1Id: player1.id,
@@ -1501,7 +1591,7 @@ export async function updatePublicTorneoPair(
   }
 
   try {
-    return await prisma.$transaction(async (tx) => {
+    return await enTransaccion(async (tx) => {
       const torneo = await tx.torneo.findFirst({
         where: torneoBaseWhere(torneoId),
         select: {
@@ -1586,6 +1676,8 @@ export async function updatePublicTorneoPair(
           where: { id: partnerId },
           select: {
             id: true,
+            name: true,
+            lastname: true,
             genero: true,
             categoria: true,
             deletedAt: true,
@@ -1666,6 +1758,30 @@ export async function updatePublicTorneoPair(
         return {
           success: false,
           error: "La pareja seleccionada esta bloqueada en este complejo",
+        };
+      }
+
+      // Sanciones disciplinarias del club. Se consultan por `tx` y no por el
+      // cliente base, para leer dentro de la misma transaccion.
+      const sanciones = await sancionesVigentes(
+        torneo.evento.complejo.id,
+        [player1.id, player2.id],
+        tx,
+      );
+
+      const sancionPropia = sanciones.get(player1.id);
+      if (sancionPropia) {
+        return { success: false, error: mensajeSancionPropia(sancionPropia) };
+      }
+
+      const sancionPareja = sanciones.get(player2.id);
+      if (sancionPareja) {
+        return {
+          success: false,
+          error: mensajeSancion(
+            `${player2.name} ${player2.lastname}`.trim(),
+            sancionPareja,
+          ),
         };
       }
 
@@ -1798,7 +1914,7 @@ export async function cancelPublicTorneoPair(
   }
 
   try {
-    const resultado = await prisma.$transaction(async (tx) => {
+    const resultado = await enTransaccion(async (tx) => {
       const torneo = await tx.torneo.findFirst({
         where: { id: torneoIdNum, deletedAt: null },
         select: {
@@ -2033,7 +2149,7 @@ export async function cancelManagedTorneoPair(
   await ensureComplejoManagerAccess(torneo.evento.complejoId);
 
   try {
-    const resultado = await prisma.$transaction(async (tx) => {
+    const resultado = await enTransaccion(async (tx) => {
       const pareja = await tx.pareja.findFirst({
         where: { id: parejaIdNum, torneoId: torneoIdNum, deletedAt: null },
         select: {
@@ -2197,14 +2313,18 @@ export async function reactivateManagedTorneoPair(
   await ensureComplejoManagerAccess(torneo.evento.complejoId);
 
   try {
-    return await prisma.$transaction(async (tx) => {
+    return await enTransaccion(async (tx) => {
       const pareja = await tx.pareja.findFirst({
         where: {
           id: parejaIdNum,
           torneoId: torneoIdNum,
           deletedAt: { not: null },
         },
-        select: { id: true },
+        select: {
+          id: true,
+          jugador1: { select: { id: true, name: true, lastname: true } },
+          jugador2: { select: { id: true, name: true, lastname: true } },
+        },
       });
 
       if (!pareja) {
@@ -2212,6 +2332,27 @@ export async function reactivateManagedTorneoPair(
           success: false as const,
           error: "No hay una inscripcion dada de baja con ese id",
         };
+      }
+
+      // Reactivar es volver a inscribir: si alguno quedo sancionado desde que
+      // se dio de baja, no puede volver a entrar.
+      const sanciones = await sancionesVigentes(
+        torneo.evento.complejoId,
+        [pareja.jugador1.id, pareja.jugador2.id],
+        tx,
+      );
+
+      for (const jugador of [pareja.jugador1, pareja.jugador2]) {
+        const sancion = sanciones.get(jugador.id);
+        if (sancion) {
+          return {
+            success: false as const,
+            error: mensajeSancion(
+              `${jugador.name} ${jugador.lastname}`.trim(),
+              sancion,
+            ),
+          };
+        }
       }
 
       const titulares = await tx.pareja.count({

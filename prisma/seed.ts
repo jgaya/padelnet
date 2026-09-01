@@ -4,6 +4,7 @@ import "dotenv/config";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "../lib/generated/prisma/client";
+import { CATALOGO_INICIAL } from "../lib/logros-catalogo";
 import type { Genero, PlatformRole } from "../lib/generated/prisma/enums";
 import { slugify } from "../lib/slug";
 
@@ -682,6 +683,8 @@ async function main() {
   );
   console.log("");
   console.log("Complejo Demo PadelNet: 3 canchas, 1 evento, 2 torneos");
+  await sembrarLogros();
+
   console.log("");
   console.log("Complejos con admin propio:");
   for (const { complejo, usuarioAdmin, jugadores } of sembrados) {
@@ -693,6 +696,33 @@ async function main() {
     );
   }
 }
+
+/**
+ * Catalogo inicial de logros.
+ *
+ * Upsert por codigo: correr el seed de nuevo no duplica ni pisa lo que el
+ * superadmin haya editado en `activo` u `orden`, que son los campos que toca
+ * desde la pantalla. El texto y la rareza si se realinean con el catalogo.
+ */
+async function sembrarLogros() {
+  for (const logro of CATALOGO_INICIAL) {
+    await prisma.logro.upsert({
+      where: { codigo: logro.codigo },
+      update: {
+        titulo: logro.titulo,
+        descripcion: logro.descripcion,
+        rareza: logro.rareza,
+        progresoObjetivo: logro.progresoObjetivo,
+        orden: logro.orden,
+      },
+      create: logro,
+    });
+  }
+
+  console.log("");
+  console.log(`Logros del catalogo: ${CATALOGO_INICIAL.length}`);
+}
+
 
 main()
   .catch((error) => {

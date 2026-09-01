@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma } from "@/lib/prisma";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
 
 export type AdminZonaPareja = {
@@ -274,7 +274,7 @@ export async function saveAdminTorneoZonas(
     }
   }
 
-  await prisma.$transaction(async (tx) => {
+  await enTransaccion(async (tx) => {
     await tx.torneo.update({
       where: { id: torneo.id },
       data: {

@@ -1,0 +1,67 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# credenciales de service account de Google/Firebase. Son las que saltean todas
+# las Security Rules, asi que no pueden entrar al repo ni por accidente.
+*-firebase-adminsdk-*.json
+service-account*.json
+padelnet-*.json
+gcp-*.json
+
+# fotos de perfil de los usuarios. /var/uploads es donde viven ahora;
+# /public/uploads es la ubicacion vieja, que quedo ignorada para que no vuelva
+# a entrar nada al repo si alguien corre una version anterior del codigo.
+/var/uploads
+/public/uploads
+
+# Fuente que baja scripts/generar-iconos.ts para rasterizar los iconos de la
+# PWA. Es un binario de 450 KB que se puede volver a bajar; los PNG que salen de
+# ahi SI estan commiteados, que es lo que la app sirve.
+/var/fuentes
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# cliente de prisma: desde v7 se genera como codigo fuente fuera de node_modules
+/lib/generated/
+
+# generados por next-sitemap en el postbuild
+/public/robots.txt
+/public/sitemap.xml
+/public/sitemap-*.xml

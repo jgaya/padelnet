@@ -348,6 +348,13 @@ export default async function AdminTorneoInscripcionesPage(props: {
               Suplentes: {suplentesCount}
             </span>
           </div>
+
+          <Link
+            href={`/admin/reportes/inscriptos?torneoId=${torneoIdNum}`}
+            className="mt-4 inline-flex items-center gap-2 rounded-full bg-surface px-4 py-2 text-sm font-semibold text-content ring-1 ring-content/10 transition hover:text-padel-green hover:ring-padel-green/40"
+          >
+            Ver reporte de inscriptos
+          </Link>
         </div>
 
         <div className="space-y-4 px-5 py-5 sm:px-7 sm:py-7">

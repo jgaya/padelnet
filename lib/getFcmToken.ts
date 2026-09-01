@@ -1,6 +1,7 @@
 import { getToken } from "firebase/messaging";
 
 import { getMessagingInstance } from "./firebase";
+import { registrarServiceWorker } from "./service-worker";
 
 export async function getFcmToken() {
   const messaging = await getMessagingInstance();
@@ -15,5 +16,18 @@ export async function getFcmToken() {
   const permission = await Notification.requestPermission();
   if (permission !== "granted") return null;
 
-  return getToken(messaging, { vapidKey });
+  // Sin este parametro, Firebase registra /firebase-messaging-sw.js por su
+  // cuenta y quedan dos service workers peleando el scope raiz con /sw.js: gana
+  // uno de los dos y las push dejan de llegar de forma intermitente. Pasandole
+  // la registration, Firebase usa el worker que ya tenemos. Ver public/sw.js.
+  const registration = await registrarServiceWorker();
+
+  // `getToken` esta deprecado desde firebase 12 a favor de `register` +
+  // `onRegistered`, que reciben las mismas opciones. Migrar cambia como se
+  // obtienen y se refrescan los tokens, asi que va aparte de esto y hay que
+  // probarlo contra el pipeline de push real.
+  return getToken(messaging, {
+    vapidKey,
+    ...(registration ? { serviceWorkerRegistration: registration } : {}),
+  });
 }

@@ -19,6 +19,7 @@ const gestionMainLinks: NavLink[] = [
   { href: "/admin/complejos", label: "Gestion" },
   { href: "/admin/eventos", label: "Eventos" },
   { href: "/admin/torneos", label: "Torneos" },
+  { href: "/admin/reportes", label: "Reportes" },
 ];
 
 const superadminMainLinks: NavLink[] = [
@@ -28,6 +29,12 @@ const superadminMainLinks: NavLink[] = [
   { href: "/superadmin/torneos", label: "Torneos" },
   { href: "/superadmin/usuarios", label: "Usuarios" },
   { href: "/superadmin/funcionalidades", label: "Funcionalidades" },
+  { href: "/superadmin/logros", label: "Logros" },
+  { href: "/superadmin/auditoria", label: "Auditoria" },
+  // Los reportes viven en /admin y el superadmin pasa ese guard
+  // (administraAlgunComplejo lo deja entrar), asi que no hay una copia
+  // aparte: es el mismo link.
+  { href: "/admin/reportes", label: "Reportes" },
 ];
 
 /**

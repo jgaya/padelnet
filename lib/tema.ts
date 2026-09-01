@@ -44,6 +44,21 @@ export const ETIQUETAS_MODO: Record<ThemeMode, string> = {
 const CONSULTA_OSCURO = "(prefers-color-scheme: dark)";
 
 /**
+ * Color de la barra del navegador y de la barra de estado cuando la app corre
+ * instalada. Es `--surface` de cada tema (app/globals.css), que es el color del
+ * header sticky: asi la barra del sistema se lee como continuacion del header.
+ *
+ * No alcanza con dos `<meta name="theme-color" media="(prefers-color-scheme)">`
+ * en el layout: esas siguen al sistema operativo, y aca el tema es una eleccion
+ * de tres valores del usuario. Alguien que elige "Claro" con el celular en
+ * oscuro tendria la barra oscura y la app clara.
+ */
+export const COLOR_BARRA: Record<ResolvedTheme, string> = {
+  light: "#ffffff",
+  dark: "#16201f",
+};
+
+/**
  * Lo que ve el servidor. El valor real depende del navegador, asi que en SSR se
  * asume `system`/`light` y React reconcilia despues del primer render. Lo visible
  * no parpadea porque el script inline ya dejo puesto el `data-theme` correcto y
@@ -84,6 +99,20 @@ export function aplicarTema(mode: ThemeMode): ResolvedTheme {
   // Tambien inline y no solo por CSS: asi los controles nativos y la scrollbar
   // no parpadean en claro mientras baja la hoja de estilos.
   html.style.colorScheme = resuelto;
+
+  // La barra del navegador (y la de estado, con la app instalada) acompaña al
+  // tema elegido. Ver COLOR_BARRA.
+  //
+  // Se crea si no esta: el `<meta>` lo pone SCRIPT_TEMA, no el `metadata` de
+  // Next, justamente para que haya uno solo. Si por lo que sea ese script no
+  // corrio, esto lo cubre.
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.setAttribute("name", "theme-color");
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute("content", COLOR_BARRA[resuelto]);
 
   return resuelto;
 }
@@ -205,4 +234,7 @@ var e=document.documentElement;
 e.setAttribute("data-theme",t);
 e.setAttribute("data-theme-mode",m);
 e.style.colorScheme=t;
+var c=document.querySelector('meta[name="theme-color"]');
+if(!c){c=document.createElement("meta");c.setAttribute("name","theme-color");document.head.appendChild(c)}
+c.setAttribute("content",d?"${COLOR_BARRA.dark}":"${COLOR_BARRA.light}");
 }catch(_){}})();`;

@@ -18,6 +18,7 @@ import { minutesToTime, parseTimeToMinutes } from "@/lib/horarios";
 import {
   buildElimMatches,
   buildZonaMatches,
+  FASES_LLAVE,
   fasesDelCuadro,
   requireLlaveEntry,
   siembraDeToken,
@@ -26,6 +27,10 @@ import {
   type FaseLlave,
   type ZonaMatchSpec,
 } from "@/lib/torneo-llave";
+import {
+  buildCuadroDirecto,
+  semillaDeToken,
+} from "@/lib/torneo-llave-directa";
 
 export type GrillaDay = {
   label: string;
@@ -58,6 +63,13 @@ export type GrillaCancha = {
 
 export type GrillaInput = {
   zonas: GrillaZona[];
+  /**
+   * "ZONAS" (default) arma zonas y despues el cuadro desde LLAVE_TABLA.
+   * "DIRECTO" saltea las zonas y siembra el cuadro con `siembra`.
+   */
+  modo?: "ZONAS" | "DIRECTO";
+  /** Solo en DIRECTO: ids de pareja en orden de siembra, el 0 es la semilla 1. */
+  siembra?: number[];
   parejas: Map<number, GrillaPareja>;
   days: GrillaDay[];
   canchas: GrillaCancha[];
@@ -254,6 +266,8 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     canchas: selectedCanchas,
     durationMin,
     gapMultiplier,
+    modo = "ZONAS",
+    siembra = [],
   } = input;
 
   if (days.length === 0) {
@@ -274,30 +288,36 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     zonasPorLetra.set(zona.letra, zona);
   }
 
-  const totalParejas = [...zonasPorLetra.values()].reduce(
-    (total, zona) => total + zona.parejaIdPorSiembra.length,
-    0,
-  );
+  const totalParejas =
+    modo === "DIRECTO"
+      ? siembra.length
+      : [...zonasPorLetra.values()].reduce(
+          (total, zona) => total + zona.parejaIdPorSiembra.length,
+          0,
+        );
 
   // La tabla define, para esta cantidad de parejas, cuantas zonas hay, de que
   // tamano, sus partidos y los cruces del cuadro. Si las zonas cargadas no
   // coinciden no se puede armar nada coherente, asi que se corta con un mensaje
   // que diga que hay que corregir.
-  const entry = requireLlaveEntry(totalParejas);
+  //
+  // En DIRECTO no hay tabla: el cuadro lo calcula lib/torneo-llave-directa.ts a
+  // partir de la siembra, y no hay zonas que validar.
+  const entry = modo === "DIRECTO" ? null : requireLlaveEntry(totalParejas);
 
-  if (entry.grupo.length !== zonasPorLetra.size) {
+  if (entry && entry.grupo.length !== zonasPorLetra.size) {
     throw new Error(
       `Con ${totalParejas} parejas el torneo necesita ${entry.grupo.length} zonas y hay ${zonasPorLetra.size}. Regenera las zonas desde la pantalla de zonas.`,
     );
   }
 
-  for (const zonaTabla of entry.grupo) {
+  for (const zonaTabla of entry?.grupo ?? []) {
     const letra = zonaTabla.nombre.split(" ")[1]?.toUpperCase() ?? "";
     const zona = zonasPorLetra.get(letra);
 
     if (!zona) {
       throw new Error(
-        `Falta la ${zonaTabla.nombre}: con ${totalParejas} parejas el torneo va de la Zona A a la ${entry.grupo[entry.grupo.length - 1].nombre.split(" ")[1]}.`,
+        `Falta la ${zonaTabla.nombre}: con ${totalParejas} parejas el torneo va de la Zona A a la ${entry!.grupo[entry!.grupo.length - 1].nombre.split(" ")[1]}.`,
       );
     }
 
@@ -416,9 +436,48 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     conBye: spec.conBye,
   });
 
-  const zonaMatches = buildZonaMatches(entry).map(buildPlannedZonaMatch);
-  const elimSpecs = buildElimMatches(entry);
-  const elimMatches = elimSpecs.map(buildPlannedElimMatch);
+  /**
+   * Variante de `buildPlannedElimMatch` para el cuadro directo.
+   *
+   * La diferencia de fondo: aca las parejas de la primera ronda **se conocen
+   * al generar**, porque salen de la siembra y no del resultado de una zona.
+   * Por eso el partido nace con `pareja1Id` puesto, y el Bye ya queda marcado.
+   */
+  const buildPlannedElimDirecto = (spec: ElimMatchSpec): PlannedMatch => {
+    const base = buildPlannedElimMatch(spec);
+
+    if (!spec.primeraRonda) return base;
+
+    const parejaDeToken = (token: string | null) => {
+      const semilla = semillaDeToken(token);
+      return semilla === null ? null : (siembra[semilla - 1] ?? null);
+    };
+
+    const pareja1Id = parejaDeToken(spec.token1);
+    const pareja2Id = parejaDeToken(spec.token2);
+
+    const nombreDe = (id: number | null, token: string | null) =>
+      id === null ? (token ?? "A definir") : (parejas.get(id)?.nombre ?? token ?? "");
+
+    return {
+      ...base,
+      pareja1Id,
+      pareja2Id,
+      pareja1Nombre: nombreDe(pareja1Id, spec.token1),
+      pareja2Nombre: nombreDe(pareja2Id, spec.token2),
+      restrictions: [
+        pareja1Id === null ? null : (parejas.get(pareja1Id)?.restriccion ?? null),
+        pareja2Id === null ? null : (parejas.get(pareja2Id)?.restriccion ?? null),
+      ].filter((item): item is string => Boolean(item)),
+    };
+  };
+
+  const zonaMatches = entry
+    ? buildZonaMatches(entry).map(buildPlannedZonaMatch)
+    : [];
+  const elimMatches = entry
+    ? buildElimMatches(entry).map(buildPlannedElimMatch)
+    : buildCuadroDirecto(siembra).matches.map(buildPlannedElimDirecto);
 
   const slots: Array<{
     canchaId: number;
@@ -705,7 +764,13 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
 
   const finPorFase = new Map<FaseLlave, number>();
   const asignadosPorFase = new Map<FaseLlave, number>();
-  const fases = fasesDelCuadro(entry);
+  // Con zonas sale de la tabla; en directo, de los partidos que se armaron.
+  // Las dos formas dan las fases presentes en orden de disputa.
+  const fases = entry
+    ? fasesDelCuadro(entry)
+    : FASES_LLAVE.filter((fase) =>
+        elimMatches.some((match) => match.fase === fase),
+      );
 
   for (const [faseIndex, fase] of fases.entries()) {
     const deLaFase = elimMatches.filter((match) => match.fase === fase);

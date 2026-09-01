@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 
 import { getPerfilPublicoJugador } from "@/actions/jugadores-public";
 import EstadisticasJugador from "@/components/jugador/EstadisticasJugador";
+import PanelLogros from "@/components/logros/PanelLogros";
+import { logrosPublicos } from "@/actions/logros";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +12,7 @@ export default async function JugadorPublicoPage(props: {
 }) {
   const { id } = await props.params;
   const perfil = await getPerfilPublicoJugador(Number(id));
+  const logros = await logrosPublicos(Number(id));
 
   if (!perfil) {
     notFound();
@@ -25,6 +28,10 @@ export default async function JugadorPublicoPage(props: {
       </h1>
 
       <EstadisticasJugador perfil={perfil} />
+
+      <div className="mt-6">
+        <PanelLogros logros={logros} titulo="Logros" soloObtenidos />
+      </div>
     </div>
   );
 }

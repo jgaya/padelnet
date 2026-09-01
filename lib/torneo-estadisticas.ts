@@ -16,7 +16,7 @@
  * endpoint, dejarlo aca evita publicar un recalculo de estadisticas al mundo.
  */
 
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma } from "@/lib/prisma";
 import { calcularPosiciones } from "@/lib/torneo-posiciones";
 
 export type EstadisticasParejasResult = {
@@ -101,7 +101,7 @@ export async function actualizarEstadisticasParejas(
     });
 
     if (cambios.length > 0) {
-      await prisma.$transaction(async (tx) => {
+      await enTransaccion(async (tx) => {
         for (const cambio of cambios) {
           await tx.pareja.update({
             where: { id: cambio.id },

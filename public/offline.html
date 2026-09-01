@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sin conexion - PadelNet</title>
+
+    <!--
+      HTML suelto y no una pagina de Next a proposito.
+
+      Todo lo que pasa por app/layout.tsx atraviesa SiteHeader, que llama a
+      getSession(): el HTML sale con el nombre y el avatar de quien estaba
+      logueado. El service worker precachea esta pagina, y guardar en disco algo
+      personalizado va en contra de la regla de no cachear nada autenticado.
+
+      Aca no hay sesion, no hay datos y no hay pedidos de red: es siempre la
+      misma para todo el mundo.
+
+      Los colores estan escritos a mano porque no hay hoja de estilos que
+      cargar; salen de los tokens de app/globals.css.
+    -->
+    <style>
+      :root {
+        --background: #f5f7f7;
+        --surface: #ffffff;
+        --content: #1c2526;
+        --padel-green: #00c853;
+        color-scheme: light;
+      }
+
+      [data-theme="dark"] {
+        --background: #0e1514;
+        --surface: #16201f;
+        --content: #e3ebe9;
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: var(--background);
+        color: var(--content);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      main {
+        width: 100%;
+        max-width: 26rem;
+        text-align: center;
+        background: var(--surface);
+        border: 1px solid color-mix(in srgb, var(--content) 10%, transparent);
+        border-radius: 1rem;
+        padding: 2.5rem 1.75rem;
+      }
+
+      .marca {
+        font-size: 1.25rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        color: var(--padel-green);
+        margin: 0 0 1.5rem;
+      }
+
+      .marca span {
+        font-size: 0.625rem;
+        letter-spacing: 0.24em;
+        color: color-mix(in srgb, var(--content) 70%, transparent);
+        vertical-align: baseline;
+      }
+
+      h1 {
+        font-size: 1.25rem;
+        margin: 0 0 0.75rem;
+      }
+
+      p {
+        margin: 0 0 1.75rem;
+        line-height: 1.6;
+        color: color-mix(in srgb, var(--content) 75%, transparent);
+      }
+
+      button {
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        border: 0;
+        border-radius: 0.625rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--padel-green);
+        color: #ffffff;
+      }
+
+      button:hover {
+        filter: brightness(0.94);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="marca">PADEL<span>.NET.AR</span></p>
+      <h1>Te quedaste sin conexion</h1>
+      <p>
+        No pudimos cargar la pagina. Revisa el wifi o los datos y volve a
+        intentar.
+      </p>
+      <button type="button" onclick="location.reload()">Reintentar</button>
+    </main>
+
+    <script>
+      // Misma clave y misma logica que lib/tema.ts, escrita a mano porque este
+      // archivo no puede importar nada. Si cambia el tema alla, cambiar aca.
+      (function () {
+        try {
+          var m = localStorage.getItem("padelnet-theme");
+          if (m !== "light" && m !== "dark" && m !== "system") m = "system";
+          var d =
+            m === "dark" ||
+            (m === "system" &&
+              matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.setAttribute(
+            "data-theme",
+            d ? "dark" : "light",
+          );
+        } catch (_) {}
+      })();
+
+      // Si vuelve la conexion, salir solo de la pagina de error.
+      addEventListener("online", function () {
+        location.reload();
+      });
+    </script>
+  </body>
+</html>

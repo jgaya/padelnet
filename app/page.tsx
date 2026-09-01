@@ -123,45 +123,54 @@ export default async function Home() {
         ))}
       </div>
 
-      <div
-        id="partidos"
-        className="mt-6 rounded-2xl border border-content/10 bg-surface p-4 sm:p-6"
-      >
-        <h2 className="text-lg font-semibold text-content">
-          Proximos partidos
-        </h2>
-        <div className="mt-4 space-y-3">
-          {proximosPartidos.length === 0 ? (
-            <EmptyState>
-              No hay partidos programados por el momento. Cuando los clubes
-              publiquen la grilla de sus torneos, los vas a ver aca.
-            </EmptyState>
-          ) : (
-            proximosPartidos.map((partido) => (
-              <article
-                key={partido.id}
-                className="flex flex-col gap-2 rounded-xl bg-surface-soft px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-content">
-                    {partido.pareja1Nombre} vs {partido.pareja2Nombre}
-                  </p>
-                  <p className="truncate text-xs text-content/70">
-                    {partido.torneoNombre} - {partido.complejoNombre} -{" "}
-                    {partido.canchaLabel}
-                  </p>
-                  <p className="text-xs text-content/60">
-                    {formatDateTime(partido.scheduledAt)} -{" "}
-                    {partidoStatusLabel(partido.status)}
-                  </p>
-                </div>
-                <span className="shrink-0 self-start rounded-full bg-surface px-3 py-1 text-sm font-semibold text-energy-orange sm:self-auto">
-                  {formatTime(partido.scheduledAt)}
-                </span>
-              </article>
-            ))
-          )}
-        </div>
+      {/* Los dos caminos de entrada al sitio, uno por cada tipo de visitante:
+          el club que todavia no esta y el jugador que todavia no tiene cuenta.
+          Van juntos y del mismo tamaño porque ninguno es mas importante. */}
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <article className="flex flex-col rounded-2xl border border-content/10 bg-surface p-5 shadow-sm sm:p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-padel-green">
+            Para clubes
+          </p>
+          <h2 className="mt-2 text-xl font-semibold text-content">
+            Tenes un complejo y queres sumarte?
+          </h2>
+          <p className="mt-2 text-sm text-content/70">
+            Contanos quien sos y como se llama tu club. Un administrador de
+            PadelNet se pone en contacto para configurarte las canchas, las
+            inscripciones y los torneos.
+          </p>
+          {/* mt-auto empuja el boton abajo: las dos tarjetas tienen textos de
+              distinto largo y sin esto los botones quedan desalineados. */}
+          <div className="mt-auto pt-5">
+            <Link
+              href="/sumar-complejo"
+              className="inline-flex rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95"
+            >
+              Quiero sumar mi complejo
+            </Link>
+          </div>
+        </article>
+
+        <article className="flex flex-col rounded-2xl border border-content/10 bg-surface p-5 shadow-sm sm:p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-energy-orange">
+            Para jugadores
+          </p>
+          <h2 className="mt-2 text-xl font-semibold text-content">
+            Queres empezar a jugar?
+          </h2>
+          <p className="mt-2 text-sm text-content/70">
+            Crea tu cuenta y anotate a los torneos de tu categoria. Vas a poder
+            seguir tu ranking, tus partidos y recibir los avisos de horarios.
+          </p>
+          <div className="mt-auto pt-5">
+            <Link
+              href="/registrarse"
+              className="inline-flex rounded-full bg-energy-orange px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-95"
+            >
+              Crear mi cuenta
+            </Link>
+          </div>
+        </article>
       </div>
 
       <div
@@ -223,6 +232,47 @@ export default async function Home() {
           >
             Ir a torneos
           </Link>
+        </div>
+      </div>
+
+      <div
+        id="partidos"
+        className="mt-6 rounded-2xl border border-content/10 bg-surface p-4 sm:p-6"
+      >
+        <h2 className="text-lg font-semibold text-content">
+          Proximos partidos
+        </h2>
+        <div className="mt-4 space-y-3">
+          {proximosPartidos.length === 0 ? (
+            <EmptyState>
+              No hay partidos programados por el momento. Cuando los clubes
+              publiquen la grilla de sus torneos, los vas a ver aca.
+            </EmptyState>
+          ) : (
+            proximosPartidos.map((partido) => (
+              <article
+                key={partido.id}
+                className="flex flex-col gap-2 rounded-xl bg-surface-soft px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-content">
+                    {partido.pareja1Nombre} vs {partido.pareja2Nombre}
+                  </p>
+                  <p className="truncate text-xs text-content/70">
+                    {partido.torneoNombre} - {partido.complejoNombre} -{" "}
+                    {partido.canchaLabel}
+                  </p>
+                  <p className="text-xs text-content/60">
+                    {formatDateTime(partido.scheduledAt)} -{" "}
+                    {partidoStatusLabel(partido.status)}
+                  </p>
+                </div>
+                <span className="shrink-0 self-start rounded-full bg-surface px-3 py-1 text-sm font-semibold text-energy-orange sm:self-auto">
+                  {formatTime(partido.scheduledAt)}
+                </span>
+              </article>
+            ))
+          )}
         </div>
       </div>
     </section>

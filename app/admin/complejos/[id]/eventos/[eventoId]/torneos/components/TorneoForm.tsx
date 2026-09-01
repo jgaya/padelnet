@@ -32,6 +32,16 @@ export type TorneoFormProps = {
   isEdit?: number;
 };
 
+const formatoOptions = [
+  { value: "ZONAS", label: "Zonas y despues llave" },
+  { value: "ELIMINACION_DIRECTA", label: "Eliminacion directa" },
+];
+
+const siembraOptions = [
+  { value: "INSCRIPCION", label: "Orden de inscripcion" },
+  { value: "RANKING", label: "Ranking del club" },
+];
+
 const sexoOptions = [
   { value: "MASCULINO", label: "Masculino" },
   { value: "FEMENINO", label: "Femenino" },
@@ -85,6 +95,8 @@ export default function TorneoForm({
       categoriaN: "",
       capacidad: "24",
       jugxZona: "3",
+      formato: "ZONAS",
+      siembra: "INSCRIPCION",
       status: "DRAFT",
       publicado: false,
       zonaCerrada: false,
@@ -96,6 +108,7 @@ export default function TorneoForm({
   });
 
   const categoriaRegla = watch("categoriaRegla");
+  const esEliminacionDirecta = watch("formato") === "ELIMINACION_DIRECTA";
   const requiereCategoriaN = categoriaRegla !== "LIBRE";
 
   useEffect(() => {
@@ -113,6 +126,8 @@ export default function TorneoForm({
       categoriaN: initialData.categoriaN ?? "",
       capacidad: initialData.capacidad ?? "24",
       jugxZona: initialData.jugxZona ?? "3",
+      formato: initialData.formato ?? "ZONAS",
+      siembra: initialData.siembra ?? "INSCRIPCION",
       status: initialData.status ?? "DRAFT",
       publicado: initialData.publicado ?? false,
       zonaCerrada: initialData.zonaCerrada ?? false,
@@ -145,6 +160,8 @@ export default function TorneoForm({
           data.categoriaRegla === "LIBRE" ? null : Number(data.categoriaN || 0),
         capacidad: Number(data.capacidad),
         jugxZona: Number(data.jugxZona || 3),
+        formato: data.formato,
+        siembra: data.siembra,
         status: data.status,
         publicado: data.publicado ?? false,
         zonaCerrada: data.zonaCerrada ?? false,
@@ -247,6 +264,34 @@ export default function TorneoForm({
             required
           />
         </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FormSelect
+            label="Formato"
+            register={register("formato")}
+            error={errors.formato}
+            options={formatoOptions}
+            required
+          />
+          {esEliminacionDirecta ? (
+            <FormSelect
+              label="Orden del cuadro"
+              register={register("siembra")}
+              error={errors.siembra}
+              options={siembraOptions}
+              required
+            />
+          ) : null}
+        </div>
+
+        {esEliminacionDirecta ? (
+          <p className="mb-4 rounded-xl border border-info/30 bg-info/10 px-4 py-3 text-sm text-info">
+            El torneo empieza directamente en la llave: no se crean zonas. Las
+            parejas se siembran con el orden elegido y, si no son una potencia
+            de 2, los lugares vacios se reparten como BYE empezando por la
+            mejor sembrada. Necesita entre 5 y 32 parejas.
+          </p>
+        ) : null}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <FormInput

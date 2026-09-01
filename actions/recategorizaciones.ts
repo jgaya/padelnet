@@ -16,7 +16,7 @@
  */
 
 import { Prisma } from "@/lib/generated/prisma/client";
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma, type TxAuditado } from "@/lib/prisma";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
 import { CATEGORIA_OPTIONS } from "@/lib/categorias";
 import { fechaParaDB } from "@/lib/turnos-horario";
@@ -105,7 +105,7 @@ function resolveMovimiento(
  * corresponde: la recategorizacion nunca fue suya, fue del club.
  */
 async function aplicarCategoriaVigente(
-  tx: Prisma.TransactionClient,
+  tx: TxAuditado,
   complejoId: number,
   jugadorId: number,
 ) {
@@ -333,7 +333,7 @@ export async function createRecategorizacion(
   const nivelPrevio =
     jugador.perfilesComplejo[0]?.categoria ?? jugador.categoria ?? null;
 
-  await prisma.$transaction(async (tx) => {
+  await enTransaccion(async (tx) => {
     await tx.recategorizacion.create({
       data: {
         complejoId,
@@ -371,7 +371,7 @@ export async function deleteRecategorizacion(complejoId: number, id: number) {
     throw new Error("Recategorizacion no encontrada");
   }
 
-  await prisma.$transaction(async (tx) => {
+  await enTransaccion(async (tx) => {
     await tx.recategorizacion.delete({ where: { id: recategorizacion.id } });
     await aplicarCategoriaVigente(tx, complejoId, recategorizacion.jugadorId);
   });

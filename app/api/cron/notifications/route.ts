@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { conOrigen } from "@/lib/auditoria-contexto";
+
 import { processPendingNotifications } from "@/cron/notification-cron";
 
 export const runtime = "nodejs";
@@ -22,7 +24,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await processPendingNotifications();
+    const result = await conOrigen("cron", processPendingNotifications);
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
     console.error("Error procesando notificaciones pendientes", error);

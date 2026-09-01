@@ -3,7 +3,7 @@
 import bcrypt from "bcryptjs";
 import { Prisma } from "@/lib/generated/prisma/client";
 import { assertSuperadmin } from "@/lib/authz";
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma } from "@/lib/prisma";
 import type { ComplejoRole, PlatformRole } from "@/lib/roles";
 import { normalizarProvincia } from "@/lib/ubicaciones";
 import type { ListOpts } from "@/types/ui";
@@ -252,7 +252,7 @@ export async function createUsuario(data: UsuarioPayload) {
   });
 
   try {
-    return await prisma.$transaction(async (tx) => {
+    return await enTransaccion(async (tx) => {
       const user = await tx.user.create({
         data: {
           name,
@@ -385,7 +385,7 @@ export async function updateUsuario(id: number, data: UsuarioPayload) {
   }
 
   try {
-    return await prisma.$transaction(async (tx) => {
+    return await enTransaccion(async (tx) => {
       const user = await tx.user.update({
         where: { id },
         data: updateData,

@@ -302,6 +302,7 @@ export type ComplejoWhereInput = {
   eventos?: Prisma.EventoListRelationFilter
   sponsors?: Prisma.ComplejoSponsorListRelationFilter
   recategorizaciones?: Prisma.RecategorizacionListRelationFilter
+  sanciones?: Prisma.SancionListRelationFilter
   generaciones?: Prisma.GeneracionListRelationFilter
   features?: Prisma.ComplejoFeatureListRelationFilter
   horarios?: Prisma.ComplejoHorarioListRelationFilter
@@ -331,6 +332,7 @@ export type ComplejoOrderByWithRelationInput = {
   eventos?: Prisma.EventoOrderByRelationAggregateInput
   sponsors?: Prisma.ComplejoSponsorOrderByRelationAggregateInput
   recategorizaciones?: Prisma.RecategorizacionOrderByRelationAggregateInput
+  sanciones?: Prisma.SancionOrderByRelationAggregateInput
   generaciones?: Prisma.GeneracionOrderByRelationAggregateInput
   features?: Prisma.ComplejoFeatureOrderByRelationAggregateInput
   horarios?: Prisma.ComplejoHorarioOrderByRelationAggregateInput
@@ -364,6 +366,7 @@ export type ComplejoWhereUniqueInput = Prisma.AtLeast<{
   eventos?: Prisma.EventoListRelationFilter
   sponsors?: Prisma.ComplejoSponsorListRelationFilter
   recategorizaciones?: Prisma.RecategorizacionListRelationFilter
+  sanciones?: Prisma.SancionListRelationFilter
   generaciones?: Prisma.GeneracionListRelationFilter
   features?: Prisma.ComplejoFeatureListRelationFilter
   horarios?: Prisma.ComplejoHorarioListRelationFilter
@@ -436,6 +439,7 @@ export type ComplejoCreateInput = {
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
@@ -465,6 +469,7 @@ export type ComplejoUncheckedCreateInput = {
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
@@ -493,6 +498,7 @@ export type ComplejoUpdateInput = {
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
@@ -522,6 +528,7 @@ export type ComplejoUncheckedUpdateInput = {
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
@@ -809,6 +816,20 @@ export type ComplejoUpdateOneRequiredWithoutGeneracionesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ComplejoUpdateToOneWithWhereWithoutGeneracionesInput, Prisma.ComplejoUpdateWithoutGeneracionesInput>, Prisma.ComplejoUncheckedUpdateWithoutGeneracionesInput>
 }
 
+export type ComplejoCreateNestedOneWithoutSancionesInput = {
+  create?: Prisma.XOR<Prisma.ComplejoCreateWithoutSancionesInput, Prisma.ComplejoUncheckedCreateWithoutSancionesInput>
+  connectOrCreate?: Prisma.ComplejoCreateOrConnectWithoutSancionesInput
+  connect?: Prisma.ComplejoWhereUniqueInput
+}
+
+export type ComplejoUpdateOneRequiredWithoutSancionesNestedInput = {
+  create?: Prisma.XOR<Prisma.ComplejoCreateWithoutSancionesInput, Prisma.ComplejoUncheckedCreateWithoutSancionesInput>
+  connectOrCreate?: Prisma.ComplejoCreateOrConnectWithoutSancionesInput
+  upsert?: Prisma.ComplejoUpsertWithoutSancionesInput
+  connect?: Prisma.ComplejoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComplejoUpdateToOneWithWhereWithoutSancionesInput, Prisma.ComplejoUpdateWithoutSancionesInput>, Prisma.ComplejoUncheckedUpdateWithoutSancionesInput>
+}
+
 export type ComplejoCreateWithoutHorariosInput = {
   name: string
   slug: string
@@ -830,6 +851,7 @@ export type ComplejoCreateWithoutHorariosInput = {
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionCreateNestedManyWithoutComplejoInput
@@ -858,6 +880,7 @@ export type ComplejoUncheckedCreateWithoutHorariosInput = {
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUncheckedCreateNestedManyWithoutComplejoInput
@@ -901,6 +924,7 @@ export type ComplejoUpdateWithoutHorariosInput = {
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUpdateManyWithoutComplejoNestedInput
@@ -929,6 +953,7 @@ export type ComplejoUncheckedUpdateWithoutHorariosInput = {
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUncheckedUpdateManyWithoutComplejoNestedInput
@@ -956,6 +981,7 @@ export type ComplejoCreateWithoutHorarioExcepcionesInput = {
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
@@ -984,6 +1010,7 @@ export type ComplejoUncheckedCreateWithoutHorarioExcepcionesInput = {
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
@@ -1027,6 +1054,7 @@ export type ComplejoUpdateWithoutHorarioExcepcionesInput = {
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
@@ -1055,6 +1083,7 @@ export type ComplejoUncheckedUpdateWithoutHorarioExcepcionesInput = {
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
@@ -1082,6 +1111,7 @@ export type ComplejoCreateWithoutFeaturesInput = {
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionCreateNestedManyWithoutComplejoInput
@@ -1110,6 +1140,7 @@ export type ComplejoUncheckedCreateWithoutFeaturesInput = {
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUncheckedCreateNestedManyWithoutComplejoInput
@@ -1153,6 +1184,7 @@ export type ComplejoUpdateWithoutFeaturesInput = {
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUpdateManyWithoutComplejoNestedInput
@@ -1181,6 +1213,7 @@ export type ComplejoUncheckedUpdateWithoutFeaturesInput = {
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUncheckedUpdateManyWithoutComplejoNestedInput
@@ -1207,6 +1240,7 @@ export type ComplejoCreateWithoutMembershipsInput = {
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
@@ -1235,6 +1269,7 @@ export type ComplejoUncheckedCreateWithoutMembershipsInput = {
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
@@ -1278,6 +1313,7 @@ export type ComplejoUpdateWithoutMembershipsInput = {
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
@@ -1306,6 +1342,7 @@ export type ComplejoUncheckedUpdateWithoutMembershipsInput = {
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
@@ -1333,6 +1370,7 @@ export type ComplejoCreateWithoutPerfilesJugadoresInput = {
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
@@ -1361,6 +1399,7 @@ export type ComplejoUncheckedCreateWithoutPerfilesJugadoresInput = {
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
@@ -1404,6 +1443,7 @@ export type ComplejoUpdateWithoutPerfilesJugadoresInput = {
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
@@ -1432,6 +1472,7 @@ export type ComplejoUncheckedUpdateWithoutPerfilesJugadoresInput = {
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
@@ -1459,6 +1500,7 @@ export type ComplejoCreateWithoutCanchasInput = {
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
@@ -1487,6 +1529,7 @@ export type ComplejoUncheckedCreateWithoutCanchasInput = {
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
@@ -1530,6 +1573,7 @@ export type ComplejoUpdateWithoutCanchasInput = {
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
@@ -1558,6 +1602,7 @@ export type ComplejoUncheckedUpdateWithoutCanchasInput = {
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
@@ -1585,6 +1630,7 @@ export type ComplejoCreateWithoutEventosInput = {
   canchas?: Prisma.CanchaCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
@@ -1613,6 +1659,7 @@ export type ComplejoUncheckedCreateWithoutEventosInput = {
   canchas?: Prisma.CanchaUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
@@ -1656,6 +1703,7 @@ export type ComplejoUpdateWithoutEventosInput = {
   canchas?: Prisma.CanchaUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
@@ -1684,6 +1732,7 @@ export type ComplejoUncheckedUpdateWithoutEventosInput = {
   canchas?: Prisma.CanchaUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
@@ -1711,6 +1760,7 @@ export type ComplejoCreateWithoutRecategorizacionesInput = {
   canchas?: Prisma.CanchaCreateNestedManyWithoutComplejoInput
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
@@ -1739,6 +1789,7 @@ export type ComplejoUncheckedCreateWithoutRecategorizacionesInput = {
   canchas?: Prisma.CanchaUncheckedCreateNestedManyWithoutComplejoInput
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
@@ -1782,6 +1833,7 @@ export type ComplejoUpdateWithoutRecategorizacionesInput = {
   canchas?: Prisma.CanchaUpdateManyWithoutComplejoNestedInput
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
@@ -1810,6 +1862,7 @@ export type ComplejoUncheckedUpdateWithoutRecategorizacionesInput = {
   canchas?: Prisma.CanchaUncheckedUpdateManyWithoutComplejoNestedInput
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
@@ -1838,6 +1891,7 @@ export type ComplejoCreateWithoutTurnoSeriesInput = {
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
@@ -1866,6 +1920,7 @@ export type ComplejoUncheckedCreateWithoutTurnoSeriesInput = {
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
@@ -1909,6 +1964,7 @@ export type ComplejoUpdateWithoutTurnoSeriesInput = {
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
@@ -1937,6 +1993,7 @@ export type ComplejoUncheckedUpdateWithoutTurnoSeriesInput = {
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
@@ -1963,6 +2020,7 @@ export type ComplejoCreateWithoutSponsorsInput = {
   canchas?: Prisma.CanchaCreateNestedManyWithoutComplejoInput
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
@@ -1991,6 +2049,7 @@ export type ComplejoUncheckedCreateWithoutSponsorsInput = {
   canchas?: Prisma.CanchaUncheckedCreateNestedManyWithoutComplejoInput
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
@@ -2034,6 +2093,7 @@ export type ComplejoUpdateWithoutSponsorsInput = {
   canchas?: Prisma.CanchaUpdateManyWithoutComplejoNestedInput
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
@@ -2062,6 +2122,7 @@ export type ComplejoUncheckedUpdateWithoutSponsorsInput = {
   canchas?: Prisma.CanchaUncheckedUpdateManyWithoutComplejoNestedInput
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
   generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
@@ -2090,6 +2151,7 @@ export type ComplejoCreateWithoutGeneracionesInput = {
   eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionCreateNestedManyWithoutComplejoInput
@@ -2118,6 +2180,7 @@ export type ComplejoUncheckedCreateWithoutGeneracionesInput = {
   eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
   sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutComplejoInput
   features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
   horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUncheckedCreateNestedManyWithoutComplejoInput
@@ -2161,6 +2224,7 @@ export type ComplejoUpdateWithoutGeneracionesInput = {
   eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUpdateManyWithoutComplejoNestedInput
@@ -2189,6 +2253,137 @@ export type ComplejoUncheckedUpdateWithoutGeneracionesInput = {
   eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
   sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
   recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutComplejoNestedInput
+  features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
+  horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
+  horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUncheckedUpdateManyWithoutComplejoNestedInput
+  turnoSeries?: Prisma.TurnoSerieUncheckedUpdateManyWithoutComplejoNestedInput
+}
+
+export type ComplejoCreateWithoutSancionesInput = {
+  name: string
+  slug: string
+  email?: string | null
+  telefono?: string | null
+  direccion?: string | null
+  ciudad: string
+  provincia: string
+  pais?: string
+  timezone?: string
+  reglamento?: string | null
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipCreateNestedManyWithoutComplejoInput
+  perfilesJugadores?: Prisma.PerfilJugadorComplejoCreateNestedManyWithoutComplejoInput
+  canchas?: Prisma.CanchaCreateNestedManyWithoutComplejoInput
+  eventos?: Prisma.EventoCreateNestedManyWithoutComplejoInput
+  sponsors?: Prisma.ComplejoSponsorCreateNestedManyWithoutComplejoInput
+  recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutComplejoInput
+  generaciones?: Prisma.GeneracionCreateNestedManyWithoutComplejoInput
+  features?: Prisma.ComplejoFeatureCreateNestedManyWithoutComplejoInput
+  horarios?: Prisma.ComplejoHorarioCreateNestedManyWithoutComplejoInput
+  horarioExcepciones?: Prisma.ComplejoHorarioExcepcionCreateNestedManyWithoutComplejoInput
+  turnoSeries?: Prisma.TurnoSerieCreateNestedManyWithoutComplejoInput
+}
+
+export type ComplejoUncheckedCreateWithoutSancionesInput = {
+  id?: number
+  name: string
+  slug: string
+  email?: string | null
+  telefono?: string | null
+  direccion?: string | null
+  ciudad: string
+  provincia: string
+  pais?: string
+  timezone?: string
+  reglamento?: string | null
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedCreateNestedManyWithoutComplejoInput
+  perfilesJugadores?: Prisma.PerfilJugadorComplejoUncheckedCreateNestedManyWithoutComplejoInput
+  canchas?: Prisma.CanchaUncheckedCreateNestedManyWithoutComplejoInput
+  eventos?: Prisma.EventoUncheckedCreateNestedManyWithoutComplejoInput
+  sponsors?: Prisma.ComplejoSponsorUncheckedCreateNestedManyWithoutComplejoInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutComplejoInput
+  generaciones?: Prisma.GeneracionUncheckedCreateNestedManyWithoutComplejoInput
+  features?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutComplejoInput
+  horarios?: Prisma.ComplejoHorarioUncheckedCreateNestedManyWithoutComplejoInput
+  horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUncheckedCreateNestedManyWithoutComplejoInput
+  turnoSeries?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutComplejoInput
+}
+
+export type ComplejoCreateOrConnectWithoutSancionesInput = {
+  where: Prisma.ComplejoWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComplejoCreateWithoutSancionesInput, Prisma.ComplejoUncheckedCreateWithoutSancionesInput>
+}
+
+export type ComplejoUpsertWithoutSancionesInput = {
+  update: Prisma.XOR<Prisma.ComplejoUpdateWithoutSancionesInput, Prisma.ComplejoUncheckedUpdateWithoutSancionesInput>
+  create: Prisma.XOR<Prisma.ComplejoCreateWithoutSancionesInput, Prisma.ComplejoUncheckedCreateWithoutSancionesInput>
+  where?: Prisma.ComplejoWhereInput
+}
+
+export type ComplejoUpdateToOneWithWhereWithoutSancionesInput = {
+  where?: Prisma.ComplejoWhereInput
+  data: Prisma.XOR<Prisma.ComplejoUpdateWithoutSancionesInput, Prisma.ComplejoUncheckedUpdateWithoutSancionesInput>
+}
+
+export type ComplejoUpdateWithoutSancionesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  direccion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ciudad?: Prisma.StringFieldUpdateOperationsInput | string
+  provincia?: Prisma.StringFieldUpdateOperationsInput | string
+  pais?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  reglamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUpdateManyWithoutComplejoNestedInput
+  perfilesJugadores?: Prisma.PerfilJugadorComplejoUpdateManyWithoutComplejoNestedInput
+  canchas?: Prisma.CanchaUpdateManyWithoutComplejoNestedInput
+  eventos?: Prisma.EventoUpdateManyWithoutComplejoNestedInput
+  sponsors?: Prisma.ComplejoSponsorUpdateManyWithoutComplejoNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutComplejoNestedInput
+  generaciones?: Prisma.GeneracionUpdateManyWithoutComplejoNestedInput
+  features?: Prisma.ComplejoFeatureUpdateManyWithoutComplejoNestedInput
+  horarios?: Prisma.ComplejoHorarioUpdateManyWithoutComplejoNestedInput
+  horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUpdateManyWithoutComplejoNestedInput
+  turnoSeries?: Prisma.TurnoSerieUpdateManyWithoutComplejoNestedInput
+}
+
+export type ComplejoUncheckedUpdateWithoutSancionesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  direccion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ciudad?: Prisma.StringFieldUpdateOperationsInput | string
+  provincia?: Prisma.StringFieldUpdateOperationsInput | string
+  pais?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  reglamento?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedUpdateManyWithoutComplejoNestedInput
+  perfilesJugadores?: Prisma.PerfilJugadorComplejoUncheckedUpdateManyWithoutComplejoNestedInput
+  canchas?: Prisma.CanchaUncheckedUpdateManyWithoutComplejoNestedInput
+  eventos?: Prisma.EventoUncheckedUpdateManyWithoutComplejoNestedInput
+  sponsors?: Prisma.ComplejoSponsorUncheckedUpdateManyWithoutComplejoNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutComplejoNestedInput
+  generaciones?: Prisma.GeneracionUncheckedUpdateManyWithoutComplejoNestedInput
   features?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutComplejoNestedInput
   horarios?: Prisma.ComplejoHorarioUncheckedUpdateManyWithoutComplejoNestedInput
   horarioExcepciones?: Prisma.ComplejoHorarioExcepcionUncheckedUpdateManyWithoutComplejoNestedInput
@@ -2207,6 +2402,7 @@ export type ComplejoCountOutputType = {
   eventos: number
   sponsors: number
   recategorizaciones: number
+  sanciones: number
   generaciones: number
   features: number
   horarios: number
@@ -2221,6 +2417,7 @@ export type ComplejoCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   eventos?: boolean | ComplejoCountOutputTypeCountEventosArgs
   sponsors?: boolean | ComplejoCountOutputTypeCountSponsorsArgs
   recategorizaciones?: boolean | ComplejoCountOutputTypeCountRecategorizacionesArgs
+  sanciones?: boolean | ComplejoCountOutputTypeCountSancionesArgs
   generaciones?: boolean | ComplejoCountOutputTypeCountGeneracionesArgs
   features?: boolean | ComplejoCountOutputTypeCountFeaturesArgs
   horarios?: boolean | ComplejoCountOutputTypeCountHorariosArgs
@@ -2283,6 +2480,13 @@ export type ComplejoCountOutputTypeCountRecategorizacionesArgs<ExtArgs extends r
 /**
  * ComplejoCountOutputType without action
  */
+export type ComplejoCountOutputTypeCountSancionesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SancionWhereInput
+}
+
+/**
+ * ComplejoCountOutputType without action
+ */
 export type ComplejoCountOutputTypeCountGeneracionesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.GeneracionWhereInput
 }
@@ -2338,6 +2542,7 @@ export type ComplejoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   eventos?: boolean | Prisma.Complejo$eventosArgs<ExtArgs>
   sponsors?: boolean | Prisma.Complejo$sponsorsArgs<ExtArgs>
   recategorizaciones?: boolean | Prisma.Complejo$recategorizacionesArgs<ExtArgs>
+  sanciones?: boolean | Prisma.Complejo$sancionesArgs<ExtArgs>
   generaciones?: boolean | Prisma.Complejo$generacionesArgs<ExtArgs>
   features?: boolean | Prisma.Complejo$featuresArgs<ExtArgs>
   horarios?: boolean | Prisma.Complejo$horariosArgs<ExtArgs>
@@ -2374,6 +2579,7 @@ export type ComplejoInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   eventos?: boolean | Prisma.Complejo$eventosArgs<ExtArgs>
   sponsors?: boolean | Prisma.Complejo$sponsorsArgs<ExtArgs>
   recategorizaciones?: boolean | Prisma.Complejo$recategorizacionesArgs<ExtArgs>
+  sanciones?: boolean | Prisma.Complejo$sancionesArgs<ExtArgs>
   generaciones?: boolean | Prisma.Complejo$generacionesArgs<ExtArgs>
   features?: boolean | Prisma.Complejo$featuresArgs<ExtArgs>
   horarios?: boolean | Prisma.Complejo$horariosArgs<ExtArgs>
@@ -2391,6 +2597,7 @@ export type $ComplejoPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     eventos: Prisma.$EventoPayload<ExtArgs>[]
     sponsors: Prisma.$ComplejoSponsorPayload<ExtArgs>[]
     recategorizaciones: Prisma.$RecategorizacionPayload<ExtArgs>[]
+    sanciones: Prisma.$SancionPayload<ExtArgs>[]
     generaciones: Prisma.$GeneracionPayload<ExtArgs>[]
     features: Prisma.$ComplejoFeaturePayload<ExtArgs>[]
     horarios: Prisma.$ComplejoHorarioPayload<ExtArgs>[]
@@ -2764,6 +2971,7 @@ export interface Prisma__ComplejoClient<T, Null = never, ExtArgs extends runtime
   eventos<T extends Prisma.Complejo$eventosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Complejo$eventosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sponsors<T extends Prisma.Complejo$sponsorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Complejo$sponsorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComplejoSponsorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recategorizaciones<T extends Prisma.Complejo$recategorizacionesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Complejo$recategorizacionesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecategorizacionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sanciones<T extends Prisma.Complejo$sancionesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Complejo$sancionesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SancionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   generaciones<T extends Prisma.Complejo$generacionesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Complejo$generacionesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GeneracionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   features<T extends Prisma.Complejo$featuresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Complejo$featuresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComplejoFeaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   horarios<T extends Prisma.Complejo$horariosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Complejo$horariosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComplejoHorarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3302,6 +3510,30 @@ export type Complejo$recategorizacionesArgs<ExtArgs extends runtime.Types.Extens
   take?: number
   skip?: number
   distinct?: Prisma.RecategorizacionScalarFieldEnum | Prisma.RecategorizacionScalarFieldEnum[]
+}
+
+/**
+ * Complejo.sanciones
+ */
+export type Complejo$sancionesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sancion
+   */
+  select?: Prisma.SancionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sancion
+   */
+  omit?: Prisma.SancionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SancionInclude<ExtArgs> | null
+  where?: Prisma.SancionWhereInput
+  orderBy?: Prisma.SancionOrderByWithRelationInput | Prisma.SancionOrderByWithRelationInput[]
+  cursor?: Prisma.SancionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SancionScalarFieldEnum | Prisma.SancionScalarFieldEnum[]
 }
 
 /**

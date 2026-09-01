@@ -18,6 +18,8 @@
     "backfill:imagenes": "tsx scripts/backfill-imagenes-perfil.ts",
     "prepare": "husky",
     "prisma:check": "tsx scripts/check-prisma-tablas.ts",
+    "check:auditoria": "tsx scripts/check-auditoria.ts",
+    "check:siembra": "tsx scripts/check-siembra.ts",
     "check:llave": "tsx scripts/check-torneo-llave.ts",
     "check:turnos": "tsx scripts/check-turnos.ts",
     "check:resolucion": "tsx scripts/check-llave-resolucion.ts",
@@ -25,7 +27,8 @@
     "migrar:tema": "tsx scripts/migrar-tokens-tema.ts",
     "check:breadcrumbs": "tsx scripts/check-breadcrumbs.tsx",
     "check:dashboard": "tsx scripts/check-dashboard.ts",
-    "check:ubicaciones": "tsx scripts/check-ubicaciones.ts"
+    "check:ubicaciones": "tsx scripts/check-ubicaciones.ts",
+    "icons": "tsx scripts/generar-iconos.ts"
   },
   "engines": {
     "node": ">=20.19.0"
@@ -42,6 +45,8 @@
     "firebase": "^12.8.0",
     "firebase-admin": "^13.6.0",
     "jose": "^6.0.12",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "next": "16.1.6",
     "node-cron": "^4.2.1",
     "react": "19.2.3",
@@ -55,6 +60,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "24.0.7",
     "@types/react": "^19.2.0",

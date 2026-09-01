@@ -8,7 +8,7 @@ import {
   generarToken,
   vencimientoToken,
 } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma } from "@/lib/prisma";
 
 export type ConfirmarEmailResult =
   | { success: true; yaEstaba: boolean }
@@ -282,7 +282,7 @@ export async function restablecerPassword(
   try {
     const passwordHash = await bcrypt.hash(password, 10);
 
-    return await prisma.$transaction(async (tx) => {
+    return await enTransaccion(async (tx) => {
       const registro = await tx.emailVerification.findUnique({
         where: { token: limpio },
         select: {

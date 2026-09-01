@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { conOrigen } from "@/lib/auditoria-contexto";
+
 import { extenderSeriesDeTurnos } from "@/cron/turnos-cron";
 
 export const runtime = "nodejs";
@@ -22,7 +24,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await extenderSeriesDeTurnos();
+    const result = await conOrigen("cron", extenderSeriesDeTurnos);
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
     console.error("Error extendiendo las series de turnos", error);

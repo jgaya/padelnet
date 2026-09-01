@@ -27,6 +27,8 @@ export type TorneoListItem = {
   categoriaRegla: "LIBRE" | "MAYOR_IGUAL" | "MENOR_IGUAL" | "IGUAL" | "SUMA";
   categoriaN: number | null;
   categoriaCode: string;
+  formato: "ZONAS" | "ELIMINACION_DIRECTA";
+  siembra: "RANKING" | "INSCRIPCION";
   comentario: string | null;
   imagenUrl: string | null;
   valorInsc: string | null;
@@ -52,6 +54,10 @@ export type TorneoPayload = {
   valorInsc?: string | null;
   jugxZona?: number;
   capacidad: number;
+  /** Con zonas (default) o directo a la llave. Ver lib/torneo-llave-directa.ts. */
+  formato?: "ZONAS" | "ELIMINACION_DIRECTA";
+  /** Solo aplica en ELIMINACION_DIRECTA. */
+  siembra?: "RANKING" | "INSCRIPCION";
   status?: TournamentStatus;
   publicado?: boolean;
   zonaCerrada?: boolean;
@@ -259,6 +265,8 @@ export async function listTorneos(opts: ListOpts = {}) {
         status: true,
         publicado: true,
         zonaCerrada: true,
+        formato: true,
+        siembra: true,
         inicio: true,
         fin: true,
         evento: {
@@ -292,6 +300,8 @@ export async function listTorneos(opts: ListOpts = {}) {
         valorInsc: item.valorInsc,
         jugxZona: item.jugxZona,
         capacidad: item.capacidad,
+        formato: item.formato,
+        siembra: item.siembra,
         status: item.status,
         publicado: item.publicado,
         zonaCerrada: item.zonaCerrada,
@@ -393,6 +403,8 @@ export async function listTorneosForAdmin(opts: ListOpts = {}) {
         status: true,
         publicado: true,
         zonaCerrada: true,
+        formato: true,
+        siembra: true,
         inicio: true,
         fin: true,
         evento: {
@@ -512,6 +524,8 @@ export async function listTorneosByComplejo(
         status: true,
         publicado: true,
         zonaCerrada: true,
+        formato: true,
+        siembra: true,
         inicio: true,
         fin: true,
         evento: {
@@ -556,6 +570,8 @@ function toTorneoListItem(item: {
   valorInsc: string | null;
   jugxZona: number;
   capacidad: number;
+  formato: "ZONAS" | "ELIMINACION_DIRECTA";
+  siembra: "RANKING" | "INSCRIPCION";
   status: TournamentStatus;
   publicado: boolean;
   zonaCerrada: boolean;
@@ -572,6 +588,8 @@ function toTorneoListItem(item: {
     sexo: item.sexo,
     categoriaRegla: item.categoriaRegla,
     categoriaN: item.categoriaN,
+    formato: item.formato,
+    siembra: item.siembra,
     categoriaCode: item.categoriaCode,
     comentario: item.comentario,
     imagenUrl: item.imagenUrl,
@@ -674,6 +692,8 @@ export async function listTorneosByEvento(
         status: true,
         publicado: true,
         zonaCerrada: true,
+        formato: true,
+        siembra: true,
         inicio: true,
         fin: true,
       },
@@ -1076,6 +1096,8 @@ export async function getTorneoById(
       status: true,
       publicado: true,
       zonaCerrada: true,
+      formato: true,
+      siembra: true,
       inicio: true,
       fin: true,
     },

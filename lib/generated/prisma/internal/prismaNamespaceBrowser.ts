@@ -78,7 +78,11 @@ export const ModelName = {
   EmailVerification: 'EmailVerification',
   PushToken: 'PushToken',
   Notification: 'Notification',
-  ImagenPerfil: 'ImagenPerfil'
+  ImagenPerfil: 'ImagenPerfil',
+  Auditoria: 'Auditoria',
+  Sancion: 'Sancion',
+  Logro: 'Logro',
+  LogroUsuario: 'LogroUsuario'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -270,6 +274,8 @@ export const TorneoScalarFieldEnum = {
   status: 'status',
   publicado: 'publicado',
   zonaCerrada: 'zonaCerrada',
+  formato: 'formato',
+  siembra: 'siembra',
   zonaGenerada: 'zonaGenerada',
   partidosGenerados: 'partidosGenerados',
   actualizado: 'actualizado',
@@ -569,6 +575,70 @@ export const ImagenPerfilScalarFieldEnum = {
 export type ImagenPerfilScalarFieldEnum = (typeof ImagenPerfilScalarFieldEnum)[keyof typeof ImagenPerfilScalarFieldEnum]
 
 
+export const AuditoriaScalarFieldEnum = {
+  id: 'id',
+  tabla: 'tabla',
+  accion: 'accion',
+  registroId: 'registroId',
+  actorId: 'actorId',
+  actorNombre: 'actorNombre',
+  actorEmail: 'actorEmail',
+  origen: 'origen',
+  cambios: 'cambios',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditoriaScalarFieldEnum = (typeof AuditoriaScalarFieldEnum)[keyof typeof AuditoriaScalarFieldEnum]
+
+
+export const SancionScalarFieldEnum = {
+  id: 'id',
+  complejoId: 'complejoId',
+  jugadorId: 'jugadorId',
+  desde: 'desde',
+  hasta: 'hasta',
+  motivo: 'motivo',
+  estado: 'estado',
+  creadaPorId: 'creadaPorId',
+  anuladaPorId: 'anuladaPorId',
+  anuladaAt: 'anuladaAt',
+  motivoAnulacion: 'motivoAnulacion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SancionScalarFieldEnum = (typeof SancionScalarFieldEnum)[keyof typeof SancionScalarFieldEnum]
+
+
+export const LogroScalarFieldEnum = {
+  id: 'id',
+  codigo: 'codigo',
+  titulo: 'titulo',
+  descripcion: 'descripcion',
+  icono: 'icono',
+  rareza: 'rareza',
+  progresoObjetivo: 'progresoObjetivo',
+  activo: 'activo',
+  orden: 'orden',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LogroScalarFieldEnum = (typeof LogroScalarFieldEnum)[keyof typeof LogroScalarFieldEnum]
+
+
+export const LogroUsuarioScalarFieldEnum = {
+  userId: 'userId',
+  logroId: 'logroId',
+  progreso: 'progreso',
+  obtenidoAt: 'obtenidoAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LogroUsuarioScalarFieldEnum = (typeof LogroUsuarioScalarFieldEnum)[keyof typeof LogroUsuarioScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -583,6 +653,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const JsonNullValueFilter = {
@@ -793,4 +870,33 @@ export const ImagenPerfilOrderByRelevanceFieldEnum = {
 } as const
 
 export type ImagenPerfilOrderByRelevanceFieldEnum = (typeof ImagenPerfilOrderByRelevanceFieldEnum)[keyof typeof ImagenPerfilOrderByRelevanceFieldEnum]
+
+
+export const AuditoriaOrderByRelevanceFieldEnum = {
+  tabla: 'tabla',
+  registroId: 'registroId',
+  actorNombre: 'actorNombre',
+  actorEmail: 'actorEmail',
+  origen: 'origen'
+} as const
+
+export type AuditoriaOrderByRelevanceFieldEnum = (typeof AuditoriaOrderByRelevanceFieldEnum)[keyof typeof AuditoriaOrderByRelevanceFieldEnum]
+
+
+export const SancionOrderByRelevanceFieldEnum = {
+  motivo: 'motivo',
+  motivoAnulacion: 'motivoAnulacion'
+} as const
+
+export type SancionOrderByRelevanceFieldEnum = (typeof SancionOrderByRelevanceFieldEnum)[keyof typeof SancionOrderByRelevanceFieldEnum]
+
+
+export const LogroOrderByRelevanceFieldEnum = {
+  codigo: 'codigo',
+  titulo: 'titulo',
+  descripcion: 'descripcion',
+  icono: 'icono'
+} as const
+
+export type LogroOrderByRelevanceFieldEnum = (typeof LogroOrderByRelevanceFieldEnum)[keyof typeof LogroOrderByRelevanceFieldEnum]
 

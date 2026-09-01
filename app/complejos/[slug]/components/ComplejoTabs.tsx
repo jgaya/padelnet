@@ -15,6 +15,7 @@ const TABS = [
   { segment: "calendario", label: "Calendario" },
   { segment: "ranking", label: "Ranking" },
   { segment: "recategorizacion", label: "Recategorizacion" },
+  { segment: "sanciones", label: "Sanciones" },
 ];
 
 export default function ComplejoTabs({ complejoSlug }: ComplejoTabsProps) {

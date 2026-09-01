@@ -40,7 +40,16 @@ function firmaCoincide(buffer: Buffer, ext: "png" | "jpg") {
   return firma.every((byte, i) => buffer[i] === byte);
 }
 
-const MAX_BYTES = 5 * 1024 * 1024;
+/**
+ * Tope por archivo.
+ *
+ * Con los recortes bajados a 800px y codificados en JPEG q0.85, la imagen
+ * cuadrada ronda los 130 KB y el avatar los 25 KB. Un mega deja ocho veces de
+ * margen y recien ahi el limite empieza a ser una guarda de verdad: los 5 MB
+ * de antes no cortaban nada, porque el PNG a resolucion completa entraba justo
+ * abajo.
+ */
+const MAX_BYTES = 1024 * 1024;
 
 export function parsearDataUrl(dataUrl: string, label: string): ArchivoImagen {
   const match = /^data:(image\/(?:png|jpeg|jpg));base64,(.+)$/i.exec(dataUrl);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   PencilSquareIcon,
@@ -300,12 +301,23 @@ export default function TorneosPageClient({
       <TitleBar
         title={`Torneos - ${eventoNombre}`}
         buttons={
-          <a
-            className="btn btn-primary"
-            href={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/new`}
-          >
-            Nuevo Torneo
-          </a>
+          <>
+            {/* La grilla de canchas es del evento y no de un torneo: cruza
+                todos los que juegan esa fecha. Por eso el link vive aca y no
+                en la pantalla de cada torneo. */}
+            <Link
+              className="inline-flex items-center gap-2 rounded-full bg-surface px-4 py-2 text-sm font-semibold text-content ring-1 ring-content/10 transition hover:text-padel-green hover:ring-padel-green/40"
+              href={`/admin/reportes/horarios?eventoId=${eventoId}`}
+            >
+              Ver horarios
+            </Link>
+            <a
+              className="btn btn-primary"
+              href={`/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/new`}
+            >
+              Nuevo Torneo
+            </a>
+          </>
         }
         backURL={`/complejos/${complejoId}/eventos`}
         total={total}

@@ -77,6 +77,24 @@ enum TournamentCategoryRule {
   SUMA
 }
 
+/// Como se arma el torneo.
+enum TorneoFormato {
+  /// Zonas primero y despues el cuadro, con los cruces de LLAVE_TABLA. Es lo
+  /// de siempre y el default, para que nada cambie en los torneos existentes.
+  ZONAS
+  /// Directo a la llave, sembrando las parejas. Ver lib/torneo-llave-directa.ts.
+  ELIMINACION_DIRECTA
+}
+
+/// Con que criterio se ordenan las parejas para sembrar el cuadro. Solo se usa
+/// en ELIMINACION_DIRECTA: en ZONAS la siembra la define la tabla.
+enum TorneoSiembra {
+  /// Puntos de ranking del club; las parejas sin puntos van al fondo.
+  RANKING
+  /// Orden en que se anotaron.
+  INSCRIPCION
+}
+
 enum MatchStatus {
   PENDING
   SCHEDULED
@@ -133,6 +151,16 @@ enum ImagenPerfilEstado {
   PENDIENTE
   APROBADA
   RECHAZADA
+}
+
+/// Que le paso a la fila. Ver model Auditoria.
+enum AuditoriaAccion {
+  CREAR
+  ACTUALIZAR
+  BORRAR
+  /// updateMany / deleteMany / createMany: se registra el filtro y cuantas
+  /// filas toco, sin diff por fila.
+  MASIVA
 }
 
 model User {
@@ -208,6 +236,14 @@ model User {
   imagenesPerfil    ImagenPerfil[] @relation("ImagenPerfilDueno")
   imagenesModeradas ImagenPerfil[] @relation("ImagenPerfilModerador")
 
+  auditoria Auditoria[] @relation("AuditoriaActor")
+
+  logros             LogroUsuario[]
+
+  sanciones          Sancion[] @relation("SancionJugador")
+  sancionesCreadas   Sancion[] @relation("SancionCreador")
+  sancionesAnuladas  Sancion[] @relation("SancionAnulador")
+
   featuresActualizadas ComplejoFeature[] @relation("ComplejoFeatureEditor")
 }
 
@@ -237,6 +273,7 @@ model Complejo {
   eventos            Evento[]
   sponsors           ComplejoSponsor[]
   recategorizaciones Recategorizacion[]
+  sanciones          Sancion[]
   generaciones       Generacion[]
   features           ComplejoFeature[]
   horarios           ComplejoHorario[]
@@ -403,6 +440,8 @@ model Torneo {
   status            TournamentStatus       @default(DRAFT)
   publicado         Boolean                @default(false)
   zonaCerrada       Boolean                @default(false)
+  formato           TorneoFormato          @default(ZONAS)
+  siembra           TorneoSiembra          @default(INSCRIPCION)
   zonaGenerada      Boolean                @default(false)
   partidosGenerados Boolean                @default(false)
   actualizado       Boolean                @default(false)
@@ -835,4 +874,162 @@ model ImagenPerfil {
   /// La cola de moderacion filtra por estado y ordena por fecha.
   @@index([estado, createdAt])
   @@index([userId, createdAt])
+}
+
+/// Registro de cambios: quien toco que fila, cuando, y con que valores.
+///
+/// No lo escribe nadie a mano: lo llena la extension de lib/auditoria.ts, que
+/// intercepta toda escritura de Prisma. Por eso auditar un modelo nuevo es
+/// agregarlo a la lista de lib/auditoria-config.ts y nada mas.
+///
+/// Solo se guardan los campos que cambiaron. Un update que no modifica nada no
+/// escribe ninguna fila.
+model Auditoria {
+  id     BigInt          @id @default(autoincrement())
+  tabla  String          @db.VarChar(64)
+  accion AuditoriaAccion
+
+  /// Id de la fila afectada, como texto porque no todos los modelos usan Int.
+  /// Null en las operaciones masivas, que tocan varias.
+  registroId String? @db.VarChar(64)
+
+  /// Quien lo hizo. Null = lo hizo el sistema (cron, seed, script).
+  actorId Int?
+  /// Copia del nombre y el mail al momento del cambio. Con `onDelete: SetNull`
+  /// borrar la cuenta desengancha la relacion, pero el registro tiene que
+  /// seguir diciendo quien fue.
+  actorNombre String? @db.VarChar(160)
+  actorEmail  String? @db.VarChar(160)
+
+  /// "web", "cron" o "script". Separa lo que hizo una persona de lo que hizo
+  /// una tarea automatica.
+  origen String @db.VarChar(16)
+
+  /// { campo: { antes, despues } } con solo lo que cambio. En CREAR va solo
+  /// `despues`, en BORRAR solo `antes`, y en MASIVA el filtro y el count.
+  cambios Json
+
+  createdAt DateTime @default(now())
+
+  actor User? @relation("AuditoriaActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  /// Historial de una fila concreta: es la consulta que mas se va a hacer.
+  @@index([tabla, registroId, createdAt])
+  /// "que toco esta persona".
+  @@index([actorId, createdAt])
+  /// El listado general y el borrado por retencion del cron.
+  @@index([createdAt])
+}
+
+/// Estado de una sancion. No hay borrado: se anula. Ver model Sancion.
+enum SancionEstado {
+  VIGENTE
+  ANULADA
+}
+
+/// Suspension disciplinaria de un jugador en un complejo.
+///
+/// Le impide inscribirse a los torneos de ESE club mientras dure; en otros
+/// clubes no lo afecta. El bloqueo lo aplica lib/sanciones.ts desde
+/// actions/torneos-inscripcion.ts.
+///
+/// Se publica en /complejos/<slug>/sanciones, asi que `motivo` lo lee
+/// cualquiera. Por eso no se borra nunca: una sancion que se levanta se anula
+/// y queda a la vista, que es lo contrario de que desaparezca sin rastro.
+model Sancion {
+  id         Int @id @default(autoincrement())
+  complejoId Int
+  jugadorId  Int
+
+  /// Dias completos e inclusivos: cubre desde las 00:00 de `desde` hasta las
+  /// 23:59 de `hasta`. `@db.Date` igual que Recategorizacion.fecha.
+  desde DateTime @db.Date
+  hasta DateTime @db.Date
+
+  /// Los porques y los considerandos. Se muestra tal cual en la pagina publica.
+  motivo String @db.Text
+
+  estado SancionEstado @default(VIGENTE)
+
+  creadaPorId     Int?
+  anuladaPorId    Int?
+  anuladaAt       DateTime?
+  motivoAnulacion String?   @db.VarChar(300)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  complejo   Complejo @relation(fields: [complejoId], references: [id], onDelete: Cascade)
+  jugador    User     @relation("SancionJugador", fields: [jugadorId], references: [id], onDelete: Cascade)
+  creadaPor  User?    @relation("SancionCreador", fields: [creadaPorId], references: [id], onDelete: SetNull)
+  anuladaPor User?    @relation("SancionAnulador", fields: [anuladaPorId], references: [id], onDelete: SetNull)
+
+  /// La consulta del bloqueo: "tiene este jugador una sancion vigente en este
+  /// club que cubra hoy". Corre en cada intento de inscripcion.
+  @@index([complejoId, jugadorId, estado])
+  /// Los listados admin y publico.
+  @@index([complejoId, desde])
+}
+
+/// Que tan dificil es un logro. Define el color de la medalla.
+enum LogroRareza {
+  COMUN
+  POCO_COMUN
+  RARO
+  EPICO
+  LEGENDARIO
+}
+
+/// Catalogo de logros. Lo administra el superadmin desde /superadmin/logros.
+///
+/// Los logros son globales del jugador y no por complejo: alguien juega en
+/// varios clubes y "primera victoria" se gana una sola vez, no una por club.
+model Logro {
+  id          Int         @id @default(autoincrement())
+  /// Clave con la que lo busca el motor (lib/logros.ts). NO se edita despues
+  /// de creado: cambiarlo lo desengancha en silencio de los eventos que lo
+  /// otorgan y el logro deja de darse sin que nadie se entere.
+  codigo      String      @unique @db.VarChar(48)
+  titulo      String      @db.VarChar(80)
+  descripcion String      @db.VarChar(200)
+  /// Ruta a un SVG en /public/badges. Si esta vacio se pinta un placeholder
+  /// con el color de la rareza.
+  icono       String?     @db.VarChar(200)
+  rareza      LogroRareza
+
+  /// Cuantas veces hay que hacerlo para ganarlo. Null = se gana la primera vez.
+  progresoObjetivo Int?
+
+  /// Retirar un logro no lo borra: quien ya lo gano lo conserva. Uno inactivo
+  /// no se otorga mas y no figura entre los pendientes.
+  activo Boolean @default(true)
+  /// Orden en la pantalla del jugador.
+  orden  Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  usuarios LogroUsuario[]
+
+  @@index([activo, orden])
+}
+
+/// Progreso de un jugador en un logro concreto.
+model LogroUsuario {
+  userId  Int
+  logroId Int
+
+  progreso Int @default(0)
+  /// Null mientras no se gano. Es lo que separa "voy 3 de 5" de "lo tengo".
+  obtenidoAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logro Logro @relation(fields: [logroId], references: [id], onDelete: Cascade)
+
+  @@id([userId, logroId])
+  /// "las medallas de este jugador": la consulta de las dos pantallas.
+  @@index([userId, obtenidoAt])
 }

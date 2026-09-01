@@ -7,6 +7,7 @@ import type { TournamentStatus } from "@/types/db";
 import {
   calcularPosiciones,
   compararPosiciones,
+  construirContextoDesempate,
 } from "@/lib/torneo-posiciones";
 
 /**
@@ -190,7 +191,8 @@ function scoreLabel(
     .join(" | ");
 }
 
-function canchaLabel(
+/** Exportada para el reporte de horarios, que pinta la misma etiqueta. */
+export function canchaLabel(
   cancha:
     | {
         name: string | null;
@@ -378,12 +380,16 @@ export async function buildVistaPublicaTorneo(
       grupo.partidos,
     );
 
+    // Con el mismo contexto de desempate: si la tabla publica no aplicara el
+    // enfrentamiento directo, mostraria un orden distinto al que uso el cuadro.
+    const contexto = construirContextoDesempate(posiciones, grupo.partidos);
+
     // A igualdad total el modulo deja el orden indefinido a proposito. Para la
     // tabla publica se desempata por nombre, que al menos es estable.
     const rows: TorneoGrupoStatsRow[] = posiciones
       .slice()
       .sort((a, b) => {
-        const porCriterios = compararPosiciones(a, b);
+        const porCriterios = compararPosiciones(a, b, contexto);
         if (porCriterios !== 0) return porCriterios;
         return (nombrePorPareja.get(a.parejaId) ?? "").localeCompare(
           nombrePorPareja.get(b.parejaId) ?? "",

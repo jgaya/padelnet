@@ -588,3 +588,59 @@ export async function listPublicComplejoRecategorizaciones(
     nivelNuevo: item.nivelNuevo,
   }));
 }
+
+export type PublicComplejoSancion = {
+  id: number;
+  jugadorId: number;
+  jugadorNombre: string;
+  desde: string;
+  hasta: string;
+  motivo: string;
+  anulada: boolean;
+  vigenteHoy: boolean;
+  motivoAnulacion: string | null;
+};
+
+/**
+ * Sanciones publicas del complejo.
+ *
+ * Se publican para transparencia del torneo: si alguien no esta en un cuadro,
+ * el club puede mostrar por que. Las anuladas se siguen mostrando, tachadas:
+ * una sancion que se levanta y desaparece sin rastro es lo contrario de lo que
+ * esto busca.
+ */
+export async function listPublicComplejoSanciones(
+  complejoId: number,
+): Promise<PublicComplejoSancion[]> {
+  const hoy = new Date();
+  hoy.setUTCHours(0, 0, 0, 0);
+
+  const items = await prisma.sancion.findMany({
+    where: { complejoId, complejo: COMPLEJO_PUBLICO_WHERE },
+    orderBy: [{ desde: "desc" }, { id: "desc" }],
+    take: 100,
+    select: {
+      id: true,
+      jugadorId: true,
+      desde: true,
+      hasta: true,
+      motivo: true,
+      estado: true,
+      motivoAnulacion: true,
+      jugador: { select: { name: true, lastname: true } },
+    },
+  });
+
+  return items.map((item) => ({
+    id: item.id,
+    jugadorId: item.jugadorId,
+    jugadorNombre: `${item.jugador.name} ${item.jugador.lastname}`.trim(),
+    desde: item.desde.toISOString(),
+    hasta: item.hasta.toISOString(),
+    motivo: item.motivo,
+    anulada: item.estado === "ANULADA",
+    vigenteHoy:
+      item.estado === "VIGENTE" && item.desde <= hoy && item.hasta >= hoy,
+    motivoAnulacion: item.motivoAnulacion,
+  }));
+}

@@ -179,3 +179,41 @@ export type Notification = Prisma.NotificationModel
  * paso por moderacion.
  */
 export type ImagenPerfil = Prisma.ImagenPerfilModel
+/**
+ * Model Auditoria
+ * Registro de cambios: quien toco que fila, cuando, y con que valores.
+ * 
+ * No lo escribe nadie a mano: lo llena la extension de lib/auditoria.ts, que
+ * intercepta toda escritura de Prisma. Por eso auditar un modelo nuevo es
+ * agregarlo a la lista de lib/auditoria-config.ts y nada mas.
+ * 
+ * Solo se guardan los campos que cambiaron. Un update que no modifica nada no
+ * escribe ninguna fila.
+ */
+export type Auditoria = Prisma.AuditoriaModel
+/**
+ * Model Sancion
+ * Suspension disciplinaria de un jugador en un complejo.
+ * 
+ * Le impide inscribirse a los torneos de ESE club mientras dure; en otros
+ * clubes no lo afecta. El bloqueo lo aplica lib/sanciones.ts desde
+ * actions/torneos-inscripcion.ts.
+ * 
+ * Se publica en /complejos/<slug>/sanciones, asi que `motivo` lo lee
+ * cualquiera. Por eso no se borra nunca: una sancion que se levanta se anula
+ * y queda a la vista, que es lo contrario de que desaparezca sin rastro.
+ */
+export type Sancion = Prisma.SancionModel
+/**
+ * Model Logro
+ * Catalogo de logros. Lo administra el superadmin desde /superadmin/logros.
+ * 
+ * Los logros son globales del jugador y no por complejo: alguien juega en
+ * varios clubes y "primera victoria" se gana una sola vez, no una por club.
+ */
+export type Logro = Prisma.LogroModel
+/**
+ * Model LogroUsuario
+ * Progreso de un jugador en un logro concreto.
+ */
+export type LogroUsuario = Prisma.LogroUsuarioModel

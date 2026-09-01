@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma } from "@/lib/prisma";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
 import {
   notifyPartidosCambiados,
@@ -8,8 +8,13 @@ import {
   notifyResultadoCargado,
   type PartidoCambio,
 } from "@/actions/notificaciones-eventos";
-import type { FaseLlave } from "@/lib/torneo-llave";
+import { FASES_LLAVE, type FaseLlave } from "@/lib/torneo-llave";
+import { procesarEventos } from "@/lib/logros";
+import { ordenarParejasParaSiembra } from "@/lib/torneo-siembra";
+import { DIRECTA_MIN_PAREJAS } from "@/lib/torneo-llave-directa";
+import type { EventoJuego } from "@/lib/logros-catalogo";
 import {
+  avanzarByesDelCuadroDirecto,
   cerrarZonaDeTorneo,
   cerrarZonasYArmarLlaveDeTorneo,
   getEstadoAvance,
@@ -320,6 +325,12 @@ export async function saveTorneoPartidoResultado(
       id: true,
       pareja1Id: true,
       pareja2Id: true,
+      // Para los logros: `status` dice si el partido ya estaba terminado (una
+      // correccion no vuelve a sumar progreso) y `llave` en que ronda se jugo.
+      status: true,
+      llave: true,
+      pareja1: { select: { player1Id: true, player2Id: true } },
+      pareja2: { select: { player1Id: true, player2Id: true } },
     },
   });
 
@@ -376,7 +387,149 @@ export async function saveTorneoPartidoResultado(
 
   await notifyResultadoCargado(partidoId);
 
+  // Logros. Va al final y fuera de cualquier transaccion: que falle no puede
+  // voltear el resultado, que ya quedo guardado.
+  const eventos = eventosDelResultado({
+    partido,
+    ganadorId,
+    sets: setsAGuardar,
+    walkover,
+  });
+
+  // El campeon se resuelve aparte porque saber si quedo invicto necesita una
+  // consulta, y solo tiene sentido hacerla al cerrar la final.
+  if (eventos.length && partido.llave === "F") {
+    eventos.push(...(await eventosDelCampeon(torneoId, ganadorId, partido)));
+  }
+
+  await procesarEventos(eventos);
+
   return { success: true };
+}
+
+/**
+ * "Campeon" y, si corresponde, "campeon invicto".
+ *
+ * Invicto es no haber perdido **ningun set** en todo el torneo. Se mira sobre
+ * los partidos terminados de esa pareja: si en alguno hay un set donde hizo
+ * menos games que el rival, no lo esta.
+ */
+async function eventosDelCampeon(
+  torneoId: number,
+  ganadorId: number,
+  partido: PartidoParaLogros,
+): Promise<EventoJuego[]> {
+  const campeones =
+    ganadorId === partido.pareja1Id ? partido.pareja1 : partido.pareja2;
+
+  if (!campeones) return [];
+
+  const partidosDelCampeon = await prisma.partido.findMany({
+    where: {
+      torneoId,
+      deletedAt: null,
+      status: { in: ["FINISHED", "WALKOVER"] },
+      OR: [{ pareja1Id: ganadorId }, { pareja2Id: ganadorId }],
+    },
+    select: {
+      pareja1Id: true,
+      sets: { select: { gamesPareja1: true, gamesPareja2: true } },
+    },
+  });
+
+  const perdioAlgunSet = partidosDelCampeon.some((otro) =>
+    otro.sets.some((set) =>
+      otro.pareja1Id === ganadorId
+        ? set.gamesPareja1 < set.gamesPareja2
+        : set.gamesPareja2 < set.gamesPareja1,
+    ),
+  );
+
+  return [campeones.player1Id, campeones.player2Id].map((userId) => ({
+    tipo: "TORNEO_GANADO" as const,
+    userId,
+    invicto: !perdioAlgunSet,
+  }));
+}
+
+type PartidoParaLogros = {
+  status: string;
+  llave: string | null;
+  pareja1Id: number | null;
+  pareja2Id: number | null;
+  pareja1: { player1Id: number; player2Id: number } | null;
+  pareja2: { player1Id: number; player2Id: number } | null;
+};
+
+/**
+ * Traduce un resultado recien cargado a eventos de logros.
+ *
+ * **Solo cuando el partido termina por primera vez.** `saveTorneoPartidoResultado`
+ * se vuelve a llamar para corregir un resultado mal cargado, y sin este corte
+ * cada correccion volveria a sumar "partido jugado" y compania, inflando los
+ * contadores acumulativos.
+ *
+ * Un walkover no se jugo: no otorga nada. El que avanza igual suma la ronda,
+ * porque efectivamente llego, pero no partidos ni sets.
+ */
+function eventosDelResultado(datos: {
+  partido: PartidoParaLogros;
+  ganadorId: number;
+  sets: Array<{ gamesPareja1: number; gamesPareja2: number }>;
+  walkover: boolean;
+}): EventoJuego[] {
+  const { partido, ganadorId, sets, walkover } = datos;
+
+  const yaEstabaTerminado =
+    partido.status === "FINISHED" || partido.status === "WALKOVER";
+
+  if (yaEstabaTerminado) return [];
+
+  const jugadoresDe = (pareja: { player1Id: number; player2Id: number } | null) =>
+    pareja ? [pareja.player1Id, pareja.player2Id] : [];
+
+  const ganadores = jugadoresDe(
+    ganadorId === partido.pareja1Id ? partido.pareja1 : partido.pareja2,
+  );
+  const todos = [...jugadoresDe(partido.pareja1), ...jugadoresDe(partido.pareja2)];
+
+  const eventos: EventoJuego[] = [];
+
+  if (!walkover) {
+    for (const userId of todos) {
+      eventos.push({ tipo: "PARTIDO_JUGADO", userId });
+    }
+
+    for (const userId of ganadores) {
+      eventos.push({ tipo: "PARTIDO_GANADO", userId });
+
+      for (const set of sets) {
+        // Quien gano el partido no gano necesariamente todos los sets.
+        const ganoElSet =
+          ganadorId === partido.pareja1Id
+            ? set.gamesPareja1 > set.gamesPareja2
+            : set.gamesPareja2 > set.gamesPareja1;
+
+        if (!ganoElSet) continue;
+
+        const perdidos =
+          ganadorId === partido.pareja1Id ? set.gamesPareja2 : set.gamesPareja1;
+
+        eventos.push({ tipo: "SET_GANADO", userId, bagel: perdidos === 0 });
+      }
+    }
+  }
+
+  // La ronda si cuenta aunque haya sido walkover: el jugador llego igual.
+  const fase = partido.llave as FaseLlave | null;
+
+  if (fase && FASES_LLAVE.includes(fase)) {
+    for (const userId of ganadores) {
+      eventos.push({ tipo: "RONDA_ALCANZADA", userId, fase });
+    }
+  }
+
+  return eventos;
 }
 
 function formatDayLabel(date: Date) {
@@ -472,6 +625,8 @@ async function ensureTorneoAccess(
       inicio: true,
       fin: true,
       partidosGenerados: true,
+      formato: true,
+      siembra: true,
       evento: {
         select: {
           nombre: true,
@@ -589,7 +744,11 @@ async function buildTorneoPartidosPreview(
     },
   });
 
-  if (grupos.length === 0) {
+  const esDirecta = torneo.formato === "ELIMINACION_DIRECTA";
+
+  // En eliminacion directa no hay zonas que crear: el cuadro se siembra con
+  // las parejas inscriptas.
+  if (!esDirecta && grupos.length === 0) {
     throw new Error("Debes crear zonas antes de generar partidos");
   }
 
@@ -679,7 +838,21 @@ async function buildTorneoPartidosPreview(
     }),
   }));
 
+  // El orden de siembra se calcula recien aca: si se cargan o se dan de baja
+  // parejas, regenerar los partidos vuelve a sembrar con lo que hay.
+  const siembra = esDirecta
+    ? await ordenarParejasParaSiembra(torneoId, torneo.siembra)
+    : [];
+
+  if (esDirecta && siembra.length < DIRECTA_MIN_PAREJAS) {
+    throw new Error(
+      `Un cuadro de eliminacion directa necesita al menos ${DIRECTA_MIN_PAREJAS} parejas inscriptas y hay ${siembra.length}`,
+    );
+  }
+
   const grilla = buildGrilla({
+    modo: esDirecta ? "DIRECTO" : "ZONAS",
+    siembra,
     zonas: zonasGrilla,
     parejas,
     days,
@@ -779,7 +952,7 @@ export async function saveTorneoPartidosSetup(
     });
   };
 
-  await prisma.$transaction(async (tx) => {
+  await enTransaccion(async (tx) => {
     await tx.partido.deleteMany({
       where: {
         torneoId,
@@ -836,9 +1009,23 @@ export async function saveTorneoPartidosSetup(
       where: { id: torneo.id },
       data: {
         partidosGenerados: true,
+        // En eliminacion directa el cuadro nace completo, asi que la etapa de
+        // zonas queda cerrada de entrada. Los flags no significan "hubo
+        // zonas": significan "la etapa de zonas ya no bloquea", que es lo que
+        // consulta el resto de la app para decidir que se puede editar.
+        ...(torneo.formato === "ELIMINACION_DIRECTA"
+          ? { zonaGenerada: true, zonaCerrada: true }
+          : {}),
       },
     });
   });
+
+  // Los BYE pasan de ronda apenas se genera el cuadro: no hay nada que esperar,
+  // las parejas ya estan sembradas. Va fuera de la transaccion de arriba para
+  // no alargarla.
+  if (torneo.formato === "ELIMINACION_DIRECTA") {
+    await avanzarByesDelCuadroDirecto(torneoId);
+  }
 
   // Las notificaciones se disparan con la transaccion ya commiteada: un fallo
   // acá no puede revertir la grilla recien guardada.

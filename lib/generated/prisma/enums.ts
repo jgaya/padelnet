@@ -85,6 +85,22 @@ export const TournamentCategoryRule = {
 export type TournamentCategoryRule = (typeof TournamentCategoryRule)[keyof typeof TournamentCategoryRule]
 
 
+export const TorneoFormato = {
+  ZONAS: 'ZONAS',
+  ELIMINACION_DIRECTA: 'ELIMINACION_DIRECTA'
+} as const
+
+export type TorneoFormato = (typeof TorneoFormato)[keyof typeof TorneoFormato]
+
+
+export const TorneoSiembra = {
+  RANKING: 'RANKING',
+  INSCRIPCION: 'INSCRIPCION'
+} as const
+
+export type TorneoSiembra = (typeof TorneoSiembra)[keyof typeof TorneoSiembra]
+
+
 export const MatchStatus = {
   PENDING: 'PENDING',
   SCHEDULED: 'SCHEDULED',
@@ -165,9 +181,38 @@ export const ImagenPerfilEstado = {
 export type ImagenPerfilEstado = (typeof ImagenPerfilEstado)[keyof typeof ImagenPerfilEstado]
 
 
+export const AuditoriaAccion = {
+  CREAR: 'CREAR',
+  ACTUALIZAR: 'ACTUALIZAR',
+  BORRAR: 'BORRAR',
+  MASIVA: 'MASIVA'
+} as const
+
+export type AuditoriaAccion = (typeof AuditoriaAccion)[keyof typeof AuditoriaAccion]
+
+
 export const TokenEmailPurpose = {
   VERIFICACION: 'VERIFICACION',
   RESET_PASSWORD: 'RESET_PASSWORD'
 } as const
 
 export type TokenEmailPurpose = (typeof TokenEmailPurpose)[keyof typeof TokenEmailPurpose]
+
+
+export const SancionEstado = {
+  VIGENTE: 'VIGENTE',
+  ANULADA: 'ANULADA'
+} as const
+
+export type SancionEstado = (typeof SancionEstado)[keyof typeof SancionEstado]
+
+
+export const LogroRareza = {
+  COMUN: 'COMUN',
+  POCO_COMUN: 'POCO_COMUN',
+  RARO: 'RARO',
+  EPICO: 'EPICO',
+  LEGENDARIO: 'LEGENDARIO'
+} as const
+
+export type LogroRareza = (typeof LogroRareza)[keyof typeof LogroRareza]

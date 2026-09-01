@@ -58,6 +58,8 @@ export type TorneoMinAggregateOutputType = {
   status: $Enums.TournamentStatus | null
   publicado: boolean | null
   zonaCerrada: boolean | null
+  formato: $Enums.TorneoFormato | null
+  siembra: $Enums.TorneoSiembra | null
   zonaGenerada: boolean | null
   partidosGenerados: boolean | null
   actualizado: boolean | null
@@ -84,6 +86,8 @@ export type TorneoMaxAggregateOutputType = {
   status: $Enums.TournamentStatus | null
   publicado: boolean | null
   zonaCerrada: boolean | null
+  formato: $Enums.TorneoFormato | null
+  siembra: $Enums.TorneoSiembra | null
   zonaGenerada: boolean | null
   partidosGenerados: boolean | null
   actualizado: boolean | null
@@ -110,6 +114,8 @@ export type TorneoCountAggregateOutputType = {
   status: number
   publicado: number
   zonaCerrada: number
+  formato: number
+  siembra: number
   zonaGenerada: number
   partidosGenerados: number
   actualizado: number
@@ -154,6 +160,8 @@ export type TorneoMinAggregateInputType = {
   status?: true
   publicado?: true
   zonaCerrada?: true
+  formato?: true
+  siembra?: true
   zonaGenerada?: true
   partidosGenerados?: true
   actualizado?: true
@@ -180,6 +188,8 @@ export type TorneoMaxAggregateInputType = {
   status?: true
   publicado?: true
   zonaCerrada?: true
+  formato?: true
+  siembra?: true
   zonaGenerada?: true
   partidosGenerados?: true
   actualizado?: true
@@ -206,6 +216,8 @@ export type TorneoCountAggregateInputType = {
   status?: true
   publicado?: true
   zonaCerrada?: true
+  formato?: true
+  siembra?: true
   zonaGenerada?: true
   partidosGenerados?: true
   actualizado?: true
@@ -319,6 +331,8 @@ export type TorneoGroupByOutputType = {
   status: $Enums.TournamentStatus
   publicado: boolean
   zonaCerrada: boolean
+  formato: $Enums.TorneoFormato
+  siembra: $Enums.TorneoSiembra
   zonaGenerada: boolean
   partidosGenerados: boolean
   actualizado: boolean
@@ -368,6 +382,8 @@ export type TorneoWhereInput = {
   status?: Prisma.EnumTournamentStatusFilter<"Torneo"> | $Enums.TournamentStatus
   publicado?: Prisma.BoolFilter<"Torneo"> | boolean
   zonaCerrada?: Prisma.BoolFilter<"Torneo"> | boolean
+  formato?: Prisma.EnumTorneoFormatoFilter<"Torneo"> | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFilter<"Torneo"> | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFilter<"Torneo"> | boolean
   partidosGenerados?: Prisma.BoolFilter<"Torneo"> | boolean
   actualizado?: Prisma.BoolFilter<"Torneo"> | boolean
@@ -401,6 +417,8 @@ export type TorneoOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   publicado?: Prisma.SortOrder
   zonaCerrada?: Prisma.SortOrder
+  formato?: Prisma.SortOrder
+  siembra?: Prisma.SortOrder
   zonaGenerada?: Prisma.SortOrder
   partidosGenerados?: Prisma.SortOrder
   actualizado?: Prisma.SortOrder
@@ -439,6 +457,8 @@ export type TorneoWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumTournamentStatusFilter<"Torneo"> | $Enums.TournamentStatus
   publicado?: Prisma.BoolFilter<"Torneo"> | boolean
   zonaCerrada?: Prisma.BoolFilter<"Torneo"> | boolean
+  formato?: Prisma.EnumTorneoFormatoFilter<"Torneo"> | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFilter<"Torneo"> | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFilter<"Torneo"> | boolean
   partidosGenerados?: Prisma.BoolFilter<"Torneo"> | boolean
   actualizado?: Prisma.BoolFilter<"Torneo"> | boolean
@@ -472,6 +492,8 @@ export type TorneoOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   publicado?: Prisma.SortOrder
   zonaCerrada?: Prisma.SortOrder
+  formato?: Prisma.SortOrder
+  siembra?: Prisma.SortOrder
   zonaGenerada?: Prisma.SortOrder
   partidosGenerados?: Prisma.SortOrder
   actualizado?: Prisma.SortOrder
@@ -506,6 +528,8 @@ export type TorneoScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumTournamentStatusWithAggregatesFilter<"Torneo"> | $Enums.TournamentStatus
   publicado?: Prisma.BoolWithAggregatesFilter<"Torneo"> | boolean
   zonaCerrada?: Prisma.BoolWithAggregatesFilter<"Torneo"> | boolean
+  formato?: Prisma.EnumTorneoFormatoWithAggregatesFilter<"Torneo"> | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraWithAggregatesFilter<"Torneo"> | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolWithAggregatesFilter<"Torneo"> | boolean
   partidosGenerados?: Prisma.BoolWithAggregatesFilter<"Torneo"> | boolean
   actualizado?: Prisma.BoolWithAggregatesFilter<"Torneo"> | boolean
@@ -530,6 +554,8 @@ export type TorneoCreateInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -563,6 +589,8 @@ export type TorneoUncheckedCreateInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -593,6 +621,8 @@ export type TorneoUpdateInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -626,6 +656,8 @@ export type TorneoUncheckedUpdateInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -658,6 +690,8 @@ export type TorneoCreateManyInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -682,6 +716,8 @@ export type TorneoUpdateManyMutationInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -708,6 +744,8 @@ export type TorneoUncheckedUpdateManyInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -755,6 +793,8 @@ export type TorneoCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   publicado?: Prisma.SortOrder
   zonaCerrada?: Prisma.SortOrder
+  formato?: Prisma.SortOrder
+  siembra?: Prisma.SortOrder
   zonaGenerada?: Prisma.SortOrder
   partidosGenerados?: Prisma.SortOrder
   actualizado?: Prisma.SortOrder
@@ -789,6 +829,8 @@ export type TorneoMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   publicado?: Prisma.SortOrder
   zonaCerrada?: Prisma.SortOrder
+  formato?: Prisma.SortOrder
+  siembra?: Prisma.SortOrder
   zonaGenerada?: Prisma.SortOrder
   partidosGenerados?: Prisma.SortOrder
   actualizado?: Prisma.SortOrder
@@ -815,6 +857,8 @@ export type TorneoMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   publicado?: Prisma.SortOrder
   zonaCerrada?: Prisma.SortOrder
+  formato?: Prisma.SortOrder
+  siembra?: Prisma.SortOrder
   zonaGenerada?: Prisma.SortOrder
   partidosGenerados?: Prisma.SortOrder
   actualizado?: Prisma.SortOrder
@@ -895,6 +939,14 @@ export type EnumTournamentCategoryRuleFieldUpdateOperationsInput = {
 
 export type EnumTournamentStatusFieldUpdateOperationsInput = {
   set?: $Enums.TournamentStatus
+}
+
+export type EnumTorneoFormatoFieldUpdateOperationsInput = {
+  set?: $Enums.TorneoFormato
+}
+
+export type EnumTorneoSiembraFieldUpdateOperationsInput = {
+  set?: $Enums.TorneoSiembra
 }
 
 export type TorneoCreateNestedOneWithoutParejasInput = {
@@ -997,6 +1049,8 @@ export type TorneoCreateWithoutEventoInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1028,6 +1082,8 @@ export type TorneoUncheckedCreateWithoutEventoInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1089,6 +1145,8 @@ export type TorneoScalarWhereInput = {
   status?: Prisma.EnumTournamentStatusFilter<"Torneo"> | $Enums.TournamentStatus
   publicado?: Prisma.BoolFilter<"Torneo"> | boolean
   zonaCerrada?: Prisma.BoolFilter<"Torneo"> | boolean
+  formato?: Prisma.EnumTorneoFormatoFilter<"Torneo"> | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFilter<"Torneo"> | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFilter<"Torneo"> | boolean
   partidosGenerados?: Prisma.BoolFilter<"Torneo"> | boolean
   actualizado?: Prisma.BoolFilter<"Torneo"> | boolean
@@ -1113,6 +1171,8 @@ export type TorneoCreateWithoutParejasInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1145,6 +1205,8 @@ export type TorneoUncheckedCreateWithoutParejasInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1190,6 +1252,8 @@ export type TorneoUpdateWithoutParejasInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1222,6 +1286,8 @@ export type TorneoUncheckedUpdateWithoutParejasInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1251,6 +1317,8 @@ export type TorneoCreateWithoutGruposInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1283,6 +1351,8 @@ export type TorneoUncheckedCreateWithoutGruposInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1328,6 +1398,8 @@ export type TorneoUpdateWithoutGruposInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1360,6 +1432,8 @@ export type TorneoUncheckedUpdateWithoutGruposInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1389,6 +1463,8 @@ export type TorneoCreateWithoutPartidosInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1421,6 +1497,8 @@ export type TorneoUncheckedCreateWithoutPartidosInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1466,6 +1544,8 @@ export type TorneoUpdateWithoutPartidosInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1498,6 +1578,8 @@ export type TorneoUncheckedUpdateWithoutPartidosInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1527,6 +1609,8 @@ export type TorneoCreateWithoutRondasInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1559,6 +1643,8 @@ export type TorneoUncheckedCreateWithoutRondasInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1604,6 +1690,8 @@ export type TorneoUpdateWithoutRondasInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1636,6 +1724,8 @@ export type TorneoUncheckedUpdateWithoutRondasInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1665,6 +1755,8 @@ export type TorneoCreateWithoutRankingsInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1697,6 +1789,8 @@ export type TorneoUncheckedCreateWithoutRankingsInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1742,6 +1836,8 @@ export type TorneoUpdateWithoutRankingsInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1774,6 +1870,8 @@ export type TorneoUncheckedUpdateWithoutRankingsInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1803,6 +1901,8 @@ export type TorneoCreateWithoutGeneracionesInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1835,6 +1935,8 @@ export type TorneoUncheckedCreateWithoutGeneracionesInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1880,6 +1982,8 @@ export type TorneoUpdateWithoutGeneracionesInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1912,6 +2016,8 @@ export type TorneoUncheckedUpdateWithoutGeneracionesInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1942,6 +2048,8 @@ export type TorneoCreateManyEventoInput = {
   status?: $Enums.TournamentStatus
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: $Enums.TorneoFormato
+  siembra?: $Enums.TorneoSiembra
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -1966,6 +2074,8 @@ export type TorneoUpdateWithoutEventoInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1997,6 +2107,8 @@ export type TorneoUncheckedUpdateWithoutEventoInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2028,6 +2140,8 @@ export type TorneoUncheckedUpdateManyWithoutEventoInput = {
   status?: Prisma.EnumTournamentStatusFieldUpdateOperationsInput | $Enums.TournamentStatus
   publicado?: Prisma.BoolFieldUpdateOperationsInput | boolean
   zonaCerrada?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  formato?: Prisma.EnumTorneoFormatoFieldUpdateOperationsInput | $Enums.TorneoFormato
+  siembra?: Prisma.EnumTorneoSiembraFieldUpdateOperationsInput | $Enums.TorneoSiembra
   zonaGenerada?: Prisma.BoolFieldUpdateOperationsInput | boolean
   partidosGenerados?: Prisma.BoolFieldUpdateOperationsInput | boolean
   actualizado?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2130,6 +2244,8 @@ export type TorneoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   status?: boolean
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: boolean
+  siembra?: boolean
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -2166,6 +2282,8 @@ export type TorneoSelectScalar = {
   status?: boolean
   publicado?: boolean
   zonaCerrada?: boolean
+  formato?: boolean
+  siembra?: boolean
   zonaGenerada?: boolean
   partidosGenerados?: boolean
   actualizado?: boolean
@@ -2176,7 +2294,7 @@ export type TorneoSelectScalar = {
   updatedAt?: boolean
 }
 
-export type TorneoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventoId" | "nombre" | "categoriaCode" | "sexo" | "categoriaRegla" | "categoriaN" | "comentario" | "imagenUrl" | "valorInsc" | "jugxZona" | "capacidad" | "status" | "publicado" | "zonaCerrada" | "zonaGenerada" | "partidosGenerados" | "actualizado" | "inicio" | "fin" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["torneo"]>
+export type TorneoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "eventoId" | "nombre" | "categoriaCode" | "sexo" | "categoriaRegla" | "categoriaN" | "comentario" | "imagenUrl" | "valorInsc" | "jugxZona" | "capacidad" | "status" | "publicado" | "zonaCerrada" | "formato" | "siembra" | "zonaGenerada" | "partidosGenerados" | "actualizado" | "inicio" | "fin" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["torneo"]>
 export type TorneoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   evento?: boolean | Prisma.EventoDefaultArgs<ExtArgs>
   parejas?: boolean | Prisma.Torneo$parejasArgs<ExtArgs>
@@ -2215,6 +2333,8 @@ export type $TorneoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     status: $Enums.TournamentStatus
     publicado: boolean
     zonaCerrada: boolean
+    formato: $Enums.TorneoFormato
+    siembra: $Enums.TorneoSiembra
     zonaGenerada: boolean
     partidosGenerados: boolean
     actualizado: boolean
@@ -2614,6 +2734,8 @@ export interface TorneoFieldRefs {
   readonly status: Prisma.FieldRef<"Torneo", 'TournamentStatus'>
   readonly publicado: Prisma.FieldRef<"Torneo", 'Boolean'>
   readonly zonaCerrada: Prisma.FieldRef<"Torneo", 'Boolean'>
+  readonly formato: Prisma.FieldRef<"Torneo", 'TorneoFormato'>
+  readonly siembra: Prisma.FieldRef<"Torneo", 'TorneoSiembra'>
   readonly zonaGenerada: Prisma.FieldRef<"Torneo", 'Boolean'>
   readonly partidosGenerados: Prisma.FieldRef<"Torneo", 'Boolean'>
   readonly actualizado: Prisma.FieldRef<"Torneo", 'Boolean'>

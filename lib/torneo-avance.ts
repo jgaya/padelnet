@@ -1,13 +1,13 @@
 import "server-only";
 
-import type { Prisma } from "@/lib/generated/prisma/client";
 
 import type { TournamentStatus } from "@/types/db";
 import { notifyTorneoIniciado } from "@/actions/notificaciones-eventos";
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma, type TxAuditado } from "@/lib/prisma";
 import { FASES_LLAVE, type FaseLlave } from "@/lib/torneo-llave";
 import {
   calcularPosiciones,
+  construirContextoDesempate,
   hayEmpateSinResolver,
 } from "@/lib/torneo-posiciones";
 import {
@@ -62,7 +62,7 @@ function tieneResultado(partido: {
  * Devuelve true si escribio algo, para poder informar que se movio.
  */
 async function ocuparSlot(
-  tx: Prisma.TransactionClient,
+  tx: TxAuditado,
   partidoId: number,
   slot: 1 | 2,
   parejaId: number,
@@ -87,7 +87,7 @@ async function ocuparSlot(
  * cargar resultado, y la fase de zonas nunca se completa.
  */
 async function resolverEspecialesDeZona(
-  tx: Prisma.TransactionClient,
+  tx: TxAuditado,
   torneoId: number,
   grupoId: number,
 ) {
@@ -140,7 +140,7 @@ async function resolverEspecialesDeZona(
  * Pasa el ganador de un partido de llave al partido de la fase siguiente.
  */
 async function propagarGanadorDeLlave(
-  tx: Prisma.TransactionClient,
+  tx: TxAuditado,
   torneoId: number,
   partido: { llave: string | null; ganadorId: number | null },
   fases: readonly FaseLlave[],
@@ -169,7 +169,7 @@ async function propagarGanadorDeLlave(
 
 /** Fases que existen en la llave de este torneo, en orden de disputa. */
 async function fasesDeLaLlave(
-  tx: Prisma.TransactionClient,
+  tx: TxAuditado,
   torneoId: number,
 ): Promise<FaseLlave[]> {
   const conLlave = await tx.partido.findMany({
@@ -192,7 +192,7 @@ async function fasesDeLaLlave(
  * partido siguiente de la llave.
  */
 export async function propagarResultado(torneoId: number, partidoId: number) {
-  await prisma.$transaction(async (tx) => {
+  await enTransaccion(async (tx) => {
     const partido = await tx.partido.findFirst({
       where: { id: partidoId, torneoId, deletedAt: null },
       select: PARTIDO_RESOLUCION_SELECT,
@@ -390,7 +390,11 @@ function resolverZonas(
 
     const filas = calcularPosiciones(parejaIds, grupo.partidos);
 
-    if (hayEmpateSinResolver(filas)) {
+    // El mismo contexto con el que se ordeno: sin esto se reportaria como
+    // empate sin resolver algo que el enfrentamiento directo ya resolvio.
+    const contexto = construirContextoDesempate(filas, grupo.partidos);
+
+    if (hayEmpateSinResolver(filas, contexto)) {
       return {
         ...base,
         posiciones: null,
@@ -521,7 +525,7 @@ function motivoLlaveParaZona(
  * cerrar varias zonas seguidas cuente bien los cruces que quedan completos.
  */
 async function aplicarZonaEnLlave(
-  tx: Prisma.TransactionClient,
+  tx: TxAuditado,
   torneoId: number,
   zona: { letra: string; posiciones: number[] },
   primeraRonda: PartidoLlave[],
@@ -745,7 +749,7 @@ export async function cerrarZonasYArmarLlaveDeTorneo(
   const zonas = resolverZonas(torneo.grupos, torneo.zonaCerrada);
 
   try {
-    const resultado = await prisma.$transaction(async (tx) => {
+    const resultado = await enTransaccion(async (tx) => {
       const partidosLlave = await tx.partido.findMany({
         where: { torneoId, deletedAt: null, llave: { not: null } },
         select: PARTIDO_LLAVE_SELECT,
@@ -888,7 +892,7 @@ export async function cerrarZonaDeTorneo(
   const posiciones = zona.posiciones;
 
   try {
-    const resultado = await prisma.$transaction(async (tx) => {
+    const resultado = await enTransaccion(async (tx) => {
       const aplicado = await aplicarZonaEnLlave(
         tx,
         torneoId,
@@ -950,4 +954,80 @@ export async function cerrarZonaDeTorneo(
     console.error("cerrarZona error:", error);
     return { success: false, error: "No se pudo cerrar la zona" };
   }
+}
+
+/**
+ * Hace pasar de ronda a los BYE de un cuadro de eliminacion directa.
+ *
+ * En el formato con zonas esto ocurre al cerrarlas, dentro de
+ * `aplicarZonaEnLlave`: los entrantes se conocen recien ahi. En eliminacion
+ * directa el cuadro nace completo al generar los partidos, asi que los BYE se
+ * pueden resolver en el mismo momento y el torneo arranca con las mejores
+ * semillas ya en la ronda siguiente.
+ *
+ * Es idempotente: si el destino ya tiene esa pareja puesta, no hace nada. Eso
+ * permite regenerar el cuadro sin duplicar avances.
+ */
+export async function avanzarByesDelCuadroDirecto(torneoId: number) {
+  return enTransaccion(async (tx) => {
+    const fases = await fasesDeLaLlave(tx, torneoId);
+    if (!fases.length) return { byesAvanzados: 0 };
+
+    const primeraFase = fases[0];
+
+    const partidos = await tx.partido.findMany({
+      where: { torneoId, deletedAt: null, llave: { not: null } },
+      select: {
+        id: true,
+        llave: true,
+        pareja1Id: true,
+        pareja2Id: true,
+        pareja1Letra: true,
+        pareja2Letra: true,
+      },
+    });
+
+    let byesAvanzados = 0;
+
+    for (const partido of partidos) {
+      const parsed = parseLlaveValue(partido.llave);
+      if (!parsed || parsed.fase !== primeraFase) continue;
+
+      if (!esBye(partido.pareja1Letra) && !esBye(partido.pareja2Letra)) {
+        continue;
+      }
+
+      // El cruce no se juega: su unico entrante pasa derecho.
+      const unico = partido.pareja1Id ?? partido.pareja2Id;
+      const destino = siguienteEnLlave(parsed.fase, parsed.numero, fases);
+      if (unico === null || !destino) continue;
+
+      const siguiente = await tx.partido.findFirst({
+        where: {
+          torneoId,
+          deletedAt: null,
+          llave: llaveValue(destino.fase, destino.numero),
+        },
+        select: { id: true, pareja1Id: true, pareja2Id: true },
+      });
+
+      if (!siguiente) continue;
+
+      const yaEsta =
+        destino.slot === 1
+          ? siguiente.pareja1Id === unico
+          : siguiente.pareja2Id === unico;
+
+      if (yaEsta) continue;
+
+      await tx.partido.update({
+        where: { id: siguiente.id },
+        data: destino.slot === 1 ? { pareja1Id: unico } : { pareja2Id: unico },
+      });
+
+      byesAvanzados += 1;
+    }
+
+    return { byesAvanzados };
+  });
 }

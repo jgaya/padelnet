@@ -1,0 +1,23 @@
+<!--
+  Icono de la app, variante "maskable".
+
+  Android recorta el icono con la forma que use el launcher: circulo, squircle,
+  gota. Solo garantiza que sobreviva el 80% central, asi que este SVG va a
+  sangre (sin esquinas redondeadas, las pone el sistema) y con el wordmark
+  achicado para que entre entero en esa zona segura.
+
+  El 0.78 sale de ahi: con el wordmark a ese tamaño, la esquina mas lejana de la
+  caja de texto queda a ~151px del centro, comodamente adentro del circulo
+  seguro de radio 204.8.
+
+  Sin esto Android recortaria la P y la R. Ver icono.svg para la variante "any".
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#00c853" />
+  <g transform="translate(256 256) scale(0.78) translate(-256 -256)">
+    <g fill="#ffffff" font-family="Montserrat" text-anchor="middle">
+      <text x="256" y="265" font-size="112" font-weight="900" letter-spacing="-3">PADEL</text>
+      <text x="252" y="327" font-size="34" font-weight="900" letter-spacing="8">.NET.AR</text>
+    </g>
+  </g>
+</svg>

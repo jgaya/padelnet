@@ -58,7 +58,92 @@ const CABEZA_DESDE_ARRIBA = 0.2;
 const MARGEN_CABEZA_ANCHO = 1.5;
 const MARGEN_CABEZA_ALTO = 0.8;
 
+/**
+ * Lado maximo de cada recorte, en pixeles.
+ *
+ * El avatar no se pinta nunca por encima de 200px (40 en el header, 72 en la
+ * ficha, 160 en el versus), asi que 400 ya cubre pantallas al doble de
+ * densidad. Guardar el recorte a resolucion completa era guardar seis veces
+ * mas pixeles de los que se ven.
+ */
+const LADO_MAX_IMAGEN = 800;
+const LADO_MAX_AVATAR = 400;
+
+/**
+ * JPEG en vez de PNG, con esta calidad.
+ *
+ * PNG es sin perdida y esta pensado para graficos con areas planas: para una
+ * foto de una cara pesa entre 8 y 15 veces mas que un JPEG que a estos tamaños
+ * se ve igual. Ademas el data url va en base64, asi que cada KB de mas viaja
+ * un 33% mas caro en la subida.
+ *
+ * WebP daria otro 25%, pero Safari no codifica WebP desde canvas de forma
+ * confiable y `toDataURL` no falla cuando no soporta el tipo: devuelve PNG en
+ * silencio. Terminariamos con los iPhone en el formato pesado, que es justo
+ * donde mas importa el ancho de banda.
+ */
+const TIPO_SALIDA = "image/jpeg";
+const CALIDAD = 0.85;
+
 type Caja = { x: number; y: number; width: number; height: number };
+
+/**
+ * Recorta un cuadrado de la imagen y lo baja a `ladoMax`.
+ *
+ * Reduce en dos pasos cuando la baja es de mas del doble: `drawImage` con una
+ * reduccion grande de un solo saque descarta pixeles en vez de promediarlos y
+ * el resultado queda con aliasing. Bajar primero a un intermedio de 2x deja
+ * los bordes notablemente mas limpios.
+ *
+ * El intermedio nunca supera el doble del destino, asi que tampoco se reserva
+ * un canvas gigante: en iOS, `toDataURL` sobre canvas muy grandes llega a
+ * fallar por limite de memoria.
+ */
+function recortarEscalado(
+  img: HTMLImageElement,
+  origen: { x: number; y: number; tamano: number },
+  ladoMax: number,
+): HTMLCanvasElement | null {
+  const destino = Math.min(origen.tamano, ladoMax);
+
+  const dibujar = (
+    fuente: CanvasImageSource,
+    args: [number, number, number, number],
+    lado: number,
+  ) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = lado;
+    canvas.height = lado;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(fuente, ...args, 0, 0, lado, lado);
+
+    return canvas;
+  };
+
+  // Reduccion de hasta 2x: un solo paso alcanza.
+  if (origen.tamano <= destino * 2) {
+    return dibujar(
+      img,
+      [origen.x, origen.y, origen.tamano, origen.tamano],
+      destino,
+    );
+  }
+
+  const intermedio = dibujar(
+    img,
+    [origen.x, origen.y, origen.tamano, origen.tamano],
+    destino * 2,
+  );
+
+  if (!intermedio) return null;
+
+  return dibujar(intermedio, [0, 0, intermedio.width, intermedio.height], destino);
+}
 
 /**
  * Genera los dos recortes a partir de la caja de la cara ya detectada.
@@ -90,13 +175,12 @@ function generarRecortes(
 
   const tamano = Math.min(lado, img.naturalWidth - x, img.naturalHeight - y);
 
-  const canvasCuadrado = document.createElement("canvas");
-  canvasCuadrado.width = tamano;
-  canvasCuadrado.height = tamano;
-  const ctxCuadrado = canvasCuadrado.getContext("2d");
-  if (!ctxCuadrado) return null;
-
-  ctxCuadrado.drawImage(img, x, y, tamano, tamano, 0, 0, tamano, tamano);
+  const canvasCuadrado = recortarEscalado(
+    img,
+    { x, y, tamano },
+    LADO_MAX_IMAGEN,
+  );
+  if (!canvasCuadrado) return null;
 
   // ---------- Avatar: solo la cabeza ----------
   // No lo afecta el zoom: es el recorte redondo de la cara, y sirve igual para
@@ -112,27 +196,16 @@ function generarRecortes(
     img.naturalHeight - cabezaY,
   );
 
-  const canvasAvatar = document.createElement("canvas");
-  canvasAvatar.width = tamanoCabeza;
-  canvasAvatar.height = tamanoCabeza;
-  const ctxAvatar = canvasAvatar.getContext("2d");
-  if (!ctxAvatar) return null;
-
-  ctxAvatar.drawImage(
+  const canvasAvatar = recortarEscalado(
     img,
-    cabezaX,
-    cabezaY,
-    tamanoCabeza,
-    tamanoCabeza,
-    0,
-    0,
-    tamanoCabeza,
-    tamanoCabeza,
+    { x: cabezaX, y: cabezaY, tamano: tamanoCabeza },
+    LADO_MAX_AVATAR,
   );
+  if (!canvasAvatar) return null;
 
   return {
-    imagenDataUrl: canvasCuadrado.toDataURL("image/png"),
-    avatarDataUrl: canvasAvatar.toDataURL("image/png"),
+    imagenDataUrl: canvasCuadrado.toDataURL(TIPO_SALIDA, CALIDAD),
+    avatarDataUrl: canvasAvatar.toDataURL(TIPO_SALIDA, CALIDAD),
   };
 }
 

@@ -298,6 +298,8 @@ export const TorneoCrudFormSchema = z
     imagenUrl: urlOrPathSchema.optional(),
     valorInsc: z.string().trim().optional(),
     sexo: TournamentSexoSchema,
+    formato: z.enum(["ZONAS", "ELIMINACION_DIRECTA"]),
+    siembra: z.enum(["RANKING", "INSCRIPCION"]),
     categoriaRegla: TournamentCategoryRuleSchema,
     categoriaN: z.string().trim().optional(),
     capacidad: z

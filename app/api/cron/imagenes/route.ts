@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { conOrigen } from "@/lib/auditoria-contexto";
+
 import { limpiarImagenesRechazadas } from "@/cron/imagenes-cron";
 
 export const runtime = "nodejs";
@@ -22,7 +24,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await limpiarImagenesRechazadas();
+    const result = await conOrigen("cron", limpiarImagenesRechazadas);
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
     console.error("Error limpiando las imagenes rechazadas", error);

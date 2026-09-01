@@ -1,0 +1,19 @@
+<!--
+  Icono de la app, variante "any".
+
+  Es el wordmark del header (app/components/site-header.tsx) invertido: alla el
+  "PADEL" va verde sobre fondo claro, aca va blanco sobre el verde de marca,
+  porque el icono tiene que leerse igual contra cualquier fondo de launcher.
+
+  Trae sus propias esquinas redondeadas: en "any" el sistema no recorta nada, y
+  un cuadrado a sangre queda duro al lado del resto de los iconos.
+
+  No editar los PNG de al lado a mano: salen de aca con `npm run icons`.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" ry="96" fill="#00c853" />
+  <g fill="#ffffff" font-family="Montserrat" text-anchor="middle">
+    <text x="256" y="265" font-size="112" font-weight="900" letter-spacing="-3">PADEL</text>
+    <text x="252" y="327" font-size="34" font-weight="900" letter-spacing="8">.NET.AR</text>
+  </g>
+</svg>

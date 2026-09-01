@@ -366,6 +366,11 @@ export type UserWhereInput = {
   notifications?: Prisma.NotificationListRelationFilter
   imagenesPerfil?: Prisma.ImagenPerfilListRelationFilter
   imagenesModeradas?: Prisma.ImagenPerfilListRelationFilter
+  auditoria?: Prisma.AuditoriaListRelationFilter
+  logros?: Prisma.LogroUsuarioListRelationFilter
+  sanciones?: Prisma.SancionListRelationFilter
+  sancionesCreadas?: Prisma.SancionListRelationFilter
+  sancionesAnuladas?: Prisma.SancionListRelationFilter
   featuresActualizadas?: Prisma.ComplejoFeatureListRelationFilter
 }
 
@@ -410,6 +415,11 @@ export type UserOrderByWithRelationInput = {
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
   imagenesPerfil?: Prisma.ImagenPerfilOrderByRelationAggregateInput
   imagenesModeradas?: Prisma.ImagenPerfilOrderByRelationAggregateInput
+  auditoria?: Prisma.AuditoriaOrderByRelationAggregateInput
+  logros?: Prisma.LogroUsuarioOrderByRelationAggregateInput
+  sanciones?: Prisma.SancionOrderByRelationAggregateInput
+  sancionesCreadas?: Prisma.SancionOrderByRelationAggregateInput
+  sancionesAnuladas?: Prisma.SancionOrderByRelationAggregateInput
   featuresActualizadas?: Prisma.ComplejoFeatureOrderByRelationAggregateInput
   _relevance?: Prisma.UserOrderByRelevanceInput
 }
@@ -458,6 +468,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   notifications?: Prisma.NotificationListRelationFilter
   imagenesPerfil?: Prisma.ImagenPerfilListRelationFilter
   imagenesModeradas?: Prisma.ImagenPerfilListRelationFilter
+  auditoria?: Prisma.AuditoriaListRelationFilter
+  logros?: Prisma.LogroUsuarioListRelationFilter
+  sanciones?: Prisma.SancionListRelationFilter
+  sancionesCreadas?: Prisma.SancionListRelationFilter
+  sancionesAnuladas?: Prisma.SancionListRelationFilter
   featuresActualizadas?: Prisma.ComplejoFeatureListRelationFilter
 }, "id" | "email" | "firebaseUid" | "dni">
 
@@ -559,6 +574,11 @@ export type UserCreateInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -603,6 +623,11 @@ export type UserUncheckedCreateInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -646,6 +671,11 @@ export type UserUpdateInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -690,6 +720,11 @@ export type UserUncheckedUpdateInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1186,6 +1221,82 @@ export type UserUpdateOneWithoutImagenesModeradasNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutImagenesModeradasInput, Prisma.UserUpdateWithoutImagenesModeradasInput>, Prisma.UserUncheckedUpdateWithoutImagenesModeradasInput>
 }
 
+export type UserCreateNestedOneWithoutAuditoriaInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAuditoriaInput, Prisma.UserUncheckedCreateWithoutAuditoriaInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAuditoriaInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutAuditoriaNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAuditoriaInput, Prisma.UserUncheckedCreateWithoutAuditoriaInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAuditoriaInput
+  upsert?: Prisma.UserUpsertWithoutAuditoriaInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAuditoriaInput, Prisma.UserUpdateWithoutAuditoriaInput>, Prisma.UserUncheckedUpdateWithoutAuditoriaInput>
+}
+
+export type UserCreateNestedOneWithoutSancionesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSancionesInput, Prisma.UserUncheckedCreateWithoutSancionesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSancionesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutSancionesCreadasInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSancionesCreadasInput, Prisma.UserUncheckedCreateWithoutSancionesCreadasInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSancionesCreadasInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutSancionesAnuladasInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSancionesAnuladasInput, Prisma.UserUncheckedCreateWithoutSancionesAnuladasInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSancionesAnuladasInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSancionesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSancionesInput, Prisma.UserUncheckedCreateWithoutSancionesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSancionesInput
+  upsert?: Prisma.UserUpsertWithoutSancionesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSancionesInput, Prisma.UserUpdateWithoutSancionesInput>, Prisma.UserUncheckedUpdateWithoutSancionesInput>
+}
+
+export type UserUpdateOneWithoutSancionesCreadasNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSancionesCreadasInput, Prisma.UserUncheckedCreateWithoutSancionesCreadasInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSancionesCreadasInput
+  upsert?: Prisma.UserUpsertWithoutSancionesCreadasInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSancionesCreadasInput, Prisma.UserUpdateWithoutSancionesCreadasInput>, Prisma.UserUncheckedUpdateWithoutSancionesCreadasInput>
+}
+
+export type UserUpdateOneWithoutSancionesAnuladasNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSancionesAnuladasInput, Prisma.UserUncheckedCreateWithoutSancionesAnuladasInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSancionesAnuladasInput
+  upsert?: Prisma.UserUpsertWithoutSancionesAnuladasInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSancionesAnuladasInput, Prisma.UserUpdateWithoutSancionesAnuladasInput>, Prisma.UserUncheckedUpdateWithoutSancionesAnuladasInput>
+}
+
+export type UserCreateNestedOneWithoutLogrosInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLogrosInput, Prisma.UserUncheckedCreateWithoutLogrosInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLogrosInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutLogrosNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLogrosInput, Prisma.UserUncheckedCreateWithoutLogrosInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLogrosInput
+  upsert?: Prisma.UserUpsertWithoutLogrosInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLogrosInput, Prisma.UserUpdateWithoutLogrosInput>, Prisma.UserUncheckedUpdateWithoutLogrosInput>
+}
+
 export type UserCreateWithoutFeaturesActualizadasInput = {
   email: string
   passwordHash?: string | null
@@ -1226,6 +1337,11 @@ export type UserCreateWithoutFeaturesActualizadasInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
 }
 
 export type UserUncheckedCreateWithoutFeaturesActualizadasInput = {
@@ -1269,6 +1385,11 @@ export type UserUncheckedCreateWithoutFeaturesActualizadasInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
 }
 
 export type UserCreateOrConnectWithoutFeaturesActualizadasInput = {
@@ -1327,6 +1448,11 @@ export type UserUpdateWithoutFeaturesActualizadasInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFeaturesActualizadasInput = {
@@ -1370,6 +1496,11 @@ export type UserUncheckedUpdateWithoutFeaturesActualizadasInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
 }
 
 export type UserCreateWithoutMembershipsInput = {
@@ -1411,6 +1542,11 @@ export type UserCreateWithoutMembershipsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1454,6 +1590,11 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1512,6 +1653,11 @@ export type UserUpdateWithoutMembershipsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1555,6 +1701,11 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1597,6 +1748,11 @@ export type UserCreateWithoutPerfilesComplejoInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1640,6 +1796,11 @@ export type UserUncheckedCreateWithoutPerfilesComplejoInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1698,6 +1859,11 @@ export type UserUpdateWithoutPerfilesComplejoInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1741,6 +1907,11 @@ export type UserUncheckedUpdateWithoutPerfilesComplejoInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1783,6 +1954,11 @@ export type UserCreateWithoutEventosCreadosInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1826,6 +2002,11 @@ export type UserUncheckedCreateWithoutEventosCreadosInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -1884,6 +2065,11 @@ export type UserUpdateWithoutEventosCreadosInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1927,6 +2113,11 @@ export type UserUncheckedUpdateWithoutEventosCreadosInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -1969,6 +2160,11 @@ export type UserCreateWithoutParejasComoJugador1Input = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2012,6 +2208,11 @@ export type UserUncheckedCreateWithoutParejasComoJugador1Input = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2059,6 +2260,11 @@ export type UserCreateWithoutParejasComoJugador2Input = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2102,6 +2308,11 @@ export type UserUncheckedCreateWithoutParejasComoJugador2Input = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2160,6 +2371,11 @@ export type UserUpdateWithoutParejasComoJugador1Input = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2203,6 +2419,11 @@ export type UserUncheckedUpdateWithoutParejasComoJugador1Input = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2256,6 +2477,11 @@ export type UserUpdateWithoutParejasComoJugador2Input = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2299,6 +2525,11 @@ export type UserUncheckedUpdateWithoutParejasComoJugador2Input = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2341,6 +2572,11 @@ export type UserCreateWithoutRankingsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2384,6 +2620,11 @@ export type UserUncheckedCreateWithoutRankingsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2442,6 +2683,11 @@ export type UserUpdateWithoutRankingsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2485,6 +2731,11 @@ export type UserUncheckedUpdateWithoutRankingsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2527,6 +2778,11 @@ export type UserCreateWithoutRecategorizacionesInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2570,6 +2826,11 @@ export type UserUncheckedCreateWithoutRecategorizacionesInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2617,6 +2878,11 @@ export type UserCreateWithoutRecategorizacionesCreadasInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2660,6 +2926,11 @@ export type UserUncheckedCreateWithoutRecategorizacionesCreadasInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2718,6 +2989,11 @@ export type UserUpdateWithoutRecategorizacionesInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2761,6 +3037,11 @@ export type UserUncheckedUpdateWithoutRecategorizacionesInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2814,6 +3095,11 @@ export type UserUpdateWithoutRecategorizacionesCreadasInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2857,6 +3143,11 @@ export type UserUncheckedUpdateWithoutRecategorizacionesCreadasInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -2899,6 +3190,11 @@ export type UserCreateWithoutTurnoSeriesComoJugadorInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2942,6 +3238,11 @@ export type UserUncheckedCreateWithoutTurnoSeriesComoJugadorInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -2989,6 +3290,11 @@ export type UserCreateWithoutTurnoSeriesCreadasInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3032,6 +3338,11 @@ export type UserUncheckedCreateWithoutTurnoSeriesCreadasInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3090,6 +3401,11 @@ export type UserUpdateWithoutTurnoSeriesComoJugadorInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3133,6 +3449,11 @@ export type UserUncheckedUpdateWithoutTurnoSeriesComoJugadorInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3186,6 +3507,11 @@ export type UserUpdateWithoutTurnoSeriesCreadasInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3229,6 +3555,11 @@ export type UserUncheckedUpdateWithoutTurnoSeriesCreadasInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3271,6 +3602,11 @@ export type UserCreateWithoutTurnosSlotsCreadosInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3314,6 +3650,11 @@ export type UserUncheckedCreateWithoutTurnosSlotsCreadosInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3372,6 +3713,11 @@ export type UserUpdateWithoutTurnosSlotsCreadosInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3415,6 +3761,11 @@ export type UserUncheckedUpdateWithoutTurnosSlotsCreadosInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3457,6 +3808,11 @@ export type UserCreateWithoutReservasComoJugadorInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3500,6 +3856,11 @@ export type UserUncheckedCreateWithoutReservasComoJugadorInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3547,6 +3908,11 @@ export type UserCreateWithoutReservasCreadasInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3590,6 +3956,11 @@ export type UserUncheckedCreateWithoutReservasCreadasInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3648,6 +4019,11 @@ export type UserUpdateWithoutReservasComoJugadorInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3691,6 +4067,11 @@ export type UserUncheckedUpdateWithoutReservasComoJugadorInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3744,6 +4125,11 @@ export type UserUpdateWithoutReservasCreadasInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3787,6 +4173,11 @@ export type UserUncheckedUpdateWithoutReservasCreadasInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3829,6 +4220,11 @@ export type UserCreateWithoutEmailVerificationsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3872,6 +4268,11 @@ export type UserUncheckedCreateWithoutEmailVerificationsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -3930,6 +4331,11 @@ export type UserUpdateWithoutEmailVerificationsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -3973,6 +4379,11 @@ export type UserUncheckedUpdateWithoutEmailVerificationsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4015,6 +4426,11 @@ export type UserCreateWithoutPushTokensInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -4058,6 +4474,11 @@ export type UserUncheckedCreateWithoutPushTokensInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -4116,6 +4537,11 @@ export type UserUpdateWithoutPushTokensInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4159,6 +4585,11 @@ export type UserUncheckedUpdateWithoutPushTokensInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4201,6 +4632,11 @@ export type UserCreateWithoutNotificationsInput = {
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -4244,6 +4680,11 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -4302,6 +4743,11 @@ export type UserUpdateWithoutNotificationsInput = {
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4345,6 +4791,11 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4387,6 +4838,11 @@ export type UserCreateWithoutImagenesPerfilInput = {
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -4430,6 +4886,11 @@ export type UserUncheckedCreateWithoutImagenesPerfilInput = {
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -4477,6 +4938,11 @@ export type UserCreateWithoutImagenesModeradasInput = {
   pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -4520,6 +4986,11 @@ export type UserUncheckedCreateWithoutImagenesModeradasInput = {
   pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
 }
 
@@ -4578,6 +5049,11 @@ export type UserUpdateWithoutImagenesPerfilInput = {
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4621,6 +5097,11 @@ export type UserUncheckedUpdateWithoutImagenesPerfilInput = {
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4674,6 +5155,11 @@ export type UserUpdateWithoutImagenesModeradasInput = {
   pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4717,6 +5203,1041 @@ export type UserUncheckedUpdateWithoutImagenesModeradasInput = {
   pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutAuditoriaInput = {
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutAuditoriaInput = {
+  id?: number
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoUncheckedCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutAuditoriaInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAuditoriaInput, Prisma.UserUncheckedCreateWithoutAuditoriaInput>
+}
+
+export type UserUpsertWithoutAuditoriaInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAuditoriaInput, Prisma.UserUncheckedUpdateWithoutAuditoriaInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAuditoriaInput, Prisma.UserUncheckedCreateWithoutAuditoriaInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAuditoriaInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAuditoriaInput, Prisma.UserUncheckedUpdateWithoutAuditoriaInput>
+}
+
+export type UserUpdateWithoutAuditoriaInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAuditoriaInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUncheckedUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutSancionesInput = {
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutSancionesInput = {
+  id?: number
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoUncheckedCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutSancionesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSancionesInput, Prisma.UserUncheckedCreateWithoutSancionesInput>
+}
+
+export type UserCreateWithoutSancionesCreadasInput = {
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutSancionesCreadasInput = {
+  id?: number
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoUncheckedCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutSancionesCreadasInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSancionesCreadasInput, Prisma.UserUncheckedCreateWithoutSancionesCreadasInput>
+}
+
+export type UserCreateWithoutSancionesAnuladasInput = {
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutSancionesAnuladasInput = {
+  id?: number
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoUncheckedCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  logros?: Prisma.LogroUsuarioUncheckedCreateNestedManyWithoutUserInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutSancionesAnuladasInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSancionesAnuladasInput, Prisma.UserUncheckedCreateWithoutSancionesAnuladasInput>
+}
+
+export type UserUpsertWithoutSancionesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSancionesInput, Prisma.UserUncheckedUpdateWithoutSancionesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSancionesInput, Prisma.UserUncheckedCreateWithoutSancionesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSancionesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSancionesInput, Prisma.UserUncheckedUpdateWithoutSancionesInput>
+}
+
+export type UserUpdateWithoutSancionesInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSancionesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUncheckedUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUpsertWithoutSancionesCreadasInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSancionesCreadasInput, Prisma.UserUncheckedUpdateWithoutSancionesCreadasInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSancionesCreadasInput, Prisma.UserUncheckedCreateWithoutSancionesCreadasInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSancionesCreadasInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSancionesCreadasInput, Prisma.UserUncheckedUpdateWithoutSancionesCreadasInput>
+}
+
+export type UserUpdateWithoutSancionesCreadasInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSancionesCreadasInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUncheckedUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUpsertWithoutSancionesAnuladasInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSancionesAnuladasInput, Prisma.UserUncheckedUpdateWithoutSancionesAnuladasInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSancionesAnuladasInput, Prisma.UserUncheckedCreateWithoutSancionesAnuladasInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSancionesAnuladasInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSancionesAnuladasInput, Prisma.UserUncheckedUpdateWithoutSancionesAnuladasInput>
+}
+
+export type UserUpdateWithoutSancionesAnuladasInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSancionesAnuladasInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUncheckedUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  logros?: Prisma.LogroUsuarioUncheckedUpdateManyWithoutUserNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserCreateWithoutLogrosInput = {
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaCreateNestedManyWithoutActorInput
+  sanciones?: Prisma.SancionCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionCreateNestedManyWithoutAnuladaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserUncheckedCreateWithoutLogrosInput = {
+  id?: number
+  email: string
+  passwordHash?: string | null
+  firebaseUid?: string | null
+  name: string
+  lastname: string
+  telefono?: string | null
+  dni?: string | null
+  genero?: $Enums.Genero
+  categoria?: string | null
+  provincia?: string | null
+  localidad?: string | null
+  birthDate?: Date | string | null
+  avatarUrl?: string | null
+  imageUrl?: string | null
+  platformRole?: $Enums.PlatformRole
+  emailVerified?: boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: boolean
+  deletedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedCreateNestedManyWithoutUserInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedCreateNestedManyWithoutUserInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador1Input
+  parejasComoJugador2?: Prisma.ParejaUncheckedCreateNestedManyWithoutJugador2Input
+  rankings?: Prisma.RankingUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutJugadorInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedCreateNestedManyWithoutCreatedByInput
+  eventosCreados?: Prisma.EventoUncheckedCreateNestedManyWithoutCreatedByInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedCreateNestedManyWithoutCreatedByInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutJugadorInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedCreateNestedManyWithoutCreatedByInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutJugadorInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedCreateNestedManyWithoutCreatedByInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedCreateNestedManyWithoutUserInput
+  pushTokens?: Prisma.PushTokenUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutUserInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedCreateNestedManyWithoutModeradaPorInput
+  auditoria?: Prisma.AuditoriaUncheckedCreateNestedManyWithoutActorInput
+  sanciones?: Prisma.SancionUncheckedCreateNestedManyWithoutJugadorInput
+  sancionesCreadas?: Prisma.SancionUncheckedCreateNestedManyWithoutCreadaPorInput
+  sancionesAnuladas?: Prisma.SancionUncheckedCreateNestedManyWithoutAnuladaPorInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUncheckedCreateNestedManyWithoutUpdatedByInput
+}
+
+export type UserCreateOrConnectWithoutLogrosInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutLogrosInput, Prisma.UserUncheckedCreateWithoutLogrosInput>
+}
+
+export type UserUpsertWithoutLogrosInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutLogrosInput, Prisma.UserUncheckedUpdateWithoutLogrosInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutLogrosInput, Prisma.UserUncheckedCreateWithoutLogrosInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutLogrosInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutLogrosInput, Prisma.UserUncheckedUpdateWithoutLogrosInput>
+}
+
+export type UserUpdateWithoutLogrosInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUpdateManyWithoutActorNestedInput
+  sanciones?: Prisma.SancionUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUpdateManyWithoutAnuladaPorNestedInput
+  featuresActualizadas?: Prisma.ComplejoFeatureUpdateManyWithoutUpdatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutLogrosInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firebaseUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genero?: Prisma.EnumGeneroFieldUpdateOperationsInput | $Enums.Genero
+  categoria?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provincia?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  localidad?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  platformRole?: Prisma.EnumPlatformRoleFieldUpdateOperationsInput | $Enums.PlatformRole
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.ComplejoMembershipUncheckedUpdateManyWithoutUserNestedInput
+  perfilesComplejo?: Prisma.PerfilJugadorComplejoUncheckedUpdateManyWithoutUserNestedInput
+  parejasComoJugador1?: Prisma.ParejaUncheckedUpdateManyWithoutJugador1NestedInput
+  parejasComoJugador2?: Prisma.ParejaUncheckedUpdateManyWithoutJugador2NestedInput
+  rankings?: Prisma.RankingUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizaciones?: Prisma.RecategorizacionUncheckedUpdateManyWithoutJugadorNestedInput
+  recategorizacionesCreadas?: Prisma.RecategorizacionUncheckedUpdateManyWithoutCreatedByNestedInput
+  eventosCreados?: Prisma.EventoUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnosSlotsCreados?: Prisma.TurnoSlotUncheckedUpdateManyWithoutCreatedByNestedInput
+  reservasComoJugador?: Prisma.TurnoReservaUncheckedUpdateManyWithoutJugadorNestedInput
+  reservasCreadas?: Prisma.TurnoReservaUncheckedUpdateManyWithoutCreatedByNestedInput
+  turnoSeriesComoJugador?: Prisma.TurnoSerieUncheckedUpdateManyWithoutJugadorNestedInput
+  turnoSeriesCreadas?: Prisma.TurnoSerieUncheckedUpdateManyWithoutCreatedByNestedInput
+  emailVerifications?: Prisma.EmailVerificationUncheckedUpdateManyWithoutUserNestedInput
+  pushTokens?: Prisma.PushTokenUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  imagenesPerfil?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutUserNestedInput
+  imagenesModeradas?: Prisma.ImagenPerfilUncheckedUpdateManyWithoutModeradaPorNestedInput
+  auditoria?: Prisma.AuditoriaUncheckedUpdateManyWithoutActorNestedInput
+  sanciones?: Prisma.SancionUncheckedUpdateManyWithoutJugadorNestedInput
+  sancionesCreadas?: Prisma.SancionUncheckedUpdateManyWithoutCreadaPorNestedInput
+  sancionesAnuladas?: Prisma.SancionUncheckedUpdateManyWithoutAnuladaPorNestedInput
   featuresActualizadas?: Prisma.ComplejoFeatureUncheckedUpdateManyWithoutUpdatedByNestedInput
 }
 
@@ -4744,6 +6265,11 @@ export type UserCountOutputType = {
   notifications: number
   imagenesPerfil: number
   imagenesModeradas: number
+  auditoria: number
+  logros: number
+  sanciones: number
+  sancionesCreadas: number
+  sancionesAnuladas: number
   featuresActualizadas: number
 }
 
@@ -4766,6 +6292,11 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
   imagenesPerfil?: boolean | UserCountOutputTypeCountImagenesPerfilArgs
   imagenesModeradas?: boolean | UserCountOutputTypeCountImagenesModeradasArgs
+  auditoria?: boolean | UserCountOutputTypeCountAuditoriaArgs
+  logros?: boolean | UserCountOutputTypeCountLogrosArgs
+  sanciones?: boolean | UserCountOutputTypeCountSancionesArgs
+  sancionesCreadas?: boolean | UserCountOutputTypeCountSancionesCreadasArgs
+  sancionesAnuladas?: boolean | UserCountOutputTypeCountSancionesAnuladasArgs
   featuresActualizadas?: boolean | UserCountOutputTypeCountFeaturesActualizadasArgs
 }
 
@@ -4908,6 +6439,41 @@ export type UserCountOutputTypeCountImagenesModeradasArgs<ExtArgs extends runtim
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountAuditoriaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditoriaWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountLogrosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LogroUsuarioWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSancionesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SancionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSancionesCreadasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SancionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSancionesAnuladasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SancionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountFeaturesActualizadasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ComplejoFeatureWhereInput
 }
@@ -4954,6 +6520,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   imagenesPerfil?: boolean | Prisma.User$imagenesPerfilArgs<ExtArgs>
   imagenesModeradas?: boolean | Prisma.User$imagenesModeradasArgs<ExtArgs>
+  auditoria?: boolean | Prisma.User$auditoriaArgs<ExtArgs>
+  logros?: boolean | Prisma.User$logrosArgs<ExtArgs>
+  sanciones?: boolean | Prisma.User$sancionesArgs<ExtArgs>
+  sancionesCreadas?: boolean | Prisma.User$sancionesCreadasArgs<ExtArgs>
+  sancionesAnuladas?: boolean | Prisma.User$sancionesAnuladasArgs<ExtArgs>
   featuresActualizadas?: boolean | Prisma.User$featuresActualizadasArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -5005,6 +6576,11 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   imagenesPerfil?: boolean | Prisma.User$imagenesPerfilArgs<ExtArgs>
   imagenesModeradas?: boolean | Prisma.User$imagenesModeradasArgs<ExtArgs>
+  auditoria?: boolean | Prisma.User$auditoriaArgs<ExtArgs>
+  logros?: boolean | Prisma.User$logrosArgs<ExtArgs>
+  sanciones?: boolean | Prisma.User$sancionesArgs<ExtArgs>
+  sancionesCreadas?: boolean | Prisma.User$sancionesCreadasArgs<ExtArgs>
+  sancionesAnuladas?: boolean | Prisma.User$sancionesAnuladasArgs<ExtArgs>
   featuresActualizadas?: boolean | Prisma.User$featuresActualizadasArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -5030,6 +6606,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
     imagenesPerfil: Prisma.$ImagenPerfilPayload<ExtArgs>[]
     imagenesModeradas: Prisma.$ImagenPerfilPayload<ExtArgs>[]
+    auditoria: Prisma.$AuditoriaPayload<ExtArgs>[]
+    logros: Prisma.$LogroUsuarioPayload<ExtArgs>[]
+    sanciones: Prisma.$SancionPayload<ExtArgs>[]
+    sancionesCreadas: Prisma.$SancionPayload<ExtArgs>[]
+    sancionesAnuladas: Prisma.$SancionPayload<ExtArgs>[]
     featuresActualizadas: Prisma.$ComplejoFeaturePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -5447,6 +7028,11 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   imagenesPerfil<T extends Prisma.User$imagenesPerfilArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$imagenesPerfilArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImagenPerfilPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   imagenesModeradas<T extends Prisma.User$imagenesModeradasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$imagenesModeradasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImagenPerfilPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auditoria<T extends Prisma.User$auditoriaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditoriaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditoriaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  logros<T extends Prisma.User$logrosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$logrosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LogroUsuarioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sanciones<T extends Prisma.User$sancionesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sancionesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SancionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sancionesCreadas<T extends Prisma.User$sancionesCreadasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sancionesCreadasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SancionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sancionesAnuladas<T extends Prisma.User$sancionesAnuladasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sancionesAnuladasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SancionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   featuresActualizadas<T extends Prisma.User$featuresActualizadasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$featuresActualizadasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComplejoFeaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6276,6 +7862,126 @@ export type User$imagenesModeradasArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.ImagenPerfilScalarFieldEnum | Prisma.ImagenPerfilScalarFieldEnum[]
+}
+
+/**
+ * User.auditoria
+ */
+export type User$auditoriaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Auditoria
+   */
+  select?: Prisma.AuditoriaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Auditoria
+   */
+  omit?: Prisma.AuditoriaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AuditoriaInclude<ExtArgs> | null
+  where?: Prisma.AuditoriaWhereInput
+  orderBy?: Prisma.AuditoriaOrderByWithRelationInput | Prisma.AuditoriaOrderByWithRelationInput[]
+  cursor?: Prisma.AuditoriaWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AuditoriaScalarFieldEnum | Prisma.AuditoriaScalarFieldEnum[]
+}
+
+/**
+ * User.logros
+ */
+export type User$logrosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LogroUsuario
+   */
+  select?: Prisma.LogroUsuarioSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LogroUsuario
+   */
+  omit?: Prisma.LogroUsuarioOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LogroUsuarioInclude<ExtArgs> | null
+  where?: Prisma.LogroUsuarioWhereInput
+  orderBy?: Prisma.LogroUsuarioOrderByWithRelationInput | Prisma.LogroUsuarioOrderByWithRelationInput[]
+  cursor?: Prisma.LogroUsuarioWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LogroUsuarioScalarFieldEnum | Prisma.LogroUsuarioScalarFieldEnum[]
+}
+
+/**
+ * User.sanciones
+ */
+export type User$sancionesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sancion
+   */
+  select?: Prisma.SancionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sancion
+   */
+  omit?: Prisma.SancionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SancionInclude<ExtArgs> | null
+  where?: Prisma.SancionWhereInput
+  orderBy?: Prisma.SancionOrderByWithRelationInput | Prisma.SancionOrderByWithRelationInput[]
+  cursor?: Prisma.SancionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SancionScalarFieldEnum | Prisma.SancionScalarFieldEnum[]
+}
+
+/**
+ * User.sancionesCreadas
+ */
+export type User$sancionesCreadasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sancion
+   */
+  select?: Prisma.SancionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sancion
+   */
+  omit?: Prisma.SancionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SancionInclude<ExtArgs> | null
+  where?: Prisma.SancionWhereInput
+  orderBy?: Prisma.SancionOrderByWithRelationInput | Prisma.SancionOrderByWithRelationInput[]
+  cursor?: Prisma.SancionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SancionScalarFieldEnum | Prisma.SancionScalarFieldEnum[]
+}
+
+/**
+ * User.sancionesAnuladas
+ */
+export type User$sancionesAnuladasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sancion
+   */
+  select?: Prisma.SancionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sancion
+   */
+  omit?: Prisma.SancionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SancionInclude<ExtArgs> | null
+  where?: Prisma.SancionWhereInput
+  orderBy?: Prisma.SancionOrderByWithRelationInput | Prisma.SancionOrderByWithRelationInput[]
+  cursor?: Prisma.SancionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SancionScalarFieldEnum | Prisma.SancionScalarFieldEnum[]
 }
 
 /**

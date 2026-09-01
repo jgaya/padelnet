@@ -21,6 +21,7 @@ import {
   CalendarDaysIcon,
   DocumentTextIcon,
   TrashIcon,
+  NoSymbolIcon,
 } from "@heroicons/react/24/solid";
 
 import RowActions from "@/components/RowActions";
@@ -254,6 +255,12 @@ export default function ComplejosPageClient({
                         label: "Recategorizaciones",
                         icon: <ArrowsUpDownIcon className="h-4 w-4" />,
                         href: `${GESTION_BASE}/${complejo.id}/recategorizaciones`,
+                      },
+                      {
+                        key: "sanciones",
+                        label: "Sanciones",
+                        icon: <NoSymbolIcon className="h-4 w-4" />,
+                        href: `${GESTION_BASE}/${complejo.id}/sanciones`,
                       },
                       // Solo si el superadmin le prendio la funcionalidad.
                       complejo.turnosHabilitado && {

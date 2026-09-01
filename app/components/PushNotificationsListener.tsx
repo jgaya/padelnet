@@ -18,7 +18,9 @@ export default function PushNotificationsListener() {
         if (payload.notification) {
           new Notification(payload.notification.title ?? "Notificación", {
             body: payload.notification.body,
-            icon: "/icon.png",
+            // Antes apuntaba a /icon.png, que nunca existio: las notificaciones
+            // salian con el icono generico del navegador.
+            icon: "/icons/icon-192.png",
           });
         }
       });

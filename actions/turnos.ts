@@ -1,8 +1,7 @@
 "use server";
 
-import type { Prisma } from "@/lib/generated/prisma/client";
 
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma, type TxAuditado } from "@/lib/prisma";
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
 import { isComplejoFeatureEnabled } from "@/actions/complejo-features";
 import { haySolapamiento } from "@/lib/horarios";
@@ -311,7 +310,7 @@ type ConflictoDetalle = { descripcion: string };
  * forma de cubrir el solapamiento en MySQL (no hay indice que lo exprese).
  */
 async function buscarConflictos(
-  tx: Prisma.TransactionClient,
+  tx: TxAuditado,
   canchaId: number,
   inicio: Date,
   fin: Date,
@@ -503,7 +502,7 @@ export async function crearTurno(
   }
 
   try {
-    return await prisma.$transaction(async (tx) => {
+    return await enTransaccion(async (tx) => {
       const conflictosPrimera = await buscarConflictos(
         tx,
         payload.canchaId,
@@ -641,7 +640,7 @@ export async function cancelarTurno(
     };
   }
 
-  await prisma.$transaction(async (tx) => {
+  await enTransaccion(async (tx) => {
     if (alcance === "SIGUIENTES" && slot.serieId) {
       // Cortar la serie: se le pone fin el dia anterior a esta ocurrencia para
       // que el cron no la vuelva a extender, y se borran las futuras.

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import {
   borrarArchivos,
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
 
   const archivos = await guardarArchivos(userId, { imagen, avatar });
 
-  const creada = await prisma.$transaction(async (tx) => {
+  const creada = await enTransaccion(async (tx) => {
     if (anterior) {
       await tx.imagenPerfil.delete({ where: { id: anterior.id } });
     }

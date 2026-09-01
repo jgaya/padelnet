@@ -1,7 +1,10 @@
 "use server";
 
 import { ensureComplejoManagerAccess } from "@/lib/complejo-access";
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma } from "@/lib/prisma";
+import { procesarEventos } from "@/lib/logros";
+import type { EventoJuego } from "@/lib/logros-catalogo";
+import { getPublicComplejoRanking } from "@/actions/complejos-public";
 import {
   POSICION_CAMPEON,
   POSICION_ZONA,
@@ -281,13 +284,17 @@ export async function aplicarRankingTorneo(
 
     // Recalcular y reemplazar: corregir un resultado y volver a finalizar deja
     // los puntos correctos, sin duplicar.
-    await prisma.$transaction(async (tx) => {
+    await enTransaccion(async (tx) => {
       await tx.ranking.deleteMany({ where: { torneoId } });
 
       if (filas.length > 0) {
         await tx.ranking.createMany({ data: filas, skipDuplicates: true });
       }
     });
+
+    // Logros de ranking. Va despues de escribir: la posicion se lee de la
+    // tabla ya actualizada. Que falle no puede voltear el ranking.
+    await procesarEventos(await eventosDeRanking(torneoId));
 
     return { success: true, rankingsCreados: filas.length };
   } catch (error) {
@@ -300,4 +307,83 @@ export async function aplicarRankingTorneo(
         error instanceof Error ? error.message : "Error al aplicar el ranking",
     };
   }
+}
+
+/**
+ * Logros de "entraste al top N".
+ *
+ * La tabla de ranking de este proyecto es por complejo, sexo y categoria, asi
+ * que "top 10" quiere decir dentro de la tabla que le corresponde al jugador.
+ * Se reusa `getPublicComplejoRanking`, que es la que arma esa tabla para la
+ * pagina publica: calcular la posicion por otro camino se desincronizaria del
+ * numero que el jugador ve.
+ */
+async function eventosDeRanking(torneoId: number): Promise<EventoJuego[]> {
+  const torneo = await prisma.torneo.findFirst({
+    where: { id: torneoId },
+    select: { evento: { select: { complejoId: true } } },
+  });
+
+  if (!torneo) return [];
+
+  const complejoId = torneo.evento.complejoId;
+
+  const rankeados = await prisma.ranking.findMany({
+    where: { torneoId, deletedAt: null },
+    select: {
+      jugadorId: true,
+      jugador: { select: { genero: true, categoria: true } },
+    },
+  });
+
+  if (!rankeados.length) return [];
+
+  const perfiles = await prisma.perfilJugadorComplejo.findMany({
+    where: {
+      complejoId,
+      userId: { in: rankeados.map((fila) => fila.jugadorId) },
+    },
+    select: { userId: true, categoria: true },
+  });
+
+  const categoriaDelClub = new Map(
+    perfiles.map((perfil) => [perfil.userId, perfil.categoria]),
+  );
+
+  // Una consulta por combinacion sexo+categoria, no una por jugador: un torneo
+  // suele tener una sola.
+  const combinaciones = new Map<string, { sexo: string; categoria: string }>();
+
+  for (const fila of rankeados) {
+    const sexo = fila.jugador.genero;
+    if (sexo !== "M" && sexo !== "F") continue;
+
+    const categoria =
+      categoriaDelClub.get(fila.jugadorId) ?? fila.jugador.categoria;
+    if (!categoria) continue;
+
+    combinaciones.set(`${sexo}-${categoria}`, { sexo, categoria });
+  }
+
+  const eventos: EventoJuego[] = [];
+  const participantes = new Set(rankeados.map((fila) => fila.jugadorId));
+
+  for (const { sexo, categoria } of combinaciones.values()) {
+    const tabla = await getPublicComplejoRanking(complejoId, {
+      sexo,
+      categoria,
+    });
+
+    tabla.filas.forEach((fila, indice) => {
+      // Solo quienes jugaron este torneo: el resto no cambio de puesto por esto.
+      if (!participantes.has(fila.jugadorId)) return;
+      eventos.push({
+        tipo: "RANKING_ACTUALIZADO",
+        userId: fila.jugadorId,
+        puesto: indice + 1,
+      });
+    });
+  }
+
+  return eventos;
 }

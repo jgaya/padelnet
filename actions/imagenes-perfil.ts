@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { assertSuperadmin } from "@/lib/authz";
-import { prisma } from "@/lib/prisma";
+import { enTransaccion, prisma } from "@/lib/prisma";
 import { borrarArchivos } from "@/lib/imagenes-perfil";
 import { urlDeImagen } from "@/lib/imagenes-perfil-rutas";
 import type { ImagenPerfilEstado } from "@/lib/generated/prisma/client";
@@ -138,7 +138,7 @@ export async function aprobarImagen(imagenId: number) {
     select: { id: true, archivoImagen: true, archivoAvatar: true },
   });
 
-  await prisma.$transaction(async (tx) => {
+  await enTransaccion(async (tx) => {
     await tx.imagenPerfil.update({
       where: { id: imagen.id },
       data: {
