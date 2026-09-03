@@ -108,8 +108,7 @@ export default function LoginPage() {
     <>
       {recaptchaSiteKey ? (
         <Script
-          src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`}
-          strategy="afterInteractive"
+          src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`}
         />
       ) : null}
 
