@@ -13,16 +13,16 @@ import {
 } from "@/app/components/FormBase";
 import { login } from "@/actions/auth";
 import GoogleButton from "@/app/components/GoogleButton";
+import { ACCION_LOGIN } from "@/lib/recaptcha-acciones";
 import { LoginSchema, type LoginFormData } from "@/types/forms";
 
 declare global {
   interface Window {
     grecaptcha?: {
-      ready: (callback: () => void) => void;
-      execute: (
-        siteKey: string,
-        options: { action: string },
-      ) => Promise<string>;
+      enterprise: {
+        ready: (callback: () => void) => void;
+        execute: (siteKey: string, options: { action: string }) => Promise<string>;
+      };
     };
   }
 }
@@ -57,10 +57,10 @@ export default function LoginPage() {
     }
 
     return new Promise<string>((resolve, reject) => {
-      window.grecaptcha?.ready(async () => {
+      window.grecaptcha?.enterprise.ready(async () => {
         try {
-          const token = await window.grecaptcha?.execute(recaptchaSiteKey, {
-            action: "login",
+          const token = await window.grecaptcha?.enterprise.execute(recaptchaSiteKey, {
+            action: ACCION_LOGIN,
           });
 
           if (!token) {

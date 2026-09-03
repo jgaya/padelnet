@@ -1,16 +1,14 @@
 import "server-only";
 
 /**
- * Verificacion de reCAPTCHA v3.
+ * Verificacion de reCAPTCHA Enterprise.
  *
  * Existe porque los formularios publicos que disparan un mail son el blanco
  * clasico de los bots: sin esto, "Sumar mi complejo" se convierte en un caño
  * para llenar de spam la casilla de los administradores.
  *
- * `actions/auth.ts` tiene su propia copia de esta logica, escrita antes y con
- * la accion "login" fija. Cuando haya que tocar el login conviene que pase por
- * aca; no se migro junto con esto para no meter mano en el circuito de
- * autenticacion por un formulario de contacto.
+ * Tanto el login como el formulario de solicitud usan esta misma validacion
+ * para que el protocolo y las reglas de seguridad sean consistentes.
  */
 
 export type ResultadoRecaptcha = { ok: true } | { ok: false; error: string };
@@ -18,15 +16,27 @@ export type ResultadoRecaptcha = { ok: true } | { ok: false; error: string };
 /** Debajo de esto Google considera que probablemente sea un bot. */
 const SCORE_MINIMO = 0.5;
 
+type AssessmentResponse = {
+  tokenProperties?: {
+    valid?: boolean;
+    invalidReason?: string;
+    action?: string;
+  };
+  riskAnalysis?: {
+    score?: number;
+  };
+};
+
 export async function verificarRecaptcha(
   token: string | undefined,
   accionEsperada: string,
 ): Promise<ResultadoRecaptcha> {
-  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  const apiKey = process.env.RECAPTCHA_API_KEY;
+  const projectId = process.env.RECAPTCHA_PROJECT_ID;
 
-  // Sin secreto configurado no se bloquea nada: es el mismo criterio que el
+  // Sin credenciales configuradas no se bloquea nada: es el mismo criterio que el
   // login, y permite trabajar en dev sin claves de Google.
-  if (!secret) {
+  if (!apiKey || !projectId) {
     return { ok: true };
   }
 
@@ -35,24 +45,38 @@ export async function verificarRecaptcha(
   }
 
   try {
-    const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+    const res = await fetch(
+      `https://recaptchaenterprise.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/assessments?key=${encodeURIComponent(apiKey)}`,
+      {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ secret, response: token }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: {
+          token,
+          siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+          expectedAction: accionEsperada,
+        },
+      }),
       cache: "no-store",
-    });
+      },
+    );
 
-    const data: { success?: boolean; action?: string; score?: number } =
-      await res.json();
+    const data: AssessmentResponse = await res.json();
+    const tokenProperties = data.tokenProperties;
+    const score = data.riskAnalysis?.score;
 
     // La accion se compara a proposito: un token sacado de otro formulario del
     // mismo sitio es valido para Google pero no sirve para este.
     if (
-      !data.success ||
-      data.action !== accionEsperada ||
-      (typeof data.score === "number" && data.score < SCORE_MINIMO)
+      !res.ok ||
+      !tokenProperties?.valid ||
+      tokenProperties.action !== accionEsperada ||
+      (typeof score === "number" && score < SCORE_MINIMO)
     ) {
-      console.warn("[recaptcha] verificacion fallida", data);
+      console.warn("[recaptcha] verificacion fallida", {
+        tokenProperties,
+        riskAnalysis: data.riskAnalysis,
+      });
       return { ok: false, error: "Validacion de seguridad fallida" };
     }
 

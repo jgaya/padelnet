@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma";
 import { enviarConfirmacionDeRegistro } from "@/actions/email";
 import { createSession, decrypt, deleteSession } from "@/lib/session";
 import { normalizarProvincia } from "@/lib/ubicaciones";
+import { verificarRecaptcha } from "@/lib/recaptcha";
+import { ACCION_LOGIN } from "@/lib/recaptcha-acciones";
 
 export type LoginInput = {
   email: string;
@@ -38,53 +40,6 @@ export type RegisterResult = {
   error?: string;
 };
 
-async function verifyRecaptchaToken(recaptchaToken?: string) {
-  const secret = process.env.RECAPTCHA_SECRET_KEY;
-
-  // Si no existe secreto configurado, no bloqueamos el login.
-  if (!secret) {
-    return { ok: true };
-  }
-
-  if (!recaptchaToken) {
-    return { ok: false, error: "reCAPTCHA requerido" };
-  }
-
-  try {
-    const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        secret,
-        response: recaptchaToken,
-      }),
-      cache: "no-store",
-    });
-
-    const dataCaptcha: {
-      success?: boolean;
-      action?: string;
-      score?: number;
-    } = await res.json();
-
-    if (
-      !dataCaptcha.success ||
-      dataCaptcha.action !== "login" ||
-      (typeof dataCaptcha.score === "number" && dataCaptcha.score < 0.5)
-    ) {
-      console.warn("reCAPTCHA failed:", dataCaptcha);
-      return { ok: false, error: "Validacion de seguridad fallida" };
-    }
-
-    return { ok: true };
-  } catch (error) {
-    console.error("reCAPTCHA verify error:", error);
-    return { ok: false, error: "No se pudo validar reCAPTCHA" };
-  }
-}
-
 function parseBirthDate(value: string) {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) {
@@ -99,7 +54,10 @@ export async function login(input: LoginInput): Promise<LoginResult> {
   const password = input.password;
 
   try {
-    const captchaResult = await verifyRecaptchaToken(input.recaptchaToken);
+    const captchaResult = await verificarRecaptcha(
+      input.recaptchaToken,
+      ACCION_LOGIN,
+    );
     if (!captchaResult.ok) {
       return { success: false, error: captchaResult.error };
     }

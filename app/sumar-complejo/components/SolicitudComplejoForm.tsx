@@ -16,11 +16,10 @@ import { enviarSolicitudComplejo } from "@/actions/solicitud-complejo";
 declare global {
   interface Window {
     grecaptcha?: {
-      ready: (cb: () => void) => void;
-      execute: (
-        siteKey: string,
-        options: { action: string },
-      ) => Promise<string>;
+      enterprise: {
+        ready: (cb: () => void) => void;
+        execute: (siteKey: string, options: { action: string }) => Promise<string>;
+      };
     };
   }
 }
@@ -72,10 +71,10 @@ export default function SolicitudComplejoForm() {
     if (!window.grecaptcha) return undefined;
 
     return new Promise<string | undefined>((resolve) => {
-      window.grecaptcha?.ready(async () => {
+      window.grecaptcha?.enterprise.ready(async () => {
         try {
           resolve(
-            await window.grecaptcha?.execute(recaptchaSiteKey, {
+            await window.grecaptcha?.enterprise.execute(recaptchaSiteKey, {
               action: ACCION_SOLICITUD_COMPLEJO,
             }),
           );
@@ -133,8 +132,7 @@ export default function SolicitudComplejoForm() {
     <>
       {recaptchaSiteKey ? (
         <Script
-          src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`}
-          strategy="afterInteractive"
+          src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`}
         />
       ) : null}
 
