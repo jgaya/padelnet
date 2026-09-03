@@ -17,6 +17,11 @@ export type ResultadoRecaptcha = { ok: true } | { ok: false; error: string };
 const SCORE_MINIMO = 0.5;
 
 type AssessmentResponse = {
+  error?: {
+    code?: number;
+    message?: string;
+    status?: string;
+  };
   tokenProperties?: {
     valid?: boolean;
     invalidReason?: string;
@@ -49,15 +54,15 @@ export async function verificarRecaptcha(
       `https://recaptchaenterprise.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/assessments?key=${encodeURIComponent(apiKey)}`,
       {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        event: {
-          token,
-          siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
-          expectedAction: accionEsperada,
-        },
-      }),
-      cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event: {
+            token,
+            siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+            expectedAction: accionEsperada,
+          },
+        }),
+        cache: "no-store",
       },
     );
 
@@ -67,8 +72,15 @@ export async function verificarRecaptcha(
 
     // La accion se compara a proposito: un token sacado de otro formulario del
     // mismo sitio es valido para Google pero no sirve para este.
+    if (!res.ok) {
+      console.error("[recaptcha] error de Enterprise", {
+        status: res.status,
+        error: data.error,
+      });
+      return { ok: false, error: "No se pudo validar reCAPTCHA" };
+    }
+
     if (
-      !res.ok ||
       !tokenProperties?.valid ||
       tokenProperties.action !== accionEsperada ||
       (typeof score === "number" && score < SCORE_MINIMO)
