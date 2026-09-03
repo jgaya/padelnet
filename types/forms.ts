@@ -16,6 +16,10 @@ import {
   TournamentSexoSchema,
   TournamentStatusSchema,
 } from "@/types/db";
+import {
+  fechaNacimientoEnRango,
+  MENSAJE_FECHA_NACIMIENTO,
+} from "@/lib/fecha-nacimiento";
 
 const urlOrPathSchema = z
   .string()
@@ -76,7 +80,7 @@ export const LoginSchema = z.object({
     .string()
     .min(1, "El email es obligatorio")
     .email("Ingrese un email valido"),
-  password: z.string().min(6, "La contrasena debe tener al menos 6 caracteres"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   remember: z.boolean().optional(),
 });
 
@@ -101,14 +105,15 @@ export const RegisterSchema = z
     birthDate: z
       .string()
       .trim()
-      .min(1, "La fecha de nacimiento es obligatoria"),
+      .min(1, "La fecha de nacimiento es obligatoria")
+      .refine(fechaNacimientoEnRango, MENSAJE_FECHA_NACIMIENTO),
     categoria: z.string().trim().min(1, "La categoria es obligatoria"),
     provincia: z.string().trim().max(80).optional(),
     localidad: z.string().trim().max(80).optional(),
     genero: GeneroSchema,
     password: z
       .string()
-      .min(6, "La contrasena debe tener al menos 6 caracteres"),
+      .min(6, "La contraseña debe tener al menos 6 caracteres"),
     confirmPassword: z
       .string()
       .min(6, "La confirmacion debe tener al menos 6 caracteres"),
@@ -122,13 +127,6 @@ export const RegisterSchema = z
       });
     }
 
-    if (Number.isNaN(new Date(data.birthDate).getTime())) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["birthDate"],
-        message: "Fecha de nacimiento invalida",
-      });
-    }
   });
 
 export type RegisterFormData = z.infer<typeof RegisterSchema>;
@@ -144,10 +142,7 @@ export const CompletarPerfilSchema = z
       .string()
       .trim()
       .min(1, "La fecha de nacimiento es obligatoria")
-      .refine(
-        (value) => !Number.isNaN(new Date(value).getTime()),
-        "Fecha de nacimiento invalida",
-      ),
+      .refine(fechaNacimientoEnRango, MENSAJE_FECHA_NACIMIENTO),
     categoria: z.string().trim().min(1, "La categoria es obligatoria"),
     genero: GeneroSchema,
     provincia: z.string().trim().max(80).optional(),
@@ -423,7 +418,7 @@ export const UsuarioFormSchema = z
       .email("Ingrese un email valido"),
     password: z
       .string()
-      .min(6, "La contrasena debe tener al menos 6 caracteres")
+      .min(6, "La contraseña debe tener al menos 6 caracteres")
       .or(z.literal(""))
       .optional(),
     telefono: z.string().trim().optional(),
@@ -446,11 +441,11 @@ export const UsuarioFormSchema = z
   .superRefine((data, ctx) => {
     // Que este cargada no alcanza: tiene que ser una fecha real. El input es
     // type="date" pero el valor tambien puede venir de initialData.
-    if (data.birthDate && Number.isNaN(new Date(data.birthDate).getTime())) {
+    if (data.birthDate && !fechaNacimientoEnRango(data.birthDate)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["birthDate"],
-        message: "Fecha de nacimiento invalida",
+        message: MENSAJE_FECHA_NACIMIENTO,
       });
     }
 
@@ -493,7 +488,13 @@ export const PerfilFormSchema = z.object({
   genero: GeneroSchema,
   provincia: z.string().trim().max(80).optional(),
   localidad: z.string().trim().max(80).optional(),
-  birthDate: z.string().optional(),
+  birthDate: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value || fechaNacimientoEnRango(value),
+      MENSAJE_FECHA_NACIMIENTO,
+    ),
   // La foto NO es un campo del formulario. La sube AvatarCropper contra
   // /api/perfil/avatar, queda PENDIENTE y solo la publica el superadmin al
   // aprobarla. Cuando viajaba aca, el usuario podia mandar el avatarUrl que
@@ -506,6 +507,8 @@ export type FormInputProps = {
   label: string;
   type?: string;
   placeholder?: string;
+  min?: string | number;
+  max?: string | number;
   register: UseFormRegisterReturn;
   error?: FieldError;
   required?: boolean;
@@ -564,7 +567,7 @@ export const NuevaPasswordFormSchema = z
   .object({
     password: z
       .string()
-      .min(6, "La contrasena debe tener al menos 6 caracteres"),
+      .min(6, "La contraseña debe tener al menos 6 caracteres"),
     password2: z.string(),
   })
   .refine((data) => data.password === data.password2, {

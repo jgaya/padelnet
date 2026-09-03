@@ -66,7 +66,7 @@ export function nombreDesdeClaims(claims: ClaimsGoogle): {
  * El caso interesante es la cuenta existente **sin el mail verificado**: como
  * nunca se probo que ese mail fuera suyo, pudo haberla creado cualquiera con el
  * mail de otro. Google si prueba la titularidad, asi que se vincula, pero se
- * anula la contrasena previa para que quien la haya creado deje de entrar a una
+ * anula la contraseña previa para que quien la haya creado deje de entrar a una
  * cuenta que no es suya. El dueno se fija una nueva por /recuperar.
  */
 export function decidirVinculacion(

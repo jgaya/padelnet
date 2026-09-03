@@ -10,6 +10,7 @@ import { createSession, decrypt, deleteSession } from "@/lib/session";
 import { normalizarProvincia } from "@/lib/ubicaciones";
 import { verificarRecaptcha } from "@/lib/recaptcha";
 import { ACCION_LOGIN } from "@/lib/recaptcha-acciones";
+import { fechaNacimientoEnRango } from "@/lib/fecha-nacimiento";
 
 export type LoginInput = {
   email: string;
@@ -41,6 +42,10 @@ export type RegisterResult = {
 };
 
 function parseBirthDate(value: string) {
+  if (!fechaNacimientoEnRango(value)) {
+    return null;
+  }
+
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) {
     return null;
@@ -82,12 +87,12 @@ export async function login(input: LoginInput): Promise<LoginResult> {
     });
 
     if (!user || !user.passwordHash || user.deletedAt || !user.isActive) {
-      return { success: false, error: "Usuario o contrasena incorrectos" };
+      return { success: false, error: "Usuario o contraseña incorrectos" };
     }
 
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) {
-      return { success: false, error: "Usuario o contrasena incorrectos" };
+      return { success: false, error: "Usuario o contraseña incorrectos" };
     }
 
     // No se calcula ningun rol global: el rol dentro de cada complejo se
@@ -156,7 +161,7 @@ export async function registerUser(
   if (password.length < 6) {
     return {
       success: false,
-      error: "La contrasena debe tener al menos 6 caracteres",
+      error: "La contraseña debe tener al menos 6 caracteres",
     };
   }
 

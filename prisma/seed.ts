@@ -672,7 +672,7 @@ async function main() {
 
   console.log("Seed completado correctamente.");
   console.log("");
-  console.log("Contrasena de todos los usuarios: Padel1234!");
+  console.log("Contraseña de todos los usuarios: Padel1234!");
   console.log("");
   console.log("Plataforma:");
   console.log(" - superadmin@padelnet.local  SUPERADMIN");

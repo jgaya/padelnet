@@ -228,10 +228,10 @@ rol `fiscal`, que no existe (§1), la feature está a medio hacer.
 > `lib/email.ts`. Si faltan `RESEND_API_KEY` / `EMAIL_FROM` no se rompe nada: se
 > loguea el link y se sigue, para poder probar el circuito en dev.
 >
-> Sobre la misma infraestructura se sumo la **recuperacion de contrasena**:
+> Sobre la misma infraestructura se sumo la **recuperacion de contraseña**:
 > `/recuperar` pide el link y `/recuperar/nueva` lo usa, con el acceso desde el
 > login. `EmailVerification.purpose` separa los dos tipos de token, para que un
-> link de verificacion no sirva para cambiar la contrasena ni al reves.
+> link de verificacion no sirva para cambiar la contraseña ni al reves.
 
 ### 4.5 Columnas denormalizadas que nadie escribe
 

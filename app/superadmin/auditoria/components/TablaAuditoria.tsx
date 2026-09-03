@@ -138,6 +138,7 @@ export default function TablaAuditoria({ tablas }: { tablas: string[] }) {
             <span className="text-xs font-semibold text-content/70">Desde</span>
             <input
               type="date"
+              lang="es-AR"
               className="padel-form-input"
               value={desde}
               onChange={(e) => filtrar("desde", e.target.value)}
@@ -148,6 +149,7 @@ export default function TablaAuditoria({ tablas }: { tablas: string[] }) {
             <span className="text-xs font-semibold text-content/70">Hasta</span>
             <input
               type="date"
+              lang="es-AR"
               className="padel-form-input"
               value={hasta}
               onChange={(e) => filtrar("hasta", e.target.value)}

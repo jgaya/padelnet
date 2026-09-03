@@ -108,20 +108,20 @@ export async function enviarMailConfirmacion(params: {
 function plantillaRecuperacion(nombre: string, url: string) {
   return `
     <div style="font-family: system-ui, sans-serif; max-width: 520px; margin: 0 auto; color: #14181f;">
-      <h1 style="font-size: 20px;">Hola ${nombre}, recupera tu contrasena</h1>
+      <h1 style="font-size: 20px;">Hola ${nombre}, recupera tu contraseña</h1>
       <p style="font-size: 15px; line-height: 1.5;">
-        Pediste cambiar tu contrasena. Entra al link y elegi una nueva.
+        Pediste cambiar tu contraseña. Entra al link y elegi una nueva.
       </p>
       <p style="margin: 28px 0;">
         <a href="${url}"
            style="background: #00c853; color: #14181f; text-decoration: none;
                   padding: 12px 22px; border-radius: 999px; font-weight: 600;">
-          Cambiar mi contrasena
+          Cambiar mi contraseña
         </a>
       </p>
       <p style="font-size: 13px; color: #5b6472;">
         El link vence en 24 horas y se puede usar una sola vez.
-        <strong>Si no lo pediste vos, ignora este mensaje</strong>: tu contrasena
+        <strong>Si no lo pediste vos, ignora este mensaje</strong>: tu contraseña
         actual sigue funcionando.
       </p>
       <p style="font-size: 12px; color: #8c95a3; word-break: break-all;">${url}</p>
@@ -150,7 +150,7 @@ export async function enviarMailRecuperacion(params: {
     await resend.emails.send({
       from,
       to: params.email,
-      subject: "Recupera tu contrasena - PadelNet",
+      subject: "Recupera tu contraseña - PadelNet",
       html: plantillaRecuperacion(params.nombre, url),
     });
 

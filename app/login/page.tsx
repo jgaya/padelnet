@@ -159,8 +159,8 @@ export default function LoginPage() {
               />
 
               <FormPassword
-                label="Contrasena"
-                placeholder="Ingresa tu contrasena"
+                label="Contraseña"
+                placeholder="Ingresa tu contraseña"
                 register={register("password")}
                 error={errors.password}
                 required
@@ -196,7 +196,7 @@ export default function LoginPage() {
                 href="/recuperar"
                 className="font-semibold text-content/70 transition hover:text-padel-green"
               >
-                Olvidaste tu contrasena?
+                Olvidaste tu contraseña?
               </Link>
             </div>
 

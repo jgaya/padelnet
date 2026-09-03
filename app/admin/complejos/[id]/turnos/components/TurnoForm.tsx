@@ -130,6 +130,7 @@ export default function TurnoForm({
             <span className="font-medium text-content/70">Fecha</span>
             <input
               type="date"
+              lang="es-AR"
               className="rounded-lg border border-content/20 px-2 py-1.5"
               value={fecha}
               onChange={(event) => setFecha(event.target.value)}

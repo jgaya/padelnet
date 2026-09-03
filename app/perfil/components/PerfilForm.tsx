@@ -19,6 +19,7 @@ import {
   type PerfilData,
   type PerfilPayload,
 } from "@/actions/perfil";
+import { limitesInputFechaNacimiento } from "@/lib/fecha-nacimiento";
 import { PerfilFormSchema, type PerfilFormData } from "@/types/forms";
 import AvatarCropper from "./AvatarCropper";
 
@@ -157,6 +158,7 @@ export default function PerfilForm({ initialData }: PerfilFormProps) {
           <FormInput
             label="Fecha de nacimiento"
             type="date"
+            {...limitesInputFechaNacimiento()}
             register={register("birthDate")}
             error={errors.birthDate}
           />

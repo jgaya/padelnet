@@ -39,7 +39,7 @@ export default function RecuperarPage() {
       <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
         <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-6 py-6">
           <h1 className="text-2xl font-semibold text-content">
-            Recuperar contrasena
+            Recuperar contraseña
           </h1>
           <p className="mt-2 text-sm text-content/70">
             Ingresa tu email y te mandamos un link para elegir una nueva.

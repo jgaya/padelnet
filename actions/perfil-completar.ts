@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { createSession, getSession } from "@/lib/session";
 import { perfilCompleto } from "@/lib/google-cuenta";
 import { normalizarProvincia } from "@/lib/ubicaciones";
+import { fechaNacimientoEnRango } from "@/lib/fecha-nacimiento";
 
 export type CompletarPerfilInput = {
   dni: string;
@@ -52,10 +53,11 @@ export async function completarPerfil(
     return { success: false, error: "Elegi una opcion de genero" };
   }
 
-  const birthDate = new Date(input.birthDate?.trim() ?? "");
-  if (Number.isNaN(birthDate.getTime())) {
+  const birthDateValue = input.birthDate?.trim() ?? "";
+  if (!fechaNacimientoEnRango(birthDateValue)) {
     return { success: false, error: "Fecha de nacimiento invalida" };
   }
+  const birthDate = new Date(birthDateValue);
 
   try {
     const user = await prisma.user.update({

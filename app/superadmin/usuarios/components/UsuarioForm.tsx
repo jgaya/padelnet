@@ -22,6 +22,7 @@ import {
 import UbicacionFields, {
   type UbicacionValue,
 } from "@/app/components/UbicacionFields";
+import { limitesInputFechaNacimiento } from "@/lib/fecha-nacimiento";
 import { UsuarioFormSchema, type UsuarioFormData } from "@/types/forms";
 
 export type UsuarioFormProps = {
@@ -152,7 +153,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
 
     try {
       if (!isEdit && !data.password) {
-        throw new Error("La contrasena es obligatoria para crear usuario");
+        throw new Error("La contraseña es obligatoria para crear usuario");
       }
 
       const payload: UsuarioPayload = {
@@ -232,7 +233,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
             required
           />
           <FormInput
-            label={isEdit ? "Contrasena (opcional)" : "Contrasena"}
+            label={isEdit ? "Contraseña (opcional)" : "Contraseña"}
             type="password"
             placeholder={
               isEdit ? "Completar solo para cambiarla" : "Minimo 6 caracteres"
@@ -349,6 +350,7 @@ export default function UsuarioForm({ initialData, isEdit }: UsuarioFormProps) {
           <FormInput
             label="Fecha de nacimiento"
             type="date"
+            {...limitesInputFechaNacimiento()}
             register={register("birthDate")}
             error={errors.birthDate}
             required

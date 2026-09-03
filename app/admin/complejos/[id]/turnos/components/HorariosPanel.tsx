@@ -254,6 +254,7 @@ export default function HorariosPanel({
                 <span className="text-content/70">Fecha</span>
                 <input
                   type="date"
+                  lang="es-AR"
                   className="rounded border border-content/20 px-2 py-1"
                   value={excFecha}
                   onChange={(event) => setExcFecha(event.target.value)}

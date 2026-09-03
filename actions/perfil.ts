@@ -8,6 +8,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { createSession, getSession } from "@/lib/session";
 import { normalizarProvincia } from "@/lib/ubicaciones";
+import { fechaNacimientoEnRango } from "@/lib/fecha-nacimiento";
 import { urlDeImagen } from "@/lib/imagenes-perfil-rutas";
 
 export type PerfilPayload = {
@@ -37,7 +38,7 @@ function parseBirthDate(value?: string | null): Date | null {
   if (!date) return null;
 
   const parsed = new Date(date);
-  if (Number.isNaN(parsed.getTime())) {
+  if (!fechaNacimientoEnRango(date) || Number.isNaN(parsed.getTime())) {
     throw new Error("Fecha de nacimiento invalida");
   }
 

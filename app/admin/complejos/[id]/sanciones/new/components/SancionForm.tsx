@@ -225,6 +225,7 @@ export default function SancionForm({ complejoId }: { complejoId: number }) {
             <input
               id="desde"
               type="date"
+              lang="es-AR"
               className="padel-form-input"
               value={desde}
               onChange={(event) => setDesde(event.target.value)}
@@ -238,6 +239,7 @@ export default function SancionForm({ complejoId }: { complejoId: number }) {
             <input
               id="hasta"
               type="date"
+              lang="es-AR"
               className="padel-form-input"
               value={hasta}
               min={desde || undefined}

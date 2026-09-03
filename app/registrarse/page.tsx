@@ -12,6 +12,7 @@ import UbicacionFields, {
   type UbicacionValue,
 } from "@/app/components/UbicacionFields";
 import { CATEGORIA_OPTIONS } from "@/lib/categorias";
+import { limitesInputFechaNacimiento } from "@/lib/fecha-nacimiento";
 import { RegisterSchema, type RegisterFormData } from "@/types/forms";
 
 const generoOptions = [
@@ -163,6 +164,7 @@ export default function RegistrarsePage() {
               <FormInput
                 label="Fecha de nacimiento"
                 type="date"
+                {...limitesInputFechaNacimiento()}
                 register={register("birthDate")}
                 error={errors.birthDate}
                 required
@@ -194,7 +196,7 @@ export default function RegistrarsePage() {
             />
 
             <FormPassword
-              label="Contrasena"
+              label="Contraseña"
               placeholder="Minimo 6 caracteres"
               register={register("password")}
               error={errors.password}
@@ -202,8 +204,8 @@ export default function RegistrarsePage() {
             />
 
             <FormPassword
-              label="Confirmar contrasena"
-              placeholder="Repite tu contrasena"
+              label="Confirmar contraseña"
+              placeholder="Repite tu contraseña"
               register={register("confirmPassword")}
               error={errors.confirmPassword}
               required

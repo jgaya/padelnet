@@ -26,10 +26,21 @@ export function FormInput({
   label,
   type = "text",
   placeholder,
+  min,
+  max,
   register,
   error,
   required = false,
 }: FormInputProps) {
+  const acceptsLimits = type === "date" || type === "number";
+  const validLimit = (value: string | number | undefined) => {
+    if (value === undefined || value === "") return undefined;
+    if (type === "number") {
+      return Number.isFinite(Number(value)) ? value : undefined;
+    }
+    return /^\d{4}-\d{2}-\d{2}$/.test(String(value)) ? value : undefined;
+  };
+
   return (
     <div className="mb-3">
       <label className="padel-form-label">
@@ -37,6 +48,9 @@ export function FormInput({
       </label>
       <input
         type={type}
+        lang={type === "date" ? "es-AR" : undefined}
+        min={acceptsLimits ? validLimit(min) : undefined}
+        max={acceptsLimits ? validLimit(max) : undefined}
         className={`padel-form-input ${error ? "is-invalid" : ""}`}
         placeholder={placeholder}
         {...register}
@@ -413,8 +427,8 @@ export function FormPassword({
           type="button"
           onClick={() => setShowPass(!showPass)}
           className="show-password padel-password-toggle"
-          aria-label={showPass ? "Ocultar contrasena" : "Mostrar contrasena"}
-          title={showPass ? "Ocultar contrasena" : "Mostrar contrasena"}
+          aria-label={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
+          title={showPass ? "Ocultar contraseña" : "Mostrar contraseña"}
           aria-pressed={showPass}
         >
           {showPass ? <EyeClosedIcon /> : <EyeOpenIcon />}

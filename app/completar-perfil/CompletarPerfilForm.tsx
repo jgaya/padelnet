@@ -11,6 +11,7 @@ import UbicacionFields, {
 } from "@/app/components/UbicacionFields";
 import { completarPerfil } from "@/actions/perfil-completar";
 import { CATEGORIA_OPTIONS } from "@/lib/categorias";
+import { limitesInputFechaNacimiento } from "@/lib/fecha-nacimiento";
 import {
   CompletarPerfilSchema,
   type CompletarPerfilFormData,
@@ -103,6 +104,7 @@ export default function CompletarPerfilForm() {
         <FormInput
           label="Fecha de nacimiento"
           type="date"
+            {...limitesInputFechaNacimiento()}
           register={register("birthDate")}
           error={errors.birthDate}
           required

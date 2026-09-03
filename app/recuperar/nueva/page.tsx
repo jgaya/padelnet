@@ -5,12 +5,12 @@ import { verificarTokenRecuperacion } from "@/actions/email";
 import NuevaPasswordForm from "./components/NuevaPasswordForm";
 
 /**
- * Elegir una contrasena nueva desde el link del mail.
+ * Elegir una contraseña nueva desde el link del mail.
  *
  * El token se chequea aca solo para decidir que mostrar, **sin consumirlo**: si
  * se gastara al abrir la pagina, recargar dejaria a la persona afuera. El que
  * valida y consume de verdad es `restablecerPassword`, en la misma operacion en
- * la que cambia la contrasena.
+ * la que cambia la contraseña.
  */
 export const dynamic = "force-dynamic";
 
@@ -77,7 +77,7 @@ export default async function NuevaPasswordPage(props: {
       <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
         <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-6 py-6">
           <h1 className="text-2xl font-semibold text-content">
-            Elegi tu nueva contrasena
+            Elegi tu nueva contraseña
           </h1>
           <p className="mt-2 text-sm text-content/70">
             Tiene que tener al menos 6 caracteres.

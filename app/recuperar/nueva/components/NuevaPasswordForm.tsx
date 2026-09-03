@@ -16,8 +16,8 @@ const MOTIVOS: Record<string, string> = {
   SIN_TOKEN: "Falta el token: abri el link desde el mail.",
   INVALIDO:
     "Este link ya no sirve. Puede que ya lo hayas usado o que hayas pedido uno mas nuevo.",
-  VENCIDO: "El link vencio. Pedi uno nuevo desde recuperar contrasena.",
-  PASSWORD_CORTA: "La contrasena debe tener al menos 6 caracteres.",
+  VENCIDO: "El link vencio. Pedi uno nuevo desde recuperar contraseña.",
+  PASSWORD_CORTA: "La contraseña debe tener al menos 6 caracteres.",
   ERROR: "Hubo un problema de nuestro lado. Proba de nuevo en un momento.",
 };
 
@@ -46,14 +46,14 @@ export default function NuevaPasswordForm({ token }: { token: string }) {
       return;
     }
 
-    showSnackbar("Contrasena cambiada. Ya podes ingresar", "success");
+    showSnackbar("Contraseña cambiada. Ya podes ingresar", "success");
     router.push("/login");
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
       <label className="block text-sm font-medium text-content/80">
-        Nueva contrasena
+        Nueva contraseña
         <input
           type="password"
           autoComplete="new-password"
@@ -68,7 +68,7 @@ export default function NuevaPasswordForm({ token }: { token: string }) {
       </label>
 
       <label className="block text-sm font-medium text-content/80">
-        Repetir la contrasena
+        Repetir la contraseña
         <input
           type="password"
           autoComplete="new-password"
@@ -93,7 +93,7 @@ export default function NuevaPasswordForm({ token }: { token: string }) {
         disabled={isSubmitting}
         className="w-full rounded-full bg-padel-green px-5 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isSubmitting ? "Cambiando..." : "Cambiar contrasena"}
+        {isSubmitting ? "Cambiando..." : "Cambiar contraseña"}
       </button>
     </form>
   );

@@ -107,7 +107,7 @@ export async function confirmarEmail(
       },
     });
 
-    // Un token de reset de contrasena no sirve para confirmar el mail.
+    // Un token de reset de contraseña no sirve para confirmar el mail.
     if (!registro || registro.purpose !== "VERIFICACION") {
       return { success: false, motivo: "INVALIDO" };
     }
@@ -180,7 +180,7 @@ export async function reenviarConfirmacion(
 }
 
 // ---------------------------------------------------------------------------
-// Recuperacion de contrasena
+// Recuperacion de contraseña
 // ---------------------------------------------------------------------------
 
 export type SolicitarRecuperacionResult = {
@@ -198,7 +198,7 @@ export type RestablecerPasswordResult =
     };
 
 /**
- * Manda el link para elegir una contrasena nueva.
+ * Manda el link para elegir una contraseña nueva.
  *
  * Responde que si exista o no la cuenta: contestar distinto permitiria averiguar
  * que direcciones estan registradas.
@@ -259,13 +259,13 @@ export async function verificarTokenRecuperacion(
 }
 
 /**
- * Cambia la contrasena a partir del token del mail.
+ * Cambia la contraseña a partir del token del mail.
  *
  * El token se valida y se consume **en la misma operacion que el cambio**, y el
  * usuario sale del propio token: la pagina nunca ve ni manda un userId. Es la
  * diferencia con la version del organizador, donde el token se validaba al
  * cargar la pagina y despues se llamaba a un `updateUserPass({ id, password })`
- * sin token ni sesion, con lo que cualquiera podia cambiarle la contrasena a
+ * sin token ni sesion, con lo que cualquiera podia cambiarle la contraseña a
  * cualquiera.
  */
 export async function restablecerPassword(
@@ -303,7 +303,7 @@ export async function restablecerPassword(
       }
 
       // El consumo va con filtro por usedAt: si dos pedidos entran a la vez,
-      // solo uno cambia la contrasena.
+      // solo uno cambia la contraseña.
       const { count } = await tx.emailVerification.updateMany({
         where: { id: registro.id, usedAt: null },
         data: { usedAt: new Date() },
