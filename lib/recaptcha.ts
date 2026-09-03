@@ -1,5 +1,7 @@
 import "server-only";
 
+import { JWT } from "google-auth-library";
+
 /**
  * Verificacion de reCAPTCHA Enterprise.
  *
@@ -36,12 +38,13 @@ export async function verificarRecaptcha(
   token: string | undefined,
   accionEsperada: string,
 ): Promise<ResultadoRecaptcha> {
-  const apiKey = process.env.RECAPTCHA_API_KEY;
   const projectId = process.env.RECAPTCHA_PROJECT_ID;
+  const serviceAccountEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const serviceAccountPrivateKey = process.env.FIREBASE_PRIVATE_KEY;
 
   // Sin credenciales configuradas no se bloquea nada: es el mismo criterio que el
   // login, y permite trabajar en dev sin claves de Google.
-  if (!apiKey || !projectId) {
+  if (!projectId || !serviceAccountEmail || !serviceAccountPrivateKey) {
     return { ok: true };
   }
 
@@ -50,11 +53,25 @@ export async function verificarRecaptcha(
   }
 
   try {
+    const auth = new JWT({
+      email: serviceAccountEmail,
+      key: serviceAccountPrivateKey.replace(/\\n/g, "\n"),
+      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+    });
+    const accessToken = await auth.getAccessToken();
+
+    if (!accessToken.token) {
+      throw new Error("No se obtuvo un token OAuth2 para reCAPTCHA Enterprise");
+    }
+
     const res = await fetch(
-      `https://recaptchaenterprise.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/assessments?key=${encodeURIComponent(apiKey)}`,
+      `https://recaptchaenterprise.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/assessments`,
       {
       method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${accessToken.token}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           event: {
             token,

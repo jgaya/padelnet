@@ -46,6 +46,7 @@
     "face-api.js": "^0.22.2",
     "firebase": "^12.8.0",
     "firebase-admin": "^13.6.0",
+    "google-auth-library": "^11.0.2",
     "jose": "^6.0.12",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
