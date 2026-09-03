@@ -157,6 +157,60 @@ body {
     linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
 }
 
+#global-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--scrim);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+
+#global-loading-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.loader-pulse-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.24);
+  animation: loader-swing 1.5s ease-in-out infinite;
+}
+
+@keyframes loader-swing {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  20% {
+    transform: rotate(8deg);
+  }
+
+  40% {
+    transform: rotate(-7deg);
+  }
+
+  60% {
+    transform: rotate(5deg);
+  }
+
+  80% {
+    transform: rotate(-3deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 /* ========================================
    SELECTOR DE TEMA
    ========================================

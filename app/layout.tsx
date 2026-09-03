@@ -7,6 +7,7 @@ import { SCRIPT_TEMA } from "@/lib/tema";
 import PushNotificationsListener from "@/app/components/PushNotificationsListener";
 import ServiceWorkerRegistrar from "@/app/components/ServiceWorkerRegistrar";
 import InstallPrompt from "@/app/components/InstallPrompt";
+import { GlobalLoader } from "@/components/GlobalLoader";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -68,20 +69,21 @@ export default function RootLayout({
         className={`${inter.variable} ${montserrat.variable} font-sans antialiased`}
       >
         <SnackbarProvider>
-            <PushNotificationsListener />
-            <ServiceWorkerRegistrar />
-            <InstallPrompt />
-            <div className="flex min-h-screen flex-col">
-              <SiteHeader />
-              <main className="flex-1">{children}</main>
-              <footer className="border-t border-content/10 bg-surface">
-                <div className="mx-auto w-full max-w-6xl px-4 py-5 text-center text-sm text-content/70 sm:px-6">
-                  PadelNet (c) {new Date().getFullYear()} - Comunidad oficial de
-                  padel.
-                </div>
-              </footer>
-            </div>
-          </SnackbarProvider>
+          <GlobalLoader />
+          <PushNotificationsListener />
+          <ServiceWorkerRegistrar />
+          <InstallPrompt />
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <footer className="border-t border-content/10 bg-surface">
+              <div className="mx-auto w-full max-w-6xl px-4 py-5 text-center text-sm text-content/70 sm:px-6">
+                PadelNet (c) {new Date().getFullYear()} - Comunidad oficial de
+                padel.
+              </div>
+            </footer>
+          </div>
+        </SnackbarProvider>
       </body>
     </html>
   );

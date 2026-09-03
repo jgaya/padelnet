@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import * as faceapi from "face-api.js";
-
+import { loadingStore } from "@/lib/loadingStore";
 import type { EstadoImagenPerfil } from "@/actions/perfil";
 
 type AvatarCropperProps = {
@@ -353,6 +353,7 @@ export default function AvatarCropper({
       setError("La imagen aun no esta lista.");
       return;
     }
+    loadingStore.start();
 
     setProcessing(true);
     setError(null);
@@ -368,6 +369,8 @@ export default function AvatarCropper({
       setError("No se pudo analizar la imagen.");
       setProcessing(false);
       return;
+    } finally {
+      loadingStore.stop();
     }
 
     if (!detections) {
@@ -386,7 +389,7 @@ export default function AvatarCropper({
 
     setUploading(true);
     setError(null);
-
+    loadingStore.start();
     try {
       const response = await fetch("/api/perfil/avatar", {
         method: "POST",
@@ -427,6 +430,7 @@ export default function AvatarCropper({
           : "No se pudieron guardar las imagenes.",
       );
     } finally {
+      loadingStore.stop();
       setUploading(false);
     }
   };

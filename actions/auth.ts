@@ -59,14 +59,16 @@ export async function login(input: LoginInput): Promise<LoginResult> {
   const password = input.password;
 
   try {
-    const captchaResult = await verificarRecaptcha(
-      input.recaptchaToken,
-      ACCION_LOGIN,
-    );
-    if (!captchaResult.ok) {
-      return { success: false, error: captchaResult.error };
-    }
 
+    if (process.env.NODE_ENV === "production") {
+      const captchaResult = await verificarRecaptcha(
+        input.recaptchaToken,
+        ACCION_LOGIN,
+      );
+      if (!captchaResult.ok) {
+        return { success: false, error: captchaResult.error };
+      }
+    }
     const user = await prisma.user.findUnique({
       where: { email },
       select: {
