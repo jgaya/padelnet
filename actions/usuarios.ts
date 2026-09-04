@@ -14,6 +14,7 @@ export type UsuarioListItem = {
   name: string;
   lastname: string;
   email: string;
+  emailVerified: boolean;
   telefono: string | null;
   dni: string | null;
   genero: "M" | "F" | "X";
@@ -210,6 +211,7 @@ export async function listUsuarios(opts: ListOpts = {}) {
         name: true,
         lastname: true,
         email: true,
+        emailVerified: true,
         telefono: true,
         dni: true,
         genero: true,
@@ -447,6 +449,32 @@ export async function deleteUsuario(id: number) {
       deletedAt: new Date(),
       isActive: false,
     },
+  });
+
+  return { success: true };
+}
+
+export async function validateUsuario(id: number) {
+  // Gestion de usuarios: solo superadmin. Sin esto la action queda expuesta como
+  // endpoint POST y cualquiera podria verificar cuentas desde afuera.
+  await assertSuperadmin();
+
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("Usuario invalido");
+  }
+
+  const user = await prisma.user.findFirst({
+    where: { id, deletedAt: null },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  await prisma.user.update({
+    where: { id },
+    data: { emailVerified: true },
   });
 
   return { success: true };

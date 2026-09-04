@@ -5,13 +5,14 @@
 *  ~~Confirma tu email antes de inscribirte. Revisa tu correo o pedi un link nuevo en /confirmar-email. No llego un email ni a spam~~
 
 * Mejorar templates de los mails
-* spinner para el sitio
+* ~~spinner para el sitio~~
+* ~~Menu ... , agregado menuEnDesktop como prop para que sean los ... en desktop~~
 
-* cuando cargamos la foto y la procesamos, tenemos que poner un loading, porque sino pasa un tiempo y la gente no se da cuenta si se esta haciendo algo
+* ~~cuando cargamos la foto y la procesamos, tenemos que poner un loading, porque sino pasa un tiempo y la gente no se da cuenta si se esta haciendo algo~~
 
-* como superadmin, poder validar un jugador con un boton en el listado de usuarios
+* ~~como superadmin, poder validar un jugador con un boton en el listado de usuarios~~
 
-* cargue una imagen de perfil de un jugador no validado, me dijo ok. Pero cuando entro como superadmin no me aparece para moderar en el listado de imagenes de perfil
+* ~~cargue una imagen de perfil de un jugador no validado, me dijo ok. Pero cuando entro como superadmin no me aparece para moderar en el listado de imagenes de perfil~~
 
 #### Ingrese como admin de padel norte (admin@padel-norte.local)
 - Estaria bueno que ya tenga un crear Evento en la home

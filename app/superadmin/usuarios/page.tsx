@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  CheckBadgeIcon,
   PencilSquareIcon,
   ShieldCheckIcon,
   TrashIcon,
@@ -15,6 +16,7 @@ import TableWithPagination from "@/components/TableWithPagination";
 import TitleBar from "@/components/TitleBar";
 import {
   deleteUsuario,
+  validateUsuario,
   listUsuarios,
   listComplejosForUsuarios,
   assignUsuarioAdminToComplejo,
@@ -130,6 +132,18 @@ export default function UsuariosPage() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Error al eliminar el usuario";
+      showSnackbar(message, "error");
+    }
+  };
+
+  const handleValidate = async (id: number) => {
+    try {
+      await validateUsuario(id);
+      await fetchUsuarios();
+      showSnackbar("Usuario validado con exito", "success");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Error al validar el usuario";
       showSnackbar(message, "error");
     }
   };
@@ -279,6 +293,12 @@ export default function UsuariosPage() {
                         label: "Asignar admin a un complejo",
                         icon: <ShieldCheckIcon className="h-4 w-4" />,
                         onClick: () => openAssignAdminModal(user.id),
+                      },
+                      (!user.emailVerified) &&  {
+                        key: "validar",
+                        label: "Validar usuario",
+                        icon: <CheckBadgeIcon className="h-4 w-4" />,
+                        onClick: () => handleValidate(user.id),
                       },
                       {
                         key: "eliminar",

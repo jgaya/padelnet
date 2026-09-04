@@ -32,6 +32,8 @@ type RowActionsProps = {
   actions: Array<RowAction | false | null | undefined>;
   /** Titulo de la hoja en mobile. */
   tituloMobile?: string;
+  /** Fuerza el menu de tres puntos tambien en desktop. */
+  menuEnDesktop?: boolean;
 };
 
 /**
@@ -49,6 +51,7 @@ type RowActionsProps = {
 export default function RowActions({
   actions,
   tituloMobile = "Acciones",
+  menuEnDesktop = false,
 }: RowActionsProps) {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [aConfirmar, setAConfirmar] = useState<RowAction | null>(null);
@@ -79,7 +82,11 @@ export default function RowActions({
   return (
     <>
       {/* Desktop: iconos con tooltip. */}
-      <div className="hidden items-center gap-2 sm:flex">
+      <div
+        className={`items-center gap-2 ${
+          menuEnDesktop ? "hidden" : "hidden sm:flex"
+        }`}
+      >
         {visibles.map((action) => {
           const clases = `btn btn-sm padel-action-btn ${
             action.variant === "danger" ? "btn-secondary" : "btn-primary"
@@ -121,7 +128,7 @@ export default function RowActions({
       </div>
 
       {/* Mobile: un boton que abre la hoja con los nombres. */}
-      <div className="flex sm:hidden">
+      <div className={menuEnDesktop ? "flex" : "flex sm:hidden"}>
         <button
           type="button"
           aria-label={tituloMobile}
