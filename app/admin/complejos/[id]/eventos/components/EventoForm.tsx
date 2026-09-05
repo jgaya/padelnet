@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { loadingStore } from "@/lib/loadingStore";
+
 import {
   FormActions,
   FormCheckbox,
@@ -40,7 +42,7 @@ export default function EventoForm({
   const router = useRouter();
   const showSnackbar = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
-  const resolvedBackURL = backURL ?? `/complejos/${complejoId}/eventos`;
+  const resolvedBackURL = backURL ?? `/admin/complejos/${complejoId}/eventos`;
 
   const {
     register,
@@ -82,6 +84,7 @@ export default function EventoForm({
   }, [initialData, reset]);
 
   const onSubmit = async (data: EventoFormData) => {
+    loadingStore.setLoading(true);
     setIsLoading(true);
 
     try {
@@ -109,7 +112,6 @@ export default function EventoForm({
       );
 
       router.push(resolvedBackURL);
-      router.refresh();
     } catch (error) {
       showSnackbar(
         error instanceof Error ? error.message : "Error al procesar el evento",
@@ -117,6 +119,7 @@ export default function EventoForm({
       );
     } finally {
       setIsLoading(false);
+      loadingStore.setLoading(false);
     }
   };
 

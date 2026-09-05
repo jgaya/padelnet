@@ -443,6 +443,7 @@ export default function TorneosPageClient({
                 <td>{formatDateTime(torneo.fin)}</td>
                 <td className="padel-table-actions">
                   <RowActions
+                    menuEnDesktop
                     actions={[
                       {
                         key: "editar",

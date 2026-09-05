@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+
 import {
   FormCheckbox,
   FormInput,
@@ -94,7 +95,9 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/");
+      if (result.redirectTo) {
+        router.push(result.redirectTo);
+      }
       router.refresh();
     } catch (error) {
       console.error("Login submit error:", error);

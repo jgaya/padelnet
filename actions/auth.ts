@@ -20,6 +20,7 @@ export type LoginInput = {
 
 export type LoginResult = {
   success: boolean;
+  redirectTo?: string;
   error?: string;
 };
 
@@ -38,6 +39,7 @@ export type RegisterInput = {
 
 export type RegisterResult = {
   success: boolean;
+  redirectTo?: string;
   error?: string;
 };
 
@@ -126,7 +128,7 @@ export async function login(input: LoginInput): Promise<LoginResult> {
       esAdminDeComplejo: Boolean(membershipAdmin),
     });
 
-    return { success: true };
+    return { success: true, redirectTo: user.platformRole === "SUPERADMIN" ? "/superadmin" : Boolean(membershipAdmin) ? "/admin" : "/" };
   } catch (error) {
     console.error("Login error:", error);
     return { success: false, error: "No se pudo iniciar sesion" };

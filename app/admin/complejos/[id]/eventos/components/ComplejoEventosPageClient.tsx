@@ -253,6 +253,7 @@ export default function ComplejoEventosPageClient({
                 <td>{evento.isFinished ? "Si" : "No"}</td>
                 <td className="padel-table-actions">
                   <RowActions
+                    menuEnDesktop
                     actions={[
                       {
                         key: "editar",

@@ -24,6 +24,7 @@ import {
   puntajesDesdeForm,
   puntajesFormPorDefecto,
 } from "@/lib/ranking-puntajes";
+import { loadingStore } from "@/lib/loadingStore";
 
 export type TorneoFormProps = {
   complejoId: number;
@@ -50,11 +51,16 @@ const sexoOptions = [
 
 const categoriaReglaOptions = [
   { value: "LIBRE", label: "Libre" },
-  { value: "MAYOR_IGUAL", label: "Mayor o igual a N" },
-  { value: "MENOR_IGUAL", label: "Menor o igual a N" },
-  { value: "IGUAL", label: "Igual a N" },
-  { value: "SUMA", label: "Suma N (pareja)" },
+  { value: "MAYOR_IGUAL", label: "Mayor o igual a Categoria N" },
+  { value: "MENOR_IGUAL", label: "Menor o igual a Categoria N" },
+  { value: "IGUAL", label: "Igual a Categoria N" },
+  { value: "SUMA", label: "Suma categoria pareja igual a Categoria N" },
 ];
+
+const categorias = ["1", "2", "3", "4", "5", "6", "7", "8"].map((n) => ({
+  value: n,
+  label: "Categoria " + n,
+}));
 
 const statusOptions = [
   { value: "DRAFT", label: "Draft" },
@@ -146,6 +152,7 @@ export default function TorneoForm({
   }, [requiereCategoriaN, setValue]);
 
   const onSubmit = async (data: TorneoCrudFormData) => {
+    loadingStore.setLoading(true);
     setIsLoading(true);
 
     try {
@@ -182,7 +189,6 @@ export default function TorneoForm({
       );
 
       router.push(listadoURL);
-      router.refresh();
     } catch (error) {
       showSnackbar(
         error instanceof Error ? error.message : "Error al procesar el torneo",
@@ -190,6 +196,8 @@ export default function TorneoForm({
       );
     } finally {
       setIsLoading(false);
+      loadingStore.setLoading(false);
+      
     }
   };
 
@@ -256,13 +264,15 @@ export default function TorneoForm({
             options={sexoOptions}
             required
           />
-          <FormSelect
-            label="Regla de categoria"
-            register={register("categoriaRegla")}
-            error={errors.categoriaRegla}
-            options={categoriaReglaOptions}
+          <FormInput
+            label="Capacidad"
+            type="number"
+            placeholder="Cantidad maxima de parejas"
+            register={register("capacidad")}
+            error={errors.capacidad}
             required
           />
+
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -294,29 +304,35 @@ export default function TorneoForm({
         ) : null}
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormInput
-            label="Capacidad"
-            type="number"
-            placeholder="Cantidad maxima de parejas"
-            register={register("capacidad")}
-            error={errors.capacidad}
+          <FormSelect
+            label="Regla de categoria"
+            register={register("categoriaRegla")}
+            error={errors.categoriaRegla}
+            options={categoriaReglaOptions}
             required
           />
           {requiereCategoriaN ? (
-            <FormInput
+            <FormSelect
+              label="Categoria"
+              register={register("categoriaN")}
+              error={errors.categoriaN}
+              options={categorias}
+              required
+            />
+/*             <FormInput
               label="N"
               type="number"
               placeholder="Valor N"
               register={register("categoriaN")}
               error={errors.categoriaN}
               required
-            />
+            /> */
           ) : (
             <div />
           )}
         </div>
 
-        <FormInput
+{/*         <FormInput
           label="Jugadores por zona"
           type="number"
           placeholder="Cantidad de jugadores por zona"
@@ -324,7 +340,7 @@ export default function TorneoForm({
           error={errors.jugxZona}
           required
         />
-
+ */}
         <FormSelect
           label="Estado"
           register={register("status")}
@@ -388,7 +404,7 @@ export default function TorneoForm({
           </div>
         </fieldset>
 
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 p-4">
           <FormCheckbox
             label="Publicado"
             register={register("publicado")}

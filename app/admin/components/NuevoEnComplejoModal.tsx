@@ -29,6 +29,7 @@ export default function NuevoEnComplejoModal({
   const showSnackbar = useSnackbar();
 
   const [abierto, setAbierto] = useState(false);
+  const [cargandoComplejos, setCargandoComplejos] = useState(false);
   // null = todavia no se cargaron. El estado "cargando" se deriva de eso, en vez
   // de guardarse: setearlo dentro del efecto dispara renders en cascada.
   const [complejos, setComplejos] = useState<Opcion[] | null>(null);
@@ -39,29 +40,51 @@ export default function NuevoEnComplejoModal({
   const [eventoId, setEventoId] = useState<number | null>(null);
 
   const pideEvento = modo === "TORNEO" && complejoId !== null;
-  const cargandoComplejos = abierto && complejos === null;
   const cargandoEventos = pideEvento && eventosDe !== complejoId;
 
-  // Los complejos se piden al abrir, no al montar: el listado ya hace bastantes
-  // consultas y esto solo hace falta si la persona va a crear algo.
-  useEffect(() => {
-    if (!abierto || complejos !== null) return;
+  const handleNuevo = async () => {
+    if (cargandoComplejos) return;
 
-    // listComplejos ya filtra por los complejos que la persona administra.
-    void listComplejos({ page: 1, pageSize: 100, orderBy: "name" })
-      .then((data) => {
-        setComplejos(
-          data.items.map((complejo) => ({
-            id: complejo.id,
-            label: complejo.name,
-          })),
-        );
-      })
-      .catch(() => {
-        setComplejos([]);
-        showSnackbar("No se pudieron cargar los complejos", "error");
+    if (complejos !== null) {
+      if (modo === "EVENTO" && complejos.length === 1) {
+        router.push(`/admin/complejos/${complejos[0].id}/eventos/new`);
+        return;
+      }
+
+      setAbierto(true);
+      return;
+    }
+
+    setCargandoComplejos(true);
+
+    try {
+      // listComplejos ya filtra por los complejos que la persona administra.
+      const data = await listComplejos({
+        page: 1,
+        pageSize: 100,
+        orderBy: "name",
       });
-  }, [abierto, complejos, showSnackbar]);
+      const opciones = data.items.map((complejo) => ({
+        id: complejo.id,
+        label: complejo.name,
+      }));
+
+      setComplejos(opciones);
+
+      if (modo === "EVENTO" && opciones.length === 1) {
+        router.push(`/admin/complejos/${opciones[0].id}/eventos/new`);
+        return;
+      }
+
+      setAbierto(true);
+    } catch {
+      setComplejos([]);
+      setAbierto(true);
+      showSnackbar("No se pudieron cargar los complejos", "error");
+    } finally {
+      setCargandoComplejos(false);
+    }
+  };
 
   // Los eventos dependen del complejo elegido.
   useEffect(() => {
@@ -116,10 +139,11 @@ export default function NuevoEnComplejoModal({
     <>
       <button
         type="button"
-        onClick={() => setAbierto(true)}
-        className="rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-on-brand transition hover:brightness-95"
+        onClick={() => void handleNuevo()}
+        disabled={cargandoComplejos}
+        className="rounded-full bg-padel-green px-4 py-2 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-wait disabled:opacity-60"
       >
-        {etiqueta}
+        {cargandoComplejos ? "Cargando..." : etiqueta}
       </button>
 
       {abierto ? (

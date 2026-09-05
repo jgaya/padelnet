@@ -11,6 +11,7 @@ import TablaTorneosPorEvento from "./TablaTorneosPorEvento";
 import GraficoBarras from "./charts/GraficoBarras";
 import GraficoBarrasH from "./charts/GraficoBarrasH";
 import GraficoDona from "./charts/GraficoDona";
+import NuevoEnComplejoModal from "@/app/admin/components/NuevoEnComplejoModal";
 
 type DashboardProps = {
   titulo: string;
@@ -55,7 +56,10 @@ export default function Dashboard({
           </h1>
           <p className="mt-1 text-sm text-content/70">{subtitulo}</p>
         </div>
-        <BotonRefrescar />
+        <div className="flex gap-3">
+          <NuevoEnComplejoModal modo="EVENTO" etiqueta="Nuevo evento" />
+          <BotonRefrescar />
+        </div>
       </div>
 
       <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">

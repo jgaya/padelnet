@@ -15,17 +15,17 @@
 * ~~cargue una imagen de perfil de un jugador no validado, me dijo ok. Pero cuando entro como superadmin no me aparece para moderar en el listado de imagenes de perfil~~
 
 #### Ingrese como admin de padel norte (admin@padel-norte.local)
-- Estaria bueno que ya tenga un crear Evento en la home
-- cuando voy a torneo/nuevo Evento me pide elegir complejo, estaria bueno que como esto
-logueado como admin de padel norte ya tome "padel norte" como complejo y evitar ese paso.
-- una vez que presionamos "Guardar evento", se queda ahi , deberiamos redirigirlo al evento u home.
-- mejorar botones en el listado de eventos
+- ~~Estaria bueno que ya tenga un crear Evento en la home~~
+- ~~cuando voy a torneo/nuevo Evento me pide elegir complejo, estaria bueno que como esto logueado como admin de padel norte ya tome "padel norte" como complejo y evitar ese paso~~
+
+- ~~una vez que presionamos "Guardar evento", se queda ahi , deberiamos redirigirlo al evento u home.~~
+- ~~mejorar botones en el listado de eventos~~
 - 'torneos/[id]' muestra grupos, llave, pero falta mostrar los inscriptos hasta el momento
 
 ##### Nuevo torneo:
-* sacar regla de categoria y N, unificar en vez de poner "igual a N" y N = "6" cambiar por Categoria 6 pura
-* sacar jugadores por zona
-* cuando se guarda, tendria que redirigirlo al listado de torneos del evento
+* ~~sacar regla de categoria y N, unificar en vez de poner "igual a N" y N = "6" cambiar por Categoria 6 pura~~
+* ~~sacar jugadores por zona~~
+* ~~cuando se guarda, tendria que redirigirlo al listado de torneos del evento~~
 
 
 
