@@ -36,10 +36,19 @@ export type HomeTorneoItem = {
   complejoProvincia: string;
 };
 
+export type HomeTorneoInscriptoItem = {
+  id: number;
+  nombre: string;
+  inicio: string | null;
+  status: "DRAFT" | "PUBLISHED" | "IN_PROGRESS" | "FINISHED";
+  complejoNombre: string;
+};
+
 export type HomeSummary = {
   stats: HomeStats;
   proximosPartidos: HomePartidoItem[];
   proximosTorneos: HomeTorneoItem[];
+  torneosInscripto: HomeTorneoInscriptoItem[];
 };
 
 const PROXIMOS_PARTIDOS_LIMIT = 5;
@@ -70,7 +79,7 @@ function buildParejaNombre(
   return `${p1} / ${p2}`;
 }
 
-export async function getHomeSummary(): Promise<HomeSummary> {
+export async function getHomeSummary(userId?: number): Promise<HomeSummary> {
   const now = new Date();
 
   const partidoProgramadoWhere: Prisma.PartidoWhereInput = {
@@ -87,6 +96,7 @@ export async function getHomeSummary(): Promise<HomeSummary> {
     clubesActivos,
     partidos,
     torneos,
+    inscripciones,
   ] = await Promise.all([
     prisma.partido.count({ where: partidoProgramadoWhere }),
     prisma.torneo.count({ where: TORNEO_PUBLICO_WHERE }),
@@ -144,6 +154,30 @@ export async function getHomeSummary(): Promise<HomeSummary> {
         },
       },
     }),
+    userId
+      ? prisma.pareja.findMany({
+          where: {
+            deletedAt: null,
+            OR: [{ player1Id: userId }, { player2Id: userId }],
+            torneo: {
+              deletedAt: null,
+              evento: { deletedAt: null, complejo: { deletedAt: null } },
+            },
+          },
+          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+          select: {
+            torneo: {
+              select: {
+                id: true,
+                nombre: true,
+                inicio: true,
+                status: true,
+                evento: { select: { complejo: { select: { name: true } } } },
+              },
+            },
+          },
+        })
+      : Promise.resolve([]),
   ]);
 
   const proximosPartidos: HomePartidoItem[] = partidos.map((partido) => ({
@@ -188,6 +222,25 @@ export async function getHomeSummary(): Promise<HomeSummary> {
       complejoProvincia: torneo.evento.complejo.provincia,
     }));
 
+  const torneosInscripto: HomeTorneoInscriptoItem[] = [];
+  for (const pareja of inscripciones) {
+    if (torneosInscripto.some((torneo) => torneo.id === pareja.torneo.id)) {
+      continue;
+    }
+
+    torneosInscripto.push({
+      id: pareja.torneo.id,
+      nombre: pareja.torneo.nombre,
+      inicio: pareja.torneo.inicio
+        ? pareja.torneo.inicio.toISOString()
+        : null,
+      status: pareja.torneo.status as HomeTorneoInscriptoItem["status"],
+      complejoNombre: pareja.torneo.evento.complejo.name,
+    });
+
+    if (torneosInscripto.length === 8) break;
+  }
+
   return {
     stats: {
       partidosProgramados,
@@ -197,5 +250,6 @@ export async function getHomeSummary(): Promise<HomeSummary> {
     },
     proximosPartidos,
     proximosTorneos,
+    torneosInscripto,
   };
 }

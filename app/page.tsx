@@ -4,6 +4,7 @@ import {
   type HomePartidoItem,
   type HomeTorneoItem,
 } from "@/actions/home";
+import { getSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -64,7 +65,9 @@ function EmptyState({ children }: { children: React.ReactNode }) {
 }
 
 export default async function Home() {
-  const { stats, proximosPartidos, proximosTorneos } = await getHomeSummary();
+  const session = await getSession();
+  const { stats, proximosPartidos, proximosTorneos, torneosInscripto } =
+    await getHomeSummary(session?.userId);
 
   const statCards = [
     { label: "Partidos programados", value: stats.partidosProgramados },
@@ -126,7 +129,56 @@ export default async function Home() {
       {/* Los dos caminos de entrada al sitio, uno por cada tipo de visitante:
           el club que todavia no esta y el jugador que todavia no tiene cuenta.
           Van juntos y del mismo tamaño porque ninguno es mas importante. */}
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
+      {session ? (
+        <div className="mt-6 rounded-2xl border border-content/10 bg-surface p-4 sm:p-6">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-padel-green">
+                Acceso rapido
+              </p>
+              <h2 className="mt-2 text-xl font-semibold text-content">
+                Mis torneos
+              </h2>
+              <p className="mt-1 text-sm text-content/70">
+                Torneos en los que estas inscripto.
+              </p>
+            </div>
+            <Link
+              href="/torneos"
+              className="text-sm font-semibold text-energy-orange hover:underline"
+            >
+              Ver torneos
+            </Link>
+          </div>
+
+          {torneosInscripto.length === 0 ? (
+            <EmptyState>Todavia no estas inscripto en ningun torneo.</EmptyState>
+          ) : (
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {torneosInscripto.map((torneo) => (
+                <Link
+                  key={torneo.id}
+                  href={`/torneos/${torneo.id}`}
+                  className="flex items-center justify-between gap-3 rounded-xl bg-surface-soft px-4 py-3 transition hover:bg-padel-green/10"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-content">
+                      {torneo.nombre}
+                    </p>
+                    <p className="truncate text-xs text-content/70">
+                      {torneo.complejoNombre}
+                    </p>
+                  </div>
+                  <span className="shrink-0 text-xs font-semibold text-energy-orange">
+                    Ir al torneo
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
         <article className="flex flex-col rounded-2xl border border-content/10 bg-surface p-5 shadow-sm sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-padel-green">
             Para clubes
@@ -171,7 +223,8 @@ export default async function Home() {
             </Link>
           </div>
         </article>
-      </div>
+        </div>
+      )}
 
       <div
         id="torneos"

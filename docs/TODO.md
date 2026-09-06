@@ -35,8 +35,8 @@
 
 
 #### Ingreso como jugador (esta inscripto a un torneo)
-* tendriamos que poner un boton y un texto para que sepa que esta inscripto  y un link directo al torneo.
-* sacar el card "Para jugadores Queres empezar a jugar?" del home, porque estamos logueados como jugador, tal vez ahi poner los torneos en los que esto inscripto
+* ~~tendriamos que poner un boton y un texto para que sepa que esta inscripto  y un link directo al torneo.~~
+* ~~sacar el card "Para jugadores Queres empezar a jugar?" del home, porque estamos logueados como jugador, tal vez ahi poner los torneos en los que esto inscripto~~
 
 ### En General
 
@@ -129,3 +129,5 @@ mostrar las zonas con el resultado en el admin, lo mismo la llave -> Done
 - torneo llave directa onda tennis sin zonas -> Done 
 - logros -> Done
 
+ln -s /etc/nginx/sites-available/padeltotaltsas.com.ar padeltotaltsas.com.ar
+certbot --nginx -d padeltotaltsas.com.ar -d www.padeltotaltsas.com.ar
