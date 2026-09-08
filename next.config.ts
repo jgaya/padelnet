@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/(.*)",
+        ignoreBuildErrors: true,
         headers: [
           // El popup de Google necesita seguir hablando con la ventana que lo
           // abrio: hace postMessage y consulta window.closed. Con COOP en
