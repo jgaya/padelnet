@@ -200,10 +200,13 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  min-width: 0;
 }
 
 .zonaCardInput {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 0;
   border: 1px solid color-mix(in oklab, var(--content) 15%, transparent);
   border-radius: 0.7rem;
   padding: 0.35rem 0.6rem;
@@ -216,6 +219,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  flex: 0 0 auto;
 }
 
 .zonaCounter {

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   PencilSquareIcon,
+  PlayCircleIcon,
   Squares2X2Icon,
   TrashIcon,
   UserPlusIcon,
@@ -16,6 +17,7 @@ import NuevoEnComplejoModal from "@/app/admin/components/NuevoEnComplejoModal";
 import {
   deleteTorneo,
   listTorneosForAdmin,
+  publicarTorneo,
   type TorneoListItem,
 } from "@/actions/torneos";
 import { useSnackbar } from "@/context/SnackbarContext";
@@ -136,6 +138,46 @@ export default function AdminTorneosPage() {
     }
   };
 
+  const handleTogglePublicacion = async (torneo: TorneoListItem) => {
+    const safeComplejoId = torneo.complejoId;
+    const safeEventoId = torneo.eventoId;
+
+    if (
+      typeof safeComplejoId !== "number" ||
+      !Number.isInteger(safeComplejoId) ||
+      safeComplejoId <= 0 ||
+      typeof safeEventoId !== "number" ||
+      !Number.isInteger(safeEventoId) ||
+      safeEventoId <= 0
+    ) {
+      showSnackbar("No se pudo determinar la ubicacion del torneo", "error");
+      return;
+    }
+
+    try {
+      const result = await publicarTorneo(
+        safeComplejoId,
+        safeEventoId,
+        torneo.id,
+      );
+
+      if (!result.success) {
+        showSnackbar(result.error, "error");
+        return;
+      }
+
+      await fetchTorneos();
+      showSnackbar(result.message, "success");
+    } catch (error) {
+      showSnackbar(
+        error instanceof Error
+          ? error.message
+          : "No se pudo cambiar la publicacion del torneo",
+        "error",
+      );
+    }
+  };
+
   return (
     <div className="container padel-complejos-list">
       <TitleBar
@@ -246,6 +288,7 @@ export default function AdminTorneosPage() {
                 <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
                 <td className="padel-table-actions">
                   <RowActions
+                    menuEnDesktop
                     actions={[
                       {
                         key: "editar",
@@ -264,6 +307,14 @@ export default function AdminTorneosPage() {
                         label: "Ver todos los torneos del evento",
                         icon: <Squares2X2Icon className="h-4 w-4" />,
                         href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos`,
+                      },
+                      {
+                        key: "publicar",
+                        label: torneo.publicado
+                          ? "Despublicar torneo"
+                          : "Publicar torneo",
+                        icon: <PlayCircleIcon className="h-4 w-4" />,
+                        onClick: () => void handleTogglePublicacion(torneo),
                       },
                       {
                         key: "eliminar",

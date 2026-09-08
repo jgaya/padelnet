@@ -111,7 +111,11 @@ export async function SiteHeader() {
             suelto en el header para que igual se pueda cambiar. */}
         {!currentUser && <ThemeToggle compact />}
 
-        <AvatarMenu user={currentUser} profileLinks={profileLinks} />
+        <AvatarMenu
+          key={currentUser?.id ?? "anonymous"}
+          user={currentUser}
+          profileLinks={profileLinks}
+        />
       </div>
     </header>
   );

@@ -899,8 +899,9 @@ export type TorneoAccionResult =
   | { success: false; error: string };
 
 /**
- * Publica el torneo: DRAFT -> PUBLISHED.
+ * Alterna la publicación del torneo.
  *
+ * Publicar mueve DRAFT -> PUBLISHED y despublicar hace PUBLISHED -> DRAFT.
  * Mueve `status` y `publicado` juntos porque son las dos condiciones que pide
  * `inscripcionesAbiertas`; con una sola el torneo queda publicado a medias y
  * nadie se puede anotar.
@@ -920,6 +921,15 @@ export async function publicarTorneo(
 
     if (!torneo) {
       return { success: false, error: "Torneo no encontrado" };
+    }
+
+    if (torneo.publicado || torneo.status === "PUBLISHED") {
+      await prisma.torneo.update({
+        where: { id: torneoId },
+        data: { status: "DRAFT", publicado: false },
+      });
+
+      return { success: true, message: "Torneo despublicado" };
     }
 
     if (torneo.status !== "DRAFT") {
