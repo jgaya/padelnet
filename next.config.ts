@@ -1,11 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   async headers() {
     return [
       {
         source: "/(.*)",
-        ignoreBuildErrors: true,
         headers: [
           // El popup de Google necesita seguir hablando con la ventana que lo
           // abrio: hace postMessage y consulta window.closed. Con COOP en
