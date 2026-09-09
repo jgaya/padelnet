@@ -1,4 +1,14 @@
 import Link from "next/link";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaTiktok,
+  FaThreads,
+  FaWhatsapp,
+  FaXTwitter,
+  FaYoutube,
+} from "react-icons/fa6";
 
 import type { PublicComplejoItem } from "@/actions/complejos";
 import {
@@ -10,6 +20,17 @@ import {
 type ComplejosPublicPageProps = {
   complejos: PublicComplejoItem[];
 };
+
+const REDES_SOCIALES = [
+  { key: "instagram", label: "Instagram", icon: FaInstagram },
+  { key: "facebook", label: "Facebook", icon: FaFacebookF },
+  { key: "x", label: "X", icon: FaXTwitter },
+  { key: "youtube", label: "YouTube", icon: FaYoutube },
+  { key: "whatsapp", label: "WhatsApp", icon: FaWhatsapp },
+  { key: "threads", label: "Threads", icon: FaThreads },
+  { key: "tiktok", label: "TikTok", icon: FaTiktok },
+  { key: "linkedin", label: "LinkedIn", icon: FaLinkedinIn },
+] as const;
 
 export default function ComplejosPublicPage({
   complejos,
@@ -50,6 +71,10 @@ export default function ComplejosPublicPage({
                     <div className="border-b border-content/10 bg-gradient-to-r from-surface-soft via-surface to-surface-soft px-5 py-4">
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div>
+                          <div className="flex items-center gap-3">
+                            {complejo.logoUrl ? (
+                              <img src={complejo.logoUrl} alt={`Logo de ${complejo.name}`} className="h-12 w-12 rounded-xl object-contain bg-surface p-1 ring-1 ring-content/10" />
+                            ) : null}
                           <h2 className="text-2xl font-semibold leading-tight text-content">
                             <Link
                               href={`/complejos/${complejo.slug}`}
@@ -58,6 +83,7 @@ export default function ComplejosPublicPage({
                               {complejo.name}
                             </Link>
                           </h2>
+                          </div>
                           <p className="mt-1 text-sm text-content/70">
                             {complejo.ciudad}, {complejo.provincia}
                           </p>
@@ -128,22 +154,33 @@ export default function ComplejosPublicPage({
                         </div>
                       </div>
 
-                      <div className="grid gap-3 text-sm sm:grid-cols-2">
-                        <div className="rounded-2xl border border-content/10 bg-surface px-4 py-3">
-                          <p className="font-semibold text-content">Pais</p>
-                          <p className="mt-1 text-content/75">
-                            {complejo.pais}
-                          </p>
-                        </div>
-                        <div className="rounded-2xl border border-content/10 bg-surface px-4 py-3">
+                      {REDES_SOCIALES.some(({ key }) => complejo[key]) ? (
+                        <div className="rounded-2xl border border-content/10 bg-surface px-4 py-4">
                           <p className="font-semibold text-content">
-                            Zona horaria
+                            Redes sociales
                           </p>
-                          <p className="mt-1 break-all text-content/75">
-                            {complejo.timezone}
-                          </p>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {REDES_SOCIALES.map(({ key, label, icon: Icon }) => {
+                              const href = complejo[key];
+                              if (!href) return null;
+
+                              return (
+                                <a
+                                  key={key}
+                                  href={href}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  aria-label={label}
+                                  title={label}
+                                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-content/15 bg-surface-soft text-content transition hover:border-padel-green hover:bg-padel-green hover:text-on-brand"
+                                >
+                                  <Icon className="h-5 w-5" aria-hidden="true" />
+                                </a>
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
+                      ) : null}
 
                       <div className="overflow-hidden rounded-2xl border border-content/10">
                         <iframe

@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE `complejo` ADD COLUMN `facebook` VARCHAR(191) NULL,
+    ADD COLUMN `instagram` VARCHAR(191) NULL,
+    ADD COLUMN `linkedin` VARCHAR(191) NULL,
+    ADD COLUMN `threads` VARCHAR(191) NULL,
+    ADD COLUMN `tiktok` VARCHAR(191) NULL,
+    ADD COLUMN `whatsapp` VARCHAR(191) NULL,
+    ADD COLUMN `x` VARCHAR(191) NULL,
+    ADD COLUMN `youtube` VARCHAR(191) NULL;

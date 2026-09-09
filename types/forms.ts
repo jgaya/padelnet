@@ -176,6 +176,15 @@ export const ComplejoFormSchema = z.object({
   provincia: z.string().trim().min(1, "La provincia es obligatoria"),
   ciudad: z.string().trim().min(1, "La ciudad es obligatoria"),
   telefono: z.string().trim().optional(),
+  logoUrl: z.string().trim().optional(),
+  instagram: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),
+  facebook: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),
+  x: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),
+  youtube: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),
+  whatsapp: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),
+  threads: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),
+  tiktok: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),
+  linkedin: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),
 });
 
 export type ComplejoFormData = z.infer<typeof ComplejoFormSchema>;

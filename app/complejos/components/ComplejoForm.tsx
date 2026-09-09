@@ -16,17 +16,20 @@ import {
   type ComplejoPayload,
 } from "@/actions/complejos";
 import { ComplejoFormSchema, type ComplejoFormData } from "@/types/forms";
+import LogoUploader from "./LogoUploader";
 
 export type ComplejoFormProps = {
   initialData?: Partial<ComplejoFormData>;
   isEdit?: number;
   basePath?: string;
+  complejoId?: number;
 };
 
 export default function ComplejoForm({
   initialData,
   isEdit,
   basePath = "/complejos",
+  complejoId,
 }: ComplejoFormProps) {
   const router = useRouter();
   const showSnackbar = useSnackbar();
@@ -35,6 +38,8 @@ export default function ComplejoForm({
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
     reset,
   } = useForm<ComplejoFormData>({
@@ -46,6 +51,15 @@ export default function ComplejoForm({
       provincia: "",
       ciudad: "",
       telefono: "",
+      logoUrl: "",
+      instagram: "",
+      facebook: "",
+      x: "",
+      youtube: "",
+      whatsapp: "",
+      threads: "",
+      tiktok: "",
+      linkedin: "",
       ...initialData,
     },
   });
@@ -59,6 +73,15 @@ export default function ComplejoForm({
         provincia: initialData.provincia ?? "",
         ciudad: initialData.ciudad ?? "",
         telefono: initialData.telefono ?? "",
+        logoUrl: initialData.logoUrl ?? "",
+        instagram: initialData.instagram ?? "",
+        facebook: initialData.facebook ?? "",
+        x: initialData.x ?? "",
+        youtube: initialData.youtube ?? "",
+        whatsapp: initialData.whatsapp ?? "",
+        threads: initialData.threads ?? "",
+        tiktok: initialData.tiktok ?? "",
+        linkedin: initialData.linkedin ?? "",
       });
     }
   }, [initialData, reset]);
@@ -74,6 +97,15 @@ export default function ComplejoForm({
         provincia: data.provincia,
         ciudad: data.ciudad,
         telefono: data.telefono || null,
+        logoUrl: data.logoUrl || null,
+        instagram: data.instagram || null,
+        facebook: data.facebook || null,
+        x: data.x || null,
+        youtube: data.youtube || null,
+        whatsapp: data.whatsapp || null,
+        threads: data.threads || null,
+        tiktok: data.tiktok || null,
+        linkedin: data.linkedin || null,
       };
 
       if (isEdit) {
@@ -107,6 +139,17 @@ export default function ComplejoForm({
       backURL={basePath}
     >
       <form className="padel-entity-form" onSubmit={handleSubmit(onSubmit)}>
+        {isEdit && complejoId ? (
+          <div className="mb-4 rounded-2xl border border-content/10 bg-surface-soft p-4">
+            <p className="mb-2 text-sm font-semibold text-content">Logo del complejo (opcional)</p>
+            <LogoUploader
+              complejoId={complejoId}
+              value={watch("logoUrl") ?? ""}
+              onChange={(value) => setValue("logoUrl", value, { shouldDirty: true })}
+            />
+            <input type="hidden" {...register("logoUrl")} />
+          </div>
+        ) : null}
         <FormInput
           label="Nombre"
           placeholder="Nombre del complejo"
@@ -158,6 +201,33 @@ export default function ComplejoForm({
           register={register("telefono")}
           error={errors.telefono}
         />
+
+        <fieldset className="mt-4 rounded-2xl border border-content/10 bg-surface-soft p-4">
+          <legend className="px-2 text-sm font-semibold text-content">
+            Redes sociales
+          </legend>
+          <div className="grid gap-4 md:grid-cols-2">
+            {([
+              ["instagram", "Instagram"],
+              ["facebook", "Facebook"],
+              ["x", "X"],
+              ["youtube", "YouTube"],
+              ["whatsapp", "WhatsApp"],
+              ["threads", "Threads"],
+              ["tiktok", "TikTok"],
+              ["linkedin", "LinkedIn"],
+            ] as const).map(([name, label]) => (
+              <FormInput
+                key={name}
+                label={label}
+                type="url"
+                placeholder={`URL de ${label}`}
+                register={register(name)}
+                error={errors[name]}
+              />
+            ))}
+          </div>
+        </fieldset>
 
         <FormActions
           submitText={isEdit ? "Guardar cambios" : "Guardar complejo"}

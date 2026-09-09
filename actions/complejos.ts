@@ -23,6 +23,15 @@ export type ComplejoPayload = {
   telefono?: string | null;
   pais?: string;
   timezone?: string;
+  logoUrl?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  x?: string | null;
+  youtube?: string | null;
+  whatsapp?: string | null;
+  threads?: string | null;
+  tiktok?: string | null;
+  linkedin?: string | null;
 };
 
 type ComplejoListItem = Complejo & {
@@ -42,6 +51,15 @@ export type PublicComplejoItem = {
   provincia: string;
   pais: string;
   timezone: string;
+  logoUrl: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  x: string | null;
+  youtube: string | null;
+  whatsapp: string | null;
+  threads: string | null;
+  tiktok: string | null;
+  linkedin: string | null;
   canchasCount: number;
   eventosCount: number;
 };
@@ -198,6 +216,15 @@ export async function listPublicComplejos(): Promise<PublicComplejoItem[]> {
       provincia: true,
       pais: true,
       timezone: true,
+      logoUrl: true,
+      instagram: true,
+      facebook: true,
+      x: true,
+      youtube: true,
+      whatsapp: true,
+      threads: true,
+      tiktok: true,
+      linkedin: true,
       _count: {
         select: {
           canchas: true,
@@ -218,6 +245,15 @@ export async function listPublicComplejos(): Promise<PublicComplejoItem[]> {
     provincia: complejo.provincia,
     pais: complejo.pais,
     timezone: complejo.timezone,
+    logoUrl: complejo.logoUrl,
+    instagram: complejo.instagram,
+    facebook: complejo.facebook,
+    x: complejo.x,
+    youtube: complejo.youtube,
+    whatsapp: complejo.whatsapp,
+    threads: complejo.threads,
+    tiktok: complejo.tiktok,
+    linkedin: complejo.linkedin,
     canchasCount: complejo._count.canchas,
     eventosCount: complejo._count.eventos,
   }));
@@ -247,12 +283,21 @@ export async function createComplejo(data: ComplejoPayload) {
       telefono: normalizeNullable(data.telefono),
       pais: data.pais?.trim() || "AR",
       timezone: data.timezone?.trim() || "America/Argentina/Buenos_Aires",
+      logoUrl: normalizeNullable(data.logoUrl),
+      instagram: normalizeNullable(data.instagram),
+      facebook: normalizeNullable(data.facebook),
+      x: normalizeNullable(data.x),
+      youtube: normalizeNullable(data.youtube),
+      whatsapp: normalizeNullable(data.whatsapp),
+      threads: normalizeNullable(data.threads),
+      tiktok: normalizeNullable(data.tiktok),
+      linkedin: normalizeNullable(data.linkedin),
     },
   });
 }
 
 export async function updateComplejo(id: number, data: ComplejoPayload) {
-  await assertSuperadmin();
+  await requireComplejoRole(id, ["ADMIN"]);
 
   const name = data.name?.trim();
   const provincia = data.provincia?.trim();
@@ -288,6 +333,15 @@ export async function updateComplejo(id: number, data: ComplejoPayload) {
       telefono: normalizeNullable(data.telefono),
       pais: data.pais?.trim() || "AR",
       timezone: data.timezone?.trim() || "America/Argentina/Buenos_Aires",
+      logoUrl: normalizeNullable(data.logoUrl),
+      instagram: normalizeNullable(data.instagram),
+      facebook: normalizeNullable(data.facebook),
+      x: normalizeNullable(data.x),
+      youtube: normalizeNullable(data.youtube),
+      whatsapp: normalizeNullable(data.whatsapp),
+      threads: normalizeNullable(data.threads),
+      tiktok: normalizeNullable(data.tiktok),
+      linkedin: normalizeNullable(data.linkedin),
     },
   });
 }

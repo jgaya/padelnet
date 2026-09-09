@@ -238,11 +238,11 @@ model User {
 
   auditoria Auditoria[] @relation("AuditoriaActor")
 
-  logros             LogroUsuario[]
+  logros LogroUsuario[]
 
-  sanciones          Sancion[] @relation("SancionJugador")
-  sancionesCreadas   Sancion[] @relation("SancionCreador")
-  sancionesAnuladas  Sancion[] @relation("SancionAnulador")
+  sanciones         Sancion[] @relation("SancionJugador")
+  sancionesCreadas  Sancion[] @relation("SancionCreador")
+  sancionesAnuladas Sancion[] @relation("SancionAnulador")
 
   featuresActualizadas ComplejoFeature[] @relation("ComplejoFeatureEditor")
 }
@@ -258,6 +258,15 @@ model Complejo {
   provincia  String
   pais       String    @default("AR")
   timezone   String    @default("America/Argentina/Buenos_Aires")
+  logoUrl    String?
+  instagram  String?
+  facebook   String?
+  x          String?
+  youtube    String?
+  whatsapp   String?
+  threads    String?
+  tiktok     String?
+  linkedin   String?
   /// Reglamento del club, en Markdown basico (## titulos, - vinetas, parrafos).
   /// Lo edita el admin; si esta vacio la pagina publica muestra un estado vacio
   /// en vez del texto de otro complejo.
@@ -894,7 +903,7 @@ model Auditoria {
   registroId String? @db.VarChar(64)
 
   /// Quien lo hizo. Null = lo hizo el sistema (cron, seed, script).
-  actorId Int?
+  actorId     Int?
   /// Copia del nombre y el mail al momento del cambio. Con `onDelete: SetNull`
   /// borrar la cuenta desengancha la relacion, pero el registro tiene que
   /// seguir diciendo quien fue.
@@ -1019,7 +1028,7 @@ model LogroUsuario {
   userId  Int
   logroId Int
 
-  progreso Int @default(0)
+  progreso   Int       @default(0)
   /// Null mientras no se gano. Es lo que separa "voy 3 de 5" de "lo tengo".
   obtenidoAt DateTime?
 

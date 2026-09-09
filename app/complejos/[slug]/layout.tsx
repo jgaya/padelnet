@@ -26,9 +26,14 @@ export default async function ComplejoPublicLayout(props: {
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-content/60">
             Complejo
           </p>
-          <h1 className="mt-2 text-3xl font-semibold text-content sm:text-4xl">
-            {complejo.name}
-          </h1>
+          <div className="mt-2 flex items-center gap-3">
+            {complejo.logoUrl ? (
+              <img src={complejo.logoUrl} alt={`Logo de ${complejo.name}`} className="h-14 w-14 rounded-xl object-contain bg-surface p-1 ring-1 ring-content/10" />
+            ) : null}
+            <h1 className="text-3xl font-semibold text-content sm:text-4xl">
+              {complejo.name}
+            </h1>
+          </div>
           <p className="mt-1 text-sm text-content/70">
             {complejo.direccion ? `${complejo.direccion}, ` : ""}
             {complejo.ciudad}, {complejo.provincia}

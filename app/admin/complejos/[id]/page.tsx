@@ -1,5 +1,7 @@
-import { notFound, redirect } from "next/navigation";
-import { esSuperadmin, puedeGestionarComplejo } from "@/lib/authz";
+import { notFound } from "next/navigation";
+import ComplejoForm from "@/app/complejos/components/ComplejoForm";
+import { prisma } from "@/lib/prisma";
+import { requireComplejoRole } from "@/lib/authz";
 
 export default async function AdminComplejoPage(props: {
   params: Promise<{ id: string }>;
@@ -11,14 +13,51 @@ export default async function AdminComplejoPage(props: {
     notFound();
   }
 
-  if (await esSuperadmin()) {
-    redirect(`/superadmin/complejos/${complejoId}`);
-  }
+  await requireComplejoRole(complejoId, ["ADMIN"]);
 
-  // Se pregunta por este complejo en particular: administrar otro no alcanza.
-  if (await puedeGestionarComplejo(complejoId)) {
-    redirect(`/admin/complejos/${complejoId}/eventos`);
-  }
+  const complejo = await prisma.complejo.findUnique({
+    where: { id: complejoId },
+    select: {
+      name: true,
+      email: true,
+      direccion: true,
+      provincia: true,
+      ciudad: true,
+      telefono: true,
+      logoUrl: true,
+      instagram: true,
+      facebook: true,
+      x: true,
+      youtube: true,
+      whatsapp: true,
+      threads: true,
+      tiktok: true,
+      linkedin: true,
+    },
+  });
 
-  notFound();
+  if (!complejo) notFound();
+
+  return (
+    <ComplejoForm
+      initialData={{
+        ...complejo,
+        email: complejo.email ?? "",
+        direccion: complejo.direccion ?? "",
+        telefono: complejo.telefono ?? "",
+        logoUrl: complejo.logoUrl ?? "",
+        instagram: complejo.instagram ?? "",
+        facebook: complejo.facebook ?? "",
+        x: complejo.x ?? "",
+        youtube: complejo.youtube ?? "",
+        whatsapp: complejo.whatsapp ?? "",
+        threads: complejo.threads ?? "",
+        tiktok: complejo.tiktok ?? "",
+        linkedin: complejo.linkedin ?? "",
+      }}
+      isEdit={complejoId}
+      complejoId={complejoId}
+      basePath="/admin/complejos"
+    />
+  );
 }
