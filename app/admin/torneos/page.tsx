@@ -3,8 +3,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  CalendarDaysIcon,
+  ClipboardDocumentCheckIcon,
   PencilSquareIcon,
   PlayCircleIcon,
+  RectangleGroupIcon,
   Squares2X2Icon,
   TrashIcon,
   UserPlusIcon,
@@ -301,6 +304,26 @@ export default function AdminTorneosPage() {
                         label: "Inscribir parejas",
                         icon: <UserPlusIcon className="h-4 w-4" />,
                         href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/inscripciones`,
+                      },
+                      {
+                        key: "zonas",
+                        label: "Armar zonas",
+                        icon: <RectangleGroupIcon className="h-4 w-4" />,
+                        href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/zonas`,
+                      },
+                      {
+                        key: "partidos",
+                        label: "Programar partidos",
+                        icon: <CalendarDaysIcon className="h-4 w-4" />,
+                        href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/partidos`,
+                      },
+                      {
+                        key: "resultados",
+                        label: "Cargar resultados",
+                        icon: (
+                          <ClipboardDocumentCheckIcon className="h-4 w-4" />
+                        ),
+                        href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/resultados`,
                       },
                       {
                         key: "hermanos",

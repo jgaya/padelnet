@@ -13,13 +13,13 @@
 - 'torneos/[id]' muestra grupos, llave, pero falta mostrar los inscriptos hasta el momento
 
 ##### Inscripciones a torneo:
-* Jugador1 y Jugador2 modificar para que abra un modal y ahi tener un filtro de jugadores, porque el select con mas de 30 jugadores se va complicar la usabilidad
+* Jugador1 y Jugador2 modificar para que abra un modal y ahi tener un filtro de jugadores, porque el select con mas de 30 jugadores se va complicar la usabilidad ->Done
 
 
 ### En General
 
 - faltan imagenes en los logros, acomodar seed y subir imagenes
-- acomodar footer
+- acomodar footer ->Done
 - complejos zona horaria y pais acomodar como se ven
 
 

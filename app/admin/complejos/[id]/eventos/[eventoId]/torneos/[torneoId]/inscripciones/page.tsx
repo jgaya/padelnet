@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import LinkJugador from "@/components/jugador/LinkJugador";
 import { migasGestion } from "@/lib/breadcrumbs-gestion";
+import { ParejaPicker } from "./JugadorPicker";
 import {
   categoriaPuedeIntegrarPareja,
   generosElegibles,
@@ -66,12 +67,6 @@ function categoriaRuleLabel(
     default:
       return "Libre";
   }
-}
-
-function generoLabel(value: "M" | "F" | "X") {
-  if (value === "M") return "Masculino";
-  if (value === "F") return "Femenino";
-  return "Sin definir";
 }
 
 export default async function AdminTorneoInscripcionesPage(props: {
@@ -163,6 +158,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
                 OR: [
                   { name: { contains: search } },
                   { lastname: { contains: search } },
+                  { dni: { contains: search } },
                   { email: { contains: search } },
                 ],
               }
@@ -172,6 +168,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
           id: true,
           name: true,
           lastname: true,
+          dni: true,
           genero: true,
           categoria: true,
           // La categoria del jugador en este complejo pisa a la global, igual
@@ -202,6 +199,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
         id: posible.id,
         name: posible.name,
         lastname: posible.lastname,
+        dni: posible.dni,
         genero: posible.genero,
         categoria,
       };
@@ -562,47 +560,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
               </p>
             ) : null}
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl border border-content/10 bg-surface-soft p-4">
-                <label className="mb-2 block text-sm font-semibold text-content">
-                  Jugador 1
-                </label>
-                <select
-                  name="player1Id"
-                  className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
-                  defaultValue=""
-                >
-                  <option value="">Seleccionar jugador 1</option>
-                  {candidates.map((candidate) => (
-                    <option key={candidate.id} value={candidate.id}>
-                      {candidate.name} {candidate.lastname} (
-                      {generoLabel(candidate.genero)} - Categoria{" "}
-                      {candidate.categoria ?? "N/D"})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="rounded-2xl border border-content/10 bg-surface-soft p-4">
-                <label className="mb-2 block text-sm font-semibold text-content">
-                  Jugador 2
-                </label>
-                <select
-                  name="player2Id"
-                  className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
-                  defaultValue=""
-                >
-                  <option value="">Seleccionar jugador 2</option>
-                  {candidates.map((candidate) => (
-                    <option key={candidate.id} value={candidate.id}>
-                      {candidate.name} {candidate.lastname} (
-                      {generoLabel(candidate.genero)} - Categoria{" "}
-                      {candidate.categoria ?? "N/D"})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            <ParejaPicker candidates={candidates} />
 
             <div className="rounded-2xl border border-content/10 bg-surface-soft p-4">
               <label className="mb-2 block text-sm font-semibold text-content">

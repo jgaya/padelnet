@@ -78,7 +78,10 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <footer className="border-t border-content/10 bg-surface">
               <div className="mx-auto w-full max-w-6xl px-4 py-5 text-center text-sm text-content/70 sm:px-6">
-                PadelNet (c) {new Date().getFullYear()} - Comunidad oficial de
+                <a href="https://mintorksoft.com.ar" target="_blank" rel="noopener noreferrer">
+                  Mintork Soft
+                </a>
+                &nbsp;(c) {new Date().getFullYear()} - PadelNet.ar - Comunidad oficial de
                 padel.
               </div>
             </footer>
