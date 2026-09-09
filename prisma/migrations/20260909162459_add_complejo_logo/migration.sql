@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE `complejo` ADD COLUMN `logoUrl` VARCHAR(191) NULL;
+ALTER TABLE `Complejo` ADD COLUMN `logoUrl` VARCHAR(191) NULL;

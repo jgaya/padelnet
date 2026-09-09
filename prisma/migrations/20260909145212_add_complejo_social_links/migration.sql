@@ -1,5 +1,5 @@
 -- AlterTable
-ALTER TABLE `complejo` ADD COLUMN `facebook` VARCHAR(191) NULL,
+ALTER TABLE `Complejo` ADD COLUMN `facebook` VARCHAR(191) NULL,
     ADD COLUMN `instagram` VARCHAR(191) NULL,
     ADD COLUMN `linkedin` VARCHAR(191) NULL,
     ADD COLUMN `threads` VARCHAR(191) NULL,
