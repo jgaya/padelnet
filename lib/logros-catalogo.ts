@@ -67,9 +67,9 @@ export function logrosDelEvento(evento: EventoJuego): [string, number][] {
     case "SET_GANADO":
       return evento.bagel
         ? [
-            ["PRIMER_SET", 1],
-            ["SET_PERFECTO", 1],
-          ]
+          ["PRIMER_SET", 1],
+          ["SET_PERFECTO", 1],
+        ]
         : [["PRIMER_SET", 1]];
 
     case "RONDA_ALCANZADA":
@@ -78,9 +78,9 @@ export function logrosDelEvento(evento: EventoJuego): [string, number][] {
     case "TORNEO_GANADO":
       return evento.invicto
         ? [
-            ["CAMPEON", 1],
-            ["CAMPEON_INVICTO", 1],
-          ]
+          ["CAMPEON", 1],
+          ["CAMPEON_INVICTO", 1],
+        ]
         : [["CAMPEON", 1]];
 
     case "RANKING_ACTUALIZADO":
@@ -153,34 +153,35 @@ export const CATALOGO_INICIAL: {
   rareza: LogroRareza;
   progresoObjetivo: number | null;
   orden: number;
+  icono: string;
 }[] = [
-  // Iniciacion
-  { codigo: "PRIMER_PARTIDO", titulo: "Primer partido", descripcion: "Jugaste tu primer partido", rareza: "COMUN", progresoObjetivo: null, orden: 10 },
-  { codigo: "PRIMERA_VICTORIA", titulo: "Primera victoria", descripcion: "Ganaste tu primer partido", rareza: "COMUN", progresoObjetivo: null, orden: 20 },
-  { codigo: "PRIMER_SET", titulo: "Primer set ganado", descripcion: "Ganaste tu primer set", rareza: "COMUN", progresoObjetivo: null, orden: 30 },
+    // Iniciacion
+    { codigo: "PRIMER_PARTIDO", titulo: "Primer partido", descripcion: "Jugaste tu primer partido", rareza: "COMUN", progresoObjetivo: null, orden: 10, icono: "/badges/primer_partido.png" },
+    { codigo: "PRIMERA_VICTORIA", titulo: "Primera victoria", descripcion: "Ganaste tu primer partido", rareza: "COMUN", progresoObjetivo: null, orden: 20, icono: "/badges/primera_victoria.png" },
+    { codigo: "PRIMER_SET", titulo: "Primer set ganado", descripcion: "Ganaste tu primer set", rareza: "COMUN", progresoObjetivo: null, orden: 30, icono: "/badges/primer_set.png" },
 
-  // Acumulativos
-  { codigo: "PARTIDOS_10", titulo: "Habitue", descripcion: "Jugaste 10 partidos", rareza: "POCO_COMUN", progresoObjetivo: 10, orden: 40 },
-  { codigo: "PARTIDOS_50", titulo: "Veterano", descripcion: "Jugaste 50 partidos", rareza: "RARO", progresoObjetivo: 50, orden: 50 },
-  { codigo: "VICTORIAS_10", titulo: "Ganador", descripcion: "Ganaste 10 partidos", rareza: "POCO_COMUN", progresoObjetivo: 10, orden: 60 },
-  { codigo: "VICTORIAS_50", titulo: "Dominante", descripcion: "Ganaste 50 partidos", rareza: "EPICO", progresoObjetivo: 50, orden: 70 },
+    // Acumulativos
+    { codigo: "PARTIDOS_10", titulo: "Habitue", descripcion: "Jugaste 10 partidos", rareza: "POCO_COMUN", progresoObjetivo: 10, orden: 40, icono: "/badges/partidos_10.png" },
+    { codigo: "PARTIDOS_50", titulo: "Veterano", descripcion: "Jugaste 50 partidos", rareza: "RARO", progresoObjetivo: 50, orden: 50, icono: "/badges/partidos_50.png" },
+    { codigo: "VICTORIAS_10", titulo: "Ganador", descripcion: "Ganaste 10 partidos", rareza: "POCO_COMUN", progresoObjetivo: 10, orden: 60, icono: "/badges/victorias_10.png" },
+    { codigo: "VICTORIAS_50", titulo: "Dominante", descripcion: "Ganaste 50 partidos", rareza: "EPICO", progresoObjetivo: 50, orden: 70, icono: "/badges/victorias_50.png" },
 
-  // Partidos y sets
-  { codigo: "SET_PERFECTO", titulo: "Set perfecto", descripcion: "Ganaste un set 6-0", rareza: "POCO_COMUN", progresoObjetivo: null, orden: 80 },
+    // Partidos y sets
+    { codigo: "SET_PERFECTO", titulo: "Set perfecto", descripcion: "Ganaste un set 6-0", rareza: "POCO_COMUN", progresoObjetivo: null, orden: 80, icono: "/badges/set_perfecto.png" },
 
-  // Progreso en torneo
-  { codigo: "DIECISEISAVOS", titulo: "Dieciseisavos", descripcion: "Llegaste a dieciseisavos de final", rareza: "COMUN", progresoObjetivo: null, orden: 90 },
-  { codigo: "OCTAVOS", titulo: "Octavos de final", descripcion: "Llegaste a octavos de final", rareza: "COMUN", progresoObjetivo: null, orden: 100 },
-  { codigo: "CUARTOS", titulo: "Cuartos de final", descripcion: "Llegaste a cuartos de final", rareza: "POCO_COMUN", progresoObjetivo: null, orden: 110 },
-  { codigo: "SEMIFINAL", titulo: "Semifinal", descripcion: "Llegaste a la semifinal", rareza: "RARO", progresoObjetivo: null, orden: 120 },
-  { codigo: "FINALISTA", titulo: "Finalista", descripcion: "Llegaste a la final", rareza: "EPICO", progresoObjetivo: null, orden: 130 },
-  { codigo: "CAMPEON", titulo: "Campeon", descripcion: "Ganaste un torneo", rareza: "LEGENDARIO", progresoObjetivo: null, orden: 140 },
+    // Progreso en torneo
+    { codigo: "DIECISEISAVOS", titulo: "Dieciseisavos", descripcion: "Llegaste a dieciseisavos de final", rareza: "COMUN", progresoObjetivo: null, orden: 90, icono: "/badges/dieciseisavos.png" },
+    { codigo: "OCTAVOS", titulo: "Octavos de final", descripcion: "Llegaste a octavos de final", rareza: "COMUN", progresoObjetivo: null, orden: 100, icono: "/badges/octavos.png" },
+    { codigo: "CUARTOS", titulo: "Cuartos de final", descripcion: "Llegaste a cuartos de final", rareza: "POCO_COMUN", progresoObjetivo: null, orden: 110, icono: "/badges/cuartos.png" },
+    { codigo: "SEMIFINAL", titulo: "Semifinal", descripcion: "Llegaste a la semifinal", rareza: "RARO", progresoObjetivo: null, orden: 120, icono: "/badges/semifinal.png" },
+    { codigo: "FINALISTA", titulo: "Finalista", descripcion: "Llegaste a la final", rareza: "EPICO", progresoObjetivo: null, orden: 130, icono: "/badges/finalista.png" },
+    { codigo: "CAMPEON", titulo: "Campeon", descripcion: "Ganaste un torneo", rareza: "LEGENDARIO", progresoObjetivo: null, orden: 140, icono: "/badges/campeon.png" },
 
-  // Ranking
-  { codigo: "TOP_50", titulo: "Top 50", descripcion: "Entraste al top 50 del ranking", rareza: "POCO_COMUN", progresoObjetivo: null, orden: 150 },
-  { codigo: "TOP_20", titulo: "Top 20", descripcion: "Entraste al top 20 del ranking", rareza: "RARO", progresoObjetivo: null, orden: 160 },
-  { codigo: "TOP_10", titulo: "Top 10", descripcion: "Entraste al top 10 del ranking", rareza: "EPICO", progresoObjetivo: null, orden: 170 },
+    // Ranking
+    { codigo: "TOP_50", titulo: "Top 50", descripcion: "Entraste al top 50 del ranking", rareza: "POCO_COMUN", progresoObjetivo: null, orden: 150, icono: "/badges/top_50.png" },
+    { codigo: "TOP_20", titulo: "Top 20", descripcion: "Entraste al top 20 del ranking", rareza: "RARO", progresoObjetivo: null, orden: 160, icono: "/badges/top_20.png" },
+    { codigo: "TOP_10", titulo: "Top 10", descripcion: "Entraste al top 10 del ranking", rareza: "EPICO", progresoObjetivo: null, orden: 170, icono: "/badges/top_10.png" },
 
-  // Especiales
-  { codigo: "CAMPEON_INVICTO", titulo: "Campeon invicto", descripcion: "Ganaste un torneo sin perder un solo set", rareza: "LEGENDARIO", progresoObjetivo: null, orden: 180 },
-];
+    // Especiales
+    { codigo: "CAMPEON_INVICTO", titulo: "Campeon invicto", descripcion: "Ganaste un torneo sin perder un solo set", rareza: "LEGENDARIO", progresoObjetivo: null, orden: 180, icono: "/badges/campeon_invicto.png" },
+  ];

@@ -116,8 +116,8 @@ Relleno `#8B9698`, aro `#5F6B6D`, simbolo `#F5F7F7`.
 | Codigo | `{SIMBOLO_CONCRETO}` |
 |---|---|
 | `PRIMER_PARTIDO` | a single padel racket seen from the front, centered vertically |
-| `PRIMERA_VICTORIA` | a padel ball with two small wings on its sides |
-| `PRIMER_SET` | a padel ball crossing over a low net line |
+| `PRIMERA_VICTORIA` | a tennis ball with two small wings on its sides |
+| `PRIMER_SET` | a tennis ball crossing over a low net line |
 
 ### Acumulativos de partidos
 
@@ -130,14 +130,14 @@ Relleno `#8B9698`, aro `#5F6B6D`, simbolo `#F5F7F7`.
 
 | Codigo | Rareza | `{SIMBOLO_CONCRETO}` |
 |---|---|---|
-| `VICTORIAS_10` | POCO_COMUN | a single chevron stripe above a padel ball |
-| `VICTORIAS_50` | EPICO | three stacked chevron stripes above a padel ball |
+| `VICTORIAS_10` | POCO_COMUN | a single chevron stripe above a tennis ball |
+| `VICTORIAS_50` | EPICO | three stacked chevron stripes above a tennis ball |
 
 ### Sets
 
 | Codigo | Rareza | `{SIMBOLO_CONCRETO}` |
 |---|---|---|
-| `SET_PERFECTO` | POCO_COMUN | a padel ball centered inside a thick empty ring, like a zero |
+| `SET_PERFECTO` | POCO_COMUN | a tennis ball centered inside a thick empty ring, like a zero |
 
 ### Progreso en el torneo
 
@@ -150,7 +150,7 @@ achicando**. Asi se leen como una serie.
 | `OCTAVOS` | COMUN | a tournament bracket diagram with three branches merging |
 | `CUARTOS` | POCO_COMUN | a tournament bracket diagram with two branches merging into one |
 | `SEMIFINAL` | RARO | two tournament bracket branches merging into a single line, with a star at the tip |
-| `FINALISTA` | EPICO | a laurel wreath open at the top, framing a padel ball |
+| `FINALISTA` | EPICO | a laurel wreath open at the top, framing a tennis ball |
 | `CAMPEON` | LEGENDARIO | a trophy cup with two crossed padel rackets behind it |
 
 ### Ranking
@@ -175,6 +175,8 @@ Serie por cantidad de chevrones ascendentes.
 
 `CAMPEON`, legendario, listo para pegar:
 
+CAMPEON_INVICTO	LEGENDARIO	a heraldic shield with a crown above it and a padel racket inside
+
 ```
 Flat vector badge icon for a padel sports app.
 A circular medal that FILLS THE ENTIRE SQUARE FRAME, edge to edge,
@@ -185,13 +187,15 @@ thick strokes, high contrast, no gradients, no shadows, no 3D, no bevel.
 Minimal and legible when scaled down to 64 pixels.
 No text, no letters, no numbers, no watermark, no signature.
 Square 1:1 composition, 1024x1024.
-Symbol: a trophy cup with two crossed padel rackets behind it
+Symbol: a heraldic shield with a crown above it and a padel racket inside
 ```
 
 `PRIMER_PARTIDO`, comun, listo para pegar:
 
 COMUN
 Relleno #8B9698, aro #5F6B6D, simbolo #F5F7F7.
+
+OCTAVOS	COMUN	a tournament bracket diagram with three branches merging
 
 ```
 Flat vector badge icon for a padel sports app.
@@ -203,7 +207,78 @@ thick strokes, high contrast, no gradients, no shadows, no 3D, no bevel.
 Minimal and legible when scaled down to 64 pixels.
 No text, no letters, no numbers, no watermark, no signature.
 Square 1:1 composition, 1024x1024.
-Symbol: a single padel racket seen from the front, centered vertically
+Symbol: a tournament bracket diagram with three branches merging
+```
+
+
+`PARTIDOS_10`	POCO_COMUN	three padel rackets arranged in a fan, overlapping
+
+SET_PERFECTO	POCO_COMUN	a tennis ball centered inside a thick empty ring, like a zero
+#00C853	#00963E	#F5F7F7
+
+```
+Flat vector badge icon for a padel sports app.
+A circular medal that FILLS THE ENTIRE SQUARE FRAME, edge to edge,
+with no margin and no background around it.
+Solid fill color #00C853, with a thick concentric outer rim in #00963E.
+Centered symbol drawn in flat solid #F5F7F7, bold geometric shapes,
+thick strokes, high contrast, no gradients, no shadows, no 3D, no bevel.
+Minimal and legible when scaled down to 64 pixels.
+No text, no letters, no numbers, no watermark, no signature.
+Square 1:1 composition, 1024x1024.
+Symbol: a tennis ball centered inside a thick empty ring, like a zero
+```
+
+`PARTIDOS_50`	RARO	five padel rackets arranged in a radial fan, like a crown
+
+TOP_20	RARO	two stacked upward chevron arrows above a horizontal baseline
+
+	#3B82F6	#1D4ED8	#F5F7F7
+```
+Flat vector badge icon for a padel sports app.
+A circular medal that FILLS THE ENTIRE SQUARE FRAME, edge to edge,
+with no margin and no background around it.
+Solid fill color #3B82F6, with a thick concentric outer rim in #1D4ED8.
+Centered symbol drawn in flat solid #F5F7F7, bold geometric shapes,
+thick strokes, high contrast, no gradients, no shadows, no 3D, no bevel.
+Minimal and legible when scaled down to 64 pixels.
+No text, no letters, no numbers, no watermark, no signature.
+Square 1:1 composition, 1024x1024.
+Symbol: two stacked upward chevron arrows above a horizontal baseline
+```
+
+SEMIFINAL	RARO	two tournament bracket branches merging into a single line, with a star at the tip
+```
+Flat vector badge icon for a padel sports app.
+A circular medal that FILLS THE ENTIRE SQUARE FRAME, edge to edge,
+with no margin and no background around it.
+Solid fill color #3B82F6, with a thick concentric outer rim in #1D4ED8.
+Centered symbol drawn in flat solid #F5F7F7, bold geometric shapes,
+thick strokes, high contrast, no gradients, no shadows, no 3D, no bevel.
+Minimal and legible when scaled down to 64 pixels.
+No text, no letters, no numbers, no watermark, no signature.
+Square 1:1 composition, 1024x1024.
+Symbol: two tournament bracket branches merging into a single line, with a star at the tip
+```
+
+
+
+FINALISTA	EPICO	a laurel wreath open at the top, framing a tennis ball
+
+
+#7C4DFF	#5B2EDB	#F5F7F7
+
+```
+Flat vector badge icon for a padel sports app.
+A circular medal that FILLS THE ENTIRE SQUARE FRAME, edge to edge,
+with no margin and no background around it.
+Solid fill color #7C4DFF, with a thick concentric outer rim in #5B2EDB.
+Centered symbol drawn in flat solid #F5F7F7, bold geometric shapes,
+thick strokes, high contrast, no gradients, no shadows, no 3D, no bevel.
+Minimal and legible when scaled down to 64 pixels.
+No text, no letters, no numbers, no watermark, no signature.
+Square 1:1 composition, 1024x1024.
+Symbol: three stacked chevron stripes above a tennis ball
 ```
 
 ---
