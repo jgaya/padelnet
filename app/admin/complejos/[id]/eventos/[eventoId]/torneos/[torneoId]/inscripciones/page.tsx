@@ -6,11 +6,13 @@ import {
   reactivateManagedTorneoPair,
   registerManagedTorneoPair,
 } from "@/actions/torneos-inscripcion";
+import { getEstadoAvanceTorneo } from "@/actions/torneos-partidos";
 import { prisma } from "@/lib/prisma";
 
 import Breadcrumbs from "@/components/Breadcrumbs";
 import LinkJugador from "@/components/jugador/LinkJugador";
 import { migasGestion } from "@/lib/breadcrumbs-gestion";
+import AvanceTorneoPanel from "../../components/AvanceTorneoPanel";
 import { ParejaPicker } from "./JugadorPicker";
 import {
   categoriaPuedeIntegrarPareja,
@@ -127,7 +129,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
     notFound();
   }
 
-  const [inscriptosCount, suplentesCount, posibles, inscripciones] =
+  const [inscriptosCount, suplentesCount, posibles, inscripciones, avance] =
     await Promise.all([
       prisma.pareja.count({
         where: { torneoId: torneoIdNum, deletedAt: null, suplente: false },
@@ -183,6 +185,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
         take: CANDIDATOS_A_EVALUAR,
       }),
       listManagedTorneoInscripciones(torneoIdNum),
+      getEstadoAvanceTorneo(complejoId, eventoIdNum, torneoIdNum),
     ]);
 
   // Misma precedencia que la action: si la categoria del perfil del complejo
@@ -319,6 +322,13 @@ export default async function AdminTorneoInscripcionesPage(props: {
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 sm:py-8">
       <Breadcrumbs migas={migas} />
+      <AvanceTorneoPanel
+        complejoId={complejoId}
+        eventoId={eventoIdNum}
+        torneoId={torneoIdNum}
+        basePath="/admin/complejos"
+        estado={avance}
+      />
       <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
         <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-5 py-6 sm:px-7">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-content/60">

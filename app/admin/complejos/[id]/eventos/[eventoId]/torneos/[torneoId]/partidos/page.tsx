@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 
+import { getEstadoAvanceTorneo } from "@/actions/torneos-partidos";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { migasGestion } from "@/lib/breadcrumbs-gestion";
 
+import AvanceTorneoPanel from "../../components/AvanceTorneoPanel";
 import PartidosPageClient from "./PartidosPageClient";
 
 export default async function PartidosPage(props: {
@@ -25,6 +27,12 @@ export default async function PartidosPage(props: {
     notFound();
   }
 
+  const avance = await getEstadoAvanceTorneo(
+    complejoId,
+    parsedEventoId,
+    parsedTorneoId,
+  );
+
   const migas = await migasGestion({
     complejoId,
     eventoId: parsedEventoId,
@@ -35,6 +43,15 @@ export default async function PartidosPage(props: {
   return (
     <>
       <Breadcrumbs migas={migas} />
+      <div className="container p-4 pb-0">
+        <AvanceTorneoPanel
+          complejoId={complejoId}
+          eventoId={parsedEventoId}
+          torneoId={parsedTorneoId}
+          basePath="/admin/complejos"
+          estado={avance}
+        />
+      </div>
       <PartidosPageClient />
     </>
   );
