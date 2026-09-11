@@ -5,10 +5,13 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   PencilSquareIcon,
+  PlayCircleIcon,
   RectangleGroupIcon,
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
+  Squares2X2Icon,
   TrashIcon,
+  UserPlusIcon,
 } from "@heroicons/react/24/solid";
 import RowActions from "@/components/RowActions";
 import SearchBar from "@/components/SearchBar";
@@ -18,6 +21,7 @@ import Badge from "@/app/components/UI/Badge";
 import {
   deleteTorneo,
   listTorneosByEvento,
+  publicarTorneo,
   type TorneoListItem,
 } from "@/actions/torneos";
 import { useSnackbar } from "@/context/SnackbarContext";
@@ -296,6 +300,27 @@ export default function TorneosPageClient({
     }
   };
 
+  const handleTogglePublicacion = async (torneo: TorneoListItem) => {
+    try {
+      const result = await publicarTorneo(complejoId, eventoId, torneo.id);
+
+      if (!result.success) {
+        showSnackbar(result.error, "error");
+        return;
+      }
+
+      await fetchTorneos();
+      showSnackbar(result.message, "success");
+    } catch (error) {
+      showSnackbar(
+        error instanceof Error
+          ? error.message
+          : "No se pudo cambiar la publicacion del torneo",
+        "error",
+      );
+    }
+  };
+
   return (
     <div className="container padel-complejos-list">
       <TitleBar
@@ -452,6 +477,12 @@ export default function TorneosPageClient({
                         href: `/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}`,
                       },
                       {
+                        key: "inscripciones",
+                        label: "Inscribir parejas",
+                        icon: <UserPlusIcon className="h-4 w-4" />,
+                        href: `/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}/inscripciones`,
+                      },
+                      {
                         key: "zonas",
                         label: "Armar zonas",
                         icon: <RectangleGroupIcon className="h-4 w-4" />,
@@ -470,6 +501,20 @@ export default function TorneosPageClient({
                           <ClipboardDocumentCheckIcon className="h-4 w-4" />
                         ),
                         href: `/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}/resultados`,
+                      },
+                      {
+                        key: "hermanos",
+                        label: "Ver todos los torneos del evento",
+                        icon: <Squares2X2Icon className="h-4 w-4" />,
+                        href: `/admin/complejos/${complejoId}/eventos/${eventoId}/torneos`,
+                      },
+                      {
+                        key: "publicar",
+                        label: torneo.publicado
+                          ? "Despublicar torneo"
+                          : "Publicar torneo",
+                        icon: <PlayCircleIcon className="h-4 w-4" />,
+                        onClick: () => void handleTogglePublicacion(torneo),
                       },
                       {
                         key: "eliminar",
