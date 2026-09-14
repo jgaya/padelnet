@@ -2,7 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   typescript: {
+    // Ignora errores de TS durante el build de producción
     ignoreBuildErrors: true,
+  },
+  experimental: {
+    // Limita la cantidad de workers paralelos para consumir menos RAM
+    cpus: 1,
+    // Opcional en versiones recientes: optimiza el uso de RAM de los workers
+    memoryBasedWorkersCount: true,
   },
   async headers() {
     return [
