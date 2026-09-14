@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  typescript: {
+/*   typescript: {
     // Ignora errores de TS durante el build de producción
     ignoreBuildErrors: true,
   },
@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
     cpus: 1,
     // Opcional en versiones recientes: optimiza el uso de RAM de los workers
     memoryBasedWorkersCount: true,
-  },
+  }, */
   async headers() {
     return [
       {
