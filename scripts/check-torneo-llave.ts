@@ -366,6 +366,23 @@ for (const parejas of [12, 24]) {
   }
 }
 
+// La final debe conservar un slot propio aun cuando la llave empiece antes
+// del ultimo dia disponible.
+{
+  const result = buildGrilla(
+    buildInput(16, 5, 2, {
+      durationMin: 90,
+      tipoEvento: "SEMANAL",
+    }),
+  );
+  if (!result.matches.some((match) => match.phase === "F")) {
+    fallar("la final semanal queda sin dia u horario");
+  }
+  if (result.unassignedLlave.some((match) => match.phase === "F" && !match.conBye)) {
+    fallar("la final semanal aparece como pendiente aunque hay slots");
+  }
+}
+
 // El descanso entre fases es fijo: no puede colapsar cuando gapMultiplier es 0.
 {
   const input = buildInput(12, 4, 3, { gapMultiplier: 0 });

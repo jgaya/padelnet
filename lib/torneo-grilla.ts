@@ -600,33 +600,11 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     const firstLlaveDayBase = Math.min(
       ...fasesEarly.map((f) => targetDayMap.get(f) ?? lastDayIndex),
     );
-    const maxPartidosPorGrupo = Math.max(
-      1,
-      ...Array.from(
-        zonaMatches.reduce((counts, match) => {
-          if (match.grupoId !== null) {
-            counts.set(match.grupoId, (counts.get(match.grupoId) ?? 0) + 1);
-          }
-          return counts;
-        }, new Map<number, number>()),
-      ).map(([, count]) => count),
-    );
-    const firstLlaveDay = Math.min(
-      lastDayIndex,
-      firstLlaveDayBase + Math.max(0, maxPartidosPorGrupo - firstLlaveDayBase),
-    );
-    const targetShift = firstLlaveDay - firstLlaveDayBase;
-    if (targetShift > 0) {
-      for (const fase of fasesEarly) {
-        targetDayMap.set(
-          fase,
-          Math.min(
-            lastDayIndex,
-            (targetDayMap.get(fase) ?? lastDayIndex) + targetShift,
-          ),
-        );
-      }
-    }
+    // El inicio de la llave no se desplaza globalmente por la cantidad de
+    // partidos de zona: `notBefore` ya impide que una fase empiece antes de
+    // terminar sus alimentadores. Mantener los targets originales permite usar
+    // slots de dias anteriores y conservar capacidad para la final.
+    const firstLlaveDay = firstLlaveDayBase;
     const lastZonaDay = Math.max(1, Math.min(lastDayIndex, firstLlaveDay - 1));
     zonaDayIndexes = new Set<number>();
     for (let d = 0; d <= lastZonaDay; d++) zonaDayIndexes.add(d);
