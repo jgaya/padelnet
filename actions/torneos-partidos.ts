@@ -583,16 +583,16 @@ function buildTournamentDays(inicio: Date | null, fin: Date | null) {
 function buildParejaNombre(
   jugador1:
     | {
-        name: string;
-        lastname: string;
-      }
+      name: string;
+      lastname: string;
+    }
     | null
     | undefined,
   jugador2:
     | {
-        name: string;
-        lastname: string;
-      }
+      name: string;
+      lastname: string;
+    }
     | null
     | undefined,
 ) {
@@ -630,6 +630,7 @@ async function ensureTorneoAccess(
       evento: {
         select: {
           nombre: true,
+          tipo: true,
         },
       },
     },
@@ -851,6 +852,7 @@ async function buildTorneoPartidosPreview(
   }
 
   const grilla = buildGrilla({
+    tipoEvento: torneo.evento.tipo,
     modo: esDirecta ? "DIRECTO" : "ZONAS",
     siembra,
     zonas: zonasGrilla,

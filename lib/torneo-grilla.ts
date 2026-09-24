@@ -77,6 +77,8 @@ export type GrillaInput = {
   gapMultiplier: number;
   shuffleSeed: number;
   allowExtraFirstDay: boolean;
+  /** Tipo de evento: FINDE (default) o SEMANAL. Afecta la distribucion de dias. */
+  tipoEvento?: "FINDE" | "SEMANAL";
 };
 
 /** ZONA cubre tanto el round robin como los especiales de ganadores/perdedores. */
@@ -268,6 +270,7 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     gapMultiplier,
     modo = "ZONAS",
     siembra = [],
+    tipoEvento = "FINDE",
   } = input;
 
   if (days.length === 0) {
@@ -551,38 +554,91 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
       left.canchaId - right.canchaId,
   );
 
-  // Reparto de dias entre zonas y llave. Las zonas se juegan los dos primeros
-  // dias y el cuadro los ultimos, si no las zonas se comen todos los slots y no
+  // Reparto de dias entre zonas y llave. Las zonas se juegan los primeros dias
+  // y el cuadro los ultimos, si no las zonas se comen todos los slots y no
   // queda lugar para la llave.
+  //
+  // Para SEMANAL (5+ dias) las fases se reparten hacia atras desde el ultimo
+  // dia, dando a cada fase su propia franja y permitiendo spillover hacia
+  // adelante. Esto evita que las ultimas instancias queden sin asignar.
   const lastDayIndex = days.length - 1;
-  const zonaDayIndexes = new Set(
-    days.length === 1 ? [0] : [0, 1],
-  );
-  const faseDayIndexes: Record<FaseLlave, Set<number>> = (() => {
-    if (days.length >= 4) {
-      return {
-        DF: new Set([2]),
-        OF: new Set([2]),
-        CF: new Set([3]),
-        SF: new Set([3]),
-        F: new Set([3]),
-      };
+
+  // Fases presentes en el cuadro. Se calcula temprano porque en SEMANAL el
+  // reparto de dias necesita saber cuantas fases hay para distribuirlas.
+  const fasesEarly: readonly FaseLlave[] = entry
+    ? fasesDelCuadro(entry)
+    : FASES_LLAVE;
+
+  let zonaDayIndexes: Set<number>;
+  let faseDayIndexes: Record<FaseLlave, Set<number>>;
+
+  if (tipoEvento === "SEMANAL" && days.length >= 5) {
+    // --- SEMANAL, 5+ dias ---
+    // Cada fase arranca desde su dia target y puede usar los dias siguientes
+    // hasta lastDayIndex (spillover). Las zonas ocupan los dias previos.
+    const hasDF = fasesEarly.includes("DF");
+
+    const targetDayMap = new Map<FaseLlave, number>();
+    if (hasDF && days.length <= 7) {
+      // Con 5 fases en <= 7 dias, SF y F comparten el ultimo dia.
+      targetDayMap.set("DF", lastDayIndex - 3);
+      targetDayMap.set("OF", lastDayIndex - 2);
+      targetDayMap.set("CF", lastDayIndex - 1);
+      targetDayMap.set("SF", lastDayIndex);
+      targetDayMap.set("F", lastDayIndex);
+    } else {
+      // 4 fases o menos, o muchos dias: cada fase su dia.
+      targetDayMap.set("F", lastDayIndex);
+      targetDayMap.set("SF", Math.max(2, lastDayIndex - 1));
+      targetDayMap.set("CF", Math.max(2, lastDayIndex - 2));
+      targetDayMap.set("OF", Math.max(2, lastDayIndex - 3));
+      targetDayMap.set("DF", Math.max(2, lastDayIndex - 4));
     }
 
-    if (days.length === 3) {
-      // Con 3 dias los dieciseisavos arrancan el segundo dia, ya sobre el final.
-      return {
-        DF: new Set([1]),
-        OF: new Set([2]),
-        CF: new Set([2]),
-        SF: new Set([2]),
-        F: new Set([2]),
-      };
-    }
+    // Las zonas pueden usar todos los dias hasta el dia anterior al primer
+    // dia de llave, con un minimo de [0, 1].
+    const firstLlaveDay = Math.min(
+      ...fasesEarly.map((f) => targetDayMap.get(f) ?? lastDayIndex),
+    );
+    const lastZonaDay = Math.max(1, Math.min(lastDayIndex, firstLlaveDay - 1));
+    zonaDayIndexes = new Set<number>();
+    for (let d = 0; d <= lastZonaDay; d++) zonaDayIndexes.add(d);
 
-    const unico = new Set([lastDayIndex]);
-    return { DF: unico, OF: unico, CF: unico, SF: unico, F: unico };
-  })();
+    // Cada fase puede jugar desde su target hasta el ultimo dia.
+    faseDayIndexes = { DF: new Set(), OF: new Set(), CF: new Set(), SF: new Set(), F: new Set() };
+    for (const f of FASES_LLAVE) {
+      const tDay = targetDayMap.get(f) ?? lastDayIndex;
+      for (let d = tDay; d <= lastDayIndex; d++) faseDayIndexes[f].add(d);
+    }
+  } else {
+    // --- FINDE / torneos cortos (logica original, intacta) ---
+    zonaDayIndexes = new Set(days.length === 1 ? [0] : [0, 1]);
+    faseDayIndexes = (() => {
+      if (days.length >= 4) {
+        return {
+          DF: new Set([2]),
+          OF: new Set([2]),
+          CF: new Set([3]),
+          SF: new Set([3]),
+          F: new Set([3]),
+        };
+      }
+
+      if (days.length === 3) {
+        // Con 3 dias los dieciseisavos arrancan el segundo dia, ya sobre el final.
+        return {
+          DF: new Set([1]),
+          OF: new Set([2]),
+          CF: new Set([2]),
+          SF: new Set([2]),
+          F: new Set([2]),
+        };
+      }
+
+      const unico = new Set([lastDayIndex]);
+      return { DF: unico, OF: unico, CF: unico, SF: unico, F: unico };
+    })();
+  }
 
   /**
    * Descanso minimo entre fases, en minutos. Es fijo a proposito: no se deriva

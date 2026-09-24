@@ -192,11 +192,12 @@ function checkGrilla(
   totalParejas: number,
   cantidadDias: number,
   cantidadCanchas: number,
+  overrides?: Partial<GrillaInput>,
 ) {
-  const input = buildInput(totalParejas, cantidadDias, cantidadCanchas);
+  const input = buildInput(totalParejas, cantidadDias, cantidadCanchas, overrides);
   const result = buildGrilla(input);
   const entry = getLlavePorParejas(totalParejas)!;
-  const etiqueta = `parejas=${totalParejas} dias=${cantidadDias} canchas=${cantidadCanchas}`;
+  const etiqueta = `parejas=${totalParejas} dias=${cantidadDias} canchas=${cantidadCanchas}${input.tipoEvento ? ` tipo=${input.tipoEvento}` : ""}`;
 
   const totalLlave =
     entry.round + (entry.round === 16 ? 15 : entry.round === 8 ? 7 : 3);
@@ -308,8 +309,8 @@ function checkGrilla(
   const zonaAgendados = result.matches.filter((match) => match.phase === "ZONA").length;
   console.log(
     `  ${etiqueta}: zona ${zonaAgendados}/${entry.partidos.length}` +
-      ` llave ${elimAgendados.length}/${totalLlave}` +
-      ` sinZona=${result.unassignedZona.length} sinLlave=${result.unassignedLlave.length}`,
+    ` llave ${elimAgendados.length}/${totalLlave}` +
+    ` sinZona=${result.unassignedZona.length} sinLlave=${result.unassignedLlave.length}`,
   );
 }
 
@@ -327,6 +328,17 @@ checkGrilla(12, 1, 6);
 
 console.log("Grilla, capacidad ajustada (debe degradar, no romper):");
 checkGrilla(33, 4, 1);
+
+console.log("Grilla semanal (7 y 6 dias):");
+for (const parejas of [12, 16, 24]) {
+  checkGrilla(parejas, 7, 3, { tipoEvento: "SEMANAL" });
+}
+for (const parejas of [33, 48]) {
+  checkGrilla(parejas, 7, 4, { tipoEvento: "SEMANAL" });
+}
+for (const parejas of [12, 24]) {
+  checkGrilla(parejas, 6, 3, { tipoEvento: "SEMANAL" });
+}
 
 // El descanso entre fases es fijo: no puede colapsar cuando gapMultiplier es 0.
 {
