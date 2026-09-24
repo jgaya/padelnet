@@ -474,7 +474,7 @@ export default function PartidosPageClient() {
                       className="padel-form-check-label"
                       htmlFor="extra-slot-dia1"
                     >
-                      Permitir ultimo slot corto en el primer dia
+                      Permitir slot adicional completo en el primer dia
                     </label>
                   </div>
                 </div>

@@ -898,11 +898,19 @@ export async function saveTorneoPartidosSetup(
     payload,
   );
 
-  // Solo las zonas bloquean: un partido de zona sin horario es un fallo real de
-  // grilla. Los de llave que no entraron se guardan sin agendar.
+  // Un partido jugable sin horario es un fallo real de grilla. Solo se permite
+  // dejar fuera de los slots un cruce de llave cuyo rival sea Bye.
   if (preview.unassignedZona.length > 0) {
     throw new Error(
       "Hay partidos de zona sin horario. Revisa las canchas y los horarios",
+    );
+  }
+  const unassignedLlaveJugable = preview.unassignedLlave.filter(
+    (match) => !match.conBye,
+  );
+  if (unassignedLlaveJugable.length > 0) {
+    throw new Error(
+      `Hay ${unassignedLlaveJugable.length} partidos de llave sin horario. Amplia los dias, las canchas o los horarios disponibles`,
     );
   }
 

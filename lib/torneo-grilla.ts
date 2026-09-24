@@ -524,7 +524,7 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
 
       const remainingMin = endMin - lastEndMin;
       const allowExtra =
-        remainingMin > 30 &&
+        remainingMin >= durationMin &&
         (dayIndex === 1 || (dayIndex === 0 && input.allowExtraFirstDay));
 
       if (allowExtra) {
@@ -597,9 +597,36 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
 
     // Las zonas pueden usar todos los dias hasta el dia anterior al primer
     // dia de llave, con un minimo de [0, 1].
-    const firstLlaveDay = Math.min(
+    const firstLlaveDayBase = Math.min(
       ...fasesEarly.map((f) => targetDayMap.get(f) ?? lastDayIndex),
     );
+    const maxPartidosPorGrupo = Math.max(
+      1,
+      ...Array.from(
+        zonaMatches.reduce((counts, match) => {
+          if (match.grupoId !== null) {
+            counts.set(match.grupoId, (counts.get(match.grupoId) ?? 0) + 1);
+          }
+          return counts;
+        }, new Map<number, number>()),
+      ).map(([, count]) => count),
+    );
+    const firstLlaveDay = Math.min(
+      lastDayIndex,
+      firstLlaveDayBase + Math.max(0, maxPartidosPorGrupo - firstLlaveDayBase),
+    );
+    const targetShift = firstLlaveDay - firstLlaveDayBase;
+    if (targetShift > 0) {
+      for (const fase of fasesEarly) {
+        targetDayMap.set(
+          fase,
+          Math.min(
+            lastDayIndex,
+            (targetDayMap.get(fase) ?? lastDayIndex) + targetShift,
+          ),
+        );
+      }
+    }
     const lastZonaDay = Math.max(1, Math.min(lastDayIndex, firstLlaveDay - 1));
     zonaDayIndexes = new Set<number>();
     for (let d = 0; d <= lastZonaDay; d++) zonaDayIndexes.add(d);
@@ -655,6 +682,8 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     number,
     Array<{ dayKey: string; startMin: number; endMin: number }>
   >();
+  const usageByGroupDay = new Set<string>();
+  const matchCountByDay = new Map<number, number>();
   const minGap = Math.ceil(durationMin * gapMultiplier);
 
   const hasPairConflict = (
@@ -682,6 +711,11 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     );
   };
 
+  const hasGroupConflict = (
+    grupoId: number | null,
+    slot: (typeof slots)[number],
+  ) => grupoId !== null && usageByGroupDay.has(`${grupoId}|${slot.day.key}`);
+
   const registerUsage = (
     match: PlannedMatch,
     slot: (typeof slots)[number],
@@ -696,6 +730,13 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
       });
       usageByPair.set(pairId, played);
     }
+    if (match.grupoId !== null) {
+      usageByGroupDay.add(`${match.grupoId}|${slot.day.key}`);
+    }
+    matchCountByDay.set(
+      slot.dayIndex,
+      (matchCountByDay.get(slot.dayIndex) ?? 0) + 1,
+    );
   };
 
   /**
@@ -706,14 +747,17 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     match: PlannedMatch,
     allowedDays: Set<number>,
     notBefore = 0,
+    balanceDays = false,
   ) => {
     const restricted = match.restrictions.length > 0;
 
+    const candidatos = [] as Array<(typeof slots)[number]>;
     for (const slot of slots) {
       if (slot.match) continue;
       if (!allowedDays.has(slot.dayIndex)) continue;
       if (absMinutes(slot.dayIndex, slot.startMin) < notBefore) continue;
       if (isRestrictedAt(match.restrictions, slot.day, slot.startMin)) continue;
+      if (hasGroupConflict(match.grupoId, slot)) continue;
 
       if (
         hasPairConflict(match.pareja1Id, slot, restricted) ||
@@ -722,12 +766,26 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
         continue;
       }
 
-      slot.match = match;
-      registerUsage(match, slot);
-      return true;
+      candidatos.push(slot);
     }
 
-    return false;
+    candidatos.sort(
+      (left, right) =>
+        (balanceDays
+          ? (matchCountByDay.get(left.dayIndex) ?? 0) -
+            (matchCountByDay.get(right.dayIndex) ?? 0)
+          : 0) ||
+        left.dayIndex - right.dayIndex ||
+        left.scheduledAt.getTime() - right.scheduledAt.getTime() ||
+        left.canchaId - right.canchaId,
+    );
+
+    const slot = candidatos[0];
+    if (!slot) return false;
+
+    slot.match = match;
+    registerUsage(match, slot);
+    return true;
   };
 
   const pendientes: PlannedMatch[] = [];
@@ -743,7 +801,7 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     ...zonaOrdenadas.filter((item) => item.restrictions.length > 0),
     ...zonaOrdenadas.filter((item) => item.restrictions.length === 0),
   ]) {
-    if (!assignMatch(match, zonaDayIndexes)) {
+    if (!assignMatch(match, zonaDayIndexes, 0, true)) {
       pendientes.push(match);
     }
   }
@@ -754,7 +812,7 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     let asignados = 0;
 
     for (let index = pendientes.length - 1; index >= 0; index -= 1) {
-      if (assignMatch(pendientes[index], zonaDayIndexes)) {
+      if (assignMatch(pendientes[index], zonaDayIndexes, 0, true)) {
         pendientes.splice(index, 1);
         asignados += 1;
       }
@@ -782,7 +840,7 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     const notBefore =
       (finPorZona.get(match.zona ?? "") ?? 0) + GAP_ESPECIALES_ZONA;
 
-    if (!assignMatch(match, zonaDayIndexes, notBefore)) {
+    if (!assignMatch(match, zonaDayIndexes, notBefore, true)) {
       pendientes.push(match);
     }
   }
