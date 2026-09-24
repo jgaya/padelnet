@@ -904,12 +904,16 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
 
     for (const match of jugables) {
       const esFinal = fase === "F";
+      const finSemifinales = faseAnterior === "SF"
+        ? (finPorFase.get("SF") ?? notBefore)
+        : notBefore;
       const finalNotBefore = esFinal
-        ? notBefore + durationMin * 2
+        ? finSemifinales + durationMin * 2
         : notBefore;
       const asignada =
         assignMatch(match, allowedDays, finalNotBefore) ||
-        (esFinal && assignMatch(match, allowedDays, notBefore + durationMin));
+        (esFinal &&
+          assignMatch(match, allowedDays, finSemifinales + durationMin));
 
       if (asignada) {
         asignados += 1;

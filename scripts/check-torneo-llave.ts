@@ -375,7 +375,10 @@ for (const parejas of [12, 24]) {
       tipoEvento: "SEMANAL",
     }),
   );
-  if (!result.matches.some((match) => match.phase === "F")) {
+  if (result.matches.filter((match) => match.phase === "SF").length !== 2) {
+    fallar("las semifinales semanales quedan sin dia u horario");
+  }
+  if (result.matches.filter((match) => match.phase === "F").length !== 1) {
     fallar("la final semanal queda sin dia u horario");
   }
   if (result.unassignedLlave.some((match) => match.phase === "F" && !match.conBye)) {
