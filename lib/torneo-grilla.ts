@@ -903,7 +903,15 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     let asignados = 0;
 
     for (const match of jugables) {
-      if (assignMatch(match, allowedDays, notBefore)) {
+      const esFinal = fase === "F";
+      const finalNotBefore = esFinal
+        ? notBefore + durationMin * 2
+        : notBefore;
+      const asignada =
+        assignMatch(match, allowedDays, finalNotBefore) ||
+        (esFinal && assignMatch(match, allowedDays, notBefore + durationMin));
+
+      if (asignada) {
         asignados += 1;
       } else {
         unassignedLlave.push(toUnassigned(match));
