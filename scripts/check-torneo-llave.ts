@@ -340,6 +340,32 @@ for (const parejas of [12, 24]) {
   checkGrilla(parejas, 6, 3, { tipoEvento: "SEMANAL" });
 }
 
+// Con dos canchas, la grilla debe ocupar las canchas en paralelo antes de
+// avanzar al siguiente horario, siempre que las restricciones lo permitan.
+{
+  const input = buildInput(16, 7, 2, {
+    durationMin: 90,
+    tipoEvento: "SEMANAL",
+  });
+  const result = buildGrilla(input);
+  const primerInicio = result.matches
+    .filter((match) => match.phase === "ZONA")
+    .sort((left, right) => inicio(left, input.days) - inicio(right, input.days))[0];
+  const canchasEnParalelo = new Set(
+    result.matches
+      .filter(
+        (match) =>
+          match.phase === "ZONA" &&
+          match.dayKey === primerInicio?.dayKey &&
+          match.start === primerInicio?.start,
+      )
+      .map((match) => match.canchaId),
+  );
+  if (canchasEnParalelo.size < 2) {
+    fallar("semanal con 2 canchas no usa las canchas en paralelo");
+  }
+}
+
 // El descanso entre fases es fijo: no puede colapsar cuando gapMultiplier es 0.
 {
   const input = buildInput(12, 4, 3, { gapMultiplier: 0 });

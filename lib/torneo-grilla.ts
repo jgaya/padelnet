@@ -801,7 +801,7 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     ...zonaOrdenadas.filter((item) => item.restrictions.length > 0),
     ...zonaOrdenadas.filter((item) => item.restrictions.length === 0),
   ]) {
-    if (!assignMatch(match, zonaDayIndexes, 0, true)) {
+    if (!assignMatch(match, zonaDayIndexes)) {
       pendientes.push(match);
     }
   }
@@ -812,7 +812,7 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     let asignados = 0;
 
     for (let index = pendientes.length - 1; index >= 0; index -= 1) {
-      if (assignMatch(pendientes[index], zonaDayIndexes, 0, true)) {
+      if (assignMatch(pendientes[index], zonaDayIndexes)) {
         pendientes.splice(index, 1);
         asignados += 1;
       }
@@ -840,7 +840,7 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     const notBefore =
       (finPorZona.get(match.zona ?? "") ?? 0) + GAP_ESPECIALES_ZONA;
 
-    if (!assignMatch(match, zonaDayIndexes, notBefore, true)) {
+    if (!assignMatch(match, zonaDayIndexes, notBefore)) {
       pendientes.push(match);
     }
   }
