@@ -37,6 +37,26 @@ export type TorneoGrupoCard = {
   id: number;
   nombre: string;
   rows: TorneoGrupoStatsRow[];
+  matches: TorneoGrupoMatch[];
+};
+
+export type TorneoGrupoMatch = {
+  id: number;
+  scheduledAt: string | null;
+  cancha: string | null;
+  pareja1Id: number | null;
+  pareja2Id: number | null;
+  ganadorId: number | null;
+  status:
+    | "PENDING"
+    | "SCHEDULED"
+    | "IN_PROGRESS"
+    | "FINISHED"
+    | "WALKOVER"
+    | "CANCELLED";
+  pareja1: string;
+  pareja2: string;
+  score: string;
 };
 
 export type TorneoLlaveRound =
@@ -280,13 +300,53 @@ export async function buildVistaPublicaTorneo(
           partidos: {
             where: {
               deletedAt: null,
-              status: { in: ["FINISHED", "WALKOVER"] },
             },
+            orderBy: [{ scheduledAt: "asc" }, { id: "asc" }],
             select: {
               id: true,
               pareja1Id: true,
               pareja2Id: true,
               ganadorId: true,
+              scheduledAt: true,
+              status: true,
+              cancha: {
+                select: {
+                  name: true,
+                  numero: true,
+                },
+              },
+              pareja1: {
+                select: {
+                  jugador1: {
+                    select: {
+                      name: true,
+                      lastname: true,
+                    },
+                  },
+                  jugador2: {
+                    select: {
+                      name: true,
+                      lastname: true,
+                    },
+                  },
+                },
+              },
+              pareja2: {
+                select: {
+                  jugador1: {
+                    select: {
+                      name: true,
+                      lastname: true,
+                    },
+                  },
+                  jugador2: {
+                    select: {
+                      name: true,
+                      lastname: true,
+                    },
+                  },
+                },
+              },
               sets: {
                 orderBy: { numero: "asc" },
                 select: {
@@ -377,12 +437,19 @@ export async function buildVistaPublicaTorneo(
     // si divergieran, el cuadro se armaria con un orden distinto al publicado.
     const posiciones = calcularPosiciones(
       [...nombrePorPareja.keys()],
-      grupo.partidos,
+      grupo.partidos.filter(
+        (partido) =>
+          partido.status === "FINISHED" || partido.status === "WALKOVER",
+      ),
     );
 
     // Con el mismo contexto de desempate: si la tabla publica no aplicara el
     // enfrentamiento directo, mostraria un orden distinto al que uso el cuadro.
-    const contexto = construirContextoDesempate(posiciones, grupo.partidos);
+    const partidosFinalizados = grupo.partidos.filter(
+      (partido) =>
+        partido.status === "FINISHED" || partido.status === "WALKOVER",
+    );
+    const contexto = construirContextoDesempate(posiciones, partidosFinalizados);
 
     // A igualdad total el modulo deja el orden indefinido a proposito. Para la
     // tabla publica se desempata por nombre, que al menos es estable.
@@ -405,6 +472,28 @@ export async function buildVistaPublicaTorneo(
       id: grupo.id,
       nombre: grupo.nombre,
       rows,
+      matches: grupo.partidos.map((partido) => ({
+        id: partido.id,
+        scheduledAt: partido.scheduledAt?.toISOString() ?? null,
+        cancha: canchaLabel(partido.cancha),
+        pareja1Id: partido.pareja1Id,
+        pareja2Id: partido.pareja2Id,
+        ganadorId: partido.ganadorId,
+        status: partido.status,
+        pareja1: partido.pareja1
+          ? buildParejaNombre(
+              partido.pareja1.jugador1,
+              partido.pareja1.jugador2,
+            )
+          : "A definir",
+        pareja2: partido.pareja2
+          ? buildParejaNombre(
+              partido.pareja2.jugador1,
+              partido.pareja2.jugador2,
+            )
+          : "A definir",
+        score: scoreLabel(partido.sets),
+      })),
     };
   });
 
