@@ -574,47 +574,26 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
 
   if (tipoEvento === "SEMANAL" && days.length >= 5) {
     // --- SEMANAL, 5+ dias ---
-    // Cada fase arranca desde su dia target y puede usar los dias siguientes
-    // hasta lastDayIndex (spillover). Las zonas ocupan los dias previos.
-    const hasDF = fasesEarly.includes("DF");
+    // Dias con al menos un slot disponible (excluye sabados/domingos u otros
+    // dias cuya ventana horaria sea cero en todas las canchas).
+    const daysWithSlots = new Set<number>();
+    for (const slot of slots) daysWithSlots.add(slot.dayIndex);
 
-    const targetDayMap = new Map<FaseLlave, number>();
-    if (hasDF && days.length <= 7) {
-      // Con 5 fases en <= 7 dias, SF y F comparten el ultimo dia.
-      targetDayMap.set("DF", lastDayIndex - 3);
-      targetDayMap.set("OF", lastDayIndex - 2);
-      targetDayMap.set("CF", lastDayIndex - 1);
-      targetDayMap.set("SF", lastDayIndex);
-      targetDayMap.set("F", lastDayIndex);
-    } else {
-      // 4 fases o menos, o muchos dias: cada fase su dia.
-      targetDayMap.set("F", lastDayIndex);
-      targetDayMap.set("SF", Math.max(2, lastDayIndex - 1));
-      targetDayMap.set("CF", Math.max(2, lastDayIndex - 2));
-      targetDayMap.set("OF", Math.max(2, lastDayIndex - 3));
-      targetDayMap.set("DF", Math.max(2, lastDayIndex - 4));
+    // Si ningun dia tiene slots (configuracion incoherente), se toman todos.
+    if (daysWithSlots.size === 0) {
+      for (let d = 0; d <= lastDayIndex; d++) daysWithSlots.add(d);
     }
 
-    // Las zonas pueden usar todos los dias hasta el dia anterior al primer
-    // dia de llave, con un minimo de [0, 1].
-    const firstLlaveDayBase = Math.min(
-      ...fasesEarly.map((f) => targetDayMap.get(f) ?? lastDayIndex),
-    );
-    // El inicio de la llave no se desplaza globalmente por la cantidad de
-    // partidos de zona: `notBefore` ya impide que una fase empiece antes de
-    // terminar sus alimentadores. Mantener los targets originales permite usar
-    // slots de dias anteriores y conservar capacidad para la final.
-    const firstLlaveDay = firstLlaveDayBase;
-    const lastZonaDay = Math.max(1, Math.min(lastDayIndex, firstLlaveDay - 1));
-    zonaDayIndexes = new Set<number>();
-    for (let d = 0; d <= lastZonaDay; d++) zonaDayIndexes.add(d);
+    // Las zonas usan todos los dias con slots: como se asignan primero, la
+    // llave no les roba lugar, y al no restringirlas se evita que queden
+    // partidos de zona sin ubicar cuando el torneo tiene muchos dias.
+    zonaDayIndexes = new Set(daysWithSlots);
 
-    // Cada fase puede jugar desde su target hasta el ultimo dia.
-    faseDayIndexes = { DF: new Set(), OF: new Set(), CF: new Set(), SF: new Set(), F: new Set() };
-    for (const f of FASES_LLAVE) {
-      const tDay = targetDayMap.get(f) ?? lastDayIndex;
-      for (let d = tDay; d <= lastDayIndex; d++) faseDayIndexes[f].add(d);
-    }
+    // Cada fase de la llave puede usar TODOS los dias con slots. El
+    // ordenamiento temporal lo garantiza `notBefore` (linea ~900): cada fase
+    // espera a que termine la anterior + gap. Con esta libertad, la llave
+    // ocupa el primer slot libre despues de las zonas, sin saltear semanas.
+    faseDayIndexes = { DF: new Set(daysWithSlots), OF: new Set(daysWithSlots), CF: new Set(daysWithSlots), SF: new Set(daysWithSlots), F: new Set(daysWithSlots) };
   } else {
     // --- FINDE / torneos cortos (logica original, intacta) ---
     zonaDayIndexes = new Set(days.length === 1 ? [0] : [0, 1]);
@@ -849,10 +828,18 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
   // 3) Llave. El cuadro no puede empezar antes de que termine la ultima zona, y
   // cada fase espera a que la anterior este completa: si no, las semis podrian
   // caer antes que los cuartos que las alimentan.
-  const finZonas = slots.reduce((max, slot) => {
+  const ultZonaDayIndex = slots.reduce((max, slot) => {
     if (slot.match?.phase !== "ZONA") return max;
-    return Math.max(max, absMinutes(slot.dayIndex, slot.endMin));
-  }, 0);
+    return Math.max(max, slot.dayIndex);
+  }, -1);
+
+  const finZonas =
+    tipoEvento === "SEMANAL" && ultZonaDayIndex >= 0
+      ? (ultZonaDayIndex + 1) * 1440
+      : slots.reduce((max, slot) => {
+          if (slot.match?.phase !== "ZONA") return max;
+          return Math.max(max, absMinutes(slot.dayIndex, slot.endMin));
+        }, 0);
 
   const finPorFase = new Map<FaseLlave, number>();
   const asignadosPorFase = new Map<FaseLlave, number>();
