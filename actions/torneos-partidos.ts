@@ -77,6 +77,7 @@ export type SaveTorneoPartidosPayload = {
   gapMultiplier: number;
   shuffleSeed: number;
   allowExtraFirstDay: boolean;
+  dayKeys: string[];
   canchas: Array<{
     canchaId: number;
     selected: boolean;
@@ -771,10 +772,24 @@ async function buildTorneoPartidosPreview(
     throw new Error("El descanso entre partidos debe estar entre 0x y 3x");
   }
 
-  const days = buildTournamentDays(torneo.inicio, torneo.fin);
-  if (days.length === 0) {
+  const tournamentDays = buildTournamentDays(torneo.inicio, torneo.fin);
+  if (tournamentDays.length === 0) {
     throw new Error("El torneo debe tener un rango de fechas valido");
   }
+
+  if (!Array.isArray(payload.dayKeys) || payload.dayKeys.length === 0) {
+    throw new Error("Debes dejar al menos un dia en la grilla");
+  }
+  const selectedDayKeys = new Set(payload.dayKeys);
+  if (
+    selectedDayKeys.size !== payload.dayKeys.length ||
+    payload.dayKeys.some(
+      (key) => !tournamentDays.some((day) => day.key === key),
+    )
+  ) {
+    throw new Error("La seleccion de dias no es valida");
+  }
+  const days = tournamentDays.filter((day) => selectedDayKeys.has(day.key));
 
   for (const config of selectedCanchas) {
     if (config.dayWindows.length !== days.length) {

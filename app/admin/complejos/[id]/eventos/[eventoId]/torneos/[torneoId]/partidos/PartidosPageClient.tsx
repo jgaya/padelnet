@@ -36,6 +36,7 @@ export default function PartidosPageClient() {
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<TorneoPartidosPreview | null>(null);
   const [selectedCanchaIds, setSelectedCanchaIds] = useState<number[]>([]);
+  const [selectedDayKeys, setSelectedDayKeys] = useState<string[]>([]);
   const [canchaWindows, setCanchaWindows] = useState<CourtWindows>({});
   const [durationMin, setDurationMin] = useState(75);
   const [gapMultiplier, setGapMultiplier] = useState(1);
@@ -81,22 +82,27 @@ export default function PartidosPageClient() {
     void loadData();
   }, [loadData]);
 
-  const days = useMemo(() => data?.torneo.days ?? [], [data]);
+  const tournamentDays = useMemo(() => data?.torneo.days ?? [], [data]);
+  const days = useMemo(
+    () => tournamentDays.filter((day) => selectedDayKeys.includes(day.key)),
+    [selectedDayKeys, tournamentDays],
+  );
 
   useEffect(() => {
     if (!data) return;
 
+    setSelectedDayKeys(tournamentDays.map((day) => day.key));
     setSelectedCanchaIds(data.canchas.slice(0, 1).map((item) => item.id));
     setCanchaWindows(
       Object.fromEntries(
         data.canchas.map((cancha) => [
           cancha.id,
-          days.map(() => ({ start: "09:00", end: "18:00" })),
+          tournamentDays.map(() => ({ start: "09:00", end: "18:00" })),
         ]),
       ),
     );
     setPreview(null);
-  }, [data, days]);
+  }, [data, tournamentDays]);
 
   const invalidatePreview = () => setPreview(null);
 
@@ -109,6 +115,12 @@ export default function PartidosPageClient() {
     invalidatePreview();
   };
 
+  const removeDay = (dayKey: string) => {
+    if (days.length <= 1) return;
+    setSelectedDayKeys((prev) => prev.filter((key) => key !== dayKey));
+    invalidatePreview();
+  };
+
   const updateWindow = (
     canchaId: number,
     dayIndex: number,
@@ -117,7 +129,8 @@ export default function PartidosPageClient() {
   ) => {
     setCanchaWindows((prev) => {
       const current =
-        prev[canchaId] ?? days.map(() => ({ start: "09:00", end: "18:00" }));
+        prev[canchaId] ??
+        tournamentDays.map(() => ({ start: "09:00", end: "18:00" }));
       return {
         ...prev,
         [canchaId]: current.map((item, index) =>
@@ -139,7 +152,8 @@ export default function PartidosPageClient() {
 
     setCanchaWindows((prev) => {
       const origen =
-        prev[primeraId] ?? days.map(() => ({ start: "09:00", end: "18:00" }));
+        prev[primeraId] ??
+        tournamentDays.map(() => ({ start: "09:00", end: "18:00" }));
 
       const next = { ...prev };
       for (const canchaId of resto) {
@@ -169,6 +183,7 @@ export default function PartidosPageClient() {
         gapMultiplier,
         shuffleSeed: seed,
         allowExtraFirstDay,
+        dayKeys: days.map((day) => day.key),
         canchas: data.canchas
           .filter((cancha) => selectedCanchaIds.includes(cancha.id))
           .map((cancha) => ({
@@ -176,11 +191,14 @@ export default function PartidosPageClient() {
             selected: true,
             dayWindows: (
               canchaWindows[cancha.id] ??
-              days.map(() => ({ start: "09:00", end: "18:00" }))
-            ).map((window) => ({
-              start: window.start,
-              end: window.end,
-            })),
+              tournamentDays.map(() => ({ start: "09:00", end: "18:00" }))
+            )
+              .filter((_, index) =>
+                days.some(
+                  (day) => day.key === tournamentDays[index]?.key,
+                ),
+              )
+              .map((window) => ({ start: window.start, end: window.end })),
           })),
       };
     },
@@ -193,6 +211,7 @@ export default function PartidosPageClient() {
       gapMultiplier,
       selectedCanchaIds,
       shuffleSeed,
+      tournamentDays,
     ],
   );
 
@@ -355,56 +374,80 @@ export default function PartidosPageClient() {
                           </Tooltip>
                         ) : null}
                       </div>
-                      {days.map((day, index) => (
-                        <div
-                          key={day.key}
-                          className="grid items-end gap-3 padel-time-row md:grid-cols-12"
-                        >
-                          <div className="md:col-span-3">
-                            <label className="padel-form-label">
-                              {day.label}
-                            </label>
+                      {days.map((day) => {
+                        const dayIndex = tournamentDays.findIndex(
+                          (item) => item.key === day.key,
+                        );
+
+                        return (
+                          <div
+                            key={day.key}
+                            className="grid items-end gap-3 padel-time-row md:grid-cols-12"
+                          >
+                            <div className="md:col-span-3">
+                              <label className="padel-form-label">
+                                {day.label}
+                              </label>
+                            </div>
+                            <div className="md:col-span-4">
+                              <label className="padel-form-label">Inicio</label>
+                              <input
+                                type="time"
+                                className="padel-form-input"
+                                value={
+                                  canchaWindows[cancha.id]?.[dayIndex]?.start ??
+                                  "09:00"
+                                }
+                                onChange={(event) =>
+                                  updateWindow(
+                                    cancha.id,
+                                    dayIndex,
+                                    "start",
+                                    event.target.value,
+                                  )
+                                }
+                              />
+                            </div>
+                            <div className="md:col-span-4">
+                              <label className="padel-form-label">Fin</label>
+                              <input
+                                type="time"
+                                className="padel-form-input"
+                                value={
+                                  canchaWindows[cancha.id]?.[dayIndex]?.end ??
+                                  "18:00"
+                                }
+                                onChange={(event) =>
+                                  updateWindow(
+                                    cancha.id,
+                                    dayIndex,
+                                    "end",
+                                    event.target.value,
+                                  )
+                                }
+                              />
+                            </div>
+                            <div className="md:col-span-1">
+                              {esPrimera ? (
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-danger btn-sm"
+                                  aria-label={`Eliminar ${day.label} de la grilla`}
+                                  title={
+                                    days.length <= 1
+                                      ? "Debe quedar al menos un dia en la grilla"
+                                      : `Eliminar ${day.label} de la grilla`
+                                  }
+                                  disabled={days.length <= 1}
+                                  onClick={() => removeDay(day.key)}
+                                >
+                                  Eliminar
+                                </button>
+                              ) : null}
+                            </div>
                           </div>
-                          <div className="md:col-span-4">
-                            <label className="padel-form-label">Inicio</label>
-                            <input
-                              type="time"
-                              className="padel-form-input"
-                              value={
-                                canchaWindows[cancha.id]?.[index]?.start ??
-                                "09:00"
-                              }
-                              onChange={(event) =>
-                                updateWindow(
-                                  cancha.id,
-                                  index,
-                                  "start",
-                                  event.target.value,
-                                )
-                              }
-                            />
-                          </div>
-                          <div className="md:col-span-4">
-                            <label className="padel-form-label">Fin</label>
-                            <input
-                              type="time"
-                              className="padel-form-input"
-                              value={
-                                canchaWindows[cancha.id]?.[index]?.end ??
-                                "18:00"
-                              }
-                              onChange={(event) =>
-                                updateWindow(
-                                  cancha.id,
-                                  index,
-                                  "end",
-                                  event.target.value,
-                                )
-                              }
-                            />
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   );
                 })}
