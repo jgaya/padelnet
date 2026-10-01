@@ -280,6 +280,21 @@ function checkGrilla(
     const actual = elimAgendados.filter((match) => match.phase === fases[index]);
     if (anterior.length === 0 || actual.length === 0) continue;
     if (
+      input.tipoEvento === "SEMANAL" &&
+      Math.min(
+        ...actual.map((match) =>
+          input.days.findIndex((day) => day.key === match.dayKey),
+        ),
+      ) <=
+        Math.max(
+          ...anterior.map((match) =>
+            input.days.findIndex((day) => day.key === match.dayKey),
+          ),
+        )
+    ) {
+      fallar(etiqueta, `${fases[index]} comparte dia con ${fases[index - 1]}`);
+    }
+    if (
       Math.min(...actual.map((match) => inicio(match, input.days))) <
       Math.max(...anterior.map((match) => fin(match, input.days)))
     ) {

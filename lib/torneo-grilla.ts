@@ -882,9 +882,17 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
     const gap = Math.max(
       ...[...allowedDays].map((dayIndex) => elimGap(dayIndex)),
     );
+    const finFaseAnterior = faseAnterior
+      ? (finPorFase.get(faseAnterior) ?? 0)
+      : 0;
+    const inicioDiaPosterior =
+      tipoEvento === "SEMANAL" && finFaseAnterior > 0
+        ? Math.floor((finFaseAnterior - 1) / 1440 + 1) * 1440
+        : 0;
     const notBefore = Math.max(
       finZonas + gap,
-      faseAnterior ? (finPorFase.get(faseAnterior) ?? 0) + gap : 0,
+      finFaseAnterior + gap,
+      inicioDiaPosterior,
     );
 
     let asignados = 0;
@@ -895,12 +903,15 @@ export function buildGrilla(input: GrillaInput): GrillaResult {
         ? (finPorFase.get("SF") ?? notBefore)
         : notBefore;
       const finalNotBefore = esFinal
-        ? finSemifinales + durationMin * 2
+        ? Math.max(notBefore, finSemifinales + durationMin * 2)
         : notBefore;
+      const finalFallbackNotBefore =
+        tipoEvento === "SEMANAL"
+          ? Math.max(notBefore, finSemifinales + durationMin)
+          : finSemifinales + durationMin;
       const asignada =
         assignMatch(match, allowedDays, finalNotBefore) ||
-        (esFinal &&
-          assignMatch(match, allowedDays, finSemifinales + durationMin));
+        (esFinal && assignMatch(match, allowedDays, finalFallbackNotBefore));
 
       if (asignada) {
         asignados += 1;
