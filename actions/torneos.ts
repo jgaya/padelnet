@@ -37,6 +37,8 @@ export type TorneoListItem = {
   status: TournamentStatus;
   publicado: boolean;
   zonaCerrada: boolean;
+  zonaGenerada: boolean;
+  partidosGenerados: boolean;
   inicio: string | null;
   fin: string | null;
   complejoId?: number;
@@ -265,6 +267,8 @@ export async function listTorneos(opts: ListOpts = {}) {
         status: true,
         publicado: true,
         zonaCerrada: true,
+        zonaGenerada: true,
+        partidosGenerados: true,
         formato: true,
         siembra: true,
         inicio: true,
@@ -305,6 +309,8 @@ export async function listTorneos(opts: ListOpts = {}) {
         status: item.status,
         publicado: item.publicado,
         zonaCerrada: item.zonaCerrada,
+        zonaGenerada: item.zonaGenerada,
+        partidosGenerados: item.partidosGenerados,
         inicio: item.inicio,
         fin: item.fin,
         complejoId: item.evento?.complejoId ?? undefined,
@@ -403,6 +409,8 @@ export async function listTorneosForAdmin(opts: ListOpts = {}) {
         status: true,
         publicado: true,
         zonaCerrada: true,
+        zonaGenerada: true,
+        partidosGenerados: true,
         formato: true,
         siembra: true,
         inicio: true,
@@ -524,6 +532,8 @@ export async function listTorneosByComplejo(
         status: true,
         publicado: true,
         zonaCerrada: true,
+        zonaGenerada: true,
+        partidosGenerados: true,
         formato: true,
         siembra: true,
         inicio: true,
@@ -575,6 +585,8 @@ function toTorneoListItem(item: {
   status: TournamentStatus;
   publicado: boolean;
   zonaCerrada: boolean;
+  zonaGenerada: boolean;
+  partidosGenerados: boolean;
   inicio: Date | null;
   fin: Date | null;
   complejoId?: number;
@@ -599,6 +611,8 @@ function toTorneoListItem(item: {
     status: item.status,
     publicado: item.publicado,
     zonaCerrada: item.zonaCerrada,
+    zonaGenerada: item.zonaGenerada,
+    partidosGenerados: item.partidosGenerados,
     inicio: item.inicio ? item.inicio.toISOString() : null,
     fin: item.fin ? item.fin.toISOString() : null,
     complejoId: item.complejoId,
@@ -692,6 +706,8 @@ export async function listTorneosByEvento(
         status: true,
         publicado: true,
         zonaCerrada: true,
+        zonaGenerada: true,
+        partidosGenerados: true,
         formato: true,
         siembra: true,
         inicio: true,
@@ -1106,6 +1122,8 @@ export async function getTorneoById(
       status: true,
       publicado: true,
       zonaCerrada: true,
+      zonaGenerada: true,
+      partidosGenerados: true,
       formato: true,
       siembra: true,
       inicio: true,

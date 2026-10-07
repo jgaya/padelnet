@@ -420,6 +420,7 @@ export default function TorneosPageClient({
                 </th>
                 <th>Publicado</th>
                 <th>Zona cerrada</th>
+                <th>Partidos Generados</th>
                 <th
                   onClick={() => handleSort("inicio")}
                   style={{ cursor: "pointer" }}
@@ -464,6 +465,7 @@ export default function TorneosPageClient({
                 </td>
                 <td>{torneo.publicado ? "Si" : "No"}</td>
                 <td>{torneo.zonaCerrada ? "Si" : "No"}</td>
+                <td>{torneo.partidosGenerados ? "Sí" : "No"} </td>
                 <td>{formatDateTime(torneo.inicio)}</td>
                 <td>{formatDateTime(torneo.fin)}</td>
                 <td className="padel-table-actions">

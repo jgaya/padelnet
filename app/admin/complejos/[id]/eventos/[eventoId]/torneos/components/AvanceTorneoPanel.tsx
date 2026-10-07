@@ -26,6 +26,8 @@ type AvanceTorneoPanelProps = {
   /** Prefijo de ruta: cambia entre el arbol de admin y el de superadmin. */
   basePath: string;
   estado: EstadoAvanceTorneo | null;
+  zonaGenerada?: boolean;
+  partidosGenerados?: boolean;
 };
 
 export default function AvanceTorneoPanel({
@@ -34,6 +36,8 @@ export default function AvanceTorneoPanel({
   torneoId,
   basePath,
   estado,
+  zonaGenerada,
+  partidosGenerados,
 }: AvanceTorneoPanelProps) {
   const showSnackbar = useSnackbar();
   const [trabajando, setTrabajando] = useState(false);
@@ -122,6 +126,15 @@ export default function AvanceTorneoPanel({
       () => finalizarTorneo(complejoId, eventoId, torneoId),
       "No se pudo terminar el torneo",
     );
+  // Para sumar un hito nuevo alcanza con agregarlo a esta lista.
+  const hitos = [
+    { label: "Armar Zonas", cumplido: Boolean(zonaGenerada) },
+    { label: "Programar Partidos", cumplido: Boolean(partidosGenerados) },
+  ];
+  const porcentajeAvance = Math.round(
+    (hitos.filter((hito) => hito.cumplido).length / hitos.length) * 100,
+  );
+  const configuracionCompleta = porcentajeAvance === 100;
 
   return (
     <section className="mb-4 overflow-hidden rounded-2xl border border-content/10 bg-surface">
@@ -132,6 +145,45 @@ export default function AvanceTorneoPanel({
       </div>
 
       <div className="space-y-4 px-4 py-4">
+        <div>
+          <div className="mb-1 flex justify-between text-xs font-semibold text-content/80">
+            <span>Progreso de preparación</span>
+            <span>{porcentajeAvance}%</span>
+          </div>
+          <div
+            aria-valuemax={100}
+            aria-valuemin={0}
+            aria-valuenow={porcentajeAvance}
+            className="h-2 overflow-hidden rounded-full bg-surface-soft"
+            role="progressbar"
+          >
+            <div
+              className="h-full rounded-full bg-padel-green transition-all"
+              style={{ width: `${porcentajeAvance}%` }}
+            />
+          </div>
+          <ul className="mt-2 flex flex-wrap gap-2 text-xs font-semibold">
+            {hitos.map((hito) => (
+              <li
+                key={hito.label}
+                className={`rounded-full px-3 py-1 ${
+                  hito.cumplido
+                    ? "bg-padel-green/15 text-padel-green"
+                    : "bg-danger/15 text-danger"
+                }`}
+              >
+                {hito.cumplido ? "✓" : "✗"} {hito.label}
+              </li>
+            ))}
+          </ul>
+          {configuracionCompleta ? (
+            <p className="mt-3 rounded-xl border border-padel-green/30 bg-padel-green/10 px-3 py-2 text-sm font-semibold text-padel-green">
+              La configuración está completada, ahora puede comenzar con el
+              torneo.
+            </p>
+          ) : null}
+        </div>
+
         <div className="flex flex-wrap gap-2 text-xs font-semibold">
           <span
             className={`rounded-full px-3 py-1 ${

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { getTorneoById } from "@/actions/torneos";
 import { getEstadoAvanceTorneo } from "@/actions/torneos-partidos";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { migasGestion } from "@/lib/breadcrumbs-gestion";
@@ -27,11 +28,10 @@ export default async function PartidosPage(props: {
     notFound();
   }
 
-  const avance = await getEstadoAvanceTorneo(
-    complejoId,
-    parsedEventoId,
-    parsedTorneoId,
-  );
+  const [avance, torneo] = await Promise.all([
+    getEstadoAvanceTorneo(complejoId, parsedEventoId, parsedTorneoId),
+    getTorneoById(complejoId, parsedEventoId, parsedTorneoId),
+  ]);
 
   const migas = await migasGestion({
     complejoId,
@@ -50,6 +50,8 @@ export default async function PartidosPage(props: {
           torneoId={parsedTorneoId}
           basePath="/admin/complejos"
           estado={avance}
+          zonaGenerada={torneo.zonaGenerada}
+          partidosGenerados={torneo.partidosGenerados}
         />
       </div>
       <PartidosPageClient />

@@ -160,14 +160,10 @@ export default function ResultadosPageClient() {
     eventoId > 0 &&
     Number.isInteger(torneoId) &&
     torneoId > 0;
+  const cargandoVista = loadingVista && paramsAreValid;
 
   const loadMatches = useCallback(async () => {
-    if (!paramsAreValid) {
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
+    if (!paramsAreValid) return;
 
     try {
       const data = await listTorneoPartidosByTorneo(
@@ -189,12 +185,7 @@ export default function ResultadosPageClient() {
 
   /** Las zonas y el cuadro, como los ve el jugador. */
   const loadVista = useCallback(async () => {
-    if (!paramsAreValid) {
-      setLoadingVista(false);
-      return;
-    }
-
-    setLoadingVista(true);
+    if (!paramsAreValid) return;
 
     try {
       setVista(await getTorneoVistaPublica(complejoId, eventoId, torneoId));
@@ -273,6 +264,8 @@ export default function ResultadosPageClient() {
       setShowResultModal(false);
       // Tambien la vista: el resultado cambia la tabla de posiciones y puede
       // haber avanzado a alguien en el cuadro.
+      setLoading(true);
+      setLoadingVista(true);
       void loadMatches();
       void loadVista();
     } catch (error) {
@@ -385,7 +378,7 @@ export default function ResultadosPageClient() {
             </div>
           </div>
 
-          {loading ? (
+          {loading && paramsAreValid ? (
             <p>Cargando partidos...</p>
           ) : matches.length === 0 ? (
             <p>No hay partidos disponibles para este torneo.</p>
@@ -481,7 +474,7 @@ export default function ResultadosPageClient() {
             </p>
           </div>
           <div className="p-4">
-            {loadingVista ? (
+            {cargandoVista ? (
               <p className="mb-0">Cargando zonas...</p>
             ) : (
               <TorneoZonasTablas
@@ -502,7 +495,7 @@ export default function ResultadosPageClient() {
             </p>
           </div>
           <div className="p-1 sm:p-4">
-            {loadingVista ? (
+            {cargandoVista ? (
               <p className="mb-0 p-3">Cargando llave...</p>
             ) : vista && hayLlave ? (
               <Bracket columns={vista.llave} />

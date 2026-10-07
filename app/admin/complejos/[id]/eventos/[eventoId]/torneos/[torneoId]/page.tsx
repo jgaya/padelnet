@@ -63,6 +63,8 @@ export default async function EditTorneoPage(props: {
             torneoId={parsedTorneoId}
             basePath="/admin/complejos"
             estado={avance}
+            zonaGenerada={torneo.zonaGenerada}
+            partidosGenerados={torneo.partidosGenerados}
           />
         </div>
 

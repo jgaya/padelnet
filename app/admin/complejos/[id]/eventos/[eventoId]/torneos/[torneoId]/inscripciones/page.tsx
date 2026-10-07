@@ -108,6 +108,8 @@ export default async function AdminTorneoInscripcionesPage(props: {
       categoriaRegla: true,
       categoriaN: true,
       capacidad: true,
+      zonaGenerada: true,
+      partidosGenerados: true,
       evento: {
         select: {
           id: true,
@@ -328,6 +330,8 @@ export default async function AdminTorneoInscripcionesPage(props: {
         torneoId={torneoIdNum}
         basePath="/admin/complejos"
         estado={avance}
+        zonaGenerada={torneo.zonaGenerada}
+        partidosGenerados={torneo.partidosGenerados}
       />
       <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
         <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-5 py-6 sm:px-7">

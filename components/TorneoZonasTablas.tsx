@@ -72,6 +72,7 @@ export default function TorneoZonasTablas({
             <table className="min-w-full text-sm">
               <thead className="bg-surface-soft text-content/80">
                 <tr>
+                  <th className="px-3 py-2 text-left font-semibold">&nbsp;</th>
                   <th className="px-3 py-2 text-left font-semibold">Pareja</th>
                   <th className="px-3 py-2 text-right font-semibold">Pts</th>
                   <th className="px-3 py-2 text-right font-semibold">PG</th>
@@ -90,6 +91,9 @@ export default function TorneoZonasTablas({
                       index % 2 === 0 ? "bg-surface" : "bg-surface-soft/50"
                     }`}
                   >
+                    <td className="px-3 py-2 font-medium text-content">
+                      {index + 1}
+                    </td>
                     <td className="px-3 py-2 font-medium text-content">
                       {row.parejaNombre}
                     </td>
