@@ -69,10 +69,12 @@ export default function TorneoZonasTablas({
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
+            <table className="tableMobile w-max min-w-full text-sm">
               <thead className="bg-surface-soft text-content/80">
                 <tr>
-                  <th className="px-3 py-2 text-left font-semibold">&nbsp;</th>
+                  <th className="w-px whitespace-nowrap px-1 py-2 text-left font-semibold sm:px-3">
+                    &nbsp;
+                  </th>
                   <th className="px-3 py-2 text-left font-semibold">Pareja</th>
                   <th className="px-3 py-2 text-right font-semibold">Pts</th>
                   <th className="px-3 py-2 text-right font-semibold">PG</th>
@@ -84,28 +86,50 @@ export default function TorneoZonasTablas({
                 </tr>
               </thead>
               <tbody>
-                {grupo.rows.map((row, index) => (
-                  <tr
-                    key={row.parejaId}
-                    className={`transition hover:bg-padel-green/10 ${
-                      index % 2 === 0 ? "bg-surface" : "bg-surface-soft/50"
-                    }`}
-                  >
-                    <td className="px-3 py-2 font-medium text-content">
-                      {index + 1}
-                    </td>
-                    <td className="px-3 py-2 font-medium text-content">
-                      {row.parejaNombre}
-                    </td>
-                    <td className="px-3 py-2 text-right">{row.pts}</td>
-                    <td className="px-3 py-2 text-right">{row.pg}</td>
-                    <td className="px-3 py-2 text-right">{row.pp}</td>
-                    <td className="px-3 py-2 text-right">{row.sg}</td>
-                    <td className="px-3 py-2 text-right">{row.sp}</td>
-                    <td className="px-3 py-2 text-right">{row.gg}</td>
-                    <td className="px-3 py-2 text-right">{row.gp}</td>
-                  </tr>
-                ))}
+                {grupo.rows.map((row, index) => {
+                  const [jugador1, jugador2] = row.parejaNombre
+                    .split("/")
+                    .map((nombre) => nombre.trim());
+
+                  return (
+                    <tr
+                      key={row.parejaId}
+                      className={`transition hover:bg-padel-green/10 ${
+                        index % 2 === 0 ? "bg-surface" : "bg-surface-soft/50"
+                      }`}
+                    >
+                      <td className="w-px whitespace-nowrap px-1 py-2 font-medium text-content sm:px-3">
+                        {index + 1}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 font-medium text-content">
+                        <span className="block sm:hidden">
+                          {jugador2 !== undefined ? (
+                            <>
+                              <span className="block whitespace-nowrap">
+                                {jugador1}
+                              </span>
+                              <span className="block whitespace-nowrap">
+                                {jugador2}
+                              </span>
+                            </>
+                          ) : (
+                            row.parejaNombre
+                          )}
+                        </span>
+                        <span className="hidden sm:inline">
+                          {row.parejaNombre}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 text-right">{row.pts}</td>
+                      <td className="px-3 py-2 text-right">{row.pg}</td>
+                      <td className="px-3 py-2 text-right">{row.pp}</td>
+                      <td className="px-3 py-2 text-right">{row.sg}</td>
+                      <td className="px-3 py-2 text-right">{row.sp}</td>
+                      <td className="px-3 py-2 text-right">{row.gg}</td>
+                      <td className="px-3 py-2 text-right">{row.gp}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -146,8 +170,8 @@ export default function TorneoZonasTablas({
                         }
                       >
                         {match.pareja1}
-                      </span>
-                      <span className="text-content/70"> vs </span>
+                      </span><br/>
+                      <span className="text-content/70"> vs </span><br/>
                       <span
                         className={
                           (match.status === "FINISHED" ||
@@ -163,7 +187,10 @@ export default function TorneoZonasTablas({
                       </span>
                     </p>
                     <p className="mb-0 text-xs text-content/65">
-                      Resultado: {match.score} · Cancha: {match.cancha ?? "-"}
+                      Cancha: {match.cancha ?? "-"}
+                    </p>
+                    <p className="mb-0 text-xs text-content/65">
+                      Resultado: {match.score}
                     </p>
                   </li>
                 ))}
