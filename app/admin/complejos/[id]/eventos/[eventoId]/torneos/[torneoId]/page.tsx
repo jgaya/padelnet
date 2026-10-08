@@ -65,6 +65,7 @@ export default async function EditTorneoPage(props: {
             estado={avance}
             zonaGenerada={torneo.zonaGenerada}
             partidosGenerados={torneo.partidosGenerados}
+            inscripcionesCerradas={torneo.inscripcionesCerradas}
           />
         </div>
 
@@ -84,6 +85,7 @@ export default async function EditTorneoPage(props: {
             status: torneo.status,
             publicado: torneo.publicado,
             zonaCerrada: torneo.zonaCerrada,
+            inscripcionesCerradas: torneo.inscripcionesCerradas,
             inicio: toDateTimeLocal(torneo.inicio),
             fin: toDateTimeLocal(torneo.fin),
             puntajes: puntajesFormDesdeGuardados(puntajes),

@@ -37,6 +37,7 @@ export type TorneoListItem = {
   status: TournamentStatus;
   publicado: boolean;
   zonaCerrada: boolean;
+  inscripcionesCerradas: boolean;
   zonaGenerada: boolean;
   partidosGenerados: boolean;
   inicio: string | null;
@@ -63,6 +64,7 @@ export type TorneoPayload = {
   status?: TournamentStatus;
   publicado?: boolean;
   zonaCerrada?: boolean;
+  inscripcionesCerradas?: boolean;
   inicio?: string | null;
   fin?: string | null;
   /** Puntos por posicion final; sin esto se usan los valores por defecto. */
@@ -267,6 +269,7 @@ export async function listTorneos(opts: ListOpts = {}) {
         status: true,
         publicado: true,
         zonaCerrada: true,
+        inscripcionesCerradas: true,
         zonaGenerada: true,
         partidosGenerados: true,
         formato: true,
@@ -309,6 +312,7 @@ export async function listTorneos(opts: ListOpts = {}) {
         status: item.status,
         publicado: item.publicado,
         zonaCerrada: item.zonaCerrada,
+        inscripcionesCerradas: item.inscripcionesCerradas,
         zonaGenerada: item.zonaGenerada,
         partidosGenerados: item.partidosGenerados,
         inicio: item.inicio,
@@ -409,6 +413,7 @@ export async function listTorneosForAdmin(opts: ListOpts = {}) {
         status: true,
         publicado: true,
         zonaCerrada: true,
+        inscripcionesCerradas: true,
         zonaGenerada: true,
         partidosGenerados: true,
         formato: true,
@@ -532,6 +537,7 @@ export async function listTorneosByComplejo(
         status: true,
         publicado: true,
         zonaCerrada: true,
+        inscripcionesCerradas: true,
         zonaGenerada: true,
         partidosGenerados: true,
         formato: true,
@@ -585,6 +591,7 @@ function toTorneoListItem(item: {
   status: TournamentStatus;
   publicado: boolean;
   zonaCerrada: boolean;
+  inscripcionesCerradas: boolean;
   zonaGenerada: boolean;
   partidosGenerados: boolean;
   inicio: Date | null;
@@ -611,6 +618,7 @@ function toTorneoListItem(item: {
     status: item.status,
     publicado: item.publicado,
     zonaCerrada: item.zonaCerrada,
+    inscripcionesCerradas: item.inscripcionesCerradas,
     zonaGenerada: item.zonaGenerada,
     partidosGenerados: item.partidosGenerados,
     inicio: item.inicio ? item.inicio.toISOString() : null,
@@ -706,6 +714,7 @@ export async function listTorneosByEvento(
         status: true,
         publicado: true,
         zonaCerrada: true,
+        inscripcionesCerradas: true,
         zonaGenerada: true,
         partidosGenerados: true,
         formato: true,
@@ -769,6 +778,7 @@ export async function createTorneo(
         status: data.status ?? "DRAFT",
         publicado: data.publicado ?? false,
         zonaCerrada: data.zonaCerrada ?? false,
+        inscripcionesCerradas: data.inscripcionesCerradas ?? false,
         inicio,
         fin,
       },
@@ -860,6 +870,7 @@ export async function updateTorneo(
         status: data.status ?? "DRAFT",
         publicado: data.publicado ?? false,
         zonaCerrada: data.zonaCerrada ?? false,
+        inscripcionesCerradas: data.inscripcionesCerradas ?? false,
         inicio,
         fin,
       },
@@ -913,6 +924,46 @@ export async function updateTorneo(
 export type TorneoAccionResult =
   | { success: true; message: string }
   | { success: false; error: string };
+
+export async function toggleInscripcionesCerradasTorneo(
+  complejoId: number,
+  eventoId: number,
+  torneoId: number,
+): Promise<TorneoAccionResult> {
+  try {
+    await ensureEventoAccess(complejoId, eventoId);
+
+    const torneo = await prisma.torneo.findFirst({
+      where: { id: torneoId, eventoId, deletedAt: null },
+      select: { inscripcionesCerradas: true },
+    });
+
+    if (!torneo) {
+      return { success: false, error: "Torneo no encontrado" };
+    }
+
+    const inscripcionesCerradas = !torneo.inscripcionesCerradas;
+    await prisma.torneo.update({
+      where: { id: torneoId },
+      data: { inscripcionesCerradas },
+    });
+
+    return {
+      success: true,
+      message: inscripcionesCerradas
+        ? "Inscripciones cerradas"
+        : "Inscripciones abiertas",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "No se pudo cambiar el estado de las inscripciones del torneo",
+    };
+  }
+}
 
 /**
  * Alterna la publicación del torneo.
@@ -1122,6 +1173,7 @@ export async function getTorneoById(
       status: true,
       publicado: true,
       zonaCerrada: true,
+      inscripcionesCerradas: true,
       zonaGenerada: true,
       partidosGenerados: true,
       formato: true,

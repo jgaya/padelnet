@@ -10,6 +10,7 @@ import {
   RectangleGroupIcon,
   Squares2X2Icon,
   TrashIcon,
+  UserMinusIcon,
   UserPlusIcon,
 } from "@heroicons/react/24/solid";
 import RowActions from "@/components/RowActions";
@@ -21,6 +22,7 @@ import {
   deleteTorneo,
   listTorneosForAdmin,
   publicarTorneo,
+  toggleInscripcionesCerradasTorneo,
   type TorneoListItem,
 } from "@/actions/torneos";
 import { useSnackbar } from "@/context/SnackbarContext";
@@ -140,7 +142,45 @@ export default function AdminTorneosPage() {
       showSnackbar(message, "error");
     }
   };
+  const handleToggleInscripcionesCerradas = async (torneo: TorneoListItem) => {
+    const safeComplejoId = torneo.complejoId;
+    const safeEventoId = torneo.eventoId;
 
+    if (
+      typeof safeComplejoId !== "number" ||
+      !Number.isInteger(safeComplejoId) ||
+      safeComplejoId <= 0 ||
+      typeof safeEventoId !== "number" ||
+      !Number.isInteger(safeEventoId) ||
+      safeEventoId <= 0
+    ) {
+      showSnackbar("No se pudo determinar la ubicacion del torneo", "error");
+      return;
+    }
+
+    try {
+      const result = await toggleInscripcionesCerradasTorneo(
+        safeComplejoId,
+        safeEventoId,
+        torneo.id,
+      );
+
+      if (!result.success) {
+        showSnackbar(result.error, "error");
+        return;
+      }
+
+      await fetchTorneos();
+      showSnackbar(result.message, "success");
+    } catch (error) {
+      showSnackbar(
+        error instanceof Error
+          ? error.message
+          : "No se pudo cambiar el estado de las inscripciones del torneo",
+        "error",
+      );
+    }
+  };
   const handleTogglePublicacion = async (torneo: TorneoListItem) => {
     const safeComplejoId = torneo.complejoId;
     const safeEventoId = torneo.eventoId;
@@ -316,6 +356,14 @@ export default function AdminTorneosPage() {
                         label: "Programar partidos",
                         icon: <CalendarDaysIcon className="h-4 w-4" />,
                         href: `/admin/complejos/${torneo.complejoId}/eventos/${torneo.eventoId}/torneos/${torneo.id}/partidos`,
+                      },
+                      {
+                        key: "inscripcionesCerradas",
+                        label: torneo.inscripcionesCerradas
+                          ? "Abrir inscripciones"
+                          : "Cerrar inscripciones",
+                        icon: <UserMinusIcon className="h-4 w-4" />,
+                        onClick: () => void handleToggleInscripcionesCerradas(torneo),
                       },
                       {
                         key: "resultados",

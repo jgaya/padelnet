@@ -28,6 +28,7 @@ type AvanceTorneoPanelProps = {
   estado: EstadoAvanceTorneo | null;
   zonaGenerada?: boolean;
   partidosGenerados?: boolean;
+  inscripcionesCerradas?: boolean;
 };
 
 export default function AvanceTorneoPanel({
@@ -36,6 +37,7 @@ export default function AvanceTorneoPanel({
   torneoId,
   basePath,
   estado,
+  inscripcionesCerradas,
   zonaGenerada,
   partidosGenerados,
 }: AvanceTorneoPanelProps) {
@@ -127,9 +129,11 @@ export default function AvanceTorneoPanel({
       "No se pudo terminar el torneo",
     );
   // Para sumar un hito nuevo alcanza con agregarlo a esta lista.
+  debugger;
   const hitos = [
+    { label: "Inscripciones Cerradas", cumplido: Boolean(inscripcionesCerradas) },
     { label: "Armar Zonas", cumplido: Boolean(zonaGenerada) },
-    { label: "Programar Partidos", cumplido: Boolean(partidosGenerados) },
+    { label: "Programar Partidos", cumplido: Boolean(partidosGenerados) },    
   ];
   const porcentajeAvance = Math.round(
     (hitos.filter((hito) => hito.cumplido).length / hitos.length) * 100,

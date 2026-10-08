@@ -52,6 +52,7 @@ export default async function ZonasPage(props: {
           estado={avance}
           zonaGenerada={torneo.zonaGenerada}
           partidosGenerados={torneo.partidosGenerados}
+          inscripcionesCerradas={torneo.inscripcionesCerradas}
         />
       </div>
       <ZonasPageClient />

@@ -325,6 +325,7 @@ export const TorneoCrudFormSchema = z
     status: TournamentStatusSchema,
     publicado: z.boolean(),
     zonaCerrada: z.boolean(),
+    inscripcionesCerradas: z.boolean(),
     inicio: z.string().trim().optional(),
     fin: z.string().trim().optional(),
     // Puntos de ranking por posicion final. Se manejan como strings, igual que

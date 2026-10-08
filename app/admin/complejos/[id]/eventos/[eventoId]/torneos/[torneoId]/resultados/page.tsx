@@ -52,6 +52,7 @@ export default async function ResultadosPage(props: {
           estado={avance}
           zonaGenerada={torneo.zonaGenerada}
           partidosGenerados={torneo.partidosGenerados}
+          inscripcionesCerradas={torneo.inscripcionesCerradas}
         />
       </div>
       <ResultadosPageClient />

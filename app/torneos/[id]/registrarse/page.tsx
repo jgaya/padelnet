@@ -175,6 +175,18 @@ export default async function TorneoPublicRegisterPage(props: {
                 </Link>
               </div>
             </div>
+          ) : data.torneo.inscripcionesCerradas ? (
+            <div className="space-y-4">
+              <p className="rounded-2xl border border-energy-orange/25 bg-energy-orange/10 px-4 py-3 text-sm text-energy-orange">
+                Las inscripciones de este torneo estan cerradas.
+              </p>
+              <Link
+                href={`/torneos/${torneoId}`}
+                className="inline-flex rounded-full border border-content/20 bg-surface px-4 py-2 text-sm font-semibold text-content transition hover:bg-surface-soft"
+              >
+                Volver al torneo
+              </Link>
+            </div>
           ) : (
             <div className="space-y-4">
               <form

@@ -178,6 +178,7 @@ export default function TorneoForm({
       status: "DRAFT",
       publicado: false,
       zonaCerrada: false,
+      inscripcionesCerradas: false,
       inicio: "",
       fin: "",
       puntajes: puntajesFormPorDefecto(),
@@ -253,6 +254,7 @@ export default function TorneoForm({
       status: initialData.status ?? "DRAFT",
       publicado: initialData.publicado ?? false,
       zonaCerrada: initialData.zonaCerrada ?? false,
+      inscripcionesCerradas: initialData.inscripcionesCerradas ?? false,
       inicio: initialData.inicio ?? "",
       fin: initialData.fin ?? "",
       puntajes: initialData.puntajes ?? puntajesFormPorDefecto(),
@@ -288,6 +290,7 @@ export default function TorneoForm({
         status: data.status,
         publicado: data.publicado ?? false,
         zonaCerrada: data.zonaCerrada ?? false,
+        inscripcionesCerradas: data.inscripcionesCerradas,
         inicio: data.inicio || null,
         fin: data.fin || null,
         puntajes: puntajesDesdeForm(data.puntajes),
@@ -647,6 +650,11 @@ export default function TorneoForm({
             label="Zona cerrada"
             register={register("zonaCerrada")}
             error={errors.zonaCerrada}
+          />
+          <FormCheckbox
+            label="Inscripciones cerradas"
+            register={register("inscripcionesCerradas")}
+            error={errors.inscripcionesCerradas}
           />
         </div>
 

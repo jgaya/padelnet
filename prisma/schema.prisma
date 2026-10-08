@@ -459,7 +459,7 @@ model Torneo {
   deletedAt         DateTime?
   createdAt         DateTime               @default(now())
   updatedAt         DateTime               @updatedAt
-
+  inscripcionesCerradas       Boolean      @default(false)
   evento       Evento       @relation(fields: [eventoId], references: [id], onDelete: Cascade)
   parejas      Pareja[]
   grupos       Grupo[]

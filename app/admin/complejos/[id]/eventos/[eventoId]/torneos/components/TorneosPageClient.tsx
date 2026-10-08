@@ -12,6 +12,7 @@ import {
   Squares2X2Icon,
   TrashIcon,
   UserPlusIcon,
+  UserMinusIcon,
 } from "@heroicons/react/24/solid";
 import RowActions from "@/components/RowActions";
 import SearchBar from "@/components/SearchBar";
@@ -22,6 +23,7 @@ import {
   deleteTorneo,
   listTorneosByEvento,
   publicarTorneo,
+  toggleInscripcionesCerradasTorneo,
   type TorneoListItem,
 } from "@/actions/torneos";
 import { useSnackbar } from "@/context/SnackbarContext";
@@ -299,7 +301,43 @@ export default function TorneosPageClient({
       showSnackbar(message, "error");
     }
   };
+  const handleToggleInscripcionesCerradas = async (torneo: TorneoListItem) => {
+    const safeComplejoId = complejoId;
+    const safeEventoId = eventoId;
 
+    if (
+      !Number.isInteger(safeComplejoId) ||
+      safeComplejoId <= 0 ||
+      !Number.isInteger(safeEventoId) ||
+      safeEventoId <= 0
+    ) {
+      showSnackbar("No se pudo determinar la ubicacion del torneo", "error");
+      return;
+    }
+
+    try {
+      const result = await toggleInscripcionesCerradasTorneo(
+        safeComplejoId,
+        safeEventoId,
+        torneo.id,
+      );
+
+      if (!result.success) {
+        showSnackbar(result.error, "error");
+        return;
+      }
+
+      await fetchTorneos();
+      showSnackbar(result.message, "success");
+    } catch (error) {
+      showSnackbar(
+        error instanceof Error
+          ? error.message
+          : "No se pudo cambiar el estado de las inscripciones del torneo",
+        "error",
+      );
+    }
+  };
   const handleTogglePublicacion = async (torneo: TorneoListItem) => {
     try {
       const result = await publicarTorneo(complejoId, eventoId, torneo.id);
@@ -495,6 +533,14 @@ export default function TorneosPageClient({
                         label: "Programar partidos",
                         icon: <CalendarDaysIcon className="h-4 w-4" />,
                         href: `/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}/partidos`,
+                      },                      
+                      {
+                        key: "inscripcionesCerradas",
+                        label: torneo.inscripcionesCerradas
+                          ? "Abrir inscripciones"
+                          : "Cerrar inscripciones",
+                        icon: <UserMinusIcon className="h-4 w-4" />,
+                        onClick: () => void handleToggleInscripcionesCerradas(torneo),
                       },
                       {
                         key: "resultados",

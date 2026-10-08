@@ -34,6 +34,7 @@ type TorneoBase = {
   status: TournamentStatus;
   publicado: boolean;
   zonaCerrada: boolean;
+  inscripcionesCerradas: boolean;
   zonaGenerada: boolean;
   evento: {
     id: number;
@@ -70,6 +71,7 @@ export type TorneoRegistrationSummary = {
   suplentesCount: number;
   /** Si todavia se puede entrar y salir del torneo. Ver inscripcionesAbiertas(). */
   inscripcionesAbiertas: boolean;
+  inscripcionesCerradas: boolean;
 };
 
 export type TorneoRegistrationDataResult =
@@ -325,6 +327,7 @@ async function getTorneoBaseById(torneoId: number): Promise<TorneoBase | null> {
       status: true,
       publicado: true,
       zonaCerrada: true,
+      inscripcionesCerradas: true,
       zonaGenerada: true,
       evento: {
         select: {
@@ -383,6 +386,7 @@ function buildSummary(
     inscriptosCount: counts.inscriptosCount,
     suplentesCount: counts.suplentesCount,
     inscripcionesAbiertas: inscripcionesAbiertas(torneo),
+    inscripcionesCerradas: torneo.inscripcionesCerradas,
   };
 }
 
@@ -712,6 +716,15 @@ export async function getPublicTorneoRegistrationData(
     };
   }
 
+  if (torneo.inscripcionesCerradas) {
+    return {
+      status: "NOT_ALLOWED",
+      torneo: torneoSummary,
+      currentUser,
+      reason: "Las inscripciones de este torneo estan cerradas",
+    };
+  }
+
   if (!meetsSexoAsPlayer1(torneo.sexo, currentUser.genero)) {
     return {
       status: "NOT_ALLOWED",
@@ -857,6 +870,7 @@ export async function registerPublicTorneoPair(
           categoriaRegla: true,
           categoriaN: true,
           capacidad: true,
+          inscripcionesCerradas: true,
           evento: {
             select: {
               complejo: {
@@ -873,6 +887,13 @@ export async function registerPublicTorneoPair(
         return {
           success: false,
           error: "Torneo no disponible para inscripcion",
+        };
+      }
+
+      if (torneo.inscripcionesCerradas) {
+        return {
+          success: false,
+          error: "Las inscripciones de este torneo estan cerradas",
         };
       }
 
@@ -1177,6 +1198,7 @@ export async function registerManagedTorneoPair(
         categoriaRegla: true,
         categoriaN: true,
         capacidad: true,
+        inscripcionesCerradas: true,
         evento: {
           select: {
             complejo: {
@@ -1194,6 +1216,13 @@ export async function registerManagedTorneoPair(
     }
 
     await ensureComplejoManagerAccess(torneo.evento.complejo.id);
+
+    if (torneo.inscripcionesCerradas) {
+      return {
+        success: false,
+        error: "Las inscripciones de este torneo estan cerradas",
+      };
+    }
 
     const [player1, player2] = await Promise.all([
       prisma.user.findUnique({

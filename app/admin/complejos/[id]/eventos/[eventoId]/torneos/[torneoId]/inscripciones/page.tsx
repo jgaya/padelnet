@@ -108,6 +108,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
       categoriaRegla: true,
       categoriaN: true,
       capacidad: true,
+      inscripcionesCerradas: true,
       zonaGenerada: true,
       partidosGenerados: true,
       evento: {
@@ -332,6 +333,7 @@ export default async function AdminTorneoInscripcionesPage(props: {
         estado={avance}
         zonaGenerada={torneo.zonaGenerada}
         partidosGenerados={torneo.partidosGenerados}
+        inscripcionesCerradas={torneo.inscripcionesCerradas}
       />
       <div className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm">
         <div className="border-b border-content/10 bg-gradient-to-r from-padel-green/15 via-surface to-energy-orange/15 px-5 py-6 sm:px-7">
@@ -360,6 +362,12 @@ export default async function AdminTorneoInscripcionesPage(props: {
               Suplentes: {suplentesCount}
             </span>
           </div>
+          {torneo.inscripcionesCerradas ? (
+            <p className="mt-4 rounded-xl border border-energy-orange/25 bg-energy-orange/10 px-4 py-2 text-sm font-semibold text-energy-orange">
+              Las inscripciones de este torneo estan cerradas. No se pueden
+              agregar nuevas parejas.
+            </p>
+          ) : null}
 
           <Link
             href={`/admin/reportes/inscriptos?torneoId=${torneoIdNum}`}
@@ -635,7 +643,8 @@ export default async function AdminTorneoInscripcionesPage(props: {
             <div className="flex flex-wrap gap-2">
               <button
                 type="submit"
-                className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95"
+                disabled={torneo.inscripcionesCerradas}
+                className="rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 Inscribir pareja
               </button>
