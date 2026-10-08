@@ -34,6 +34,20 @@ function formatDateTime(value: string | null) {
 }
 
 /**
+ * Convierte un id como "Verano-C4-Zona_A-3" o "Torneo-C5-Octavos-2" en una
+ * etiqueta amigable y corta: "Zona A #3" u "Octavos #2".
+ */
+function formatFriendlyId(idLegible: string | null | undefined): string | null {
+  if (!idLegible) return null;
+  const parts = idLegible.split("-");
+  if (parts.length >= 3) {
+    const remainder = parts.slice(2).join(" ");
+    return remainder.replace(/_/g, " ").replace(/\s+(\d+)$/, " #$1");
+  }
+  return idLegible.replace(/_/g, " ");
+}
+
+/**
  * El admin tipea el id de la planilla de memoria: "zona a 3" tiene que
  * encontrar "Verano-C4-Zona_A-3". Se ignoran mayusculas y los separadores.
  */
@@ -319,11 +333,10 @@ export default function ResultadosPageClient() {
             key={tab.key}
             type="button"
             onClick={() => setActiveTab(tab.key)}
-            className={`rounded-t-2xl px-4 py-2 text-sm font-semibold transition ${
-              activeTab === tab.key
-                ? "bg-padel-green/15 text-padel-green"
-                : "text-content/70 hover:bg-surface-soft"
-            }`}
+            className={`rounded-t-2xl px-4 py-2 text-sm font-semibold transition ${activeTab === tab.key
+              ? "bg-padel-green/15 text-padel-green"
+              : "text-content/70 hover:bg-surface-soft"
+              }`}
           >
             {tab.label}
           </button>
@@ -331,9 +344,8 @@ export default function ResultadosPageClient() {
       </div>
 
       <div
-        className={`rounded-2xl border border-content/10 bg-surface padel-data-card ${
-          activeTab === "partidos" ? "" : "hidden"
-        }`}
+        className={`rounded-2xl border border-content/10 bg-surface padel-data-card ${activeTab === "partidos" ? "" : "hidden"
+          }`}
       >
         <div className="flex flex-col items-start justify-between gap-2 border-b border-content/10 px-4 py-3 md:flex-row md:items-center">
           <div>
@@ -389,50 +401,69 @@ export default function ResultadosPageClient() {
               <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-content">
                 <thead className="bg-ink text-[11px] font-semibold uppercase tracking-[0.18em] text-on-ink">
                   <tr>
-                    <th className="px-4 py-3">ID</th>
-                    <th className="px-4 py-3">Fecha</th>
-                    <th className="px-4 py-3">Hora</th>
-                    <th className="px-4 py-3">Cancha</th>
-                    <th className="px-4 py-3">Llave</th>
                     <th className="px-4 py-3">Partido</th>
-                    <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Ganador</th>
-                    <th className="px-4 py-3">Acción</th>
+                    <th className="px-4 py-3 whitespace-nowrap">
+                      Horario y Cancha
+                    </th>
+                    <th className="px-4 py-3 whitespace-nowrap">Estado</th>
+                    <th className="px-4 py-3">Resultado</th>
+                    <th className="px-4 py-3 whitespace-nowrap text-right">
+                      Acción
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-content/10">
                   {filteredMatches.map((match) => {
                     const status = statusBadge(match.status);
+                    const friendlyId = formatFriendlyId(match.idLegible);
+                    const winnerName = matchWinnerLabel(match);
+                    const hasFinished =
+                      match.status === "FINISHED" || match.status === "WALKOVER";
+
                     return (
                       <tr
                         key={match.id}
                         className="odd:bg-surface even:bg-surface-soft hover:bg-success/12"
                       >
-                        <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-content/80">
-                          {match.idLegible ?? "-"}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 font-medium text-sm">
-                          {formatDateTime(match.scheduledAt)}
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                            {friendlyId ? (
+                              <span
+                                className="inline-flex items-center rounded-md bg-content/5 px-2 py-0.5 font-mono text-[11px] font-semibold text-content/80 border border-content/10"
+                                title={match.idLegible ?? undefined}
+                              >
+                                {friendlyId}
+                              </span>
+                            ) : null}
+                            {match.llave &&
+                              (!friendlyId ||
+                                !friendlyId
+                                  .toLowerCase()
+                                  .includes(match.llave.toLowerCase())) ? (
+                              <span className="text-[11px] font-medium text-content/60">
+                                {match.llave}
+                              </span>
+                            ) : null}
+                          </div>
+                          <div className="text-sm font-medium text-content">
+                            <span className="font-semibold">
+                              {match.pareja1Nombre}
+                            </span>
+                            <span className="mx-1.5 text-xs text-content/50">
+                              vs
+                            </span>
+                            <span className="font-semibold">
+                              {match.pareja2Nombre}
+                            </span>
+                          </div>
                         </td>
                         <td className="whitespace-nowrap px-4 py-3 text-sm">
-                          {match.scheduledAt
-                            ? new Date(match.scheduledAt).toLocaleTimeString(
-                                "es-AR",
-                                {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                },
-                              )
-                            : "Sin horario"}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm">
-                          {match.canchaLabel}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm">
-                          {match.llave ?? "-"}
-                        </td>
-                        <td className="px-4 py-3 text-sm">
-                          {match.pareja1Nombre} vs {match.pareja2Nombre}
+                          <div className="font-medium text-content">
+                            {formatDateTime(match.scheduledAt)}
+                          </div>
+                          <div className="text-xs text-content/60 mt-0.5">
+                            {match.canchaLabel || "Sin cancha"}
+                          </div>
                         </td>
                         <td className="whitespace-nowrap px-4 py-3 text-sm">
                           <Badge
@@ -443,15 +474,39 @@ export default function ResultadosPageClient() {
                           />
                         </td>
                         <td className="px-4 py-3 text-sm">
-                          {matchWinnerLabel(match)}
+                          {match.ganadorId ? (
+                            <div>
+                              <div className="font-semibold text-content text-xs sm:text-sm">
+                                🏆 {winnerName}
+                              </div>
+                              {match.sets && match.sets.length > 0 ? (
+                                <div className="text-xs font-mono text-content/70 mt-0.5">
+                                  {match.sets
+                                    .filter(
+                                      (s) =>
+                                        s.gamesPareja1 > 0 || s.gamesPareja2 > 0,
+                                    )
+                                    .map(
+                                      (s) =>
+                                        `${s.gamesPareja1}-${s.gamesPareja2}`,
+                                    )
+                                    .join(", ")}
+                                </div>
+                              ) : null}
+                            </div>
+                          ) : (
+                            <span className="text-content/40 text-xs">-</span>
+                          )}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-sm">
+                        <td className="whitespace-nowrap px-4 py-3 text-sm text-right">
                           <button
                             type="button"
                             className="btn btn-primary btn-sm"
                             onClick={() => openResultModal(match)}
                           >
-                            Cargar resultado
+                            {hasFinished
+                              ? "Editar resultado"
+                              : "Cargar resultado"}
                           </button>
                         </td>
                       </tr>
