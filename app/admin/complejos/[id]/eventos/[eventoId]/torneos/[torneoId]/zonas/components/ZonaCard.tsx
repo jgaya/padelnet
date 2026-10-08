@@ -20,7 +20,6 @@ type ZonaCardProps = {
   onMoveUp: (groupClientId: string, index: number) => void;
   onMoveDown: (groupClientId: string, index: number) => void;
   onRemoveZone: (clientId: string) => void;
-  onUpdateZoneName: (clientId: string, name: string) => void;
 };
 
 export default function ZonaCard({
@@ -32,7 +31,6 @@ export default function ZonaCard({
   onMoveUp,
   onMoveDown,
   onRemoveZone,
-  onUpdateZoneName,
 }: ZonaCardProps) {
   return (
     <div
@@ -41,15 +39,7 @@ export default function ZonaCard({
       onDrop={(event) => onDropGroup(event, group.clientId)}
     >
       <div className={styles.zonaCardHeader}>
-        <input
-          type="text"
-          value={group.nombre}
-          onChange={(event) =>
-            onUpdateZoneName(group.clientId, event.target.value)
-          }
-          className={styles.zonaCardInput}
-          placeholder="Nombre de zona"
-        />
+        <span className={styles.zonaCardTitle}>{group.nombre}</span>
         <div className={styles.zonaCardActions}>
           <span className={styles.zonaCounter}>
             {group.parejaIds.length}/{pairsPerZone}
@@ -79,9 +69,8 @@ export default function ZonaCard({
           return (
             <div
               key={`${group.clientId}-${parejaId}`}
-              className={`${styles.zonaChip} ${
-                pair.suplente ? styles.zonaChipSuplente : ""
-              }`}
+              className={`${styles.zonaChip} ${pair.suplente ? styles.zonaChipSuplente : ""
+                }`}
               draggable
               onDragStart={(event) =>
                 onDragStart(event, pair.id, group.clientId)

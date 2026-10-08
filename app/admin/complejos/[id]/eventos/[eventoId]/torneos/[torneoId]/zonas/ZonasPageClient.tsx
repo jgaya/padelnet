@@ -180,7 +180,7 @@ export default function ZonasPageClient() {
       const inscriptosPorFecha = [...result.inscriptos].sort(sortByCreatedAt);
       setSeedOrder(
         seedOrderFromGroups(result.grupos, result.inscriptos.length) ??
-          inscriptosPorFecha.map((pair) => pair.id),
+        inscriptosPorFecha.map((pair) => pair.id),
       );
 
       const suggested =
@@ -290,15 +290,14 @@ export default function ZonasPageClient() {
   };
 
   const handleRemoveZone = (clientId: string) => {
-    setGroups((prev) => prev.filter((group) => group.clientId !== clientId));
-  };
-
-  const handleUpdateZoneName = (clientId: string, nombre: string) => {
-    setGroups((prev) =>
-      prev.map((group) =>
-        group.clientId === clientId ? { ...group, nombre } : group,
-      ),
-    );
+    setGroups((prev) => {
+      const filtered = prev.filter((group) => group.clientId !== clientId);
+      return filtered.map((group, index) => ({
+        ...group,
+        nombre: zonaLabel(index),
+      }));
+    });
+    setZoneCount((prev) => Math.max(0, prev - 1));
   };
 
   const handleDragStart = (
@@ -338,8 +337,8 @@ export default function ZonasPageClient() {
 
       const sourceGroupIndex = payload.fromGroupClientId
         ? prev.findIndex(
-            (group) => group.clientId === payload.fromGroupClientId,
-          )
+          (group) => group.clientId === payload.fromGroupClientId,
+        )
         : -1;
       const sourcePairIndex =
         sourceGroupIndex >= 0
@@ -424,11 +423,11 @@ export default function ZonasPageClient() {
       prev.map((group) =>
         group.clientId === payload.fromGroupClientId
           ? {
-              ...group,
-              parejaIds: group.parejaIds.filter(
-                (id) => id !== payload.parejaId,
-              ),
-            }
+            ...group,
+            parejaIds: group.parejaIds.filter(
+              (id) => id !== payload.parejaId,
+            ),
+          }
           : group,
       ),
     );
@@ -659,8 +658,8 @@ export default function ZonasPageClient() {
             tablaResumen={
               tablaEntry
                 ? `${tablaEntry.grupo.length} zonas (${tablaEntry.grupo
-                    .map((zona) => zona.parejas.length)
-                    .join("/")})`
+                  .map((zona) => zona.parejas.length)
+                  .join("/")})`
                 : null
             }
             onPairsPerZoneChange={setPairsPerZone}
@@ -692,7 +691,6 @@ export default function ZonasPageClient() {
                     onMoveUp={handleMoveUp}
                     onMoveDown={handleMoveDown}
                     onRemoveZone={handleRemoveZone}
-                    onUpdateZoneName={handleUpdateZoneName}
                   />
                 </div>
               ))}
