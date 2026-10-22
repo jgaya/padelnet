@@ -24,6 +24,7 @@ export type ComplejoPayload = {
   pais?: string;
   timezone?: string;
   logoUrl?: string | null;
+  bannerUrl?: string | null;
   instagram?: string | null;
   facebook?: string | null;
   x?: string | null;
@@ -52,6 +53,7 @@ export type PublicComplejoItem = {
   pais: string;
   timezone: string;
   logoUrl: string | null;
+  bannerUrl: string | null;
   instagram: string | null;
   facebook: string | null;
   x: string | null;
@@ -217,6 +219,7 @@ export async function listPublicComplejos(): Promise<PublicComplejoItem[]> {
       pais: true,
       timezone: true,
       logoUrl: true,
+      bannerUrl: true,
       instagram: true,
       facebook: true,
       x: true,
@@ -246,6 +249,7 @@ export async function listPublicComplejos(): Promise<PublicComplejoItem[]> {
     pais: complejo.pais,
     timezone: complejo.timezone,
     logoUrl: complejo.logoUrl,
+    bannerUrl: complejo.bannerUrl,
     instagram: complejo.instagram,
     facebook: complejo.facebook,
     x: complejo.x,
@@ -284,6 +288,7 @@ export async function createComplejo(data: ComplejoPayload) {
       pais: data.pais?.trim() || "AR",
       timezone: data.timezone?.trim() || "America/Argentina/Buenos_Aires",
       logoUrl: normalizeNullable(data.logoUrl),
+      bannerUrl: normalizeNullable(data.bannerUrl),
       instagram: normalizeNullable(data.instagram),
       facebook: normalizeNullable(data.facebook),
       x: normalizeNullable(data.x),
@@ -334,6 +339,7 @@ export async function updateComplejo(id: number, data: ComplejoPayload) {
       pais: data.pais?.trim() || "AR",
       timezone: data.timezone?.trim() || "America/Argentina/Buenos_Aires",
       logoUrl: normalizeNullable(data.logoUrl),
+      bannerUrl: normalizeNullable(data.bannerUrl),
       instagram: normalizeNullable(data.instagram),
       facebook: normalizeNullable(data.facebook),
       x: normalizeNullable(data.x),

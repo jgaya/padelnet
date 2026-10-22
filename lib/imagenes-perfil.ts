@@ -51,7 +51,11 @@ function firmaCoincide(buffer: Buffer, ext: "png" | "jpg") {
  */
 const MAX_BYTES = 1024 * 1024;
 
-export function parsearDataUrl(dataUrl: string, label: string): ArchivoImagen {
+export function parsearDataUrl(
+  dataUrl: string,
+  label: string,
+  maxBytes: number = MAX_BYTES,
+): ArchivoImagen {
   const match = /^data:(image\/(?:png|jpeg|jpg));base64,(.+)$/i.exec(dataUrl);
   if (!match) {
     throw new Error(`Formato de ${label} invalido`);
@@ -65,7 +69,7 @@ export function parsearDataUrl(dataUrl: string, label: string): ArchivoImagen {
     throw new Error(`${label} vacio`);
   }
 
-  if (buffer.length > MAX_BYTES) {
+  if (buffer.length > maxBytes) {
     throw new Error(`${label} supera el maximo permitido`);
   }
 
