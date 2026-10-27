@@ -550,12 +550,12 @@ export default function TorneosPageClient({
                         ),
                         href: `/admin/complejos/${complejoId}/eventos/${eventoId}/torneos/${torneo.id}/resultados`,
                       },
-                      {
+                      /*{
                         key: "hermanos",
                         label: "Ver todos los torneos del evento",
                         icon: <Squares2X2Icon className="h-4 w-4" />,
                         href: `/admin/complejos/${complejoId}/eventos/${eventoId}/torneos`,
-                      },
+                      },*/
                       {
                         key: "publicar",
                         label: torneo.publicado

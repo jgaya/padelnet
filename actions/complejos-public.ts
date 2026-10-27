@@ -22,6 +22,7 @@ export type PublicComplejoDetail = {
   pais: string;
   timezone: string;
   logoUrl: string | null;
+  bannerUrl: string | null;
   canchasCount: number;
   eventosCount: number;
   jugadoresCount: number;
@@ -190,6 +191,7 @@ export async function getPublicComplejo(
       pais: true,
       timezone: true,
       logoUrl: true,
+      bannerUrl: true,
       _count: {
         select: {
           canchas: true,
@@ -216,6 +218,7 @@ export async function getPublicComplejo(
     pais: complejo.pais,
     timezone: complejo.timezone,
     logoUrl: complejo.logoUrl,
+    bannerUrl: complejo.bannerUrl,
     canchasCount: complejo._count.canchas,
     eventosCount: complejo._count.eventos,
     jugadoresCount: complejo._count.perfilesJugadores,

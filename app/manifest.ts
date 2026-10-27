@@ -25,11 +25,10 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: "es-AR",
     dir: "ltr",
     categories: ["sports"],
-    // El fondo del splash mientras carga. Es --background del tema claro
-    // (app/globals.css); el manifest no puede tener dos valores, asi que va el
-    // claro y el theme-color dinamico lo resuelve lib/tema.ts.
-    background_color: "#f5f7f7",
-    theme_color: "#00c853",
+    // El fondo del splash mientras carga. Es --background del tema oscuro
+    // (app/globals.css), que es el tema predeterminado.
+    background_color: "#0e1514",
+    theme_color: "#16201f",
     icons: [
       {
         src: "/icons/icon-192.png",

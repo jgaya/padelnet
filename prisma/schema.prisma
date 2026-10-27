@@ -259,6 +259,7 @@ model Complejo {
   pais       String    @default("AR")
   timezone   String    @default("America/Argentina/Buenos_Aires")
   logoUrl    String?
+  bannerUrl  String?
   instagram  String?
   facebook   String?
   x          String?

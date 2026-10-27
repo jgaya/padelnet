@@ -177,6 +177,7 @@ export const ComplejoFormSchema = z.object({
   ciudad: z.string().trim().min(1, "La ciudad es obligatoria"),
   telefono: z.string().trim().optional(),
   logoUrl: z.string().trim().optional(),
+  bannerUrl: z.string().trim().optional(),
   instagram: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),
   facebook: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),
   x: z.string().trim().url("Ingrese una URL valida").or(z.literal("")).optional(),

@@ -47,6 +47,10 @@ export default function AvanceTorneoPanel({
   // Zonas cerradas en esta pasada: el panel es un server component y no se
   // refresca hasta el reload, asi que sin esto el boton queda re-clickeable.
   const [zonasCerradas, setZonasCerradas] = useState<number[]>([]);
+  // Abierto por defecto solo si falta algún hito.
+  const [abierto, setAbierto] = useState(
+    !(inscripcionesCerradas && zonaGenerada && partidosGenerados),
+  );
 
   if (!estado) return null;
 
@@ -128,8 +132,7 @@ export default function AvanceTorneoPanel({
       () => finalizarTorneo(complejoId, eventoId, torneoId),
       "No se pudo terminar el torneo",
     );
-  // Para sumar un hito nuevo alcanza con agregarlo a esta lista.
-  debugger;
+  // Para sumar un hito nuevo alcanza con agregarlo a esta lista.  
   const hitos = [
     { label: "Inscripciones Cerradas", cumplido: Boolean(inscripcionesCerradas) },
     { label: "Armar Zonas", cumplido: Boolean(zonaGenerada) },
@@ -142,13 +145,34 @@ export default function AvanceTorneoPanel({
 
   return (
     <section className="mb-4 overflow-hidden rounded-2xl border border-content/10 bg-surface">
-      <div className="border-b border-content/10 bg-surface-soft px-4 py-3">
+      <div className="border-b border-content/10 bg-surface-soft">
         <h2 className="text-lg font-semibold text-content">
-          Avance del torneo
+          <button
+            type="button"
+            id="avance-torneo-header"
+            aria-expanded={abierto}
+            aria-controls="avance-torneo-contenido"
+            onClick={() => setAbierto((v) => !v)}
+            className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left"
+          >
+            <span>Avance del torneo {configuracionCompleta ? (<span className="mt-3 rounded-xl border border-padel-green/30 bg-padel-green/10 px-3 py-2 text-sm font-semibold text-padel-green">
+              Configuración completa
+            </span>) : null}</span>
+            <span
+              aria-hidden="true"
+              className={`transition-transform ${abierto ? "rotate-180" : ""}`}
+            >
+              ▾
+            </span>
+          </button>
         </h2>
       </div>
 
-      <div className="space-y-4 px-4 py-4">
+      <div
+        id="avance-torneo-contenido"
+        hidden={!abierto}
+        className="space-y-4 px-4 py-4"
+      >
         <div>
           <div className="mb-1 flex justify-between text-xs font-semibold text-content/80">
             <span>Progreso de preparación</span>
