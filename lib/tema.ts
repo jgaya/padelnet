@@ -59,25 +59,25 @@ export const COLOR_BARRA: Record<ResolvedTheme, string> = {
 };
 
 /**
- * Lo que ve el servidor. El valor real depende del navegador, asi que en SSR se
- * asume `system`/`light` y React reconcilia despues del primer render. Lo visible
- * no parpadea porque el script inline ya dejo puesto el `data-theme` correcto y
- * la opcion activa del selector se pinta con CSS, no con este estado.
+ * Lo que ve el servidor. La preferencia guardada solo se puede leer en el
+ * navegador, asi que SSR usa el tema predeterminado y React reconcilia despues
+ * del primer render. Lo visible no parpadea porque el script inline ya dejo
+ * puesto el `data-theme` correcto y la opcion activa se pinta con CSS.
  */
-const ESTADO_SERVIDOR: EstadoTema = { mode: "system", resolved: "light" };
+const ESTADO_SERVIDOR: EstadoTema = { mode: "dark", resolved: "dark" };
 
 export function esModo(valor: unknown): valor is ThemeMode {
   return valor === "light" || valor === "dark" || valor === "system";
 }
 
-/** El modo guardado, o `system` si no hay nada o el valor esta corrupto. */
+/** El modo guardado, o `dark` si no hay nada o el valor esta corrupto. */
 export function leerModo(): ThemeMode {
   try {
     const guardado = window.localStorage.getItem(TEMA_STORAGE_KEY);
-    return esModo(guardado) ? guardado : "system";
+    return esModo(guardado) ? guardado : "dark";
   } catch {
     // localStorage puede tirar si el usuario bloquea el almacenamiento.
-    return "system";
+    return "dark";
   }
 }
 
@@ -226,8 +226,9 @@ export function fijarModo(mode: ThemeMode) {
  */
 export const SCRIPT_TEMA = `(function(){try{
 var k="${TEMA_STORAGE_KEY}";
-var m=localStorage.getItem(k);
-if(m!=="light"&&m!=="dark"&&m!=="system"){m="system"}
+var m="dark";
+try{var guardado=localStorage.getItem(k);if(guardado!==null){m=guardado}}catch(_){}
+if(m!=="light"&&m!=="dark"&&m!=="system"){m="dark"}
 var d=m==="dark"||(m==="system"&&matchMedia("${CONSULTA_OSCURO}").matches);
 var t=d?"dark":"light";
 var e=document.documentElement;

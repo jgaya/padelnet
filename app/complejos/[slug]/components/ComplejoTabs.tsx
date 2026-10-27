@@ -12,8 +12,8 @@ const TABS = [
   { segment: "eventos", label: "Eventos" },
   { segment: "reglamento", label: "Reglamento" },
   { segment: "jugadores", label: "Jugadores" },
-  { segment: "calendario", label: "Calendario" },
-  { segment: "ranking", label: "Ranking" },
+  //{ segment: "calendario", label: "Calendario" },
+  //{ segment: "ranking", label: "Ranking" },
   { segment: "recategorizacion", label: "Recategorizacion" },
   { segment: "sanciones", label: "Sanciones" },
 ];

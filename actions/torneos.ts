@@ -1189,3 +1189,332 @@ export async function getTorneoById(
 
   return toTorneoListItem(torneo);
 }
+export async function getJugadoresFiscalizadosPorEvento(eventoId: number) {
+  try {
+    const torneosEvento = await prisma.torneo.findMany({
+      where: { eventoId: Number(eventoId) },
+      select: {
+        id: true,
+        nombre: true,
+        categoria: true,
+      },
+    });
+
+    const partidos = await prisma.partido.findMany({
+      where: { torneo: { eventoId: Number(eventoId) } },
+      select: {
+        id: true,
+        horario: true,
+        torneoId: true,
+        torneo: {
+          select: {
+            nombre: true,
+            categoria: true,
+          },
+        },
+      },
+    });
+
+    const partidosIds = partidos.map((p) => p.id);
+    const partidosById = Object.fromEntries(partidos.map((p) => [p.id, p]));
+
+    const fiscalizaciones = await prisma.fiscalizacion.findMany({
+      where: { partidoId: { in: partidosIds } },
+      select: {
+        id: true,
+        partidoId: true,
+        fiscalId: true,
+        jugador1Id: true,
+        jugador2Id: true,
+        jugador3Id: true,
+        jugador4Id: true,
+        jugador1Estado: true,
+        jugador2Estado: true,
+        jugador3Estado: true,
+        jugador4Estado: true,
+        jugador1Comentario: true,
+        jugador2Comentario: true,
+        jugador3Comentario: true,
+        jugador4Comentario: true,
+        observaciones: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const filas = fiscalizaciones.flatMap((f) => {
+      const partido = partidosById[f.partidoId];
+
+      return [
+        {
+          fiscalizacionId: f.id,
+          partidoId: f.partidoId,
+          fiscalId: f.fiscalId,
+          jugadorId: f.jugador1Id,
+          estado: f.jugador1Estado,
+          comentario: f.jugador1Comentario,
+          observaciones: f.observaciones,
+          createdAt: f.createdAt,
+          horario: partido?.horario ?? null,
+          torneoId: partido?.torneoId ?? null,
+          torneoNombre: partido?.torneo?.nombre ?? null,
+          torneoCategoria: partido?.torneo?.categoria ?? null,
+        },
+        {
+          fiscalizacionId: f.id,
+          partidoId: f.partidoId,
+          fiscalId: f.fiscalId,
+          jugadorId: f.jugador2Id,
+          estado: f.jugador2Estado,
+          comentario: f.jugador2Comentario,
+          observaciones: f.observaciones,
+          createdAt: f.createdAt,
+          horario: partido?.horario ?? null,
+          torneoId: partido?.torneoId ?? null,
+          torneoNombre: partido?.torneo?.nombre ?? null,
+          torneoCategoria: partido?.torneo?.categoria ?? null,
+        },
+        {
+          fiscalizacionId: f.id,
+          partidoId: f.partidoId,
+          fiscalId: f.fiscalId,
+          jugadorId: f.jugador3Id,
+          estado: f.jugador3Estado,
+          comentario: f.jugador3Comentario,
+          observaciones: f.observaciones,
+          createdAt: f.createdAt,
+          horario: partido?.horario ?? null,
+          torneoId: partido?.torneoId ?? null,
+          torneoNombre: partido?.torneo?.nombre ?? null,
+          torneoCategoria: partido?.torneo?.categoria ?? null,
+        },
+        {
+          fiscalizacionId: f.id,
+          partidoId: f.partidoId,
+          fiscalId: f.fiscalId,
+          jugadorId: f.jugador4Id,
+          estado: f.jugador4Estado,
+          comentario: f.jugador4Comentario,
+          observaciones: f.observaciones,
+          createdAt: f.createdAt,
+          horario: partido?.horario ?? null,
+          torneoId: partido?.torneoId ?? null,
+          torneoNombre: partido?.torneo?.nombre ?? null,
+          torneoCategoria: partido?.torneo?.categoria ?? null,
+        },
+      ];
+    });
+
+    const filasFiltradas = filas.filter((fila) => fila.estado !== "OK");
+
+    const jugadoresIds = Array.from(
+      new Set(filasFiltradas.map((f) => f.jugadorId)),
+    );
+
+    const users =
+      jugadoresIds.length > 0
+        ? await prisma.user.findMany({
+            where: {
+              id: { in: jugadoresIds },
+            },
+            select: {
+              id: true,
+              name: true,
+              lastname: true,
+              dni: true,
+              image: true,
+              telefono: true,
+              observado: true,
+              categoria: true,
+              avatar: true,
+            },
+          })
+        : [];
+
+    const usersById = Object.fromEntries(users.map((u) => [u.id, u]));
+
+    const torneosMap = new Map<
+      string,
+      {
+        torneoId: number | null;
+        torneoNombre: string;
+        torneoCategoria: string | null;
+        jugadoresMap: Map<
+          number,
+          {
+            jugadorId: number;
+            jugador: (typeof users)[number] | null;
+            estados: string[];
+            comentario: string | null;
+          }
+        >;
+      }
+    >();
+
+    for (const torneo of torneosEvento) {
+      const torneoKey = `${torneo.id}-${torneo.nombre}`;
+      torneosMap.set(torneoKey, {
+        torneoId: torneo.id,
+        torneoNombre: torneo.nombre,
+        torneoCategoria: torneo.categoria,
+        jugadoresMap: new Map(),
+      });
+    }
+
+    for (const fila of filasFiltradas) {
+      const torneoId = fila.torneoId ?? null;
+      const torneoNombre = fila.torneoNombre ?? "Sin torneo";
+      const torneoCategoria = fila.torneoCategoria ?? null;
+      const torneoKey = `${torneoId ?? "sin-torneo"}-${torneoNombre}`;
+
+      if (!torneosMap.has(torneoKey)) {
+        torneosMap.set(torneoKey, {
+          torneoId,
+          torneoNombre,
+          torneoCategoria,
+          jugadoresMap: new Map(),
+        });
+      }
+
+      const torneoItem = torneosMap.get(torneoKey);
+      if (!torneoItem) continue;
+
+      if (!torneoItem.jugadoresMap.has(fila.jugadorId)) {
+        torneoItem.jugadoresMap.set(fila.jugadorId, {
+          jugadorId: fila.jugadorId,
+          jugador: usersById[fila.jugadorId] || null,
+          estados: [],
+          comentario: null,
+        });
+      }
+
+      const itemJugador = torneoItem.jugadoresMap.get(fila.jugadorId);
+      if (itemJugador && !itemJugador.estados.includes(fila.estado)) {
+        itemJugador.estados.push(fila.estado);
+      }
+
+      if (
+        itemJugador &&
+        fila.estado === "PARA_EXCLUIR" &&
+        fila.comentario &&
+        !itemJugador.comentario
+      ) {
+        itemJugador.comentario = fila.comentario;
+      }
+    }
+ 
+    const torneoIds = torneosEvento.map((torneo) => torneo.id);
+     
+    const finales =
+      torneoIds.length > 0
+        ? await prisma.partido.findMany({
+            where: {
+              torneoId: { in: torneoIds },
+              llave: "1-1",
+            },
+            select: {
+              id: true,
+              torneoId: true,
+              horario: true,
+              ganadorId: true,
+              torneo: {
+                select: {
+                  nombre: true,
+                  categoria: true,
+                },
+              },
+              pareja1: {
+                select: {
+                  id: true,
+                  jugador1: true,
+                  jugador2: true,
+                },
+              },
+              pareja2: {
+                select: {
+                  id: true,
+                  jugador1: true,
+                  jugador2: true,
+                },
+              },
+            },
+          })
+        : []; 
+    const finalesByTorneo = new Map<
+      number,
+      Array<{
+        id: number;
+        horario: string | null;
+        ganadorId: number | null;
+        torneoNombre: string;
+        torneoCategoria: string | null;
+        pareja1: {
+          id: number;
+          jugador1: string | null;
+          jugador2: string | null;
+          esGanadora: boolean;
+        } | null;
+        pareja2: {
+          id: number;
+          jugador1: string | null;
+          jugador2: string | null;
+          esGanadora: boolean;
+        } | null;
+      }>
+    >();
+
+    for (const final of finales) {
+      if (!finalesByTorneo.has(final.torneoId)) {
+        finalesByTorneo.set(final.torneoId, []);
+      }
+
+      finalesByTorneo.get(final.torneoId)?.push({
+        id: final.id,
+        horario: final.horario,
+        ganadorId: final.ganadorId,
+        torneoNombre: final.torneo?.nombre || "",
+        torneoCategoria: final.torneo?.categoria ?? null,
+        pareja1: final.pareja1
+          ? {
+              id: final.pareja1.id,
+              jugador1: final.pareja1.jugador1,
+              jugador2: final.pareja1.jugador2,
+              esGanadora: final.ganadorId === final.pareja1.id,
+            }
+          : null,
+        pareja2: final.pareja2
+          ? {
+              id: final.pareja2.id,
+              jugador1: final.pareja2.jugador1,
+              jugador2: final.pareja2.jugador2,
+              esGanadora: final.ganadorId === final.pareja2.id,
+            }
+          : null,
+      });
+    }
+
+    const items = Array.from(torneosMap.values()).map((torneo) => ({
+      torneoId: torneo.torneoId,
+      torneoNombre: torneo.torneoNombre,
+      torneoCategoria: torneo.torneoCategoria,
+      jugadores: Array.from(torneo.jugadoresMap.values()),
+      partidosFinales:
+        torneo.torneoId !== null
+          ? finalesByTorneo.get(torneo.torneoId) || []
+          : [],
+    }));
+
+    return {
+      success: true,
+      items,
+      users,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message || String(error),
+    };
+  }
+}
