@@ -156,7 +156,7 @@ export default function AvanceTorneoPanel({
             className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left"
           >
             <span>Avance del torneo {configuracionCompleta ? (<span className="mt-3 rounded-xl border border-padel-green/30 bg-padel-green/10 px-3 py-2 text-sm font-semibold text-padel-green">
-              Configuración está completada.
+              Configuración completa
             </span>) : null}</span>
             <span
               aria-hidden="true"
