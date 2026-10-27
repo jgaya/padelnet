@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import { PrismaClient } from "../lib/generated/prisma/client";
 import { CATALOGO_INICIAL } from "../lib/logros-catalogo";
 import type { Genero, PlatformRole } from "../lib/generated/prisma/enums";
-import { slugify } from "../lib/slug";
+// import { slugify } from "../lib/slug";
 
 const url = process.env.DATABASE_URL;
 
@@ -29,13 +29,12 @@ type DatosUsuario = {
   passwordHash: string;
 };
 
-/**
- * Valores que se reparten ciclicamente entre los jugadores.
- *
- * La gracia es que el dashboard tenga con que dibujar: si todos comparten
- * genero, categoria y localidad, los graficos salen con una sola barra y no se
- * ve si estan bien.
- */
+/* --- HELPERS Y CONSTANTES DE PRUEBA COMENTADOS PARA PRODUCCION ---
+// Valores que se reparten ciclicamente entre los jugadores.
+//
+// La gracia es que el dashboard tenga con que dibujar: si todos comparten
+// genero, categoria y localidad, los graficos salen con una sola barra y no se
+// ve si estan bien.
 const NOMBRES_DEMO = [
   "Carlos",
   "Miguel",
@@ -133,6 +132,7 @@ const LOCALIDADES = [
   "Tigre",
   "Vicente Lopez",
 ];
+--- FIN CONSTANTES DE PRUEBA --- */
 
 async function upsertUser({
   email,
@@ -177,17 +177,16 @@ async function upsertUser({
   });
 }
 
-/**
- * Los cuatro complejos de prueba, cada uno con su propio admin y su plantel.
- *
- * Son deliberadamente distintos entre si (ciudad, cantidad de canchas y de
- * jugadores) para poder ver que el dashboard de un admin muestra **solo** lo
- * suyo: si todos tuvieran los mismos numeros, un error de alcance pasaria
- * desapercibido.
- *
- * Los rangos de DNI no se pisan entre complejos ni con los usuarios de arriba,
- * que ocupan 10000001-10000043.
- */
+/* --- COMPLEJOS DE PRUEBA COMENTADOS PARA PRODUCCION ---
+// Los cuatro complejos de prueba, cada uno con su propio admin y su plantel.
+//
+// Son deliberadamente distintos entre si (ciudad, cantidad de canchas y de
+// jugadores) para poder ver que el dashboard de un admin muestra **solo** lo
+// suyo: si todos tuvieran los mismos numeros, un error de alcance pasaria
+// desapercibido.
+//
+// Los rangos de DNI no se pisan entre complejos ni con los usuarios de arriba,
+// que ocupan 10000001-10000043.
 const COMPLEJOS_DEMO = [
   {
     name: "Padel Norte",
@@ -229,7 +228,7 @@ const COMPLEJOS_DEMO = [
 
 type ComplejoDemo = (typeof COMPLEJOS_DEMO)[number];
 
-/** Crea un complejo con su admin, sus canchas y sus jugadores. */
+// Crea un complejo con su admin, sus canchas y sus jugadores.
 async function sembrarComplejo(
   definicion: ComplejoDemo,
   passwordHash: string,
@@ -342,6 +341,7 @@ async function sembrarComplejo(
 
   return { complejo, usuarioAdmin, jugadores: creados };
 }
+--- FIN COMPLEJOS DE PRUEBA --- */
 
 async function main() {
   const passwordHash = await bcrypt.hash("Padel1234!", 10);
@@ -357,6 +357,14 @@ async function main() {
     passwordHash,
   });
 
+  await sembrarLogros();
+
+  console.log("Seed completado correctamente.");
+  console.log("");
+  console.log("Plataforma:");
+  console.log(` - ${superadmin.email}  SUPERADMIN (contraseña: Padel1234!)`);
+
+  /* --- DATOS DE PRUEBA COMENTADOS PARA PRODUCCION ---
   // Antes era platformRole "SUPPORT", que ya no existe: al unificar los roles
   // quedaron solo USER y SUPERADMIN, y lo que este usuario "es" sale de su
   // membresia en el complejo, no de un rol global.
@@ -482,7 +490,6 @@ async function main() {
       isActive: true,
     },
   });
-  /*
   await prisma.perfilJugadorComplejo.upsert({
     where: {
       complejoId_userId: {
@@ -502,7 +509,7 @@ async function main() {
       isBlocked: false,
       observado: false,
     },
-  });*/
+  });
 
   const canchas = [
     {
@@ -695,6 +702,7 @@ async function main() {
         `${definicion?.canchas ?? 0} canchas, ${jugadores.length} jugadores`,
     );
   }
+  --- FIN DATOS DE PRUEBA --- */
 }
 
 /**
