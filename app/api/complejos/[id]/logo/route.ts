@@ -32,12 +32,12 @@ export async function POST(
       return NextResponse.json({ error: "Imagen invalida" }, { status: 400 });
     }
 
-    const image = parsearDataUrl(body.dataUrl, "logo");
+    const image = parsearDataUrl(body.dataUrl, "logo", 10 * 1024 * 1024);
     const target = logoPath(complejoId, image.ext);
     await mkdir(path.dirname(target), { recursive: true });
     await writeFile(target, image.buffer);
 
-    const logoUrl = `/api/complejos/${complejoId}/logo`;
+    const logoUrl = `/api/complejos/${complejoId}/logo?v=${Date.now()}`;
     await prisma.complejo.update({ where: { id: complejoId }, data: { logoUrl } });
     return NextResponse.json({ logoUrl });
   } catch (error) {

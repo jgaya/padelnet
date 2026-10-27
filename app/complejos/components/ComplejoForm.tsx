@@ -52,6 +52,7 @@ export default function ComplejoForm({
       ciudad: "",
       telefono: "",
       logoUrl: "",
+      bannerUrl: "",
       instagram: "",
       facebook: "",
       x: "",
@@ -74,6 +75,7 @@ export default function ComplejoForm({
         ciudad: initialData.ciudad ?? "",
         telefono: initialData.telefono ?? "",
         logoUrl: initialData.logoUrl ?? "",
+        bannerUrl: initialData.bannerUrl ?? "",
         instagram: initialData.instagram ?? "",
         facebook: initialData.facebook ?? "",
         x: initialData.x ?? "",
@@ -98,6 +100,7 @@ export default function ComplejoForm({
         ciudad: data.ciudad,
         telefono: data.telefono || null,
         logoUrl: data.logoUrl || null,
+        bannerUrl: data.bannerUrl || null,
         instagram: data.instagram || null,
         facebook: data.facebook || null,
         x: data.x || null,
@@ -140,14 +143,27 @@ export default function ComplejoForm({
     >
       <form className="padel-entity-form" onSubmit={handleSubmit(onSubmit)}>
         {isEdit && complejoId ? (
-          <div className="mb-4 rounded-2xl border border-content/10 bg-surface-soft p-4">
-            <p className="mb-2 text-sm font-semibold text-content">Logo del complejo (opcional)</p>
-            <LogoUploader
-              complejoId={complejoId}
-              value={watch("logoUrl") ?? ""}
-              onChange={(value) => setValue("logoUrl", value, { shouldDirty: true })}
-            />
-            <input type="hidden" {...register("logoUrl")} />
+          <div className="mb-4 grid gap-4 md:grid-cols-2">
+            <div className="rounded-2xl border border-content/10 bg-surface-soft p-4">
+              <p className="mb-2 text-sm font-semibold text-content">Logo del complejo (opcional)</p>
+              <LogoUploader
+                complejoId={complejoId}
+                variant="logo"
+                value={watch("logoUrl") ?? ""}
+                onChange={(value) => setValue("logoUrl", value, { shouldDirty: true })}
+              />
+              <input type="hidden" {...register("logoUrl")} />
+            </div>
+            <div className="rounded-2xl border border-content/10 bg-surface-soft p-4">
+              <p className="mb-2 text-sm font-semibold text-content">Imagen de fondo / portada (opcional)</p>
+              <LogoUploader
+                complejoId={complejoId}
+                variant="banner"
+                value={watch("bannerUrl") ?? ""}
+                onChange={(value) => setValue("bannerUrl", value, { shouldDirty: true })}
+              />
+              <input type="hidden" {...register("bannerUrl")} />
+            </div>
           </div>
         ) : null}
         <FormInput

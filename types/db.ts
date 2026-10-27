@@ -128,6 +128,8 @@ export const ComplejoSchema = z.object({
   provincia: z.string(),
   pais: z.string(),
   timezone: z.string(),
+  logoUrl: z.string().nullable().optional(),
+  bannerUrl: z.string().nullable().optional(),
   isActive: z.boolean(),
   deletedAt: nullableDateSchema,
   createdAt: dateSchema,

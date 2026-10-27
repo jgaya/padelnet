@@ -68,32 +68,73 @@ export default function ComplejosPublicPage({
                     key={complejo.id}
                     className="overflow-hidden rounded-3xl border border-content/10 bg-surface shadow-sm transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
                   >
-                    <div className="border-b border-content/10 bg-gradient-to-r from-surface-soft via-surface to-surface-soft px-5 py-4">
-                      <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div
+                      className={`relative overflow-hidden border-b border-content/10 px-5 py-4 ${
+                        complejo.bannerUrl
+                          ? "bg-cover bg-center"
+                          : "bg-gradient-to-r from-surface-soft via-surface to-surface-soft"
+                      }`}
+                      style={
+                        complejo.bannerUrl
+                          ? { backgroundImage: `url(${complejo.bannerUrl})` }
+                          : undefined
+                      }
+                    >
+                      {complejo.bannerUrl ? (
+                        <div
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/40"
+                        />
+                      ) : null}
+                      <div className="relative z-10 flex flex-wrap items-start justify-between gap-2">
                         <div>
                           <div className="flex items-center gap-3">
                             {complejo.logoUrl ? (
-                              <img src={complejo.logoUrl} alt={`Logo de ${complejo.name}`} className="h-12 w-12 rounded-xl object-contain bg-surface p-1 ring-1 ring-content/10" />
+                              <img
+                                src={complejo.logoUrl}
+                                alt={`Logo de ${complejo.name}`}
+                                className="h-12 w-12 rounded-xl bg-surface object-contain p-1 ring-1 ring-content/10"
+                              />
                             ) : null}
-                          <h2 className="text-2xl font-semibold leading-tight text-content">
-                            <Link
-                              href={`/complejos/${complejo.slug}`}
-                              className="transition hover:text-padel-green"
+                            <h2
+                              className={`text-2xl font-semibold leading-tight ${
+                                complejo.bannerUrl ? "text-white drop-shadow-sm" : "text-content"
+                              }`}
                             >
-                              {complejo.name}
-                            </Link>
-                          </h2>
+                              <Link
+                                href={`/complejos/${complejo.slug}`}
+                                className="transition hover:text-padel-green"
+                              >
+                                {complejo.name}
+                              </Link>
+                            </h2>
                           </div>
-                          <p className="mt-1 text-sm text-content/70">
+                          <p
+                            className={`mt-1 text-sm ${
+                              complejo.bannerUrl ? "text-white/85" : "text-content/70"
+                            }`}
+                          >
                             {complejo.ciudad}, {complejo.provincia}
                           </p>
                         </div>
 
                         <div className="flex flex-wrap gap-2">
-                          <span className="rounded-full bg-padel-green/15 px-3 py-1 text-xs font-semibold text-content">
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                              complejo.bannerUrl
+                                ? "border border-white/20 bg-black/45 text-white backdrop-blur-sm"
+                                : "bg-padel-green/15 text-content"
+                            }`}
+                          >
                             {complejo.canchasCount} canchas
                           </span>
-                          <span className="rounded-full bg-energy-orange/15 px-3 py-1 text-xs font-semibold text-content">
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                              complejo.bannerUrl
+                                ? "border border-white/20 bg-black/45 text-white backdrop-blur-sm"
+                                : "bg-energy-orange/15 text-content"
+                            }`}
+                          >
                             {complejo.eventosCount} eventos
                           </span>
                         </div>
