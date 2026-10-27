@@ -1189,6 +1189,7 @@ export async function getTorneoById(
 
   return toTorneoListItem(torneo);
 }
+/*
 export async function getJugadoresFiscalizadosPorEvento(eventoId: number) {
   try {
     const torneosEvento = await prisma.torneo.findMany({
@@ -1517,4 +1518,4 @@ export async function getJugadoresFiscalizadosPorEvento(eventoId: number) {
       error: error.message || String(error),
     };
   }
-}
+}*/
