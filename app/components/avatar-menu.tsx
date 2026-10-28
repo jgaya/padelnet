@@ -62,7 +62,7 @@ export function AvatarMenu({ user, profileLinks }: AvatarMenuProps) {
     return (
       <Link
         href="/login"
-        className="ml-1 inline-flex items-center justify-center rounded-full bg-energy-orange px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_16px_var(--glow-orange-strong)] transition hover:brightness-95"
+        className="ml-0.5 inline-flex items-center justify-center rounded-full bg-energy-orange px-3 py-1.5 text-xs font-semibold text-white shadow-[0_8px_16px_var(--glow-orange-strong)] transition hover:brightness-95 sm:ml-1 sm:px-4 sm:py-2 sm:text-sm"
       >
         Iniciar
       </Link>

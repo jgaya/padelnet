@@ -65,7 +65,7 @@ export function MainNav({ links }: { links: NavLink[] }) {
         ))}
       </nav>
 
-      <div ref={contenedorRef} className="relative sm:hidden">
+      <div ref={contenedorRef} className="relative order-last sm:hidden">
         <button
           type="button"
           onClick={() => setAbierto((prev) => !prev)}
