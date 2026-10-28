@@ -245,12 +245,7 @@ export const EventoFormSchema = z
       .trim()
       .min(2, "El nombre del evento debe tener al menos 2 caracteres"),
     descripcion: z.string().trim().optional(),
-    posterUrl: z
-      .string()
-      .trim()
-      .url("Ingrese una URL valida")
-      .or(z.literal(""))
-      .optional(),
+    posterUrl: urlOrPathSchema.optional(),
     tipo: EventTypeSchema,
     inicio: z.string().trim().min(1, "La fecha/hora de inicio es obligatoria"),
     fin: z.string().trim().min(1, "La fecha/hora de fin es obligatoria"),

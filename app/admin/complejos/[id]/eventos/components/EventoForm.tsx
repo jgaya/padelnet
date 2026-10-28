@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { loadingStore } from "@/lib/loadingStore";
+import { fileToOptimizedDataUrl } from "@/app/complejos/components/LogoUploader";
 
 import {
   FormActions,
@@ -42,11 +43,16 @@ export default function EventoForm({
   const router = useRouter();
   const showSnackbar = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadingPoster, setUploadingPoster] = useState(false);
+  const [posterError, setPosterError] = useState("");
+  const [pendingPosterDataUrl, setPendingPosterDataUrl] = useState<string | null>(null);
   const resolvedBackURL = backURL ?? `/admin/complejos/${complejoId}/eventos`;
 
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
     reset,
   } = useForm<EventoFormData>({
@@ -83,6 +89,51 @@ export default function EventoForm({
     });
   }, [initialData, reset]);
 
+  const uploadPosterToEvento = async (eventoId: number, dataUrl: string) => {
+    const response = await fetch(`/api/eventos/${eventoId}/poster`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dataUrl }),
+    });
+    const result = await response.json();
+    if (!response.ok || typeof result.posterUrl !== "string") {
+      throw new Error(result.error || "No se pudo guardar el poster del evento");
+    }
+    return result.posterUrl as string;
+  };
+
+  const handlePosterFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setPosterError("Selecciona una imagen valida");
+      return;
+    }
+
+    setPosterError("");
+    setUploadingPoster(true);
+    try {
+      const dataUrl = await fileToOptimizedDataUrl(file, true);
+      if (isEdit) {
+        const posterUrl = await uploadPosterToEvento(isEdit, dataUrl);
+        setValue("posterUrl", posterUrl, { shouldDirty: true });
+      } else {
+        setPendingPosterDataUrl(dataUrl);
+      }
+    } catch (uploadError) {
+      setPosterError(
+        uploadError instanceof Error
+          ? uploadError.message
+          : "No se pudo procesar el poster del evento",
+      );
+    } finally {
+      setUploadingPoster(false);
+      event.target.value = "";
+    }
+  };
+
   const onSubmit = async (data: EventoFormData) => {
     loadingStore.setLoading(true);
     setIsLoading(true);
@@ -103,7 +154,10 @@ export default function EventoForm({
       if (isEdit) {
         await updateEvento(complejoId, isEdit, payload);
       } else {
-        await createEvento(complejoId, payload);
+        const created = await createEvento(complejoId, payload);
+        if (created?.id && pendingPosterDataUrl) {
+          await uploadPosterToEvento(created.id, pendingPosterDataUrl);
+        }
       }
 
       showSnackbar(
@@ -152,13 +206,34 @@ export default function EventoForm({
           )}
         </div>
 
-        <FormInput
-          label="Poster URL"
-          type="url"
-          placeholder="https://..."
-          register={register("posterUrl")}
-          error={errors.posterUrl}
-        />
+        <div className="mb-3 rounded-2xl border border-content/10 bg-surface-soft p-4">
+          <p className="mb-2 text-sm font-semibold text-content">
+            Poster / imagen del evento (opcional)
+          </p>
+          <div className="space-y-2">
+            {(pendingPosterDataUrl || watch("posterUrl")) ? (
+              <img
+                src={pendingPosterDataUrl || watch("posterUrl") || ""}
+                alt="Poster del evento"
+                className="h-32 w-full max-w-md rounded-xl object-cover ring-1 ring-content/10"
+              />
+            ) : null}
+            <input
+              type="file"
+              accept="image/png,image/jpeg"
+              onChange={handlePosterFileChange}
+              disabled={uploadingPoster || isLoading}
+              className="block w-full text-sm text-content"
+            />
+            {uploadingPoster ? (
+              <p className="text-xs text-content/60">Subiendo...</p>
+            ) : null}
+            {posterError ? (
+              <p className="text-xs text-energy-orange">{posterError}</p>
+            ) : null}
+          </div>
+          <input type="hidden" {...register("posterUrl")} />
+        </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <FormSelect

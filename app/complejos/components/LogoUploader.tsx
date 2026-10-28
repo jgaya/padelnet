@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-async function fileToOptimizedDataUrl(
+export async function fileToOptimizedDataUrl(
   file: File,
   isBanner: boolean,
 ): Promise<string> {
