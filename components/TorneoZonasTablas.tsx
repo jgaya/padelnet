@@ -15,6 +15,23 @@ function formatDateTime(value: string | null) {
   });
 }
 
+/** Por horario ascendente; los partidos sin horario quedan al final. */
+function ordenarPorHorario<T extends { scheduledAt: string | null }>(
+  items: T[],
+) {
+  const tiempo = (value: string | null) => {
+    const time = value ? new Date(value).getTime() : Number.NaN;
+    return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
+  };
+
+  return [...items].sort((a, b) => {
+    const ta = tiempo(a.scheduledAt);
+    const tb = tiempo(b.scheduledAt);
+    if (ta === tb) return 0;
+    return ta < tb ? -1 : 1;
+  });
+}
+
 function matchStatusLabel(status: TorneoGrupoCard["matches"][number]["status"]) {
   switch (status) {
     case "SCHEDULED":
@@ -144,7 +161,7 @@ export default function TorneoZonasTablas({
               </p>
             ) : (
               <ul className="mb-0 grid gap-2 sm:grid-cols-2">
-                {grupo.matches.map((match) => (
+                {ordenarPorHorario(grupo.matches).map((match) => (
                   <li
                     key={match.id}
                     className="rounded-xl border border-content/10 bg-surface-soft/50 p-3"

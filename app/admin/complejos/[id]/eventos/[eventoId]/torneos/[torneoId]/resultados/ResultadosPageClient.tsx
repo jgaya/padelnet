@@ -9,14 +9,42 @@ import TorneoZonasTablas from "@/components/TorneoZonasTablas";
 import Badge from "@/app/components/UI/Badge";
 import { useSnackbar } from "@/context/SnackbarContext";
 import {
+  getTorneoPartidosSetupData,
   getTorneoVistaPublica,
   listTorneoPartidosByTorneo,
   saveTorneoPartidoResultado,
+  updateTorneoPartidoHorario,
   type TorneoPartidoListItem,
   type TorneoPartidoSetItem,
+  type TorneoPartidosCanchaOption,
 } from "@/actions/torneos-partidos";
 // Solo el tipo: se borra al compilar y no arrastra el modulo server-only.
 import type { PublicTorneoDetail } from "@/lib/torneo-vista-publica";
+
+function formatDate(value: string | null) {
+  if (!value) return "-";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+
+  return date.toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+function formatTime(value: string | null) {
+  if (!value) return "-";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+
+  return date.toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 function formatDateTime(value: string | null) {
   if (!value) return "-";
@@ -31,6 +59,29 @@ function formatDateTime(value: string | null) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+/**
+ * Primero los partidos de zona (los que ya tienen horario antes) y despues el
+ * resto, con la llave al final. Dentro de cada grupo se mantiene el orden
+ * original, que ya viene por horario.
+ */
+function ordenarPartidos(items: TorneoPartidoListItem[]) {
+  const prioridad = (match: TorneoPartidoListItem) =>
+    (match.llave ? 2 : 0) + (match.scheduledAt ? 0 : 1);
+
+  return [...items].sort((a, b) => prioridad(a) - prioridad(b));
+}
+
+/** ISO -> valor de <input type="datetime-local"> en hora local. */
+function toDateTimeLocal(value: string | null) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 /**
@@ -154,6 +205,13 @@ export default function ResultadosPageClient() {
   const [setScores, setSetScores] = useState<string[]>(EMPTY_SET_SCORES);
   const [walkover, setWalkover] = useState(false);
   const [search, setSearch] = useState("");
+  const [showHorarioModal, setShowHorarioModal] = useState(false);
+  const [horarioMatch, setHorarioMatch] =
+    useState<TorneoPartidoListItem | null>(null);
+  const [horarioFecha, setHorarioFecha] = useState("");
+  const [horarioCanchaId, setHorarioCanchaId] = useState<number | null>(null);
+  const [savingHorario, setSavingHorario] = useState(false);
+  const [canchas, setCanchas] = useState<TorneoPartidosCanchaOption[]>([]);
 
   const filteredMatches = useMemo(() => {
     const term = normalizeSearch(search);
@@ -185,7 +243,7 @@ export default function ResultadosPageClient() {
         eventoId,
         torneoId,
       );
-      setMatches(data);
+      setMatches(ordenarPartidos(data));
     } catch (error) {
       const message =
         error instanceof Error
@@ -215,8 +273,12 @@ export default function ResultadosPageClient() {
   }, [complejoId, eventoId, paramsAreValid, showSnackbar, torneoId]);
 
   useEffect(() => {
+    // Carga de datos externos: los setState ocurren despues de un await, no de
+    // forma sincronica; la regla no puede verlo a traves de los callbacks.
+    /* eslint-disable react-hooks/set-state-in-effect */
     void loadMatches();
     void loadVista();
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [loadMatches, loadVista]);
 
   const openResultModal = (match: TorneoPartidoListItem) => {
@@ -225,6 +287,64 @@ export default function ResultadosPageClient() {
     setSetScores(setsToScores(match.sets));
     setWalkover(match.walkover);
     setShowResultModal(true);
+  };
+
+  const openHorarioModal = async (match: TorneoPartidoListItem) => {
+    setHorarioMatch(match);
+    setHorarioFecha(toDateTimeLocal(match.scheduledAt));
+    setHorarioCanchaId(match.canchaId);
+    setShowHorarioModal(true);
+
+    if (canchas.length === 0) {
+      try {
+        const data = await getTorneoPartidosSetupData(
+          complejoId,
+          eventoId,
+          torneoId,
+        );
+        setCanchas(data.canchas);
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "No se pudieron cargar las canchas";
+        showSnackbar(message, "error");
+      }
+    }
+  };
+
+  const handleSaveHorario = async () => {
+    if (!horarioMatch || !horarioFecha) return;
+
+    const fecha = new Date(horarioFecha);
+    if (Number.isNaN(fecha.getTime())) {
+      showSnackbar("La fecha y hora no son validas", "error");
+      return;
+    }
+
+    setSavingHorario(true);
+
+    try {
+      await updateTorneoPartidoHorario(
+        complejoId,
+        eventoId,
+        torneoId,
+        horarioMatch.id,
+        fecha.toISOString(),
+        horarioCanchaId,
+      );
+      showSnackbar("Horario guardado correctamente", "success");
+      setShowHorarioModal(false);
+      setHorarioMatch(null);
+      setLoading(true);
+      void loadMatches();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "No se pudo guardar el horario";
+      showSnackbar(message, "error");
+    } finally {
+      setSavingHorario(false);
+    }
   };
 
   const handleSetScoreChange = (index: number, value: string) => {
@@ -401,9 +521,9 @@ export default function ResultadosPageClient() {
               <table className="min-w-full border-separate border-spacing-0 text-left text-sm text-content">
                 <thead className="bg-ink text-[11px] font-semibold uppercase tracking-[0.18em] text-on-ink">
                   <tr>
-                    <th className="px-4 py-3">Partido</th>
+                    <th className="min-w-[240px] px-4 py-3 sm:min-w-0">Partido</th>
                     <th className="px-4 py-3 whitespace-nowrap">
-                      Horario y Cancha
+                      Horario
                     </th>
                     <th className="px-4 py-3 whitespace-nowrap">Estado</th>
                     <th className="px-4 py-3">Resultado</th>
@@ -445,7 +565,7 @@ export default function ResultadosPageClient() {
                               </span>
                             ) : null}
                           </div>
-                          <div className="text-sm font-medium text-content">
+                          <div className="text-sm font-medium text-content flex flex-col justify-evenly">
                             <span className="font-semibold">
                               {match.pareja1Nombre}
                             </span>
@@ -459,7 +579,10 @@ export default function ResultadosPageClient() {
                         </td>
                         <td className="whitespace-nowrap px-4 py-3 text-sm">
                           <div className="font-medium text-content">
-                            {formatDateTime(match.scheduledAt)}
+                            {formatDate(match.scheduledAt)}
+                          </div>
+                          <div className="font-medium text-content">
+                            {formatTime(match.scheduledAt)}
                           </div>
                           <div className="text-xs text-content/60 mt-0.5">
                             {match.canchaLabel || "Sin cancha"}
@@ -499,15 +622,30 @@ export default function ResultadosPageClient() {
                           )}
                         </td>
                         <td className="whitespace-nowrap px-4 py-3 text-sm text-right">
-                          <button
-                            type="button"
-                            className="btn btn-primary btn-sm"
-                            onClick={() => openResultModal(match)}
-                          >
-                            {hasFinished
-                              ? "Editar resultado"
-                              : "Cargar resultado"}
-                          </button>
+                          <div className="flex flex-col justify-evenly gap-2">
+                            <button
+                              type="button"
+                              className={`btn btn-sm ${match.scheduledAt
+                                ? "btn-secondary"
+                                : "btn-primary"}`}
+                              onClick={() => void openHorarioModal(match)}
+                            >
+                              {match.scheduledAt
+                                ? "Cambiar horario"
+                                : "Asignar horario"}
+                            </button>
+                            <button
+                              type="button"
+                              className={`btn btn-sm ${hasFinished
+                                ? "btn-secondary"
+                                : "btn-primary"}`}
+                              onClick={() => openResultModal(match)}
+                            >
+                              {hasFinished
+                                ? "Editar resultado"
+                                : "Cargar resultado"}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -732,6 +870,90 @@ export default function ResultadosPageClient() {
             No hay partido seleccionado.
           </p>
         )}
+      </Modal>
+
+      <Modal
+        showModal={showHorarioModal}
+        setShowModal={(open) => {
+          if (!open) setHorarioMatch(null);
+          setShowHorarioModal(open);
+        }}
+        title="Cambiar horario"
+        size="lg"
+        footer={
+          horarioMatch ? (
+            <>
+              <button
+                type="button"
+                className="inline-flex items-center rounded-full border border-content/20 bg-surface px-4 py-2.5 text-sm font-semibold text-content transition hover:bg-surface-soft"
+                onClick={() => setShowHorarioModal(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center rounded-full bg-padel-green px-4 py-2.5 text-sm font-semibold text-on-brand transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={() => void handleSaveHorario()}
+                disabled={savingHorario || !horarioFecha}
+              >
+                {savingHorario ? "Guardando..." : "Guardar horario"}
+              </button>
+            </>
+          ) : undefined
+        }
+      >
+        {horarioMatch ? (
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-content/10 bg-surface-soft px-4 py-3">
+              {horarioMatch.idLegible ? (
+                <p className="mb-1 font-mono text-xs text-content/70">
+                  {horarioMatch.idLegible}
+                </p>
+              ) : null}
+              <p className="mb-0 text-base font-semibold text-content">
+                {horarioMatch.pareja1Nombre} vs {horarioMatch.pareja2Nombre}
+              </p>
+            </div>
+            <div>
+              <label
+                className="mb-1.5 block text-sm font-semibold text-content"
+                htmlFor="horario-fecha"
+              >
+                Fecha y hora
+              </label>
+              <input
+                id="horario-fecha"
+                type="datetime-local"
+                className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                value={horarioFecha}
+                onChange={(event) => setHorarioFecha(event.target.value)}
+              />
+            </div>
+            <div>
+              <label
+                className="mb-1.5 block text-sm font-semibold text-content"
+                htmlFor="horario-cancha"
+              >
+                Cancha
+              </label>
+              <select
+                id="horario-cancha"
+                className="w-full rounded-xl border border-content/20 bg-surface px-3 py-2.5 text-sm text-content focus:border-padel-green focus:outline-none focus:ring-2 focus:ring-padel-green/20"
+                value={horarioCanchaId ?? ""}
+                onChange={(event) =>
+                  setHorarioCanchaId(Number(event.target.value) || null)
+                }
+              >
+                <option value="">Sin cancha</option>
+                {canchas.map((cancha) => (
+                  <option key={cancha.id} value={cancha.id}>
+                    {cancha.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        ) : null}
       </Modal>
     </div>
   );

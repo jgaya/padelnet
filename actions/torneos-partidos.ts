@@ -298,6 +298,108 @@ export async function listTorneoPartidosByTorneo(
   }));
 }
 
+/**
+ * Asigna o cambia la fecha, hora y cancha de un partido puntual. Si el partido
+ * estaba pendiente pasa a programado; los terminados conservan su estado.
+ */
+export async function updateTorneoPartidoHorario(
+  complejoId: number,
+  eventoId: number,
+  torneoId: number,
+  partidoId: number,
+  scheduledAtIso: string,
+  canchaId: number | null,
+) {
+  await ensureTorneoAccess(complejoId, eventoId, torneoId);
+
+  const scheduledAt = new Date(scheduledAtIso);
+  if (Number.isNaN(scheduledAt.getTime())) {
+    throw new Error("La fecha y hora no son validas");
+  }
+
+  const partido = await prisma.partido.findFirst({
+    where: { id: partidoId, torneoId, deletedAt: null },
+    select: {
+      id: true,
+      status: true,
+      scheduledAt: true,
+      canchaId: true,
+      duracionMin: true,
+      pareja1: { select: { player1Id: true, player2Id: true } },
+      pareja2: { select: { player1Id: true, player2Id: true } },
+    },
+  });
+
+  if (!partido) {
+    throw new Error("Partido no encontrado");
+  }
+
+  if (canchaId !== null) {
+    const cancha = await prisma.cancha.findFirst({
+      where: { id: canchaId, complejoId, deletedAt: null, isActive: true },
+      select: { id: true },
+    });
+    if (!cancha) {
+      throw new Error("La cancha seleccionada no es valida");
+    }
+
+    const duracionMs = (partido.duracionMin ?? 75) * 60_000;
+    const vecinos = await prisma.partido.findMany({
+      where: {
+        canchaId,
+        deletedAt: null,
+        id: { not: partidoId },
+        status: { not: "CANCELLED" },
+        scheduledAt: {
+          gt: new Date(scheduledAt.getTime() - 180 * 60_000),
+          lt: new Date(scheduledAt.getTime() + duracionMs),
+        },
+      },
+      select: { scheduledAt: true, duracionMin: true },
+    });
+    const solapa = vecinos.some((otro) => {
+      if (!otro.scheduledAt) return false;
+      const fin = otro.scheduledAt.getTime() + (otro.duracionMin ?? 75) * 60_000;
+      return fin > scheduledAt.getTime();
+    });
+    if (solapa) {
+      throw new Error("Esa cancha ya tiene un partido en ese horario");
+    }
+  }
+
+  await prisma.partido.update({
+    where: { id: partidoId },
+    data: {
+      scheduledAt,
+      canchaId,
+      duracionMin: partido.duracionMin ?? 75,
+      ...(partido.status === "PENDING" ? { status: "SCHEDULED" as const } : {}),
+    },
+  });
+
+  const cambioHorario = partido.scheduledAt?.getTime() !== scheduledAt.getTime();
+  const cambioCancha = partido.canchaId !== canchaId;
+  const jugadores = [
+    partido.pareja1?.player1Id,
+    partido.pareja1?.player2Id,
+    partido.pareja2?.player1Id,
+    partido.pareja2?.player2Id,
+  ].filter((id): id is number => typeof id === "number");
+
+  if (partido.scheduledAt && (cambioHorario || cambioCancha) && jugadores.length) {
+    const detalles: string[] = [];
+    if (cambioHorario) detalles.push("cambio el horario");
+    if (cambioCancha) detalles.push("cambio la cancha");
+    await notifyPartidosCambiados(torneoId, [
+      { partidoId, jugadores, detalle: detalles.join(" y ") },
+    ]);
+  } else if (!partido.scheduledAt) {
+    await notifyPartidosProgramados(torneoId);
+  }
+
+  return { success: true };
+}
+
 export async function saveTorneoPartidoResultado(
   complejoId: number,
   eventoId: number,
@@ -711,6 +813,7 @@ async function buildTorneoPartidosPreview(
   eventoId: number,
   torneoId: number,
   payload: SaveTorneoPartidosPayload,
+  sinAgendar = false,
 ) {
   const torneo = await ensureTorneoAccess(complejoId, eventoId, torneoId);
 
@@ -758,7 +861,7 @@ async function buildTorneoPartidosPreview(
     (item) => item.selected,
   );
 
-  if (selectedCanchas.length === 0) {
+  if (!sinAgendar && selectedCanchas.length === 0) {
     throw new Error("Debes seleccionar al menos una cancha");
   }
 
@@ -905,28 +1008,69 @@ export async function saveTorneoPartidosSetup(
   torneoId: number,
   payload: SaveTorneoPartidosPayload,
 ) {
+  return persistTorneoPartidos(complejoId, eventoId, torneoId, payload, false);
+}
+
+/**
+ * Crea todos los partidos del torneo sin cancha ni horario, para agendarlos
+ * despues a mano. Reemplaza los partidos existentes.
+ */
+export async function saveTorneoPartidosSinAgendar(
+  complejoId: number,
+  eventoId: number,
+  torneoId: number,
+) {
+  const torneo = await ensureTorneoAccess(complejoId, eventoId, torneoId);
+  const days = buildTournamentDays(torneo.inicio, torneo.fin);
+
+  return persistTorneoPartidos(
+    complejoId,
+    eventoId,
+    torneoId,
+    {
+      durationMin: 75,
+      gapMultiplier: 1,
+      shuffleSeed: 1,
+      allowExtraFirstDay: false,
+      dayKeys: days.map((day) => day.key),
+      canchas: [],
+    },
+    true,
+  );
+}
+
+async function persistTorneoPartidos(
+  complejoId: number,
+  eventoId: number,
+  torneoId: number,
+  payload: SaveTorneoPartidosPayload,
+  sinAgendar: boolean,
+) {
   const torneo = await ensureTorneoAccess(complejoId, eventoId, torneoId);
   const preview = await buildTorneoPartidosPreview(
     complejoId,
     eventoId,
     torneoId,
     payload,
+    sinAgendar,
   );
 
   // Un partido jugable sin horario es un fallo real de grilla. Solo se permite
   // dejar fuera de los slots un cruce de llave cuyo rival sea Bye.
-  if (preview.unassignedZona.length > 0) {
-    throw new Error(
-      "Hay partidos de zona sin horario. Revisa las canchas y los horarios",
+  if (!sinAgendar) {
+    if (preview.unassignedZona.length > 0) {
+      throw new Error(
+        "Hay partidos de zona sin horario. Revisa las canchas y los horarios",
+      );
+    }
+    const unassignedLlaveJugable = preview.unassignedLlave.filter(
+      (match) => !match.conBye,
     );
-  }
-  const unassignedLlaveJugable = preview.unassignedLlave.filter(
-    (match) => !match.conBye,
-  );
-  if (unassignedLlaveJugable.length > 0) {
-    throw new Error(
-      `Hay ${unassignedLlaveJugable.length} partidos de llave sin horario. Amplia los dias, las canchas o los horarios disponibles`,
-    );
+    if (unassignedLlaveJugable.length > 0) {
+      throw new Error(
+        `Hay ${unassignedLlaveJugable.length} partidos de llave sin horario. Amplia los dias, las canchas o los horarios disponibles`,
+      );
+    }
   }
 
   // Foto de la grilla previa para detectar que partidos cambiaron de horario o
@@ -1012,7 +1156,10 @@ export async function saveTorneoPartidosSetup(
     // El cuadro completo tiene que existir aunque no haya entrado en la grilla:
     // se crean los cruces restantes sin horario ni cancha para poder agendarlos
     // despues a mano.
-    for (const match of preview.unassignedLlave) {
+    for (const match of [
+      ...preview.unassignedZona,
+      ...preview.unassignedLlave,
+    ]) {
       await tx.partido.create({
         data: {
           torneoId,
@@ -1061,9 +1208,13 @@ export async function saveTorneoPartidosSetup(
 
   return {
     success: true,
-    partidosGenerados: preview.matches.length + preview.unassignedLlave.length,
+    partidosGenerados:
+      preview.matches.length +
+      preview.unassignedZona.length +
+      preview.unassignedLlave.length,
     partidosAgendados: preview.matches.length,
-    partidosSinAgendar: preview.unassignedLlave.length,
+    partidosSinAgendar:
+      preview.unassignedZona.length + preview.unassignedLlave.length,
   };
 }
 

@@ -10,6 +10,7 @@ import {
   generateTorneoPartidosPreview,
   getTorneoPartidosSetupData,
   saveTorneoPartidosSetup,
+  saveTorneoPartidosSinAgendar,
   type SaveTorneoPartidosPayload,
   type TorneoPartidosPreview,
   type TorneoPartidosSetupData,
@@ -33,6 +34,7 @@ export default function PartidosPageClient() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [creatingSinAgendar, setCreatingSinAgendar] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<TorneoPartidosPreview | null>(null);
   const [selectedCanchaIds, setSelectedCanchaIds] = useState<number[]>([]);
@@ -272,6 +274,39 @@ export default function PartidosPageClient() {
       showSnackbar(message, "error");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleCrearSinAgendar = async () => {
+    if (
+      (data?.torneo.partidoCount ?? 0) > 0 &&
+      !window.confirm(
+        "Ya hay partidos creados. Se van a reemplazar por partidos sin cancha ni horario. ¿Continuar?",
+      )
+    ) {
+      return;
+    }
+
+    setCreatingSinAgendar(true);
+
+    try {
+      const result = await saveTorneoPartidosSinAgendar(
+        complejoId,
+        eventoId,
+        torneoId,
+      );
+      showSnackbar(
+        `Partidos creados sin cancha ni horario (${result.partidosGenerados})`,
+        "success",
+      );
+      setPreview(null);
+      await loadData();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "No se pudo crear los partidos";
+      showSnackbar(message, "error");
+    } finally {
+      setCreatingSinAgendar(false);
     }
   };
 
@@ -522,15 +557,33 @@ export default function PartidosPageClient() {
                   </div>
                 </div>
               </div>
-              <Tooltip label="Arma una grilla tentativa con las canchas elegidas. No guarda nada todavia.">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => void handleGenerate()}
-                  disabled={generating || selectedCanchaIds.length === 0}
-                >
-                  {generating ? "Generando..." : "Generar vista previa"}
-                </button>
-              </Tooltip>
+              <div className="flex flex-wrap gap-2">
+                <Tooltip label="Arma una grilla tentativa con las canchas elegidas. No guarda nada todavia.">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => void handleGenerate()}
+                    disabled={
+                      generating ||
+                      creatingSinAgendar ||
+                      selectedCanchaIds.length === 0
+                    }
+                  >
+                    {generating ? "Generando..." : "Generar vista previa"}
+                  </button>
+                </Tooltip>
+                <Tooltip label="Crea todos los partidos sin cancha ni horario para agendarlos despues a mano. Reemplaza los que ya existan.">
+                  <button
+                    className="btn btn-outline-secondary"
+                    type="button"
+                    onClick={() => void handleCrearSinAgendar()}
+                    disabled={generating || saving || creatingSinAgendar}
+                  >
+                    {creatingSinAgendar
+                      ? "Creando..."
+                      : "Crear partidos sin cancha ni horario"}
+                  </button>
+                </Tooltip>
+              </div>
             </div>
           </div>
 
