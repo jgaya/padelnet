@@ -13,9 +13,13 @@ async function fileToOptimizedDataUrl(
     reader.readAsDataURL(file);
   });
 
-  // Si ya es liviana (<= 900 KB) y es PNG/JPEG, se puede enviar directo
+  // Limite seguro de longitud del string dataUrl (~750 KB) para que el body JSON
+  // quede siempre comodamente debajo del limite default de 1 MB de Nginx.
+  const MAX_SAFE_DATA_URL_LENGTH = 750 * 1024;
+
+  // Si ya es liviana y es PNG/JPEG, se puede enviar directo
   if (
-    file.size <= 900 * 1024 &&
+    rawDataUrl.length <= MAX_SAFE_DATA_URL_LENGTH &&
     (file.type === "image/png" || file.type === "image/jpeg")
   ) {
     return rawDataUrl;
@@ -24,8 +28,8 @@ async function fileToOptimizedDataUrl(
   return new Promise<string>((resolve) => {
     const img = new Image();
     img.onload = () => {
-      const maxWidth = isBanner ? 1920 : 800;
-      const maxHeight = isBanner ? 1080 : 800;
+      const maxWidth = isBanner ? 1600 : 600;
+      const maxHeight = isBanner ? 900 : 600;
       let { width, height } = img;
 
       if (width > maxWidth || height > maxHeight) {
@@ -44,16 +48,31 @@ async function fileToOptimizedDataUrl(
       }
 
       ctx.drawImage(img, 0, 0, width, height);
-      // Para logos en PNG mantenemos PNG (transparencia) salvo que siga siendo muy pesado;
-      // para banners o JPEGs exportamos en JPEG comprimido.
+      // Para logos en PNG mantenemos PNG (transparencia) solo si entra debajo del limite seguro;
+      // si sigue siendo pesado o es banner/JPEG, exportamos en JPEG reduciendo calidad hasta que entre.
       if (!isBanner && file.type === "image/png") {
         const pngUrl = canvas.toDataURL("image/png");
-        if (pngUrl.length <= 2.5 * 1024 * 1024) {
+        if (pngUrl.length <= MAX_SAFE_DATA_URL_LENGTH) {
           resolve(pngUrl);
           return;
         }
+        // Si el PNG supera el limite, pintamos fondo blanco antes de pasar a JPEG
+        // para que las transparencias no queden negras.
+        ctx.globalCompositeOperation = "destination-over";
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+        ctx.globalCompositeOperation = "source-over";
       }
-      resolve(canvas.toDataURL("image/jpeg", 0.85));
+
+      for (const quality of [0.82, 0.72, 0.6, 0.5]) {
+        const jpegUrl = canvas.toDataURL("image/jpeg", quality);
+        if (jpegUrl.length <= MAX_SAFE_DATA_URL_LENGTH) {
+          resolve(jpegUrl);
+          return;
+        }
+      }
+
+      resolve(canvas.toDataURL("image/jpeg", 0.45));
     };
     img.onerror = () => resolve(rawDataUrl);
     img.src = rawDataUrl;

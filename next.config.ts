@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
 /*   typescript: {
     // Ignora errores de TS durante el build de producción
     ignoreBuildErrors: true,
